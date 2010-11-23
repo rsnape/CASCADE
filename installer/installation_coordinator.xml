@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+
+<!-- Created by Michael J. North -->
+<!-- September 20, 2007          -->
+
+<project name="BuildModelInstaller" default="BuildUserModelInstaller" basedir="..">
+
+	<target name="BuildUserModelInstaller">
+
+		<!-- Declare the local variables -->
+		<echo message="EclipsePluginsDirectory = ${EclipsePluginsDirectory}" />
+		<property name="StagingArea" value="${EclipsePluginsDirectory}/repast.simphony.bin_and_src_${REPAST_VERSION}/temp" />
+		<echo message="StagingArea = ${StagingArea}" />
+		<property name="IzPackHomeDirectory" value="${EclipsePluginsDirectory}/repast.simphony.score.agents_${REPAST_VERSION}/setupfiles/IzPack" />
+		<echo message="IzPackHomeDirectory = ${IzPackHomeDirectory}" />
+		<property name="IzPackLibDirectory" value="${IzPackHomeDirectory}/lib" />
+		<echo message="IzPackLibDirectory = ${IzPackLibDirectory}" />
+		<fileset id="RawIzPackJARs" dir="${IzPackLibDirectory}">
+			<include name="*.jar" />
+		</fileset>
+
+		<!-- Clear the temporary staging area -->
+		<echo message="Clearing the temporary staging area..." />
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="${StagingArea}" includes="**/*" />
+		</delete>
+
+		<!-- Setup the temporary staging area -->
+		<echo message="Setting up the temporary staging area..." />
+		<copy todir="${StagingArea}" overwrite="true" failonerror="false">
+			<fileset dir="." casesensitive="no">
+				<include name="model_description.txt" />
+				<include name="license.txt" />
+				<include name="installer/start_model.bat" />
+				<include name="installer/start_model.command" />
+				<include name="installer/splash_screen.png" />
+				<include name="docs/**" />
+				<include name="freezedried_data/**" />
+				<include name="src/**" />
+				<include name="bin/**" />
+				<include name="bin-groovy/**" />
+				<include name="repast-licenses/**" />
+				<include name="integration/**" />
+				<include name="lib/**" />
+				<include name="icons/**" />
+				<include name="misc/**" />
+				<include name="batch/**" />
+				<include name="prosumermodel.rs/**" />
+				<include name="installer/shortcuts_Windows.xml" />
+				<include name="installer/shortcuts_Windows_Registry.xml" />
+				<include name="installer/shortcuts_Xnix.xml" />
+			</fileset>
+		</copy>
+
+		<chmod perm="+x" file="${StagingArea}/installer/start_model.command" />
+
+
+		<copy file="installer/installation_components.xml" tofile="${StagingArea}/installation_components_temp.xml"/>
+
+		<replace file="${StagingArea}/installation_components_temp.xml">
+			<replacefilter token="$REPAST_VERSION" value="${REPAST_VERSION}" />
+		</replace>
+
+		<!-- Run IzPack -->
+		<echo message="Creating the installation file..." />
+		<java fork="true" classname="com.izforge.izpack.compiler.Compiler">
+			<classpath>
+				<fileset id="RawIzPackJARs" dir="${IzPackLibDirectory}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+			<arg value="${StagingArea}/installation_components_temp.xml" />
+			<arg value="-b" />
+			<arg value="${EclipsePluginsDirectory}" />
+			<arg value="-o" />
+			<arg value="${outputInstallationFile}" />
+			<arg value="-k" />
+			<arg value="standard" />
+		</java>
+
+
+		<!-- Clear the temporary staging area -->
+		<echo message="Clearing the temporary staging area..." />
+		<delete includeemptydirs="true" quiet="true">
+			<fileset dir="${StagingArea}" includes="**/*" />
+		</delete>
+
+		<!-- Note the status -->
+		<echo message="Done!" />
+
+	</target>
+
+</project>

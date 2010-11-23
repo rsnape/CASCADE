@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<score:SContext xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:score="http://scoreabm.org/score" label="Prosumermodel" ID="Prosumermodel" pluralLabel="Prosumermodels">
+  <attributes label="weatherFile" ID="weatherFile" pluralLabel="weatherFiles" sType="STRING" defaultValue="yearWeather.csv"/>
+  <attributes label="systemBaseDemandFile" ID="systemBaseDemandFile" pluralLabel="systemBaseDemandFiles" description="" sType="STRING" defaultValue="macroDemand.csv"/>
+  <attributes label="householdBaseAttributeFile" ID="householdBaseAttributeFile" pluralLabel="householdBaseAttributeFiles" description="" sType="STRING" defaultValue="melodySampleWeek.csv"/>
+  <attributes label="electricalNetworkLayoutFile" ID="electricalNetworkLayoutFile" pluralLabel="electricalNetworkLayoutFiles" description="" sType="STRING" defaultValue="networkTopology.csv"/>
+  <attributes label="defaultSignalLength" ID="defaultSignalLength" pluralLabel="defaultSignalLengths" sType="INTEGER" defaultValue="48"/>
+  <attributes label="ticksPerDay" ID="ticksPerDay" pluralLabel="ticksPerDaies" sType="INTEGER" defaultValue="48"/>
+  <attributes label="defaultProsumersPerFeeder" ID="defaultProsumersPerFeeder" pluralLabel="defaultProsumersPerFeeders" sType="INTEGER" defaultValue="30"/>
+  <attributes label="dataFileFolder" ID="dataFileFolder" pluralLabel="dataFileFolders" sType="STRING" defaultValue="'C:\workspace\Prosumer model\dataFiles'"/>
+  <implementation package="prosumermodel" className="SmartGridCreator" basePath="../Prosumer model"/>
+  <agents label="ProsumerAgent" ID="prosumerAgent" pluralLabel="ProsumerAgents">
+    <implementation className="ProsumerAgent"/>
+  </agents>
+  <agents label="AggregatorAgent" ID="AggregatorAgent" pluralLabel="AggregatorAgents">
+    <implementation className="AggregatorAgent"/>
+  </agents>
+  <projections xsi:type="score:SNetwork" label="socialNetwork" ID="socialNetwork" pluralLabel="socialNetworks" description="Social Network"/>
+  <projections xsi:type="score:SGeography" label="Geography" ID="geography" pluralLabel="Geographies" description="The actual geography within which agents can be located"/>
+  <projections xsi:type="score:SNetwork" label="economicNetwork" ID="economicNetwork" pluralLabel="economicNetworks" description="Economic network i.e. trading partners"/>
+  <projections xsi:type="score:SNetwork" label="electricalNetwork" ID="electricalNetwork" pluralLabel="electricalNetworks" description="The physical electrical network"/>
+  <projections xsi:type="score:SNetwork" label="infoNetwork" ID="infoNetwork" pluralLabel="infoNetworks" description="Network from which agent derives information about the grid"/>
+</score:SContext>
