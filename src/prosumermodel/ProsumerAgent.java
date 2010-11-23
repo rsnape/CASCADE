@@ -331,7 +331,7 @@ public class ProsumerAgent {
 		// Note, we can only moderate based on cost signal
 		// if we receive it (i.e. if we have smart meter)
 		// TODO: may have to refine this - do we differentiate smart meter and smart display - i.e. whether receive only or Tx/Rx
-		if(hasSmartMeter)
+		if(hasSmartMeter && predictedCostSignalLength > 0)
 		{
 			if (predictedCostSignal[time % predictedCostSignalLength] > costThreshold){
 
