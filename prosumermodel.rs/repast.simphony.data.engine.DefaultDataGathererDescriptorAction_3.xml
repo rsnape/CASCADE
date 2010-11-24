@@ -1,6 +1,6 @@
 <repast.simphony.data.engine.DefaultDataGathererDescriptor>
-  <name>Totals data set</name>
-  <dataSetId class="string">TotalDemand</dataSetId>
+  <name>Aggregator data</name>
+  <dataSetId class="string">AggregatorData</dataSetId>
   <scheduleParameters>
     <start>1.0</start>
     <interval>1.0</interval>
@@ -9,8 +9,32 @@
     <frequency>REPEAT</frequency>
   </scheduleParameters>
   <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
-    <nameMappingTable/>
-    <mappingNameTable/>
+    <nameMappingTable>
+      <entry>
+        <string>Tick</string>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
+      </entry>
+      <entry>
+        <string>NetDemand</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>prosumermodel.AggregatorAgent</class>
+            <name>getNetDemand</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+    </nameMappingTable>
+    <mappingNameTable>
+      <entry>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>NetDemand</string>
+      </entry>
+    </mappingNameTable>
   </dataMappingContainer>
   <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
     <nameMappingTable>
@@ -19,25 +43,12 @@
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
       </entry>
       <entry>
-        <string>Unadapted total demand</string>
+        <string>New Column</string>
         <repast.simphony.data.logging.gather.aggregate.SumMapping>
           <type>Sum</type>
           <decorated class="repast.simphony.data.logging.gather.MethodMapping">
             <method>
-              <class>prosumermodel.ProsumerAgent</class>
-              <name>getUnadaptedDemand</name>
-              <parameter-types/>
-            </method>
-          </decorated>
-        </repast.simphony.data.logging.gather.aggregate.SumMapping>
-      </entry>
-      <entry>
-        <string>Total Demand</string>
-        <repast.simphony.data.logging.gather.aggregate.SumMapping>
-          <type>Sum</type>
-          <decorated class="repast.simphony.data.logging.gather.MethodMapping">
-            <method>
-              <class>prosumermodel.ProsumerAgent</class>
+              <class>prosumermodel.AggregatorAgent</class>
               <name>getNetDemand</name>
               <parameter-types/>
             </method>
@@ -52,15 +63,11 @@
       </entry>
       <entry>
         <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
-        <string>Unadapted total demand</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
-        <string>Total Demand</string>
+        <string>New Column</string>
       </entry>
     </mappingNameTable>
     <alternatedNameTable/>
     <nameAlternatedTable/>
   </aggregateContainer>
-  <agentClass>prosumermodel.ProsumerAgent</agentClass>
+  <agentClass>prosumermodel.AggregatorAgent</agentClass>
 </repast.simphony.data.engine.DefaultDataGathererDescriptor>

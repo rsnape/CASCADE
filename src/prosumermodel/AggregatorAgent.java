@@ -49,7 +49,161 @@ import static repast.simphony.essentials.RepastEssentials.*;
  */
 public class AggregatorAgent {
 
-/**
+	boolean autoControl;
+	String contextName;
+	/*
+	 * This is net demand, may be +ve (consumption), 0, or 
+	 * -ve (generation)
+	 */
+	float netDemand;
+	float[] predictedCustomerDemand;
+	int predictedCustomerDemandLength;
+	float[] priceSignal;
+	int priceSignalLength;
+	boolean priceSignalChanged = true;  //set true when we wish to send a new and different price signal.  
+	//True by default as it will always be new until the first broadcast
+	int ticksPerDay;
+
+	/*
+	 * Accessor functions (NetBeans style)
+	 */
+
+	public float getNetDemand()
+	{
+		return netDemand;
+	}
+
+	public void setNetDemand(float newDemand)
+	{
+		netDemand = newDemand;
+	}
+
+	/*
+	 * Communication functions
+	 */
+
+	/*
+	 * This method receives the centralised value signal
+	 * and stores it to the Prosumer's memory.
+	 */
+	public boolean receiveValueSignal()
+	{
+		boolean success = true;
+
+		return success;
+	}
+
+	public boolean receiveInfluence()
+	{
+		boolean success = true;
+
+		return success;
+	}
+
+	/*
+	 * Step behaviour
+	 */
+
+	/******************
+	 * This method defines the step behaviour of a prosumer agent
+	 * 
+	 * Input variables: 	none
+	 * 
+	 * Return variables: 	boolean returnValue - returns true if the 
+	 * 						method executes succesfully
+	 ******************/
+	@ScheduledMethod(start = 1, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	public boolean step() {
+
+		// Define the return value variable.
+		boolean returnValue = true;
+
+		// Note the simulation time if needed.
+		double time = RepastEssentials.GetTickCount();
+		int timeOfDay = (int) (time % ticksPerDay);
+
+		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
+		List<RepastEdge> linkages = RepastEssentials.GetInEdges("Prosumermodel/economicNetwork", this);
+		for (RepastEdge edge : linkages) {
+			Object linkSource = edge.getTarget();
+			if (linkSource instanceof ProsumerAgent){
+				customers.add((ProsumerAgent) linkSource);    		
+			}
+			else
+			{
+				throw (new WrongCustomerTypeException(linkSource));
+			}
+		}
+
+		float sumDemand = 0;
+		for (ProsumerAgent a : customers)
+		{
+			sumDemand = sumDemand + a.getNetDemand();
+		}
+
+		setNetDemand(sumDemand);
+
+		//This is where we may alter the signal based on the demand
+		// In this simple implementation, we simply scale the signal based on deviation of 
+		// actual demand from projected demand for use next time round.
+
+		int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
+		broadcastLength = priceSignal.length; // but in this case we choose not to
+		float predictedInstantaneousDemand = (int) time % predictedCustomerDemandLength;
+		
+		//This is the real guts - adapt the price signal by a fraction of the 
+		//departure of actual demand from predicted
+		priceSignal[(int) time % priceSignalLength] = priceSignal[(int) time % priceSignalLength] * ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand);
+		priceSignalChanged = true;
+
+		//Here, we simply broadcast the electricity value signal each midnight
+		if (timeOfDay == 0) {
+			broadcastDemandSignal(customers, time, broadcastLength);
+		}    	
+
+		// Return the results.
+		return returnValue;
+
+	}
+	/*
+	 * Logic helper methods
+	 */
+	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
+
+
+		// To avoid computational load (and realistically model a reasonable broadcast strategy)
+		// only prepare and transmit the price signal if it has changed.
+		if(priceSignalChanged)
+		{
+			//populate the broadcast signal with the price signal starting from now and continuing for
+			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
+			//broadcast signal out.
+			float[] broadcastSignal= new float[broadcastLength];
+			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignalLength);
+			int startIndex = (int) time % priceSignalLength;
+			System.out.println(" Copy " + broadcastLength + " figures of price signal, needs " + numCopies + " copies starting at " + startIndex);
+			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignalLength - startIndex);
+			for (int i = 1; i <= numCopies; i++)
+			{
+				int addIndex = (priceSignalLength - startIndex) * i;
+				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignalLength);
+			}
+
+			if (broadcastLength > (((numCopies + 1) * priceSignalLength) - startIndex))
+			{
+				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignalLength) - startIndex, broadcastLength - (((numCopies + 1) * priceSignalLength) - startIndex));
+			}
+
+			for (ProsumerAgent a : broadcastCusts){
+				a.receiveValueSignal(broadcastSignal, broadcastLength);
+			}
+		}
+
+		priceSignalChanged = false;
+	}
+	
+
+	/**
 	 * @param Parameters for this setup
 	 */
 	public AggregatorAgent(String myContext, float[] baseDemand, Parameters parm) {
@@ -64,114 +218,12 @@ public class AggregatorAgent {
 		}
 		this.priceSignal = new float [priceSignalLength];
 		System.arraycopy(baseDemand, 0, this.priceSignal, 0, priceSignalLength);
-	}
-boolean autoControl;
-String contextName;
-/*
- * This is net demand, may be +ve (consumption), 0, or 
- * -ve (generation)
- */
-float netDemand;
-float[] priceSignal;
-int priceSignalLength;
-int ticksPerDay;
-
-/*
- * Accessor functions (NetBeans style)
- */
-
-public float getNetDemand()
-{
-	return netDemand;
-}
-
-public void setNetDemand(float newDemand)
-{
-	netDemand = newDemand;
-}
-
-/*
- * Communication functions
- */
-
-/*
- * This method receives the centralised value signal
- * and stores it to the Prosumer's memory.
- */
-public boolean receiveValueSignal()
-{
-	boolean success = true;
 		
-	return success;
-}
-
-public boolean receiveInfluence()
-{
-	boolean success = true;
-		
-	return success;
-}
-
-/*
- * Step behaviour
- */
-
-/******************
- * This method defines the step behaviour of a prosumer agent
- * 
- * Input variables: 	none
- * 
- * Return variables: 	boolean returnValue - returns true if the 
- * 						method executes succesfully
- ******************/
-@ScheduledMethod(start = 1, interval = 1, shuffle = true)
-public boolean step() {
-
-    // Define the return value variable.
-    boolean returnValue = true;
-
-    // Note the simulation time if needed.
-    double time = RepastEssentials.GetTickCount();
-    int timeOfDay = (int) (time % ticksPerDay);
-    
-    List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
-    List<RepastEdge> linkages = RepastEssentials.GetInEdges("Prosumermodel/economicNetwork", this);
-    for (RepastEdge edge : linkages) {
-    	Object linkSource = edge.getTarget();
-    	if (linkSource instanceof ProsumerAgent){
-    		customers.add((ProsumerAgent) linkSource);    		
-    	}
-    	else
-    	{
-    		throw (new WrongCustomerTypeException(linkSource));
-    	}
-    }
-    
-    float sumDemand = 0;
-    for (ProsumerAgent a : customers)
-    {
-    	sumDemand = sumDemand + a.getNetDemand();
-    }
-    
-    setNetDemand(sumDemand);
-   
-    //This is where we may alter the signal based on the demand if we go realtime
-    
-    //Here, we simply broadcast the electricity value signal each midnight
-    if (timeOfDay == 0) {
-    	broadcastDemandSignal(customers);
-    }    	
-    
-    // Return the results.
-    return returnValue;
-
-}
-/*
- * Logic helper methods
- */
-private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts) {
-	for (ProsumerAgent a : broadcastCusts){
-		a.receiveValueSignal(priceSignal, priceSignalLength);
+		//Very basic configuration of predicted customer demand as 
+		// a constant.  We could be more sophisticated than this or 
+		// possibly this gives us an aspirational target...
+		this.predictedCustomerDemand = new float[ticksPerDay];
+		Arrays.fill(this.predictedCustomerDemand, 13);
+		this.predictedCustomerDemandLength = ticksPerDay;
 	}
-}
 }

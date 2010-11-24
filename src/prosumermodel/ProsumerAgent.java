@@ -149,7 +149,7 @@ public class ProsumerAgent {
 	/*
 	 * Exported signals and profiles.
 	 */
-	float[] currentDemandProfile = new float[48];
+	float[] currentDemandProfile;
 	float[] predictedPriceSignal;
 	int predictedPriceSignalLength;
 
@@ -198,7 +198,7 @@ public class ProsumerAgent {
 	
 	public float getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
-		int index = Math.max(((int) RepastEssentials.GetTickCount() % ticksPerDay), 0);
+		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
 		return (baseDemandProfile[index]);
 	}
 	
