@@ -99,6 +99,12 @@ public class AggregatorAgent {
 
 		return success;
 	}
+	
+	public float getCurrentPriceSignal()
+	{
+		double time = RepastEssentials.GetTickCount();
+		return priceSignal[(int) time % priceSignalLength];
+	}
 
 	/*
 	 * Step behaviour
@@ -149,11 +155,11 @@ public class AggregatorAgent {
 
 		int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
 		broadcastLength = priceSignal.length; // but in this case we choose not to
-		float predictedInstantaneousDemand = (int) time % predictedCustomerDemandLength;
-		
+		float predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+		System.out.println((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand);
 		//This is the real guts - adapt the price signal by a fraction of the 
 		//departure of actual demand from predicted
-		priceSignal[(int) time % priceSignalLength] = priceSignal[(int) time % priceSignalLength] * ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand);
+		priceSignal[(int) time % priceSignalLength] = priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
 		priceSignalChanged = true;
 
 		//Here, we simply broadcast the electricity value signal each midnight
@@ -181,7 +187,6 @@ public class AggregatorAgent {
 			float[] broadcastSignal= new float[broadcastLength];
 			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignalLength);
 			int startIndex = (int) time % priceSignalLength;
-			System.out.println(" Copy " + broadcastLength + " figures of price signal, needs " + numCopies + " copies starting at " + startIndex);
 			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignalLength - startIndex);
 			for (int i = 1; i <= numCopies; i++)
 			{
@@ -201,6 +206,45 @@ public class AggregatorAgent {
 
 		priceSignalChanged = false;
 	}
+	
+    /**
+    *
+    * This value is used to automatically generate agent identifiers.
+    * @field serialVersionUID
+    *
+    */
+   private static final long serialVersionUID = 1L;
+
+   /**
+    *
+    * This value is used to automatically generate agent identifiers.
+    * @field agentIDCounter
+    *
+    */
+   protected static long agentIDCounter = 1;
+
+   /**
+    *
+    * This value is the agent's identifier.
+    * @field agentID
+    *
+    */
+   protected String agentID = "Aggregator " + (agentIDCounter++);
+	
+    /**
+    *
+    * This method provides a human-readable name for the agent.
+    * @method toString
+    *
+    */
+   @ProbeID()
+   public String toString() {
+       // Set the default agent identifier.
+       String returnValue = this.agentID;
+       // Return the results.
+       return returnValue;
+
+   }
 	
 
 	/**
@@ -223,7 +267,7 @@ public class AggregatorAgent {
 		// a constant.  We could be more sophisticated than this or 
 		// possibly this gives us an aspirational target...
 		this.predictedCustomerDemand = new float[ticksPerDay];
-		Arrays.fill(this.predictedCustomerDemand, 13);
+		Arrays.fill(this.predictedCustomerDemand, 20);
 		this.predictedCustomerDemandLength = ticksPerDay;
 	}
 }

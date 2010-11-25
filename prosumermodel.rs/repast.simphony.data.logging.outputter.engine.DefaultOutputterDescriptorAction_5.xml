@@ -1,23 +1,23 @@
 <repast.simphony.data.logging.outputter.engine.DefaultFileOutputterDescriptor>
-  <name>summedDemandOutput</name>
+  <name>Aggregator output</name>
   <outputterFactory class="repast.simphony.data.logging.outputter.engine.DefaultFileOutputterDescriptor$1">
     <outer-class reference="../.."/>
   </outputterFactory>
   <dataSetHandler>
     <dataSets>
-      <string>TotalDemand</string>
+      <string>AggregatorData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns>
       <string>Tick</string>
-      <string>Total Demand</string>
-      <string>Unadapted total demand</string>
+      <string>NetDemand</string>
+      <string>CurrentPriceSignal</string>
     </columns>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">TotalDemand</dataSetId>
-  <fileName>ModelOutputWithAdaptedSignal.csv</fileName>
+  <dataSetId class="string">AggregatorData</dataSetId>
+  <fileName>aggregatorOutput.csv</fileName>
   <insertTimeToFileName>true</insertTimeToFileName>
   <appendToFile>false</appendToFile>
   <writeHeader>true</writeHeader>

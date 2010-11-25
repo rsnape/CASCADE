@@ -314,7 +314,8 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		{
 			thisAgent = new ProsumerAgent((String) thisContext.getId(), baseProfile, parm);
 		}
-		thisAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > 0.5);
+		//thisAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > 0.5);
+		thisAgent.exercisesBehaviourChange = true;
 		thisAgent.hasSmartMeter = true;
 		thisAgent.costThreshold = 35000;  //Threshold in price signal at which behaviour change is prompted (if agent is willing)
 		thisAgent.minSetPoint = 18;

@@ -1,5 +1,5 @@
 <repast.simphony.visualization.engine.DefaultDisplayDescriptor>
-  <name>economicNetwork</name>
+  <name>socialNetwork 2</name>
   <type>TWO_D</type>
   <styles>
     <entry>
@@ -23,13 +23,13 @@
   </editedStyles>
   <netStyles>
     <entry>
-      <string>economicNetwork</string>
+      <string>socialNetwork</string>
       <string>repast.simphony.visualization.visualization2D.style.DefaultEdgeStyle2D</string>
     </entry>
   </netStyles>
   <editedNetStyles>
     <entry>
-      <string>economicNetwork</string>
+      <string>socialNetwork</string>
       <null/>
     </entry>
   </editedNetStyles>
@@ -41,8 +41,8 @@
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
   </schedParams>
-  <layoutClassName>repast.simphony.visualization.visualization2D.Random2DLayout</layoutClassName>
-  <layoutProjection>economicNetwork</layoutProjection>
+  <layoutClassName>repast.simphony.visualization.visualization2D.layout.CircleLayout2D</layoutClassName>
+  <layoutProjection>socialNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
@@ -56,13 +56,13 @@
   </layerOrder>
   <projections>
     <repast.score.impl.SNetworkImpl>
-      <name>economicNetwork</name>
+      <name>socialNetwork</name>
     </repast.score.impl.SNetworkImpl>
   </projections>
   <valueLayers/>
   <projectionDescriptors>
     <entry>
-      <string>economicNetwork</string>
+      <string>socialNetwork</string>
       <repast.simphony.visualization.engine.DefaultProjectionDescriptor>
         <proj class="repast.score.impl.SNetworkImpl" reference="../../../../projections/repast.score.impl.SNetworkImpl"/>
         <props/>

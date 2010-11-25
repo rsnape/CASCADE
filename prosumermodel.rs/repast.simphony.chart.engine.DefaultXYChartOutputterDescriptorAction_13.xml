@@ -1,22 +1,22 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Wind Speed</name>
+  <name>Aggregator Chart</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>weather</string>
+      <string>AggregatorData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">weather</dataSetId>
+  <dataSetId class="string">AggregatorData</dataSetId>
   <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>100.0</visibleXRange>
+  <visibleXRange>500.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
@@ -26,9 +26,9 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Wind Speed</seriesID>
-      <valueColumn>Wind Speed</valueColumn>
-      <hashCode>-777724445</hashCode>
+      <seriesID>Sum of total demand</seriesID>
+      <valueColumn>New Column</valueColumn>
+      <hashCode>-1773597658</hashCode>
       <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>

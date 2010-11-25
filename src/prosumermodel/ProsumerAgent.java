@@ -253,7 +253,7 @@ public class ProsumerAgent {
 	 * Return variables: boolean returnValue - returns true if the method
 	 * executes succesfully
 	 ******************/
-	@ScheduledMethod(start = 0, interval = 1, shuffle = true)
+	@ScheduledMethod(start = 1, interval = 1, shuffle = true)
 	public boolean step() {
 
 		// Define the return value variable.  Set this false if errors encountered.
@@ -326,16 +326,22 @@ public class ProsumerAgent {
 	private float evaluateBehaviour(int time)
 	{
 		float myDemand;
+		
+		//As a basic strategy ("pass-through"), we set the demand now to
+		//basic demand as of now.
 		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
 		// Note, we can only moderate based on cost signal
 		// if we receive it (i.e. if we have smart meter)
 		// TODO: may have to refine this - do we differentiate smart meter and smart display - i.e. whether receive only or Tx/Rx
 		if(hasSmartMeter && predictedCostSignalLength > 0)
 		{
-			if (predictedCostSignal[time % predictedCostSignalLength] > costThreshold){
-
-				myDemand = myDemand * (1 - percentageMoveableDemand);			
+			float predictedCostNow = predictedCostSignal[time % predictedCostSignalLength];
+			if ( predictedCostNow > costThreshold){
+				//Infinitely elastic version (i.e. takes no account of percenteageMoveableDemand
+				myDemand = myDemand * (float) Math.exp( - ((predictedCostNow - costThreshold) / costThreshold));
+				
 			}
 		}
 
@@ -384,6 +390,45 @@ public class ProsumerAgent {
 		windSpeed = myContext.getWindSpeed(time);
 		airTemperature = myContext.getAirTemperature(time);		
 	}
+	
+    /**
+    *
+    * This value is used to automatically generate agent identifiers.
+    * @field serialVersionUID
+    *
+    */
+   private static final long serialVersionUID = 1L;
+
+   /**
+    *
+    * This value is used to automatically generate agent identifiers.
+    * @field agentIDCounter
+    *
+    */
+   protected static long agentIDCounter = 1;
+
+   /**
+    *
+    * This value is the agent's identifier.
+    * @field agentID
+    *
+    */
+   protected String agentID = "Prosumer " + (agentIDCounter++);
+	
+    /**
+    *
+    * This method provides a human-readable name for the agent.
+    * @method toString
+    *
+    */
+   @ProbeID()
+   public String toString() {
+       // Set the default agent identifier.
+       String returnValue = this.agentID;
+       // Return the results.
+       return returnValue;
+
+   }
 	
 	/*
 	 * Constructor function(s)

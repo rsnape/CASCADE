@@ -1,5 +1,5 @@
 <repast.simphony.visualization.engine.DefaultDisplayDescriptor>
-  <name>socialNetwork 2</name>
+  <name>socialNetwork</name>
   <type>TWO_D</type>
   <styles>
     <entry>
@@ -41,7 +41,7 @@
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
   </schedParams>
-  <layoutClassName>repast.simphony.visualization.visualization2D.layout.CircleLayout2D</layoutClassName>
+  <layoutClassName>repast.simphony.visualization.visualization2D.Random2DLayout</layoutClassName>
   <layoutProjection>socialNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
