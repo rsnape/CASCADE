@@ -429,6 +429,11 @@ public class ProsumerAgent {
        return returnValue;
 
    }
+   
+   public String getAgentID()
+   {
+	   return this.agentID;
+   }
 	
 	/*
 	 * Constructor function(s)

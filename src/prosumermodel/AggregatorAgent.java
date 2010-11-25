@@ -156,7 +156,6 @@ public class AggregatorAgent {
 		int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
 		broadcastLength = priceSignal.length; // but in this case we choose not to
 		float predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
-		System.out.println((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand);
 		//This is the real guts - adapt the price signal by a fraction of the 
 		//departure of actual demand from predicted
 		priceSignal[(int) time % priceSignalLength] = priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
@@ -245,6 +244,11 @@ public class AggregatorAgent {
        return returnValue;
 
    }
+   
+   public String getAgentID()
+   {
+	   return this.agentID;
+   }
 	
 
 	/**
@@ -267,7 +271,7 @@ public class AggregatorAgent {
 		// a constant.  We could be more sophisticated than this or 
 		// possibly this gives us an aspirational target...
 		this.predictedCustomerDemand = new float[ticksPerDay];
-		Arrays.fill(this.predictedCustomerDemand, 20);
+		Arrays.fill(this.predictedCustomerDemand, 25);
 		this.predictedCustomerDemandLength = ticksPerDay;
 	}
 }

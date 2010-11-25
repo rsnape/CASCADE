@@ -26,9 +26,9 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>CurrentPriceSignal</seriesID>
+      <seriesID>AgentID</seriesID>
       <valueColumn>CurrentPriceSignal</valueColumn>
-      <hashCode>-263065799</hashCode>
+      <hashCode>-841472287</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
