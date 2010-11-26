@@ -159,6 +159,11 @@ public class AggregatorAgent {
 		//This is the real guts - adapt the price signal by a fraction of the 
 		//departure of actual demand from predicted
 		priceSignal[(int) time % priceSignalLength] = priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
+		// Now introduce some prediction - it was high today, so moderate tomorrow...
+		if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
+		{
+			priceSignal[(int) time % priceSignalLength + ticksPerDay] = priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
+		}
 		priceSignalChanged = true;
 
 		//Here, we simply broadcast the electricity value signal each midnight
@@ -261,8 +266,8 @@ public class AggregatorAgent {
 		this.priceSignalLength = baseDemand.length;
 		if (priceSignalLength % ticksPerDay != 0)
 		{
-			System.err.println("baseDemand array not a whole number of days");
-			System.err.println("Will be truncated and may cause unexpected behaviour");
+			System.err.println("baseDemand array imported to aggregator not a whole number of days");
+			System.err.println("May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 		}
 		this.priceSignal = new float [priceSignalLength];
 		System.arraycopy(baseDemand, 0, this.priceSignal, 0, priceSignalLength);
@@ -271,7 +276,7 @@ public class AggregatorAgent {
 		// a constant.  We could be more sophisticated than this or 
 		// possibly this gives us an aspirational target...
 		this.predictedCustomerDemand = new float[ticksPerDay];
-		Arrays.fill(this.predictedCustomerDemand, 25);
+		Arrays.fill(this.predictedCustomerDemand, 5);
 		this.predictedCustomerDemandLength = ticksPerDay;
 	}
 }

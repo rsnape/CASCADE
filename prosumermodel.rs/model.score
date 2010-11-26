@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <score:SContext xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:score="http://scoreabm.org/score" label="Prosumermodel" ID="Prosumermodel" pluralLabel="Prosumermodels">
-  <attributes label="weatherFile" ID="weatherFile" pluralLabel="weatherFiles" sType="STRING" defaultValue="yearWeather.csv"/>
+  <attributes label="weatherFile" ID="weatherFile" pluralLabel="weatherFiles" sType="STRING" defaultValue="oneDayWeather.csv"/>
   <attributes label="systemBaseDemandFile" ID="systemBaseDemandFile" pluralLabel="systemBaseDemandFiles" description="" sType="STRING" defaultValue="macroDemand.csv"/>
-  <attributes label="householdBaseAttributeFile" ID="householdBaseAttributeFile" pluralLabel="householdBaseAttributeFiles" description="" sType="STRING" defaultValue="melodySampleWeek.csv"/>
+  <attributes label="householdBaseAttributeFile" ID="householdBaseAttributeFile" pluralLabel="householdBaseAttributeFiles" description="" sType="STRING" defaultValue="aggMinuteToHH.csv"/>
   <attributes label="electricalNetworkLayoutFile" ID="electricalNetworkLayoutFile" pluralLabel="electricalNetworkLayoutFiles" description="" sType="STRING" defaultValue="networkTopology.csv"/>
   <attributes label="defaultSignalLength" ID="defaultSignalLength" pluralLabel="defaultSignalLengths" sType="INTEGER" defaultValue="48"/>
   <attributes label="ticksPerDay" ID="ticksPerDay" pluralLabel="ticksPerDaies" sType="INTEGER" defaultValue="48"/>

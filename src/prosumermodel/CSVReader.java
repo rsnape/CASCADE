@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 
@@ -61,7 +62,15 @@ public class CSVReader {
 			colHeaders = new String[numCols];
 			while(myTokenizer.hasMoreTokens())
 			{
-				tempArray.add(myTokenizer.nextToken());	
+				try
+				{
+					tempArray.add(myTokenizer.nextToken());
+				}
+				catch (NoSuchElementException e)
+				{
+					System.err.println("No such element - is one of the column headers blank / null?");
+					e.printStackTrace();
+				}
 			}
 
 			tempArray.toArray(colHeaders);
@@ -90,7 +99,15 @@ public class CSVReader {
 				StringTokenizer myTokenizer = new StringTokenizer(thisLine, mySeperator);
 				for (int i = 0; i < numCols; i++)
 				{
-					dataArray[i].add(myTokenizer.nextToken());
+					try
+					{
+						dataArray[i].add(myTokenizer.nextToken());
+					}
+					catch (NoSuchElementException e)
+					{
+						System.err.println("No such element - is one of the data rows blank / null - e.g. commas only?");
+						e.printStackTrace();
+					}
 				}
 				numRows++;
 			}
@@ -100,7 +117,7 @@ public class CSVReader {
 				contentsByColumn.put(colHeaders[k], dataArray[k].toArray(new String[numRows]));
 			}
 		}
-		
+
 		System.out.println("Parsed file - " + numCols + " columns and " + numRows + " rows.");
 
 	}
@@ -125,7 +142,7 @@ public class CSVReader {
 			System.err.println("Reader name is " + CSVFileName);
 			System.err.println("Number of columns is " + numCols + " with names " + Arrays.toString(colHeaders));
 		}
-		
+
 		return returnArray;
 	}
 
@@ -141,7 +158,7 @@ public class CSVReader {
 	{
 		this(myFile, DEFAULT_SEPERATOR);
 	}
-	
+
 	public CSVReader(String myFilename, String seperator) throws FileNotFoundException
 	{
 		this(new FileReader(myFilename), seperator, DEFAULT_HAS_COL_HEADERS);

@@ -224,6 +224,10 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		// TODO: How does info network differ from economic network?
 		Network infoNet = smartFactory.createNetwork("infoNetwork", thisContext, directed);
 		
+		for (ProsumerAgent thisAgent:(Iterable<ProsumerAgent>) (thisContext.getObjects(ProsumerAgent.class)) )
+		{
+			infoNet.addEdge(firstAggregator, thisAgent);
+		}
 		System.out.println(thisContext.toString());
 
 		return thisContext;

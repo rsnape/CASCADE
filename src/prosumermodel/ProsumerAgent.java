@@ -230,6 +230,7 @@ public class ProsumerAgent {
 			setPredictedCostSignalLength(length);
 			predictedCostSignal = new float[length];
 			System.arraycopy(signal, 0, predictedCostSignal, 0, length);
+			System.out.println(this.agentID + " received value signal " + Arrays.toString(signal));
 		}
 
 		return success;
