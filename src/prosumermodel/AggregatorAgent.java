@@ -162,7 +162,7 @@ public class AggregatorAgent {
 		// Now introduce some prediction - it was high today, so moderate tomorrow...
 		if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
 		{
-			priceSignal[(int) time % priceSignalLength + ticksPerDay] = priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
+			priceSignal[(int) time % priceSignalLength + ticksPerDay] = priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
 		}
 		priceSignalChanged = true;
 
