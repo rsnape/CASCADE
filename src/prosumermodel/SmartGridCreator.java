@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 
+import prosumermodel.SmartGridConstants.*;
+
 import repast.simphony.context.Context;
 import repast.simphony.context.DefaultContext;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -25,7 +27,7 @@ import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.Projection;
 
 /**
- * @author jrsnape
+ * @author J. Richard Snape
  * @version $Revision: 1.0 $ $Date: 2010/11/17 17:00:00 $
  */
 public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
@@ -48,14 +50,6 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 	// The parameters for the run environment in which this creator is running
 	Parameters parm;
 	
-	enum generatorType {
-		COAL, GAS, OIL, NUCLEAR, BIOMASS, WIND, HYDRO, CHP, SOLAR
-	}
-	
-	enum storageType {
-		BATTERY, HYDRO, HEAT, FLYWHEEL, EV
-	}
-	
 	/*
 	 * builds a SmartGridContext
 	 * 
@@ -76,6 +70,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		String elecLayoutFilename = (String)parm.getValue("electricalNetworkLayoutFile");
 		int numProsumers = (Integer) parm.getValue("defaultProsumersPerFeeder");
 		int ticksPerDay = (Integer) parm.getValue("ticksPerDay");
+		SmartGridConstants.debug = (Boolean) parm.getValue("debugOutput");
 
 		/*
 		 * Read in the necessary data files and store to the context
@@ -184,7 +179,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		
 		// create a small world social network
 		double beta = 0.1;
-		int degree = 4;
+		int degree = 2;
 		boolean directed = false;
 		boolean symmetric = false;
 		NetworkGenerator gen = new WattsBetaSmallWorldGenerator(beta, degree, symmetric);
