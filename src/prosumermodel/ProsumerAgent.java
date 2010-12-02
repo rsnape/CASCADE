@@ -39,9 +39,11 @@ import repast.simphony.util.*;
 import simphony.util.messages.*;
 import static java.lang.Math.*;
 import static repast.simphony.essentials.RepastEssentials.*;
+import prosumermodel.SmartGridConstants.*;
+
 
 /**
- * @author jsnape
+ * @author J. Richard Snape
  * @version $Revision: 1.0 $ $Date: 2010/11/17 17:00:00 $
  * 
  */
@@ -145,6 +147,7 @@ public class ProsumerAgent {
 	float[] baseDemandProfile;
 	float[] predictedCostSignal;
 	int predictedCostSignalLength;
+	int predictionValidTime;
 	
 	/*
 	 * Exported signals and profiles.
@@ -213,7 +216,20 @@ public class ProsumerAgent {
 	public float getAirTemperature() {
 		return airTemperature;
 	}
+	/**
+	 * @return the predictionValidTime
+	 */
+	public int getPredictionValidTime() {
+		return predictionValidTime;
+	}
 
+	/**
+	 * @param predictionValidTime the predictionValidTime to set
+	 */
+	public void setPredictionValidTime(int predictionValidTime) {
+		this.predictionValidTime = predictionValidTime;
+	}
+	
 	/*
 	 * Communication functions
 	 */
@@ -221,16 +237,54 @@ public class ProsumerAgent {
 	/*
 	 * This method receives the centralised value signal and stores it to the
 	 * Prosumer's memory.
+	 * 
+	 * @param signal - the array containing the cost signal - one member per time tick
+	 * @param length - the length of the signal
+	 * @param validTime - the time (in ticks) from which the signal is valid
 	 */
-	public boolean receiveValueSignal(float[] signal, int length) {
+	public boolean receiveValueSignal(float[] signal, int length, int validTime) {
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		if (hasSmartMeter)
 		{
-			setPredictedCostSignalLength(length);
-			predictedCostSignal = new float[length];
-			System.arraycopy(signal, 0, predictedCostSignal, 0, length);
-			System.out.println(this.agentID + " received value signal " + Arrays.toString(signal));
+			// Note the time from which the signal is valid.
+			// Note - Repast can cope with fractions of a tick (a double is returned)
+			// but I am assuming here we will deal in whole ticks and alter the resolution should we need
+			int time = (int) RepastEssentials.GetTickCount();
+			int newSignalLength = length;
+			setPredictionValidTime(validTime);
+			float[] tempArray;
+			
+			int signalOffset = time - validTime;
+			
+			if (signalOffset != 0)
+			{
+				newSignalLength = newSignalLength - signalOffset;
+			}
+			
+			if (newSignalLength != getPredictedCostSignalLength())
+			{
+				setPredictedCostSignalLength(newSignalLength);
+				predictedCostSignal = new float[newSignalLength];
+			}
+			
+			if (signalOffset < 0)
+			{
+				// This is a signal projected into the future.
+				// pad the signal with copies of what was in it before and then add the new signal on
+				System.arraycopy(signal, 0, predictedCostSignal, 0 - signalOffset, length);
+			}
+			else
+			{
+				// This was valid from some point in the past.  Copy in the portion that is still valid and 
+				// then "wrap" the front bits round to the end of the array.
+				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
+			}
+						
+			if (SmartGridConstants.debug)
+			{
+				System.out.println(this.agentID + " received value signal " + Arrays.toString(signal));
+			}
 		}
 
 		return success;
@@ -327,10 +381,11 @@ public class ProsumerAgent {
 	private float evaluateBehaviour(int time)
 	{
 		float myDemand;
+		int timeSinceSigValid = time - predictionValidTime;
 		
 		//As a basic strategy ("pass-through"), we set the demand now to
 		//basic demand as of now.
-		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		myDemand = baseDemandProfile[timeSinceSigValid % baseDemandProfile.length];
 		
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
 		// Note, we can only moderate based on cost signal
@@ -338,9 +393,15 @@ public class ProsumerAgent {
 		// TODO: may have to refine this - do we differentiate smart meter and smart display - i.e. whether receive only or Tx/Rx
 		if(hasSmartMeter && predictedCostSignalLength > 0)
 		{
-			float predictedCostNow = predictedCostSignal[time % predictedCostSignalLength];
+			float predictedCostNow = predictedCostSignal[timeSinceSigValid % predictedCostSignalLength];
 			if ( predictedCostNow > costThreshold){
 				//Infinitely elastic version (i.e. takes no account of percenteageMoveableDemand
+				// TODO: Need a better logging system than this - send logs with a level and output to
+				// console or file.  Can we use log4j?
+				if (SmartGridConstants.debug)
+				{
+					System.out.println("Agent " + this.agentID + "Changing demand at time " + time + " with price signal " + (predictedCostNow - costThreshold) + " above threshold");
+				}
 				myDemand = myDemand * (float) Math.exp( - ((predictedCostNow - costThreshold) / costThreshold));
 				
 			}

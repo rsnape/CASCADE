@@ -5,6 +5,8 @@ import java.math.*;
 import java.util.*;
 import java.util.Vector;
 
+import prosumermodel.SmartGridConstants.*;
+
 import javax.measure.unit.*;
 import org.jscience.mathematics.number.*;
 import org.jscience.mathematics.vector.*;
@@ -43,7 +45,7 @@ import static java.lang.Math.*;
 import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
- * @author jsnape
+ * @author J. Richard Snape
  * @version $Revision: 1.0 $ $Date: 2010/11/17 17:00:00 $
  * 
  */
@@ -204,7 +206,10 @@ public class AggregatorAgent {
 			}
 
 			for (ProsumerAgent a : broadcastCusts){
-				a.receiveValueSignal(broadcastSignal, broadcastLength);
+				// Broadcast signal to all customers - note we simply say that the signal is valid
+				// from now currently, in future implementations we may want to be able to insert
+				// signals valid at an offset from now.
+				a.receiveValueSignal(broadcastSignal, broadcastLength, (int) time);
 			}
 		}
 
@@ -276,7 +281,13 @@ public class AggregatorAgent {
 		// a constant.  We could be more sophisticated than this or 
 		// possibly this gives us an aspirational target...
 		this.predictedCustomerDemand = new float[ticksPerDay];
-		Arrays.fill(this.predictedCustomerDemand, 5);
+		//Put in a constant predicted demand
+		//Arrays.fill(this.predictedCustomerDemand, 5);
+		//Or - put in a variable one
+		for (int j = 0; j < ticksPerDay; j++)
+		{
+			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
+		}
 		this.predictedCustomerDemandLength = ticksPerDay;
 	}
 }

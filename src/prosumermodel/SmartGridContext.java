@@ -7,6 +7,8 @@ import java.io.*;
 import java.math.*;
 import java.util.*;
 
+import prosumermodel.SmartGridConstants.*;
+
 import javax.measure.unit.*;
 import org.jscience.mathematics.number.*;
 import org.jscience.mathematics.vector.*;
@@ -46,7 +48,7 @@ import static java.lang.Math.*;
 import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
- * @author jrsnape
+ * @author J. Richard Snape
  * @version $Revision: 1.0 $ $Date: 2010/11/16 17:00:00 $
  */
 public class SmartGridContext extends DefaultContext{
@@ -240,6 +242,7 @@ public class SmartGridContext extends DefaultContext{
 		
 		this.setId(context.getId());
 		this.setTypeID(context.getTypeID());
+			
 	}
 	
 	/*
