@@ -205,6 +205,18 @@ public class ProsumerAgent {
 		return (baseDemandProfile[index]);
 	}
 	
+	public float getCurrentPrediction() {
+		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
+		if (predictedCostSignalLength > 0) {
+			return predictedCostSignal[timeSinceSigValid % predictedCostSignalLength];
+			}
+		else
+		{
+			return 0;
+		}
+	}
+	
+	
 	public float getInsolation() {
 		return insolation;
 	}
@@ -235,6 +247,23 @@ public class ProsumerAgent {
 	 */
 
 	/*
+	 * Helper method for the common case where the signal transmitted is valid from the 
+	 * current time
+	 * 
+	 * @param signal - the array containing the cost signal - one member per time tick
+	 * @param length - the length of the signal
+	 * 
+	 */
+	public boolean receiveValueSignal(float[] signal, int length) {
+		boolean success = true;
+		
+		receiveValueSignal(signal, length, (int) RepastEssentials.GetTickCount());
+		
+		return success;
+	}
+	
+	
+	/*
 	 * This method receives the centralised value signal and stores it to the
 	 * Prosumer's memory.
 	 * 
@@ -259,11 +288,19 @@ public class ProsumerAgent {
 			
 			if (signalOffset != 0)
 			{
+				if (SmartGridConstants.debug)
+				{
+					System.out.println("Signal valid from time other than current time");
+				}
 				newSignalLength = newSignalLength - signalOffset;
 			}
 			
 			if (newSignalLength != getPredictedCostSignalLength())
 			{
+				if (SmartGridConstants.debug)
+				{
+					System.out.println("Re-defining length of signal in agent" + agentID);
+				}
 				setPredictedCostSignalLength(newSignalLength);
 				predictedCostSignal = new float[newSignalLength];
 			}
@@ -276,7 +313,7 @@ public class ProsumerAgent {
 			}
 			else
 			{
-				// This was valid from some point in the past.  Copy in the portion that is still valid and 
+				// This was valid from now or some point in the past.  Copy in the portion that is still valid and 
 				// then "wrap" the front bits round to the end of the array.
 				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
 			}
@@ -385,7 +422,7 @@ public class ProsumerAgent {
 		
 		//As a basic strategy ("pass-through"), we set the demand now to
 		//basic demand as of now.
-		myDemand = baseDemandProfile[timeSinceSigValid % baseDemandProfile.length];
+		myDemand = baseDemandProfile[time % baseDemandProfile.length];
 		
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
 		// Note, we can only moderate based on cost signal

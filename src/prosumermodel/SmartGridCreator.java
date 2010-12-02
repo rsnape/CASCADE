@@ -170,7 +170,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		
 		for (int i = 0; i < numProsumers; i++) {
 			// Introduce variability in agents here or in their constructor
-			ProsumerAgent newAgent = createHouseholdProsumer(householdBaseDemand, true);
+			ProsumerAgent newAgent = createHouseholdProsumer(householdBaseDemand, false);
 			thisContext.add(newAgent);			
 		}
 		
