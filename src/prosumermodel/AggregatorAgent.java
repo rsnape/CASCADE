@@ -120,7 +120,7 @@ public class AggregatorAgent {
 	 * Return variables: 	boolean returnValue - returns true if the 
 	 * 						method executes succesfully
 	 ******************/
-	@ScheduledMethod(start = 1, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
 	public boolean step() {
 
 		// Define the return value variable.
@@ -164,7 +164,7 @@ public class AggregatorAgent {
 		// Now introduce some prediction - it was high today, so moderate tomorrow...
 		if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
 		{
-			priceSignal[(int) time % priceSignalLength + ticksPerDay] = priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
+			priceSignal[(int) time % priceSignalLength + ticksPerDay] = priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
 		}
 		priceSignalChanged = true;
 
@@ -209,7 +209,7 @@ public class AggregatorAgent {
 				// Broadcast signal to all customers - note we simply say that the signal is valid
 				// from now currently, in future implementations we may want to be able to insert
 				// signals valid at an offset from now.
-				a.receiveValueSignal(broadcastSignal, broadcastLength, (int) time);
+				a.receiveValueSignal(broadcastSignal, broadcastLength);
 			}
 		}
 
