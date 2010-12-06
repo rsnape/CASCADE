@@ -1,24 +1,24 @@
 <repast.simphony.visualization.engine.DefaultDisplayDescriptor>
-  <name>socialNetwork</name>
+  <name>socialNetwork 2</name>
   <type>TWO_D</type>
   <styles>
     <entry>
       <string>prosumermodel.ProsumerAgent</string>
-      <string>repast.simphony.visualization.visualization2D.style.DefaultStyle2D</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
     <entry>
       <string>prosumermodel.AggregatorAgent</string>
-      <string>repast.simphony.visualization.visualization2D.style.DefaultStyle2D</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
       <string>prosumermodel.ProsumerAgent</string>
-      <null/>
+      <string>prosumermodel.ProsumerAgent.style_0.xml</string>
     </entry>
     <entry>
       <string>prosumermodel.AggregatorAgent</string>
-      <null/>
+      <string>prosumermodel.AggregatorAgent.style_0.xml</string>
     </entry>
   </editedStyles>
   <netStyles>
@@ -41,7 +41,7 @@
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
   </schedParams>
-  <layoutClassName>repast.simphony.visualization.visualization2D.Random2DLayout</layoutClassName>
+  <layoutClassName>repast.simphony.visualization.visualization2D.layout.CircleLayout2D</layoutClassName>
   <layoutProjection>socialNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
