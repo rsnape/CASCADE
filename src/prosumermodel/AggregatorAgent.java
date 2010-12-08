@@ -157,14 +157,23 @@ public class AggregatorAgent {
 
 		int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
 		broadcastLength = priceSignal.length; // but in this case we choose not to
-		float predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+		
+		//Define a variable to hold the aggregator's predicted demand at this instant.
+		float predictedInstantaneousDemand;
+		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
+		// demand, have a less dynamic but still non-zero predicted demand 
+		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
+		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+		predictedInstantaneousDemand = 0;
+		
+		
 		//This is the real guts - adapt the price signal by a fraction of the 
 		//departure of actual demand from predicted
-		priceSignal[(int) time % priceSignalLength] = priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
+		priceSignal[(int) time % priceSignalLength] = (float) (priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/Math.sqrt(Math.pow(netDemand, 2)))));
 		// Now introduce some prediction - it was high today, so moderate tomorrow...
 		if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
 		{
-			priceSignal[(int) time % priceSignalLength + ticksPerDay] = priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
+			priceSignal[(int) time % priceSignalLength + ticksPerDay] = (float) (priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1 + ((netDemand - predictedInstantaneousDemand)/Math.sqrt(Math.pow(netDemand, 2)))));
 		}
 		priceSignalChanged = true;
 

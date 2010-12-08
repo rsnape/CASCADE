@@ -364,11 +364,6 @@ public class ProsumerAgent {
 		if (timeOfDay == 0)
 		{
 			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
-
-			//Receive the prediction signal every midnight if you have a smart meter
-			if (hasSmartMeter){
-				//receiveValueSignal(myContext.systemPriceSignalData, myContext.systemPriceSignalDataLength);
-			}
 		}
 		
 		if (hasSmartControl){
@@ -383,7 +378,7 @@ public class ProsumerAgent {
 		{
 			//No adaptation case
 			learnSmartAdaptationDecision();
-			setNetDemand(baseDemandProfile[time % baseDemandProfile.length]);
+			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
 		}
 		
 		
@@ -391,6 +386,65 @@ public class ProsumerAgent {
 		// Return (this will be false if problems encountered).
 		return returnValue;
 
+	}
+
+	/**
+	 * @return
+	 */
+	private float currentGeneration() {
+		float returnAmount;
+		
+		returnAmount = CHPGeneration() + windGeneration() + hydroGeneration() + thermalGeneration() + PVGeneration();
+		if (SmartGridConstants.debug)
+		{
+			System.out.println("Generating " + returnAmount);
+		}
+		return returnAmount;
+	}
+
+	/**
+	 * @return
+	 */
+	private float PVGeneration() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private float thermalGeneration() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private float hydroGeneration() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private float windGeneration() {
+		if(hasWind){
+			return getWindSpeed()/20 * ratedPowerWind;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	private float CHPGeneration() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	/**

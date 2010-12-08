@@ -185,6 +185,9 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		NetworkGenerator gen = new WattsBetaSmallWorldGenerator(beta, degree, symmetric);
 		smartFactory.createNetwork("socialNetwork", thisContext, gen, directed);
 		
+		//Add in some generators
+		ProsumerAgent firstWindmill = createPureGenerator(20, generatorType.WIND);
+		thisContext.add(firstWindmill);
 		
 		//Secondly add aggregator(s)
 		AggregatorAgent firstAggregator = new AggregatorAgent((String) thisContext.getId(), thisContext.systemPriceSignalData, parm);
@@ -280,7 +283,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 	 * @param Capacity - the generation capacity of this agent (kWh)
 	 * @param type - the type of this generator (from an enumerator of all types)
 	 */
-	public ProsumerAgent createPureGenerator(int Capacity, generatorType type) {
+	public ProsumerAgent createPureGenerator(float capacity, generatorType type) {
 		ProsumerAgent thisAgent;
 		
 		// Create a prosumer with zero base demand
@@ -289,7 +292,10 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		nilDemand[0] = 0;
 		thisAgent = new ProsumerAgent((String) thisContext.getId(), nilDemand, parm);
 		switch (type){
-			
+		case WIND:
+			thisAgent.hasWind = true;
+			thisAgent.ratedPowerWind = capacity;
+			break;			
 		}
 		
 		return thisAgent;

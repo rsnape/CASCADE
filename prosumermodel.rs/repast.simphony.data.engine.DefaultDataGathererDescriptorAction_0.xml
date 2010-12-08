@@ -1,6 +1,6 @@
 <repast.simphony.data.engine.DefaultDataGathererDescriptor>
-  <name>Weather</name>
-  <dataSetId class="string">weather</dataSetId>
+  <name>Totals data set</name>
+  <dataSetId class="string">TotalDemand</dataSetId>
   <scheduleParameters>
     <start>1.0</start>
     <interval>1.0</interval>
@@ -19,61 +19,44 @@
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
       </entry>
       <entry>
-        <string>Wind Speed</string>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping>
-          <type>Mean</type>
+        <string>Unadapted total demand</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping>
+          <type>Sum</type>
           <decorated class="repast.simphony.data.logging.gather.MethodMapping">
             <method>
               <class>prosumermodel.ProsumerAgent</class>
-              <name>getWindSpeed</name>
+              <name>getUnadaptedDemand</name>
               <parameter-types/>
             </method>
           </decorated>
-        </repast.simphony.data.logging.gather.aggregate.MeanMapping>
+        </repast.simphony.data.logging.gather.aggregate.SumMapping>
       </entry>
       <entry>
-        <string>Air Temperature</string>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping>
-          <type>Mean</type>
+        <string>Total Demand</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping>
+          <type>Sum</type>
           <decorated class="repast.simphony.data.logging.gather.MethodMapping">
             <method>
               <class>prosumermodel.ProsumerAgent</class>
-              <name>getAirTemperature</name>
+              <name>getNetDemand</name>
               <parameter-types/>
             </method>
           </decorated>
-        </repast.simphony.data.logging.gather.aggregate.MeanMapping>
-      </entry>
-      <entry>
-        <string>Insolation</string>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping>
-          <type>Mean</type>
-          <decorated class="repast.simphony.data.logging.gather.MethodMapping">
-            <method>
-              <class>prosumermodel.ProsumerAgent</class>
-              <name>getInsolation</name>
-              <parameter-types/>
-            </method>
-          </decorated>
-        </repast.simphony.data.logging.gather.aggregate.MeanMapping>
+        </repast.simphony.data.logging.gather.aggregate.SumMapping>
       </entry>
     </nameMappingTable>
     <mappingNameTable>
-      <entry>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
-        <string>Insolation</string>
-      </entry>
       <entry>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
-        <string>Wind Speed</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
+        <string>Unadapted total demand</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
-        <string>Air Temperature</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
+        <string>Total Demand</string>
       </entry>
     </mappingNameTable>
     <alternatedNameTable/>

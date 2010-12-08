@@ -1,5 +1,5 @@
 <repast.simphony.visualization.engine.DefaultDisplayDescriptor>
-  <name>socialNetwork 2</name>
+  <name>economicNetwork</name>
   <type>TWO_D</type>
   <styles>
     <entry>
@@ -14,22 +14,22 @@
   <editedStyles>
     <entry>
       <string>prosumermodel.ProsumerAgent</string>
-      <string>prosumermodel.ProsumerAgent.style_0.xml</string>
+      <string>prosumermodel.ProsumerAgent.style_1.xml</string>
     </entry>
     <entry>
       <string>prosumermodel.AggregatorAgent</string>
-      <string>prosumermodel.AggregatorAgent.style_0.xml</string>
+      <string>prosumermodel.AggregatorAgent.style_1.xml</string>
     </entry>
   </editedStyles>
   <netStyles>
     <entry>
-      <string>socialNetwork</string>
+      <string>economicNetwork</string>
       <string>repast.simphony.visualization.visualization2D.style.DefaultEdgeStyle2D</string>
     </entry>
   </netStyles>
   <editedNetStyles>
     <entry>
-      <string>socialNetwork</string>
+      <string>economicNetwork</string>
       <null/>
     </entry>
   </editedNetStyles>
@@ -41,8 +41,8 @@
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
   </schedParams>
-  <layoutClassName>repast.simphony.visualization.visualization2D.layout.CircleLayout2D</layoutClassName>
-  <layoutProjection>socialNetwork</layoutProjection>
+  <layoutClassName>repast.simphony.visualization.visualization2D.Random2DLayout</layoutClassName>
+  <layoutProjection>economicNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
@@ -56,13 +56,13 @@
   </layerOrder>
   <projections>
     <repast.score.impl.SNetworkImpl>
-      <name>socialNetwork</name>
+      <name>economicNetwork</name>
     </repast.score.impl.SNetworkImpl>
   </projections>
   <valueLayers/>
   <projectionDescriptors>
     <entry>
-      <string>socialNetwork</string>
+      <string>economicNetwork</string>
       <repast.simphony.visualization.engine.DefaultProjectionDescriptor>
         <proj class="repast.score.impl.SNetworkImpl" reference="../../../../projections/repast.score.impl.SNetworkImpl"/>
         <props/>

@@ -1,17 +1,17 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Total Demand</name>
+  <name>Insolation</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>TotalDemand</string>
+      <string>weather</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">TotalDemand</dataSetId>
-  <showLegend>true</showLegend>
+  <dataSetId class="string">weather</dataSetId>
+  <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
@@ -26,15 +26,9 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Unadapted total demand</seriesID>
-      <valueColumn>Unadapted total demand</valueColumn>
-      <hashCode>-1006942461</hashCode>
-      <proxy>true</proxy>
-    </repast.simphony.chart.Series>
-    <repast.simphony.chart.Series>
-      <seriesID>Total Demand</seriesID>
-      <valueColumn>Total Demand</valueColumn>
-      <hashCode>-53720781</hashCode>
+      <seriesID>Insolation</seriesID>
+      <valueColumn>Insolation</valueColumn>
+      <hashCode>177755685</hashCode>
       <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>
