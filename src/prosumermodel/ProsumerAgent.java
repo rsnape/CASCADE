@@ -431,7 +431,9 @@ public class ProsumerAgent {
 	 */
 	private float windGeneration() {
 		if(hasWind){
-			return getWindSpeed()/20 * ratedPowerWind;
+			//TODO: get a realistic model of wind production - this just linear between 
+			//5 and 25 metres per second, zero below, max power above
+			return (Math.max((Math.min(getWindSpeed(),25) - 5),0))/20 * ratedPowerWind;
 		}
 		else
 		{

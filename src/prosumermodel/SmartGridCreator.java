@@ -186,7 +186,9 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		smartFactory.createNetwork("socialNetwork", thisContext, gen, directed);
 		
 		//Add in some generators
-		ProsumerAgent firstWindmill = createPureGenerator(20, generatorType.WIND);
+		
+		//A 2 MW windmill
+		ProsumerAgent firstWindmill = createPureGenerator(2000, generatorType.WIND);
 		thisContext.add(firstWindmill);
 		
 		//Secondly add aggregator(s)

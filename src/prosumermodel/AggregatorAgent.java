@@ -154,31 +154,40 @@ public class AggregatorAgent {
 		//This is where we may alter the signal based on the demand
 		// In this simple implementation, we simply scale the signal based on deviation of 
 		// actual demand from projected demand for use next time round.
-
-		int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
-		broadcastLength = priceSignal.length; // but in this case we choose not to
 		
 		//Define a variable to hold the aggregator's predicted demand at this instant.
 		float predictedInstantaneousDemand;
 		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
 		// demand, have a less dynamic but still non-zero predicted demand 
 		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
+		
 		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
 		predictedInstantaneousDemand = 0;
 		
 		
 		//This is the real guts - adapt the price signal by a fraction of the 
 		//departure of actual demand from predicted
-		priceSignal[(int) time % priceSignalLength] = (float) (priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/Math.sqrt(Math.pow(netDemand, 2)))));
+		//Note there are myriad ways to do this, and many will reflect different policy
+		//aims.  For instance - we may wish to never have the signal negative
+		//i.e. never encourage consumption.  However, if prosumers actively demand shift
+		// then this would not be good otherwise they would not have an indication where
+		// to load shift the demand to.
+		
+		if (netDemand > predictedInstantaneousDemand) {
+		priceSignal[(int) time % priceSignalLength] = (float) (priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand))));
 		// Now introduce some prediction - it was high today, so moderate tomorrow...
 		if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
 		{
-			priceSignal[(int) time % priceSignalLength + ticksPerDay] = (float) (priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1 + ((netDemand - predictedInstantaneousDemand)/Math.sqrt(Math.pow(netDemand, 2)))));
+			priceSignal[(int) time % priceSignalLength + ticksPerDay] = (float) (priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1 + ((netDemand - predictedInstantaneousDemand))));
 		}
-		priceSignalChanged = true;
-
+		priceSignalChanged = true; }
+		
 		//Here, we simply broadcast the electricity value signal each midnight
 		if (timeOfDay == 0) {
+
+			int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
+			broadcastLength = priceSignal.length; // but in this case we choose not to
+
 			broadcastDemandSignal(customers, time, broadcastLength);
 		}    	
 

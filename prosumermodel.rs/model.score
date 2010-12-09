@@ -6,7 +6,7 @@
   <attributes label="electricalNetworkLayoutFile" ID="electricalNetworkLayoutFile" pluralLabel="electricalNetworkLayoutFiles" description="" sType="STRING" defaultValue="networkTopology.csv"/>
   <attributes label="defaultSignalLength" ID="defaultSignalLength" pluralLabel="defaultSignalLengths" sType="INTEGER" defaultValue="48"/>
   <attributes label="ticksPerDay" ID="ticksPerDay" pluralLabel="ticksPerDaies" sType="INTEGER" defaultValue="48"/>
-  <attributes label="defaultProsumersPerFeeder" ID="defaultProsumersPerFeeder" pluralLabel="defaultProsumersPerFeeders" sType="INTEGER" defaultValue="30"/>
+  <attributes label="defaultProsumersPerFeeder" ID="defaultProsumersPerFeeder" pluralLabel="defaultProsumersPerFeeders" sType="INTEGER" defaultValue="1000"/>
   <attributes label="dataFileFolder" ID="dataFileFolder" pluralLabel="dataFileFolders" sType="STRING" defaultValue="'C:\workspace\Prosumer model\dataFiles'"/>
   <attributes label="debugOutput" ID="debugOutput" pluralLabel="debugOutputs" defaultValue="0"/>
   <implementation package="prosumermodel" className="SmartGridCreator" basePath="../Prosumer model"/>
