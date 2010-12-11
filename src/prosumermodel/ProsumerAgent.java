@@ -4,6 +4,9 @@ import java.io.*;
 import java.math.*;
 import java.util.*;
 import javax.measure.unit.*;
+
+import org.hsqldb.lib.ArrayUtil;
+import org.jfree.util.ArrayUtilities;
 import org.jscience.mathematics.number.*;
 import org.jscience.mathematics.vector.*;
 import org.jscience.physics.amount.*;
@@ -44,7 +47,12 @@ import prosumermodel.SmartGridConstants.*;
 
 /**
  * @author J. Richard Snape
- * @version $Revision: 1.0 $ $Date: 2010/11/17 17:00:00 $
+ * @version $Revision: 1.01 $ $Date: 2010/12/09 12:00:00 $
+ * 
+ * Version history (for intermediate steps see Git repository history
+ * 
+ * 1.0 - Initial basic functionality including pure elastic reaction to price signal
+ * 1.01 - Introduction of smart adaptation in addition to elastic behavioural adaptation
  * 
  */
 public class ProsumerAgent {
@@ -177,6 +185,7 @@ public class ProsumerAgent {
 	float costThreshold;
 	float actualCost; // The demand multiplied by the cost signal.  Note that this may be in "real" currency, or not
 	float inelasticTotalDayDemand;
+	private float[] smartOptimisedProfile;
 	
 	/*
 	 * Accessor functions (NetBeans style)
@@ -202,7 +211,7 @@ public class ProsumerAgent {
 	public float getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
 		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
-		return (baseDemandProfile[index]);
+		return (baseDemandProfile[index]) - currentGeneration();
 	}
 	
 	public float getCurrentPrediction() {
@@ -364,10 +373,12 @@ public class ProsumerAgent {
 		if (timeOfDay == 0)
 		{
 			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
+			if (hasSmartControl){
+				smartControlLearn(time);
+			}
 		}
 		
 		if (hasSmartControl){
-			smartControlLearn();
 			setNetDemand(smartDemand(time));
 		}
 		else if (hasSmartMeter && exercisesBehaviourChange) {
@@ -377,7 +388,7 @@ public class ProsumerAgent {
 		else
 		{
 			//No adaptation case
-			learnSmartAdaptationDecision();
+			learnSmartAdoptionDecision();
 			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
 		}
 		
@@ -392,9 +403,9 @@ public class ProsumerAgent {
 	 * @return
 	 */
 	private float currentGeneration() {
-		float returnAmount;
+		float returnAmount = 0;
 		
-		returnAmount = CHPGeneration() + windGeneration() + hydroGeneration() + thermalGeneration() + PVGeneration();
+		returnAmount = returnAmount + CHPGeneration() + windGeneration() + hydroGeneration() + thermalGeneration() + PVGeneration();
 		if (SmartGridConstants.debug)
 		{
 			System.out.println("Generating " + returnAmount);
@@ -495,7 +506,7 @@ public class ProsumerAgent {
 				{
 					System.out.println("Agent " + this.agentID + "Changing demand at time " + time + " with price signal " + (predictedCostNow - costThreshold) + " above threshold");
 				}
-				myDemand = myDemand * (float) Math.exp( - ((predictedCostNow - costThreshold) / costThreshold));
+				myDemand = myDemand * (1 - percentageMoveableDemand * (1 - (float) Math.exp( - ((predictedCostNow - costThreshold) / costThreshold))));
 				
 			}
 		}
@@ -516,7 +527,7 @@ public class ProsumerAgent {
 	private float smartDemand(int time)
 	{
 		float myDemand;
-		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		myDemand = smartOptimisedProfile[time % smartOptimisedProfile.length];
 		return myDemand;
 	}
 	
@@ -525,12 +536,50 @@ public class ProsumerAgent {
 		// TODO: Implement the behavioural (social?) learning in here
 	}
 	
-	private void smartControlLearn()
+	private void smartControlLearn(int time)
 	{
 		// TODO: Implement the smart device (optimisation) learning in here
+		// in lieu of knowledge of what can "switch off" and "switch on", we assume that
+		// the percentage moveable of the day's consumption is what may be time shifted
+		float moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
+		float [] daysCostSignal = new float [ticksPerDay];
+		float [] daysOptimisedDemand = new float [ticksPerDay];
+		System.arraycopy(predictedCostSignal, time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
+		float [] tempArray = ArrayUtils.mtimes(daysCostSignal, daysOptimisedDemand);
+
+		float currentCost = ArrayUtils.sum(tempArray);
+		// Algorithm to minimise this whilst satisfying constraints of
+		// maximum movable demand and total demand being inelastic.
+		
+		float movedLoad = 0;
+		float movedThisTime = -1;
+		float swapAmount = -1;
+		while (movedLoad < moveableLoad && movedThisTime != 0)
+		{
+			int maxIndex = ArrayUtils.indexOfMax(tempArray);
+			int minIndex = ArrayUtils.indexOfMin(tempArray);
+			swapAmount = (daysOptimisedDemand[minIndex] + daysOptimisedDemand[maxIndex]) / 2;
+			movedThisTime = ((daysOptimisedDemand[maxIndex] - daysOptimisedDemand[minIndex]) / 2);
+			movedLoad = movedLoad + movedThisTime;
+			daysOptimisedDemand[maxIndex] = swapAmount;
+			daysOptimisedDemand[minIndex] = swapAmount;
+			if (SmartGridConstants.debug)
+			{
+				System.out.println(agentID + " moving " + movedLoad + "MaxIndex = " + maxIndex + " minIndex = " + minIndex + Arrays.toString(tempArray));
+			}
+			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
+		}
+		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, ticksPerDay);
+        if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
+        {
+        	System.out.println("optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
+        }
+        
+        System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + "cost");
 	}
 	
-	private void learnSmartAdaptationDecision()
+	private void learnSmartAdoptionDecision()
 	{
 		// TODO: implement learning whether to adopt smart control in here
 		// Could be a TpB based model.
@@ -605,6 +654,10 @@ public class ProsumerAgent {
 		}
 		this.baseDemandProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
+		//Initialise the smart optimised profile to be the same as base demand
+		//smart controller will alter this
+		this.smartOptimisedProfile = new float [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
 	}
 
 	/*
