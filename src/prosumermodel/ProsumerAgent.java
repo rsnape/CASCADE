@@ -573,6 +573,8 @@ public class ProsumerAgent {
 		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, ticksPerDay);
         if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
         {
+        	//TODO: This always gets triggerd - I wonder if the "day" i'm taking
+        	//here and in the inelasticdemand method are "off-by-one"
         	System.out.println("optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
         }
         
@@ -645,7 +647,7 @@ public class ProsumerAgent {
 	public ProsumerAgent(String myContext, float[] baseDemand, Parameters parm) {
 		super();
 		this.contextName = myContext;
-		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.15);
+		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.5);
 		this.ticksPerDay = (Integer) parm.getValue("ticksPerDay");
 		if (baseDemand.length % ticksPerDay != 0)
 		{
