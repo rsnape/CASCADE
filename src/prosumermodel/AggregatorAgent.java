@@ -113,7 +113,7 @@ public class AggregatorAgent {
 	 */
 
 	/******************
-	 * This method defines the step behaviour of a prosumer agent
+	 * This method defines the step behaviour of an aggregator agent
 	 * 
 	 * Input variables: 	none
 	 * 
@@ -131,7 +131,10 @@ public class AggregatorAgent {
 		int timeOfDay = (int) (time % ticksPerDay);
 
 		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
-		List<RepastEdge> linkages = RepastEssentials.GetInEdges("Prosumermodel/economicNetwork", this);
+		List<RepastEdge> linkages = RepastEssentials.GetOutEdges("Prosumermodel/economicNetwork", this);
+		if(SmartGridConstants.debug) {
+			System.out.println("Agent " + agentID + " has " + linkages.size() + "links in economic network");
+		}
 		for (RepastEdge edge : linkages) {
 			Object linkSource = edge.getTarget();
 			if (linkSource instanceof ProsumerAgent){
@@ -227,6 +230,10 @@ public class AggregatorAgent {
 				// Broadcast signal to all customers - note we simply say that the signal is valid
 				// from now currently, in future implementations we may want to be able to insert
 				// signals valid at an offset from now.
+				if (SmartGridConstants.debug)
+				{
+					System.out.println("Broadcasting to " + a.agentID);
+				}
 				a.receiveValueSignal(broadcastSignal, broadcastLength);
 			}
 		}

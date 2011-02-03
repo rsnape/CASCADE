@@ -5,11 +5,14 @@ import java.math.*;
 import java.util.*;
 import javax.measure.unit.*;
 
+import org.apache.tools.ant.taskdefs.Sync.MyCopy;
 import org.hsqldb.lib.ArrayUtil;
 import org.jfree.util.ArrayUtilities;
 import org.jscience.mathematics.number.*;
 import org.jscience.mathematics.vector.*;
 import org.jscience.physics.amount.*;
+
+//import cern.colt.Arrays;
 import repast.simphony.adaptation.neural.*;
 import repast.simphony.adaptation.regression.*;
 import repast.simphony.context.*;
@@ -68,7 +71,7 @@ public class ProsumerAgent {
 	 * All are set false initially - they can be set true on instantiation to
 	 * allow fine-grained control of agent properties
 	 */
-	
+
 	// the agent can see "smart" information
 	boolean hasSmartMeter = false; 
 	// the agent acts on "smart" information but not via automatic control
@@ -94,7 +97,7 @@ public class ProsumerAgent {
 	boolean hasHotWaterStorage = false;
 	boolean hasSpaceHeatStorage = false;
 
-	
+
 	/*
 	 * the rated power of the various technologies / appliances we are interested in
 	 * 
@@ -115,20 +118,20 @@ public class ProsumerAgent {
 	float ratedCapacityElectricalStorage;   // Note kWh rather than kW
 	float ratedCapacityHotWaterStorage;
 	float ratedCapacitySpaceHeatStorage; // Note - related to thermal mass
-	
+
 	/*
 	 * Weather and temperature variables
 	 */
 	float insolation; //current insolation at the given half hour tick
 	float windSpeed; //current wind speed at the given half hour tick
 	float airTemperature; // outside air temperature
-	
-	
+
+
 	// For prosumers in buildings - set to zero if irrelevant
 	float buildingHeatCapacity;
 	float buildingHeatLossRate;
 	float buildingTemperatureSetPoint;
-	
+
 	/*
 	 * Electrical properties
 	 */
@@ -156,7 +159,7 @@ public class ProsumerAgent {
 	float[] predictedCostSignal;
 	int predictedCostSignalLength;
 	int predictionValidTime;
-	
+
 	/*
 	 * Exported signals and profiles.
 	 */
@@ -178,7 +181,13 @@ public class ProsumerAgent {
 	// Learner adoptSmartMeterLearner;
 	// Learner adoptSmartControlLearner;
 	// Learner consumptionPatternLearner;
-	
+	float transmitPropensitySmartControl;
+	float transmitPropensityProEnvironmental;
+	float visibilityMicrogen;
+
+	/*
+	 * temperature control parameters
+	 */
 	float minSetPoint;  // The minimum temperature for this prosumer's building in centigrade (where relevant)
 	float maxSetPoint;  // The maximum temperature for this prosumer's building in centigrade (where relevant)
 	float currentInternalTemp;
@@ -186,12 +195,12 @@ public class ProsumerAgent {
 	float actualCost; // The demand multiplied by the cost signal.  Note that this may be in "real" currency, or not
 	float inelasticTotalDayDemand;
 	private float[] smartOptimisedProfile;
-	
+
 	/*
 	 * Accessor functions (NetBeans style)
 	 * TODO: May make some of these private to respect agent conventions of autonomy / realistic simulation of humans
 	 */
-	
+
 	public float getNetDemand() {
 		return netDemand;
 	}
@@ -199,7 +208,18 @@ public class ProsumerAgent {
 	public void setNetDemand(float newDemand) {
 		netDemand = newDemand;
 	}
-	
+
+	public int getSmartControlForCount()
+	{
+		if (hasSmartControl){
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
 	public int getPredictedCostSignalLength() {
 		return predictedCostSignalLength;
 	}
@@ -207,33 +227,33 @@ public class ProsumerAgent {
 	public void setPredictedCostSignalLength(int length) {
 		predictedCostSignalLength = length;
 	}
-	
+
 	public float getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
 		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
 		return (baseDemandProfile[index]) - currentGeneration();
 	}
-	
+
 	public float getCurrentPrediction() {
 		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
 		if (predictedCostSignalLength > 0) {
 			return predictedCostSignal[timeSinceSigValid % predictedCostSignalLength];
-			}
+		}
 		else
 		{
 			return 0;
 		}
 	}
-	
-	
+
+
 	public float getInsolation() {
 		return insolation;
 	}
-	
+
 	public float getWindSpeed() {
 		return windSpeed;
 	}
-	
+
 	public float getAirTemperature() {
 		return airTemperature;
 	}
@@ -250,7 +270,7 @@ public class ProsumerAgent {
 	public void setPredictionValidTime(int predictionValidTime) {
 		this.predictionValidTime = predictionValidTime;
 	}
-	
+
 	/*
 	 * Communication functions
 	 */
@@ -265,13 +285,13 @@ public class ProsumerAgent {
 	 */
 	public boolean receiveValueSignal(float[] signal, int length) {
 		boolean success = true;
-		
+
 		receiveValueSignal(signal, length, (int) RepastEssentials.GetTickCount());
-		
+
 		return success;
 	}
-	
-	
+
+
 	/*
 	 * This method receives the centralised value signal and stores it to the
 	 * Prosumer's memory.
@@ -283,6 +303,7 @@ public class ProsumerAgent {
 	public boolean receiveValueSignal(float[] signal, int length, int validTime) {
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
+
 		if (hasSmartMeter)
 		{
 			// Note the time from which the signal is valid.
@@ -292,9 +313,9 @@ public class ProsumerAgent {
 			int newSignalLength = length;
 			setPredictionValidTime(validTime);
 			float[] tempArray;
-			
+
 			int signalOffset = time - validTime;
-			
+
 			if (signalOffset != 0)
 			{
 				if (SmartGridConstants.debug)
@@ -303,8 +324,8 @@ public class ProsumerAgent {
 				}
 				newSignalLength = newSignalLength - signalOffset;
 			}
-			
-			if (newSignalLength != getPredictedCostSignalLength())
+
+			if ((predictedCostSignal == null) || (newSignalLength != getPredictedCostSignalLength()))
 			{
 				if (SmartGridConstants.debug)
 				{
@@ -313,7 +334,7 @@ public class ProsumerAgent {
 				setPredictedCostSignalLength(newSignalLength);
 				predictedCostSignal = new float[newSignalLength];
 			}
-			
+
 			if (signalOffset < 0)
 			{
 				// This is a signal projected into the future.
@@ -326,7 +347,7 @@ public class ProsumerAgent {
 				// then "wrap" the front bits round to the end of the array.
 				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
 			}
-						
+
 			if (SmartGridConstants.debug)
 			{
 				System.out.println(this.agentID + " received value signal " + Arrays.toString(signal));
@@ -366,9 +387,9 @@ public class ProsumerAgent {
 		int time = (int) RepastEssentials.GetTickCount();
 		int timeOfDay = (time % ticksPerDay);
 		SmartGridContext myContext = (SmartGridContext) FindContext(contextName);
-		
+
 		checkWeather(time);
-	
+
 		//Do all the "once-per-day" things here
 		if (timeOfDay == 0)
 		{
@@ -377,23 +398,25 @@ public class ProsumerAgent {
 				smartControlLearn(time);
 			}
 		}
-		
+
 		if (hasSmartControl){
 			setNetDemand(smartDemand(time));
 		}
 		else if (hasSmartMeter && exercisesBehaviourChange) {
 			learnBehaviourChange();
 			setNetDemand(evaluateBehaviour(time));
+			learnSmartAdoptionDecision(time);
 		}
 		else
 		{
 			//No adaptation case
-			learnSmartAdoptionDecision();
 			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
+
+			learnSmartAdoptionDecision(time);
 		}
-		
-		
-		
+
+
+
 		// Return (this will be false if problems encountered).
 		return returnValue;
 
@@ -404,11 +427,14 @@ public class ProsumerAgent {
 	 */
 	private float currentGeneration() {
 		float returnAmount = 0;
-		
+
 		returnAmount = returnAmount + CHPGeneration() + windGeneration() + hydroGeneration() + thermalGeneration() + PVGeneration();
 		if (SmartGridConstants.debug)
 		{
-			System.out.println("Generating " + returnAmount);
+			if (returnAmount != 0)
+			{
+				System.out.println("Generating " + returnAmount);
+			}
 		}
 		return returnAmount;
 	}
@@ -472,7 +498,7 @@ public class ProsumerAgent {
 	/*
 	 * Logic helper methods
 	 */
-	
+
 	/*
 	 * Evaluates the net demand mediated by the prosumers behaviour in a given half hour.
 	 * 
@@ -486,11 +512,11 @@ public class ProsumerAgent {
 	{
 		float myDemand;
 		int timeSinceSigValid = time - predictionValidTime;
-		
+
 		//As a basic strategy ("pass-through"), we set the demand now to
 		//basic demand as of now.
 		myDemand = baseDemandProfile[time % baseDemandProfile.length];
-		
+
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
 		// Note, we can only moderate based on cost signal
 		// if we receive it (i.e. if we have smart meter)
@@ -507,14 +533,14 @@ public class ProsumerAgent {
 					System.out.println("Agent " + this.agentID + "Changing demand at time " + time + " with price signal " + (predictedCostNow - costThreshold) + " above threshold");
 				}
 				myDemand = myDemand * (1 - percentageMoveableDemand * (1 - (float) Math.exp( - ((predictedCostNow - costThreshold) / costThreshold))));
-				
+
 			}
 		}
 
 
 		return myDemand;
 	}
-	
+
 	/*
 	 * Evaluates the net demand mediated by smart controller behaviour at a given tick.
 	 * 
@@ -526,32 +552,75 @@ public class ProsumerAgent {
 	 */
 	private float smartDemand(int time)
 	{
+		//Very simple function at the moment - just return the smart profile for this time
+		//Previously defined by smartControlLearn()
 		float myDemand;
 		myDemand = smartOptimisedProfile[time % smartOptimisedProfile.length];
 		return myDemand;
 	}
-	
+
 	private void learnBehaviourChange()
 	{
 		// TODO: Implement the behavioural (social?) learning in here
 	}
+
+	private void smartControlLearnFlat(int time)
+	{
+		// simplest smart controller implementation - perfect division of load through the day
+		float moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
+		float [] daysCostSignal = new float [ticksPerDay];
+		float [] daysOptimisedDemand = new float [ticksPerDay];
+		System.arraycopy(predictedCostSignal, time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+
+		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
+
+		float [] tempArray = ArrayUtils.mtimes(daysCostSignal, daysOptimisedDemand);
+
+		float currentCost = ArrayUtils.sum(tempArray);
+		// Algorithm to minimise this whilst satisfying constraints of
+		// maximum movable demand and total demand being inelastic.
+
+		float movedLoad = 0;
+		float movedThisTime = -1;
+		float swapAmount = -1;
+		while (movedLoad < moveableLoad && movedThisTime != 0)
+		{
+			Arrays.fill(daysOptimisedDemand, inelasticTotalDayDemand / ticksPerDay);
+			movedThisTime = 0;
+			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
+		}
+		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, ticksPerDay);
+		if (SmartGridConstants.debug)
+		{
+			if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
+			{
+				//TODO: This always gets triggerd - I wonder if the "day" i'm taking
+				//here and in the inelasticdemand method are "off-by-one"
+				System.out.println("optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
+			}
+
+			System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+		}
+	}
 	
 	private void smartControlLearn(int time)
 	{
-		// TODO: Implement the smart device (optimisation) learning in here
+		// smart device (optimisation) learning in here
 		// in lieu of knowledge of what can "switch off" and "switch on", we assume that
 		// the percentage moveable of the day's consumption is what may be time shifted
 		float moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
 		float [] daysCostSignal = new float [ticksPerDay];
 		float [] daysOptimisedDemand = new float [ticksPerDay];
 		System.arraycopy(predictedCostSignal, time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+
 		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
+
 		float [] tempArray = ArrayUtils.mtimes(daysCostSignal, daysOptimisedDemand);
 
 		float currentCost = ArrayUtils.sum(tempArray);
 		// Algorithm to minimise this whilst satisfying constraints of
 		// maximum movable demand and total demand being inelastic.
-		
+
 		float movedLoad = 0;
 		float movedThisTime = -1;
 		float swapAmount = -1;
@@ -571,22 +640,58 @@ public class ProsumerAgent {
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
 		}
 		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, ticksPerDay);
-        if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
-        {
-        	//TODO: This always gets triggerd - I wonder if the "day" i'm taking
-        	//here and in the inelasticdemand method are "off-by-one"
-        	System.out.println("optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
-        }
-        
-        System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + "cost");
+		if (SmartGridConstants.debug)
+		{
+			if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
+			{
+				//TODO: This always gets triggerd - I wonder if the "day" i'm taking
+				//here and in the inelasticdemand method are "off-by-one"
+				System.out.println("optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
+			}
+
+			System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+		}
+	}
+
+	private void learnSmartAdoptionDecisionRemoveAll(int time)
+	{
+		hasSmartControl = false;
+		return;
 	}
 	
-	private void learnSmartAdoptionDecision()
+	private void learnSmartAdoptionDecision(int time)
 	{
+		
 		// TODO: implement learning whether to adopt smart control in here
 		// Could be a TpB based model.
+		float inwardInfluence = 0;
+		float internalInfluence = 0;
+		Iterable socialConnections = FindNetwork("socialNetwork").getInEdges(this);
+		// Get social influence - note communication is not every tick
+		// hence the if clause
+		if ((time % (21 * ticksPerDay)) == 0)
+		{
+
+			for (Object thisConn: socialConnections)
+			{
+				RepastEdge myConn = ((RepastEdge) thisConn);
+				if (((ProsumerAgent) myConn.getSource()).hasSmartControl)
+				{
+
+					inwardInfluence = inwardInfluence + (float) myConn.getWeight() * ((ProsumerAgent) myConn.getSource()).transmitPropensitySmartControl;
+				}
+			}
+		}
+
+		float decisionCriterion = inwardInfluence + internalInfluence;
+		if(decisionCriterion > (Double) GetParameter("smartControlDecisionThreshold")) 
+		{
+			hasSmartControl = true;
+		}
+
+
 	}
-	
+
 	private void checkWeather(int time)
 	{
 		// Note at the moment, no geographical info is needed to read the weather
@@ -596,51 +701,51 @@ public class ProsumerAgent {
 		windSpeed = myContext.getWindSpeed(time);
 		airTemperature = myContext.getAirTemperature(time);		
 	}
-	
-    /**
-    *
-    * This value is used to automatically generate agent identifiers.
-    * @field serialVersionUID
-    *
-    */
-   private static final long serialVersionUID = 1L;
 
-   /**
-    *
-    * This value is used to automatically generate agent identifiers.
-    * @field agentIDCounter
-    *
-    */
-   protected static long agentIDCounter = 1;
+	/**
+	 *
+	 * This value is used to automatically generate agent identifiers.
+	 * @field serialVersionUID
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /**
-    *
-    * This value is the agent's identifier.
-    * @field agentID
-    *
-    */
-   protected String agentID = "Prosumer " + (agentIDCounter++);
-	
-    /**
-    *
-    * This method provides a human-readable name for the agent.
-    * @method toString
-    *
-    */
-   @ProbeID()
-   public String toString() {
-       // Set the default agent identifier.
-       String returnValue = this.agentID;
-       // Return the results.
-       return returnValue;
+	/**
+	 *
+	 * This value is used to automatically generate agent identifiers.
+	 * @field agentIDCounter
+	 *
+	 */
+	protected static long agentIDCounter = 1;
 
-   }
-   
-   public String getAgentID()
-   {
-	   return this.agentID;
-   }
-	
+	/**
+	 *
+	 * This value is the agent's identifier.
+	 * @field agentID
+	 *
+	 */
+	protected String agentID = "Prosumer " + (agentIDCounter++);
+
+	/**
+	 *
+	 * This method provides a human-readable name for the agent.
+	 * @method toString
+	 *
+	 */
+	@ProbeID()
+	public String toString() {
+		// Set the default agent identifier.
+		String returnValue = this.agentID;
+		// Return the results.
+		return returnValue;
+
+	}
+
+	public String getAgentID()
+	{
+		return this.agentID;
+	}
+
 	/*
 	 * Constructor function(s)
 	 */

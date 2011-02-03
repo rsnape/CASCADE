@@ -9,6 +9,7 @@
   <attributes label="defaultProsumersPerFeeder" ID="defaultProsumersPerFeeder" pluralLabel="defaultProsumersPerFeeders" sType="INTEGER" defaultValue="1000"/>
   <attributes label="dataFileFolder" ID="dataFileFolder" pluralLabel="dataFileFolders" sType="STRING" defaultValue="'C:\workspace\Prosumer model\dataFiles'"/>
   <attributes label="debugOutput" ID="debugOutput" pluralLabel="debugOutputs" defaultValue="0"/>
+  <attributes label="smartControlDecisionThreshold" ID="smartControlDecisionThreshold" pluralLabel="smartControlDecisionThresholds" sType="FLOAT" defaultValue="0"/>
   <implementation package="prosumermodel" className="SmartGridCreator" basePath="../Prosumer model"/>
   <agents label="ProsumerAgent" ID="prosumerAgent" pluralLabel="ProsumerAgents">
     <implementation className="ProsumerAgent"/>

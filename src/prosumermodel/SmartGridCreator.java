@@ -24,6 +24,7 @@ import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
+import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.projection.Projection;
 
 /**
@@ -171,6 +172,9 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		for (int i = 0; i < numProsumers; i++) {
 			// Introduce variability in agents here or in their constructor
 			ProsumerAgent newAgent = createHouseholdProsumer(householdBaseDemand, false);
+			//set propensity to transmit 
+			// initially random - next iteration seed from DEFRA
+			newAgent.transmitPropensitySmartControl = (float) RandomHelper.nextDouble();
 			thisContext.add(newAgent);			
 		}
 		
@@ -180,16 +184,22 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		// create a small world social network
 		double beta = 0.1;
 		int degree = 2;
-		boolean directed = false;
-		boolean symmetric = false;
+		boolean directed = true;
+		boolean symmetric = true;
 		NetworkGenerator gen = new WattsBetaSmallWorldGenerator(beta, degree, symmetric);
-		smartFactory.createNetwork("socialNetwork", thisContext, gen, directed);
-		
+		Network social = smartFactory.createNetwork("socialNetwork", thisContext, gen, directed);
+		//set weight of each social contact - initially random
+		//this will represent the influence a contact may have on another
+		//Note that influence of x on y may not be same as y on x - which is realistic
+		for (Object thisEdge : social.getEdges())
+		{
+			((RepastEdge) thisEdge).setWeight(RandomHelper.nextDouble());			
+		}
 		//Add in some generators
 		
 		//A 2 MW windmill
 		ProsumerAgent firstWindmill = createPureGenerator(2000, generatorType.WIND);
-		thisContext.add(firstWindmill);
+		//thisContext.add(firstWindmill);
 		
 		//Secondly add aggregator(s)
 		AggregatorAgent firstAggregator = new AggregatorAgent((String) thisContext.getId(), thisContext.systemPriceSignalData, parm);
@@ -322,7 +332,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 			thisAgent = new ProsumerAgent((String) thisContext.getId(), baseProfile, parm);
 		}
 		//thisAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > 0.5);
-		thisAgent.hasSmartControl = (RandomHelper.nextDouble() > 0.5);
+		thisAgent.hasSmartControl = (RandomHelper.nextDouble() > 0.9);
 		thisAgent.exercisesBehaviourChange = true;
 		thisAgent.hasSmartMeter = true;
 		thisAgent.costThreshold = 35000;  //Threshold in price signal at which behaviour change is prompted (if agent is willing)
