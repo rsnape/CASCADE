@@ -113,7 +113,7 @@ public class AggregatorAgent {
 	 */
 
 	/******************
-	 * This method defines the step behaviour of a prosumer agent
+	 * This method defines the step behaviour of an aggregator agent
 	 * 
 	 * Input variables: 	none
 	 * 
@@ -131,7 +131,10 @@ public class AggregatorAgent {
 		int timeOfDay = (int) (time % ticksPerDay);
 
 		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
-		List<RepastEdge> linkages = RepastEssentials.GetInEdges("Prosumermodel/economicNetwork", this);
+		List<RepastEdge> linkages = RepastEssentials.GetOutEdges("Prosumermodel/economicNetwork", this);
+		if(SmartGridConstants.debug) {
+			System.out.println("Agent " + agentID + " has " + linkages.size() + "links in economic network");
+		}
 		for (RepastEdge edge : linkages) {
 			Object linkSource = edge.getTarget();
 			if (linkSource instanceof ProsumerAgent){
@@ -154,22 +157,40 @@ public class AggregatorAgent {
 		//This is where we may alter the signal based on the demand
 		// In this simple implementation, we simply scale the signal based on deviation of 
 		// actual demand from projected demand for use next time round.
-
-		int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
-		broadcastLength = priceSignal.length; // but in this case we choose not to
-		float predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+		
+		//Define a variable to hold the aggregator's predicted demand at this instant.
+		float predictedInstantaneousDemand;
+		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
+		// demand, have a less dynamic but still non-zero predicted demand 
+		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
+		
+		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+		predictedInstantaneousDemand = 0;
+		
+		
 		//This is the real guts - adapt the price signal by a fraction of the 
 		//departure of actual demand from predicted
-		priceSignal[(int) time % priceSignalLength] = priceSignal[(int) time % priceSignalLength] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
+		//Note there are myriad ways to do this, and many will reflect different policy
+		//aims.  For instance - we may wish to never have the signal negative
+		//i.e. never encourage consumption.  However, if prosumers actively demand shift
+		// then this would not be good otherwise they would not have an indication where
+		// to load shift the demand to.
+		
+		if (netDemand > predictedInstantaneousDemand) {
+		priceSignal[(int) time % priceSignalLength] = (float) (priceSignal[(int) time % priceSignalLength] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
 		// Now introduce some prediction - it was high today, so moderate tomorrow...
 		if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
 		{
-			priceSignal[(int) time % priceSignalLength + ticksPerDay] = priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1 + ((netDemand - predictedInstantaneousDemand)/predictedInstantaneousDemand));
+			priceSignal[(int) time % priceSignalLength + ticksPerDay] = (float) (priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
 		}
-		priceSignalChanged = true;
-
+		priceSignalChanged = true; }
+		
 		//Here, we simply broadcast the electricity value signal each midnight
 		if (timeOfDay == 0) {
+
+			int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
+			broadcastLength = priceSignal.length; // but in this case we choose not to
+
 			broadcastDemandSignal(customers, time, broadcastLength);
 		}    	
 
@@ -209,6 +230,10 @@ public class AggregatorAgent {
 				// Broadcast signal to all customers - note we simply say that the signal is valid
 				// from now currently, in future implementations we may want to be able to insert
 				// signals valid at an offset from now.
+				if (SmartGridConstants.debug)
+				{
+					System.out.println("Broadcasting to " + a.agentID);
+				}
 				a.receiveValueSignal(broadcastSignal, broadcastLength);
 			}
 		}
