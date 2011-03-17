@@ -50,21 +50,15 @@ import prosumermodel.SmartGridConstants.*;
 
 /**
  * @author J. Richard Snape
- * @version $Revision: 1.1 $ $Date: 2011/03/17 12:00:00 $
+ * @version $Revision: 1.00 $ $Date: 2011/03/17 12:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
- * 1.0 - Initial basic functionality including pure elastic reaction to price signal
- * 1.01 - Introduction of smart adaptation in addition to elastic behavioural adaptation
- * 1.1 - refactor to an abstract class holding only generic prosumer functions
+ * 1.0 - Initial split of categories of prosumer from the abstract class representing all prosumers
+ * 
  * 
  */
-public abstract class ProsumerAgent {
-	/*
-	 * Agent properties
-	 */
-	String contextName;
-	int ticksPerDay;
+public class WindGeneratorProsumer extends GeneratorProsumer {
 
 	/*
 	 * Configuration options
@@ -72,72 +66,11 @@ public abstract class ProsumerAgent {
 	 * All are set false initially - they can be set true on instantiation to
 	 * allow fine-grained control of agent properties
 	 */
-
-	// the agent can see "smart" information
-	boolean hasSmartMeter = false; 
-	// the agent acts on "smart" information but not via automatic control
-	// action on information is mediated by human input
-	boolean exercisesBehaviourChange = false; 
-	boolean hasSmartControl = false; //i.e. the agent allows automatic "smart" control of its demand / generation based on "smart" information
-	boolean receivesCostSignal = false; //we may choose to model some who remain outside the smart signal system
-	
-
-	 /*
-	 * Weather and temperature variables
-	 */
-	float insolation; //current insolation at the given half hour tick
-	float windSpeed; //current wind speed at the given half hour tick
-	float airTemperature; // outside air temperature
-
-
-	/*
-	 * Electrical properties
-	 */
-	int nodeID;
-	int connectionNominalVoltage;
-	int[] connectedNodes;
-	// distance to source is in metres, can be distance from nearest transformer
-	// Can be specified in first instance, or calculated from geographical info below
-	// if we go GIS heavy
-	int distanceFromSource;
-
-	/*
-	 * Geographical properties
-	 * 
-	 * Could go for this if we wish to go GIS heavy
-	 */
-	float latitude;
-	float longitude;
-	float altitude = 0;
-
-	/*
-	 * Imported signals and profiles.
-	 */
-	float[] baseDemandProfile;
-	float[] predictedCostSignal;
-	int predictedCostSignalLength;
-	int predictionValidTime;
-
-	/*
-	 * Exported signals and profiles.
-	 */
-	float[] currentDemandProfile;
-	float[] predictedPriceSignal;
-	int predictedPriceSignalLength;
-
-	/*
-	 * This is net demand, may be +ve (consumption), 0, or -ve (generation)
-	 */
-	float netDemand; // (note in kW)
-	float availableGeneration; // Generation Capability at this instant (note in kW)
-
-	/*
-	 * Economic variables which all prosumers will wish to calculate.
-	 */
-	float actualCost; // The demand multiplied by the cost signal.  Note that this may be in "real" currency, or not
-	float inelasticTotalDayDemand;
-	protected float[] smartOptimisedProfile;
-
+	int numTurbines;
+/*
+ * TODO - need some operating characteristic parameters here - e.g. time to start
+ * ramp up generation etc. etc.
+ */
 	/*
 	 * Accessor functions (NetBeans style)
 	 * TODO: May make some of these private to respect agent conventions of autonomy / realistic simulation of humans
@@ -168,6 +101,12 @@ public abstract class ProsumerAgent {
 
 	public void setPredictedCostSignalLength(int length) {
 		predictedCostSignalLength = length;
+	}
+
+	public float getUnadaptedDemand(){
+		// Cope with tick count being null between project initialisation and start.
+		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
+		return (baseDemandProfile[index]) - currentGeneration();
 	}
 
 	public float getCurrentPrediction() {
@@ -228,70 +167,7 @@ public abstract class ProsumerAgent {
 	}
 
 
-	/*
-	 * This method receives the centralised value signal and stores it to the
-	 * Prosumer's memory.
-	 * 
-	 * @param signal - the array containing the cost signal - one member per time tick
-	 * @param length - the length of the signal
-	 * @param validTime - the time (in ticks) from which the signal is valid
-	 */
-	public boolean receiveValueSignal(float[] signal, int length, int validTime) {
-		boolean success = true;
-		// Can only receive if we have a smart meter to receive data
-
-		if (hasSmartMeter)
-		{
-			// Note the time from which the signal is valid.
-			// Note - Repast can cope with fractions of a tick (a double is returned)
-			// but I am assuming here we will deal in whole ticks and alter the resolution should we need
-			int time = (int) RepastEssentials.GetTickCount();
-			int newSignalLength = length;
-			setPredictionValidTime(validTime);
-			float[] tempArray;
-
-			int signalOffset = time - validTime;
-
-			if (signalOffset != 0)
-			{
-				if (SmartGridConstants.debug)
-				{
-					System.out.println("Signal valid from time other than current time");
-				}
-				newSignalLength = newSignalLength - signalOffset;
-			}
-
-			if ((predictedCostSignal == null) || (newSignalLength != getPredictedCostSignalLength()))
-			{
-				if (SmartGridConstants.debug)
-				{
-					System.out.println("Re-defining length of signal in agent" + agentID);
-				}
-				setPredictedCostSignalLength(newSignalLength);
-				predictedCostSignal = new float[newSignalLength];
-			}
-
-			if (signalOffset < 0)
-			{
-				// This is a signal projected into the future.
-				// pad the signal with copies of what was in it before and then add the new signal on
-				System.arraycopy(signal, 0, predictedCostSignal, 0 - signalOffset, length);
-			}
-			else
-			{
-				// This was valid from now or some point in the past.  Copy in the portion that is still valid and 
-				// then "wrap" the front bits round to the end of the array.
-				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
-			}
-
-			if (SmartGridConstants.debug)
-			{
-				System.out.println(this.agentID + " received value signal " + Arrays.toString(signal));
-			}
-		}
-
-		return success;
-	}
+	
 
 	public boolean receiveInfluence() {
 		boolean success = true;
@@ -304,12 +180,14 @@ public abstract class ProsumerAgent {
 	 */
 
 	/******************
-	 * This method defines the step behaviour of a prosumer agent
+	 * This method defines the step behaviour of a wind generator agent
+	 * This represents a farm of 1 or more turbines i.e. anything that is
+	 * purely wind - can be a single turbine or many
 	 * 
 	 * Input variables: none
 	 * 
 	 * Return variables: boolean returnValue - returns true if the method
-	 * executes succesfully
+	 * executes successfully
 	 ******************/
 	@ScheduledMethod(start = 1, interval = 1, shuffle = true)
 	public boolean step() {
@@ -317,22 +195,73 @@ public abstract class ProsumerAgent {
 		// Define the return value variable.  Set this false if errors encountered.
 		boolean returnValue = true;
 
-		/*
-		 * At this very basic stage, the abstract class has no step behaviour
-		 * this should all be taken care of by the inheriting classes
+		// Note the simulation time if needed.
+		// Note - Repast can cope with fractions of a tick (a double is returned)
+		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
+		int time = (int) RepastEssentials.GetTickCount();
+		int timeOfDay = (time % ticksPerDay);
+		SmartGridContext myContext = (SmartGridContext) FindContext(contextName);
+
+		checkWeather(time);
+
+		//Do all the "once-per-day" things here
+		if (timeOfDay == 0)
+		{
+			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
+		}
+
+		/* 
+		 * As wind is non-dispatchable, simply return the current generation
+		 * each time.  The only adaptation possible would be shutting down
+		 * some / all turbines
+		 * 
+		 * TODO - implement turbine shutdown
 		 */
+		setNetDemand( 0 - currentGeneration());
+		
+		// Return (this will be false if problems encountered).
 		return returnValue;
 
 	}
 
-	protected void checkWeather(int time)
-	{
-		// Note at the moment, no geographical info is needed to read the weather
-		// this is because weather is a flat file and not spatially differentiated
-		SmartGridContext myContext = (SmartGridContext) FindContext(contextName);
-		insolation = myContext.getInsolation(time);
-		windSpeed = myContext.getWindSpeed(time);
-		airTemperature = myContext.getAirTemperature(time);		
+	/**
+	 * @return
+	 */
+	private float currentGeneration() {
+		float returnAmount = 0;
+
+		returnAmount = returnAmount + windGeneration();
+		if (SmartGridConstants.debug)
+		{
+			if (returnAmount != 0)
+			{
+				System.out.println("Generating " + returnAmount);
+			}
+		}
+		return returnAmount;
+	}
+
+	/**
+	 * @return - float containing the current generation for this wind generator
+	 */
+	private float windGeneration() {
+		if(hasWind){
+			//TODO: get a realistic model of wind production - this just linear between 
+			//5 and 25 metres per second, zero below, max power above
+			return (Math.max((Math.min(getWindSpeed(),25) - 5),0))/20 * ratedPowerWind;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	/**
+	 * @param time
+	 * @return float giving sum of baseDemand for the day.
+	 */
+	private float calculateFixedDayTotalDemand(int time) {
+		int baseProfileIndex = time % baseDemandProfile.length;
+		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
 	}
 
 	/**
@@ -382,14 +311,39 @@ public abstract class ProsumerAgent {
 	/*
 	 * Constructor function(s)
 	 */
-	public ProsumerAgent(String myContext, float[] baseDemand, Parameters parm) {
+	public WindGeneratorProsumer(String myContext, float[] baseDemand, float capacity, Parameters parm) {
+		/*
+		 * If number of wind turbines not specified, assume 1
+		 */
+		this(myContext, baseDemand, capacity, parm, 1);
+	}
+	
+	public WindGeneratorProsumer(String myContext, float[] baseDemand, float capacity, Parameters parm, int turbines) {
 		super();
+		this.contextName = myContext;
+		this.hasWind = true;
+		this.ratedPowerWind = capacity;
+		this.numTurbines = turbines;
+		this.percentageMoveableDemand = 0;
+		this.maxTimeShift = 0;
+		this.ticksPerDay = (Integer) parm.getValue("ticksPerDay");
+		if (baseDemand.length % ticksPerDay != 0)
+		{
+			System.err.println("baseDemand array not a whole number of days");
+			System.err.println("Will be truncated and may cause unexpected behaviour");
+		}
+		this.baseDemandProfile = new float [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
+		//Initialise the smart optimised profile to be the same as base demand
+		//smart controller will alter this
+		this.smartOptimisedProfile = new float [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
 	}
 
 	/*
 	 * No argument constructor - basic prosumer created
 	 */
-	public ProsumerAgent() {
+	public WindGeneratorProsumer() {
 		super();
 	}
 }
