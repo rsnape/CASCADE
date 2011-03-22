@@ -29,7 +29,14 @@ import repast.simphony.space.projection.Projection;
 
 /**
  * @author J. Richard Snape
- * @version $Revision: 1.0 $ $Date: 2010/11/17 17:00:00 $
+ * @version $Revision: 1.1 $ $Date: 2011/03/17 17:00:00 $
+ * 
+ * Version history (for intermediate steps see Git repository history
+ * 
+ * 1.0 - Initial scenario creator
+ * 1.1 - amend to accommodate refactor of Prosumer into abstract class and 
+ * 		specific inherited classes.
+ * 
  */
 public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 
@@ -171,7 +178,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		
 		for (int i = 0; i < numProsumers; i++) {
 			// Introduce variability in agents here or in their constructor
-			ProsumerAgent newAgent = createHouseholdProsumer(householdBaseDemand, false);
+			HouseholdProsumer newAgent = createHouseholdProsumer(householdBaseDemand, false);
 			//set propensity to transmit 
 			// initially random - next iteration seed from DEFRA
 			newAgent.transmitPropensitySmartControl = (float) RandomHelper.nextDouble();
@@ -199,7 +206,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		
 		//A 2 MW windmill
 		ProsumerAgent firstWindmill = createPureGenerator(2000, generatorType.WIND);
-		//thisContext.add(firstWindmill);
+		thisContext.add(firstWindmill);
 		
 		//Secondly add aggregator(s)
 		AggregatorAgent firstAggregator = new AggregatorAgent((String) thisContext.getId(), thisContext.systemPriceSignalData, parm);
@@ -274,12 +281,12 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 	 * @param type - the type of this generator (from an enumerator of all types)
 	 */
 	public ProsumerAgent createStorageProsumer(int Capacity, storageType type) {
-		ProsumerAgent thisAgent;
+		StorageProsumer thisAgent;
 		
 		// Create a prosumer with zero base demand
 		float[] nilDemand = new float[1];
 		nilDemand[0] = 0;
-		thisAgent = new ProsumerAgent((String) thisContext.getId(), nilDemand, parm);
+		thisAgent = new StorageProsumer((String) thisContext.getId(), nilDemand, parm);
 		switch (type){
 		}
 		
@@ -296,17 +303,15 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 	 * @param type - the type of this generator (from an enumerator of all types)
 	 */
 	public ProsumerAgent createPureGenerator(float capacity, generatorType type) {
-		ProsumerAgent thisAgent;
+		GeneratorProsumer thisAgent = null;
 		
 		// Create a prosumer with zero base demand
 		// TODO: Should this be null?  or zero as implemented?
 		float[] nilDemand = new float[1];
 		nilDemand[0] = 0;
-		thisAgent = new ProsumerAgent((String) thisContext.getId(), nilDemand, parm);
 		switch (type){
 		case WIND:
-			thisAgent.hasWind = true;
-			thisAgent.ratedPowerWind = capacity;
+			thisAgent = new WindGeneratorProsumer((String) thisContext.getId(), nilDemand, capacity, parm);
 			break;			
 		}
 		
@@ -320,16 +325,16 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 	 * @param baseProfile - an array of the basic consumption profile for this prosumer (kWh per tick)
 	 * @param addNoise - boolean specifying whether or not to add noise to the profile
 	 */
-	public ProsumerAgent createHouseholdProsumer(float[] baseProfile, boolean addNoise) {
-		ProsumerAgent thisAgent;
+	public HouseholdProsumer createHouseholdProsumer(float[] baseProfile, boolean addNoise) {
+		HouseholdProsumer thisAgent;
 		
 		if (addNoise) 
 		{
-			thisAgent = new ProsumerAgent((String) thisContext.getId(), createRandomHouseholdDemand(baseProfile), parm);
+			thisAgent = new HouseholdProsumer((String) thisContext.getId(), createRandomHouseholdDemand(baseProfile), parm);
 		}
 		else
 		{
-			thisAgent = new ProsumerAgent((String) thisContext.getId(), baseProfile, parm);
+			thisAgent = new HouseholdProsumer((String) thisContext.getId(), baseProfile, parm);
 		}
 		//thisAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > 0.5);
 		thisAgent.hasSmartControl = (RandomHelper.nextDouble() > 0.9);
@@ -354,7 +359,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		ProsumerAgent thisAgent;
 		
 		// Create a prosumer with  base demand as specified
-		thisAgent = new ProsumerAgent((String) thisContext.getId(),baseProfile, parm);
+		thisAgent = new NonDomesticProsumer((String) thisContext.getId(),baseProfile, parm);
 				
 		return thisAgent;
 	}
