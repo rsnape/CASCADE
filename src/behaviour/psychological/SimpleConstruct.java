@@ -40,6 +40,11 @@ public class SimpleConstruct implements Construct {
 		return name;
 	}
 
+	public SimpleConstruct()
+	{
+		
+	}
+	
 	public SimpleConstruct(String name)
 	{
 		this.name = name;
