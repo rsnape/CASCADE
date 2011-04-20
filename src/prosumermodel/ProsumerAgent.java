@@ -64,7 +64,7 @@ public abstract class ProsumerAgent {
 	 * Agent properties
 	 */
 	String contextName;
-	int ticksPerDay;
+	public int ticksPerDay;
 
 	/*
 	 * Configuration options

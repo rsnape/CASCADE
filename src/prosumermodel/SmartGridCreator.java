@@ -26,6 +26,8 @@ import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.projection.Projection;
+import smartgrid.helperfunctions.ArrayUtils;
+import smartgrid.helperfunctions.*;
 
 /**
  * @author J. Richard Snape
@@ -84,9 +86,16 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		 * Read in the necessary data files and store to the context
 		 */
 		File dataDirectory = new File(dataFileFolderPath);
-		
 		File weatherFile = new File(dataDirectory, weatherFileName);
-		CSVReader weatherReader;
+		CSVReader weatherReader = null;
+		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
+		CSVReader systemBasePriceReader = null;
+		File householdAttrFile = new File(dataDirectory, householdAttrFileName);
+		CSVReader demandReader = null;
+		int numDemandColumns = 1;
+		float[] householdBaseDemand = null;
+		
+		
 		try {
 			weatherReader = new CSVReader(weatherFile);
 			weatherReader.parseByColumn();
@@ -106,8 +115,6 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 			System.err.println("May cause unexpected behaviour");
 		}
 		
-		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
-		CSVReader systemBasePriceReader;
 		try {
 			systemBasePriceReader = new CSVReader(systemDemandFile);
 			systemBasePriceReader.parseByColumn();
@@ -124,24 +131,17 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 			System.err.println("Base System Demand array not a whole number of days");
 			System.err.println("May cause unexpected behaviour");
 		}
-
-		File householdAttrFile = new File(dataDirectory, householdAttrFileName);
-		CSVReader demandReader;
-		float[] householdBaseDemand = null;
+		
 		try {
 			demandReader = new CSVReader(householdAttrFile);
 			demandReader.parseByColumn();
-			householdBaseDemand = ArrayUtils.convertStringArraytofloatArray(demandReader.getColumn("demand"));
+			numDemandColumns = demandReader.columnsStarting("demand");
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not find file with name " + householdAttrFileName);
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}
-		if (householdBaseDemand.length % ticksPerDay != 0)
-		{
-			System.err.println("Household base demand array not a whole number of days");
-			System.err.println("May cause unexpected behaviour");
-		}
+
 
 		//Convert base demand to half hourly (or whatever fraction of a day we are working with)
 		// NOTE - I am assuming input in kWh.  If in kW, this should average rather than sum!!
@@ -178,7 +178,15 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		
 		for (int i = 0; i < numProsumers; i++) {
 			// Introduce variability in agents here or in their constructor
-			HouseholdProsumer newAgent = createHouseholdProsumer(householdBaseDemand, false);
+			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
+			System.out.println("initialising with profile" + demandName);
+			householdBaseDemand = ArrayUtils.convertStringArraytofloatArray(demandReader.getColumn(demandName));
+			if (householdBaseDemand.length % ticksPerDay != 0)
+			{
+				System.err.println("Household base demand array not a whole number of days");
+				System.err.println("May cause unexpected behaviour");
+			}
+			HouseholdProsumer newAgent = createHouseholdProsumer(householdBaseDemand, true);
 			//set propensity to transmit 
 			// initially random - next iteration seed from DEFRA
 			newAgent.transmitPropensitySmartControl = (float) RandomHelper.nextDouble();
@@ -263,10 +271,21 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 	private float[] createRandomHouseholdDemand(float[] baseProfile){
 		float[] newProfile = new float[baseProfile.length];
 		
+		//add amplitude randomisation
 		for (int i = 0; i < newProfile.length; i++)
 		{
 			newProfile[i] = baseProfile[i] * (float)(1 + 0.3*(RandomHelper.nextDouble() - 0.5));
 		}
+		
+		//add time jitter
+		float jitterFactor = (float) RandomHelper.nextDouble() - 0.5f;
+		System.out.println("Applying jitter" + jitterFactor);
+		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
+		for (int i = 1; i < (newProfile.length - 1); i++)
+		{
+			newProfile[i] = (jitterFactor * newProfile[i]) + ((1 - jitterFactor) * newProfile[i+1]);
+		}
+		newProfile[newProfile.length - 1] = (jitterFactor * newProfile[newProfile.length - 1]) + ((1 - jitterFactor) * newProfile[0]);
 		
 		return newProfile;
 	}

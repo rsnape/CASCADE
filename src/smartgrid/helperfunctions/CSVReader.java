@@ -1,7 +1,7 @@
 /**
  * 
  */
-package prosumermodel;
+package smartgrid.helperfunctions;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,8 +37,11 @@ public class CSVReader {
 	/*
 	 * methods
 	 */
-	void parseByColumn(){
+	public void parseByColumn(){
 
+		// TODO:  This is much slower for a low number of long columns than many columns with fewer data points.  
+		// TODO: Find out why and optimise
+		
 		boolean hasNextLine = true;		
 		String thisLine = null;
 		try {
@@ -176,6 +179,28 @@ public class CSVReader {
 		myReader = new BufferedReader(myCSV);
 		mySeperator = seperator;
 		hasColHeaders = colHeaders;
+	}
+
+	public String[] getColumnNames()
+	{
+		return colHeaders;
+	}
+	
+	/**
+	 * @param string
+	 * @return
+	 */
+	public int columnsStarting(String string) {
+		// TODO Auto-generated method stub
+		int numCols = 0;
+		for (int i = 0; i < colHeaders.length; i++)
+		{
+			if (colHeaders[i].startsWith(string))
+			{
+				numCols++;
+			}
+		}
+		return numCols;
 	}
 
 }

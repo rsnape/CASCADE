@@ -43,6 +43,7 @@ import repast.simphony.space.projection.*;
 import repast.simphony.ui.probe.*;
 import repast.simphony.util.*;
 import simphony.util.messages.*;
+import smartgrid.helperfunctions.ArrayUtils;
 import static java.lang.Math.*;
 import static repast.simphony.essentials.RepastEssentials.*;
 import prosumermodel.SmartGridConstants.*;
@@ -109,10 +110,27 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float ratedCapacitySpaceHeatStorage; // Note - related to thermal mass
 
 
-	// For Households in buildings - set to zero if irrelevant
+	// For Households' heating requirements
 	float buildingHeatCapacity;
 	float buildingHeatLossRate;
 	float buildingTemperatureSetPoint;
+	float spaceTemperature;
+	float waterTemperature;
+
+	/*
+	 * temperature control parameters
+	 */
+	float setPoint;
+	float minSetPoint;  // The minimum temperature for this Household's building in centigrade (where relevant)
+	float maxSetPoint;  // The maximum temperature for this Household's building in centigrade (where relevant)
+	float currentInternalTemp;
+	
+	//Occupancy information
+	int numOccupants;
+	int numAdults;
+	int numChildren;
+	int numTeenagers;
+	int[] occupancyProfile;
 
 
 	/*
@@ -131,12 +149,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float transmitPropensityProEnvironmental;
 	float visibilityMicrogen;
 
-	/*
-	 * temperature control parameters
-	 */
-	float minSetPoint;  // The minimum temperature for this Household's building in centigrade (where relevant)
-	float maxSetPoint;  // The maximum temperature for this Household's building in centigrade (where relevant)
-	float currentInternalTemp;
 	
 	/*
 	 * This may or may not be used, but is a threshold cost above which actions
@@ -152,6 +164,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 	public float getNetDemand() {
 		return netDemand;
 	}
+	
+	public float getSetPoint() {
+		return setPoint;
+	}
+
 
 	public void setNetDemand(float newDemand) {
 		netDemand = newDemand;
@@ -290,7 +307,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else if (hasSmartMeter && exercisesBehaviourChange) {
 			learnBehaviourChange();
 			setNetDemand(evaluateBehaviour(time));
-			learnSmartAdoptionDecision(time);
+			//learnSmartAdoptionDecision(time);
 		}
 		else
 		{

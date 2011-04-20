@@ -43,6 +43,7 @@ import repast.simphony.space.projection.*;
 import repast.simphony.ui.probe.*;
 import repast.simphony.util.*;
 import simphony.util.messages.*;
+import smartgrid.helperfunctions.ArrayUtils;
 import static java.lang.Math.*;
 import static repast.simphony.essentials.RepastEssentials.*;
 import prosumermodel.SmartGridConstants.*;

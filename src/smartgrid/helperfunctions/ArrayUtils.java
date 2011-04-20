@@ -1,7 +1,7 @@
 /**
  * 
  */
-package prosumermodel;
+package smartgrid.helperfunctions;
 
 /**
  * @author J. Richard Snape
