@@ -1,5 +1,5 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Aggregator Chart</name>
+  <name>Price Signal</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
@@ -26,10 +26,10 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Sum of total demand</seriesID>
-      <valueColumn>New Column</valueColumn>
-      <hashCode>-1773597658</hashCode>
-      <proxy>true</proxy>
+      <seriesID>AgentID</seriesID>
+      <valueColumn>CurrentPriceSignal</valueColumn>
+      <hashCode>-841472287</hashCode>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

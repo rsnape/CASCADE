@@ -176,6 +176,8 @@ public class AggregatorAgent {
 		// then this would not be good otherwise they would not have an indication where
 		// to load shift the demand to.
 		
+		//TODO I've started too complicated here - first put out flat prices (as per today), then E7, then stepped ToU, then a real dynamic one like this...
+		
 		if (netDemand > predictedInstantaneousDemand) {
 		priceSignal[(int) time % priceSignalLength] = (float) (priceSignal[(int) time % priceSignalLength] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
 		// Now introduce some prediction - it was high today, so moderate tomorrow...

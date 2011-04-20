@@ -24,7 +24,7 @@ public class TPBModel extends SimpleModel {
 		Construct sn = new SimpleConstruct("Subjective Norm",0.1f);
 		Construct pbc = new SimpleConstruct("Perceived Behavioural Control",0.2f);
 		Construct intention = new SimpleConstruct("Intention",0.2f);
-		Construct behaviour = new BehaviourConstruct("Behaviour",0.0f);
+		Construct behaviour = new SimpleConstruct("Behaviour",0.0f);
 		this.addConstruct(attitude);
 		this.addConstruct(sn);
 		this.addConstruct(pbc);

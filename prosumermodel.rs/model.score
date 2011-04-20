@@ -14,6 +14,9 @@
   <agents label="ProsumerAgent" ID="prosumerAgent" pluralLabel="ProsumerAgents">
     <implementation className="ProsumerAgent"/>
   </agents>
+  <agents label="HouseholdProsumer" ID="HouseholdProsumer" pluralLabel="HouseholdProsumers">
+    <implementation className="HouseholdProsumer"/>
+  </agents>
   <agents label="AggregatorAgent" ID="AggregatorAgent" pluralLabel="AggregatorAgents">
     <implementation className="AggregatorAgent"/>
   </agents>
