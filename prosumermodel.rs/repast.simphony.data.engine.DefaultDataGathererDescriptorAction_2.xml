@@ -1,6 +1,6 @@
 <repast.simphony.data.engine.DefaultDataGathererDescriptor>
-  <name>Weather</name>
-  <dataSetId class="string">weather</dataSetId>
+  <name>Signal data set</name>
+  <dataSetId class="string">sigDataSet</dataSetId>
   <scheduleParameters>
     <start>1.0</start>
     <interval>1.0</interval>
@@ -9,75 +9,52 @@
     <frequency>REPEAT</frequency>
   </scheduleParameters>
   <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
-    <nameMappingTable/>
-    <mappingNameTable/>
-  </dataMappingContainer>
-  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
     <nameMappingTable>
-      <entry>
-        <string>Wind Speed</string>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping>
-          <type>Mean</type>
-          <decorated class="repast.simphony.data.logging.gather.MethodMapping">
-            <method>
-              <class>prosumermodel.ProsumerAgent</class>
-              <name>getWindSpeed</name>
-              <parameter-types/>
-            </method>
-          </decorated>
-        </repast.simphony.data.logging.gather.aggregate.MeanMapping>
-      </entry>
       <entry>
         <string>Tick</string>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
       </entry>
       <entry>
-        <string>Air Temperature</string>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping>
-          <type>Mean</type>
-          <decorated class="repast.simphony.data.logging.gather.MethodMapping">
-            <method>
-              <class>prosumermodel.ProsumerAgent</class>
-              <name>getAirTemperature</name>
-              <parameter-types/>
-            </method>
-          </decorated>
-        </repast.simphony.data.logging.gather.aggregate.MeanMapping>
+        <string>AgentID</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>prosumermodel.ProsumerAgent</class>
+            <name>getAgentID</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
       </entry>
       <entry>
-        <string>Insolation</string>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping>
-          <type>Mean</type>
-          <decorated class="repast.simphony.data.logging.gather.MethodMapping">
-            <method>
-              <class>prosumermodel.ProsumerAgent</class>
-              <name>getInsolation</name>
-              <parameter-types/>
-            </method>
-          </decorated>
-        </repast.simphony.data.logging.gather.aggregate.MeanMapping>
+        <string>CurrentPrediction</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>prosumermodel.ProsumerAgent</class>
+            <name>getCurrentPrediction</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
       </entry>
     </nameMappingTable>
     <mappingNameTable>
       <entry>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
-        <string>Wind Speed</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
-        <string>Insolation</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
-        <string>Air Temperature</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
       </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>AgentID</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentPrediction</string>
+      </entry>
     </mappingNameTable>
+  </dataMappingContainer>
+  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
+    <nameMappingTable/>
+    <mappingNameTable/>
     <alternatedNameTable/>
     <nameAlternatedTable/>
   </aggregateContainer>
-  <agentClass>prosumermodel.ProsumerAgent</agentClass>
+  <agentClass>prosumermodel.HouseholdProsumer</agentClass>
 </repast.simphony.data.engine.DefaultDataGathererDescriptor>
