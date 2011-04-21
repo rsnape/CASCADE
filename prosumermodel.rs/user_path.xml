@@ -1,0 +1,7 @@
+<model name="Prosumermodel">
+<classpath>
+<agents path="../../ProsumerModel/bin" filter="prosumermodel.ProsumerAgent"/>
+<agents path="../../ProsumerModel/bin" filter="prosumermodel.HouseholdProsumer"/>
+<agents path="../../ProsumerModel/bin" filter="prosumermodel.AggregatorAgent"/>
+</classpath>
+</model>
