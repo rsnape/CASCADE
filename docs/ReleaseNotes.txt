@@ -1,0 +1,6 @@
+20/04/2011
+This file was added in order to allow git to commit the final
+version of this model that was coded in Repast Simphony 1.2.
+All future versions will be developed in Repast Simphony 2.0 beta.
+
+This file may be used to keep track of significant release notes.
