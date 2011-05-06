@@ -60,6 +60,9 @@ public class AggregatorAgent {
 	float netDemand;
 	float[] predictedCustomerDemand;
 	int predictedCustomerDemandLength;
+	float[] overallSystemDemand;
+	int overallSystemDemandLength;
+	// priceSignal units are £/MWh which translates to p/kWh if divided by 10
 	float[] priceSignal;
 	int priceSignalLength;
 	boolean priceSignalChanged = true;  //set true when we wish to send a new and different price signal.  
@@ -153,39 +156,19 @@ public class AggregatorAgent {
 		}
 
 		setNetDemand(sumDemand);
+		//Set the predicted demand for next day to the sum of the demand at this time today.
+		//TODO: This is naive
+		
+		System.out.println("Setting predicted demand at " + timeOfDay + " to " + sumDemand);
+		predictedCustomerDemand[timeOfDay] = sumDemand;
 
-		//This is where we may alter the signal based on the demand
-		// In this simple implementation, we simply scale the signal based on deviation of 
-		// actual demand from projected demand for use next time round.
-		
-		//Define a variable to hold the aggregator's predicted demand at this instant.
-		float predictedInstantaneousDemand;
-		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
-		// demand, have a less dynamic but still non-zero predicted demand 
-		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
-		
-		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
-		predictedInstantaneousDemand = 0;
-		
-		
-		//This is the real guts - adapt the price signal by a fraction of the 
-		//departure of actual demand from predicted
-		//Note there are myriad ways to do this, and many will reflect different policy
-		//aims.  For instance - we may wish to never have the signal negative
-		//i.e. never encourage consumption.  However, if prosumers actively demand shift
-		// then this would not be good otherwise they would not have an indication where
-		// to load shift the demand to.
-		
 		//TODO I've started too complicated here - first put out flat prices (as per today), then E7, then stepped ToU, then a real dynamic one like this...
 		
-		if (netDemand > predictedInstantaneousDemand) {
-		priceSignal[(int) time % priceSignalLength] = (float) (priceSignal[(int) time % priceSignalLength] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
-		// Now introduce some prediction - it was high today, so moderate tomorrow...
-		if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
-		{
-			priceSignal[(int) time % priceSignalLength + ticksPerDay] = (float) (priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
-		}
-		priceSignalChanged = true; }
+		//setPriceSignalFlatRate(125f);
+		//setPriceSignalEconomySeven(125f, 48f);
+		
+		// Co-efficients estimated from Figure 4 in Roscoe and Ault
+		setPriceSignalRoscoeAndAult(0.0006f, 12f, 40f);
 		
 		//Here, we simply broadcast the electricity value signal each midnight
 		if (timeOfDay == 0) {
@@ -200,8 +183,69 @@ public class AggregatorAgent {
 		return returnValue;
 
 	}
+	
+	void setPriceSignalFlatRate(float price)
+	{
+		float[] oldPrice = priceSignal;
+		Arrays.fill(priceSignal, price);
+		priceSignalChanged = Arrays.equals(priceSignal, oldPrice);
+	}
+	
+	void setPriceSignalEconomySeven(float highprice, float lowprice)
+	{
+		float[] oldPrice = priceSignal;
+		Arrays.fill(priceSignal, 0, 16, lowprice);
+		Arrays.fill(priceSignal, 17, 46, highprice);
+		priceSignal[47] = lowprice;
+		priceSignalChanged = Arrays.equals(priceSignal, oldPrice);;
+	}
+	
+	void setPriceSignalRoscoeAndAult(float A, float B, float C)
+	{
+		float price;
+		float x;
+		
+		for (int i = 0; i < priceSignalLength; i++)
+		{			
+			x = (predictedCustomerDemand[i % ticksPerDay] / 10 ) / (SmartGridConstants.maxSupplyCapacity - SmartGridConstants.biggestGeneratorCapacity);
+			price = (float) (A * Math.exp(B * x) + C);
+			System.out.println("Price at tick" + i + " is " + price);
+			if (price > 1000) 
+			{
+				price = 1000f;
+			}
+			priceSignal[i] = price;
+		}
+		priceSignalChanged = true;
+	}
+	
+	void setPriceSignalExpIncreaseOnOverCapacity(int time)
+	{
+		//This is where we may alter the signal based on the demand
+		// In this simple implementation, we simply scale the signal based on deviation of 
+		// actual demand from projected demand for use next time round.
+		
+		//Define a variable to hold the aggregator's predicted demand at this instant.
+		float predictedInstantaneousDemand;
+		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
+		// demand, have a less dynamic but still non-zero predicted demand 
+		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
+		
+		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+		predictedInstantaneousDemand = 0;
+		
+		if (netDemand > predictedInstantaneousDemand) {
+			priceSignal[(int) time % priceSignalLength] = (float) (priceSignal[(int) time % priceSignalLength] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
+			// Now introduce some prediction - it was high today, so moderate tomorrow...
+			if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
+			{
+				priceSignal[(int) time % priceSignalLength + ticksPerDay] = (float) (priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
+			}
+			priceSignalChanged = true; }
+	}
+	
 	/*
-	 * Logic helper methods
+	 * helper methods
 	 */
 	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
 
@@ -295,14 +339,19 @@ public class AggregatorAgent {
 		super();
 		this.ticksPerDay = (Integer) parm.getValue("ticksPerDay");
 		this.contextName = myContext;
+		this.overallSystemDemandLength = baseDemand.length;
 		this.priceSignalLength = baseDemand.length;
-		if (priceSignalLength % ticksPerDay != 0)
+		
+		if (overallSystemDemandLength % ticksPerDay != 0)
 		{
 			System.err.println("baseDemand array imported to aggregator not a whole number of days");
 			System.err.println("May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 		}
 		this.priceSignal = new float [priceSignalLength];
-		System.arraycopy(baseDemand, 0, this.priceSignal, 0, priceSignalLength);
+		this.overallSystemDemand = new float [overallSystemDemandLength];
+		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
+		//Start initially with a flat price signal of 12.5p per kWh
+		Arrays.fill(priceSignal,125f);
 		
 		//Very basic configuration of predicted customer demand as 
 		// a constant.  We could be more sophisticated than this or 

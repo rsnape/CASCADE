@@ -23,9 +23,13 @@ public class SmartGridConstants {
 	public static enum storageType {
 		BATTERY, HYDRO, HEAT, FLYWHEEL, EV
 	}
+
+	public static final int biggestGeneratorCapacity = 5;
 	
 	/*
 	 * Variable to store whether or not we wish to output debug information
 	 */
 	public static boolean debug = false;
+	public static final int maxSupplyCapacity = 45;
+	
 }

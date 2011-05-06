@@ -359,7 +359,7 @@ public class SmartGridCreator implements ContextBuilder<ProsumerAgent> {
 		thisAgent.hasSmartControl = (RandomHelper.nextDouble() > 0.9);
 		thisAgent.exercisesBehaviourChange = true;
 		thisAgent.hasSmartMeter = true;
-		thisAgent.costThreshold = 35000;  //Threshold in price signal at which behaviour change is prompted (if agent is willing)
+		thisAgent.costThreshold = 125;  //Threshold in price signal at which behaviour change is prompted (if agent is willing)
 		thisAgent.minSetPoint = 18;
 		thisAgent.maxSetPoint = 21;
 		thisAgent.currentInternalTemp = 19;

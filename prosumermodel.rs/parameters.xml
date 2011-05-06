@@ -25,7 +25,7 @@
 									
 		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
-						defaultValue="C:\workspace\Prosumer" 
+						defaultValue="C:\RepastSimphony-2.0-beta\workspace\ProsumerModel\dataFiles" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									

@@ -248,8 +248,8 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	private float windGeneration() {
 		if(hasWind){
 			//TODO: get a realistic model of wind production - this just linear between 
-			//5 and 25 metres per second, zero below, max power above
-			return (Math.max((Math.min(getWindSpeed(),25) - 5),0))/20 * ratedPowerWind;
+			//2.5 and 12.5 metres per second (5 to 25 mph / knots roughly), zero below, max power above
+			return (Math.max((Math.min(getWindSpeed(),12.5f) - 2.5f),0))/20 * ratedPowerWind;
 		}
 		else
 		{
