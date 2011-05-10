@@ -52,6 +52,7 @@ import prosumermodel.SmartGridConstants.*;
 /**
  * @author J. Richard Snape
  * @version $Revision: 1.00 $ $Date: 2011/03/17 12:00:00 $
+  * Babak test
  * 
  * Version history (for intermediate steps see Git repository history
  * 
