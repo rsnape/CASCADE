@@ -42,12 +42,6 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
-				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
-						defaultValue="false" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
-									
-		/>
 				<parameter name="ticksPerDay" displayName="ticksPerDay" type="java.lang.Integer" 
 						defaultValue="48" 
 						isReadOnly="false" 
@@ -64,6 +58,12 @@
 						defaultValue="0.0" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
+						defaultValue="false" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
 		/>
 		</parameters>
