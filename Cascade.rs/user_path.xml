@@ -1,0 +1,7 @@
+<model name="Cascade">
+<classpath>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.ProsumerAgent"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.HouseholdProsumer"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.AggregatorAgent"/>
+</classpath>
+</model>

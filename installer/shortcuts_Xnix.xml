@@ -3,20 +3,20 @@
 
   <skipIfNotSupported/>
 
-  <programGroup defaultName="Prosumermodel" location="StartMenu"/>
+  <programGroup defaultName="Cascade" location="StartMenu"/>
   
   <shortcut
-     name="Prosumermodel"
+     name="Cascade"
      programGroup="yes"
      desktop="no"
      applications="no"
-     startMenu="yes"
+     startMenu="no"
      startup="no"
      target="$INSTALL_PATH/start_model.command"
      commandLine=""
      workingDirectory="$INSTALL_PATH"
      description="Model"
-     iconFile="$INSTALL_PATH/Prosumer model/icons/model.png"
+     iconFile="$INSTALL_PATH/Cascade/icons/model.png"
      iconIndex="0"
      type="Application"
      encoding="UTF-8"
@@ -31,15 +31,15 @@
      programGroup="yes"
      desktop="yes"
      applications="no"
-     startMenu="yes"
+     startMenu="no"
      startup="no"
-     target="$INSTALL_PATH/Prosumer model/docs/index.html"
+     target="$INSTALL_PATH/Cascade/docs/index.html"
      workingDirectory="$INSTALL_PATH/docs"
      commandLine=""
      initialState="noShow"
      iconFile="help"
      iconIndex="0" 
-     url="$INSTALL_PATH/Prosumer model/docs/index.html"                                
+     url="$INSTALL_PATH/Cascade/docs/index.html"                                
      type="Application"
      encoding="UTF-8" 
    	 createForAll="true"  
@@ -48,11 +48,11 @@
   </shortcut>
    
   <shortcut
-     name="Prosumermodel Uninstaller"
+     name="Cascade Uninstaller"
      programGroup="yes"
      desktop="no"
      applications="no"
-     startMenu="yes"
+     startMenu="no"
      startup="no"
      target="java"
      commandLine="-jar &quot;$INSTALL_PATH/Uninstaller/uninstaller.jar&quot;"

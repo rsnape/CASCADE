@@ -1,0 +1,37 @@
+package id157t3gnlhffr7gnlkhuih;
+
+/**
+@version 2.0
+@physicalPackage
+@__modelType diagram 
+*/
+class diagram {
+/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.cognitive.TPBModel:oiref><oihard>
+@__modelType reference 
+*/
+class reference {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.cognitive.TIBModel:oiref><oihard>
+@__modelType reference 
+*/
+class reference28 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.cognitive.SCTModel:oiref><oihard>
+@__modelType reference 
+*/
+class reference29 {
+}}/**
+@__tags
+@shapeType ClassDiagram 
+*/
+class __tags {
+}/**
+@__options 
+*/
+class __options {
+}/**
+@__positions 
+*/
+class __positions {
+}

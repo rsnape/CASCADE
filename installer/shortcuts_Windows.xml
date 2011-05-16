@@ -4,20 +4,20 @@
 
   <skipIfNotSupported/>
   
-  <programGroup defaultName="Prosumermodel" location="StartMenu"/>
+  <programGroup defaultName="Cascade" location="StartMenu"/>
   
   <shortcut
-     name="Prosumermodel"
+     name="Cascade"
      programGroup="yes"
      desktop="no"
      applications="no"
-     startMenu="yes"
+     startMenu="no"
      startup="no"
      target="$INSTALL_PATH\start_model.bat"
      commandLine=""
      workingDirectory="$INSTALL_PATH"
      description="Model"
-     iconFile="$INSTALL_PATH\Prosumer model\icons\model.bmp"
+     iconFile="$INSTALL_PATH\Cascade\icons\model.bmp"
      iconIndex="0"
      initialState="noShow">
      <createForPack name="Model"/>
@@ -28,9 +28,9 @@
      programGroup="yes"
      desktop="no"
      applications="no"
-     startMenu="yes"
+     startMenu="no"
      startup="no"
-     target="$INSTALL_PATH\Prosumer model\docs\index.html"
+     target="$INSTALL_PATH\Cascade\docs\index.html"
      commandLine=""
 	 iconFile="%SystemRoot%\system32\SHELL32.dll"
      iconIndex="23" 
@@ -40,11 +40,11 @@
   </shortcut>
   
   <shortcut
-     name="Prosumermodel Uninstaller"
+     name="Cascade Uninstaller"
      programGroup="yes"
      desktop="no"
      applications="no"
-     startMenu="yes"
+     startMenu="no"
      startup="no"
      target="$INSTALL_PATH\Uninstaller\uninstaller.jar"     
      commandLine=""

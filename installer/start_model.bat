@@ -1,5 +1,5 @@
 @ECHO OFF
-TITLE Prosumer model
+TITLE Cascade
 
 REM Repast Simphony Model Starter
 REM By Michael J. North
@@ -15,19 +15,19 @@ set REPAST_SIMPHONY_LIB=%REPAST_SIMPHONY_ROOT%lib/
 
 REM Define the Core Repast Simphony Directories and JARs
 SET CP=%CP%;%REPAST_SIMPHONY_ROOT%bin
-SET CP=%CP%;%REPAST_SIMPHONY_ROOT%bin-groovy
 SET CP=%CP%;%REPAST_SIMPHONY_LIB%saf.core.runtime.jar
 SET CP=%CP%;%REPAST_SIMPHONY_LIB%commons-logging-1.0.4.jar
-SET CP=%CP%;%REPAST_SIMPHONY_LIB%groovy-all-1.5.7.jar
+SET CP=%CP%;%REPAST_SIMPHONY_LIB%groovy-all-1.7.5.jar
 SET CP=%CP%;%REPAST_SIMPHONY_LIB%javassist-3.7.0.GA.jar
 SET CP=%CP%;%REPAST_SIMPHONY_LIB%jpf.jar
 SET CP=%CP%;%REPAST_SIMPHONY_LIB%jpf-boot.jar
 SET CP=%CP%;%REPAST_SIMPHONY_LIB%log4j-1.2.13.jar
 SET CP=%CP%;%REPAST_SIMPHONY_LIB%xpp3_min-1.1.4c.jar
 SET CP=%CP%;%REPAST_SIMPHONY_LIB%xstream-1.3.jar
+SET CP=%CP%;%REPAST_SIMPHONY_LIB%commons-cli-1.0.jar
 
 REM Change to the Default Repast Simphony Directory
-CD Prosumer model
+CD Cascade
 
 REM Start the Model
-START javaw -Xss10M -Xmx400M -cp %CP% repast.simphony.runtime.RepastMain prosumermodel.rs
+START javaw -Xss10M -Xmx400M -cp %CP% repast.simphony.runtime.RepastMain ./Cascade.rs
