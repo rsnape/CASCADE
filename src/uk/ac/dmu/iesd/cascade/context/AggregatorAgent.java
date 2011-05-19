@@ -1,68 +1,82 @@
 package uk.ac.dmu.iesd.cascade.context;
 
-import java.io.*;
-import java.math.*;
+
 import java.util.*;
 import java.util.Vector;
-
-
-import javax.measure.unit.*;
-import org.jscience.mathematics.number.*;
-import org.jscience.mathematics.vector.*;
-import org.jscience.physics.amount.*;
-
-
-import repast.simphony.adaptation.neural.*;
-import repast.simphony.adaptation.regression.*;
-import repast.simphony.context.*;
-import repast.simphony.context.space.continuous.*;
-import repast.simphony.context.space.gis.*;
-import repast.simphony.context.space.graph.*;
-import repast.simphony.context.space.grid.*;
-import repast.simphony.engine.environment.*;
 import repast.simphony.engine.schedule.*;
-import repast.simphony.engine.watcher.*;
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.groovy.math.*;
-import repast.simphony.integration.*;
-import repast.simphony.matlab.link.*;
-import repast.simphony.query.*;
-import repast.simphony.query.space.continuous.*;
-import repast.simphony.query.space.gis.*;
-import repast.simphony.query.space.graph.*;
-import repast.simphony.query.space.grid.*;
-import repast.simphony.query.space.projection.*;
-import repast.simphony.parameter.*;
-import repast.simphony.random.*;
-import repast.simphony.space.continuous.*;
-import repast.simphony.space.gis.*;
 import repast.simphony.space.graph.*;
-import repast.simphony.space.grid.*;
-import repast.simphony.space.projection.*;
 import repast.simphony.ui.probe.*;
-import repast.simphony.util.*;
-import simphony.util.messages.*;
 import uk.ac.dmu.iesd.cascade.Consts;
-import static java.lang.Math.*;
-import static repast.simphony.essentials.RepastEssentials.*;
+
 
 /**
+ *  An <em>AggregatorAgent</em> is an object that represents a commercial/business 
+ *  entity providing energy services to prosumer agents (<code>ProsumerAgent</code>) such
+ *  as household prosumers (<code>HouseholdProsumer</code>) [i.e. it is involved in retail trade], 
+ *  while at the same time is securing its gross energy need by trading in the wholesale market.
+ *  The <code>AggregatorAgent</code> class is the abstract superclass of aggregator agents.
+ *  Examples of aggregator agents include ESCO, RECO and GENCO. <p>
+ *  
  * @author J. Richard Snape
- * @version $Revision: 1.1 $ $Date: 2011/05/11 13:00:00 $
+ * @author Babak Mahdavi
+ * @version $Revision: 1.2 $ $Date: 2011/05/19 13:00:00 $
  * 
- * Version history (for intermediate steps see Git repository history
+ * Version history (for intermediate steps see Git repository history)
  * 
  * 1.1 - Implements ICognitiveAgent (Babak)
+ * 1.2 - Made the class abstract; modified the constructor, added/modified/removed fields/methods
+ *       made some methods abstract (Babak)
  */
 public class AggregatorAgent implements ICognitiveAgent {
 
+	/*
+	 * Agent properties
+	 */
+
+	/**
+	 * an aggregator agent's ID
+	 * This field is automatically assigned by constructor 
+	 * when the agent is created for the first time
+	 * */
+	protected long agentID = -1; 
+
+	/**
+	 * This field is used for counting number of agents 
+	 * instantiated by descendants of this class  
+	 **/	
+	private static long agentIDCounter = 0; 
+
+	/**
+	 * An aggregator agent's name
+	 * This field can be <code>null</code>.
+	 * */
+	protected String agentName;
+
+	/**
+	 * An aggregator agent's base name  
+	 * it can be reassigned (renamed) properly by descendants of this class  
+	 **/	
+	protected static String agentBaseName = "aggregator";
+
+	/**
+	 * A boolen to determine whether the name has
+	 * been set explicitly. <code>nameExplicitlySet</code> will
+	 * be false if the name has not been set and true if it has.
+	 * @see #getName
+	 * @see #setName(String)
+	 */
+	protected boolean nameExplicitlySet = false;
+	
+	protected CascadeContext mainContext;
+	
 	boolean autoControl;
-	String contextName;
+	//String contextName;
 	/*
 	 * This is net demand, may be +ve (consumption), 0, or 
 	 * -ve (generation)
 	 */
-	float netDemand;
+	protected float netDemand;
 	float[] predictedCustomerDemand;
 	int predictedCustomerDemandLength;
 	float[] overallSystemDemand;
@@ -74,47 +88,155 @@ public class AggregatorAgent implements ICognitiveAgent {
 	//True by default as it will always be new until the first broadcast
 	int ticksPerDay;
 
-	/*
-	 * Accessor functions (NetBeans style)
+
+	/**
+	 * @param Parameters for this setup
 	 */
+	
+	/*public AggregatorAgent(String myContext, float[] baseDemand, Parameters parm) {
+		super();
+		
+		this.ticksPerDay = (Integer) parm.getValue("ticksPerDay");
+		this.contextName = myContext;
+		this.overallSystemDemandLength = baseDemand.length;
+		this.priceSignalLength = baseDemand.length;
+		
+		if (overallSystemDemandLength % ticksPerDay != 0)
+		{
+			System.err.println("baseDemand array imported to aggregator not a whole number of days");
+			System.err.println("May cause unexpected behaviour - unless you intend to repeat the signal within a day");
+		}
+		this.priceSignal = new float [priceSignalLength];
+		this.overallSystemDemand = new float [overallSystemDemandLength];
+		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
+		//Start initially with a flat price signal of 12.5p per kWh
+		Arrays.fill(priceSignal,125f);
+		
+		//Very basic configuration of predicted customer demand as 
+		// a Conssant.  We could be more sophisticated than this or 
+		// possibly this gives us an aspirational target...
+		this.predictedCustomerDemand = new float[ticksPerDay];
+		//Put in a constant predicted demand
+		//Arrays.fill(this.predictedCustomerDemand, 5);
+		//Or - put in a variable one
+		for (int j = 0; j < ticksPerDay; j++)
+		{
+			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
+		}
+		this.predictedCustomerDemandLength = ticksPerDay;
+	}
+	*/
+	
+	public AggregatorAgent(CascadeContext context, float[] baseDemand) {
+	
+		this.ticksPerDay = context.getTickPerDay();
+		//this.contextName = myContext;
+		this.overallSystemDemandLength = baseDemand.length;
+		this.priceSignalLength = baseDemand.length;
+		
+		if (overallSystemDemandLength % ticksPerDay != 0)
+		{
+			System.err.println("baseDemand array imported to aggregator not a whole number of days");
+			System.err.println("May cause unexpected behaviour - unless you intend to repeat the signal within a day");
+		}
+		this.priceSignal = new float [priceSignalLength];
+		this.overallSystemDemand = new float [overallSystemDemandLength];
+		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
+		//Start initially with a flat price signal of 12.5p per kWh
+		Arrays.fill(priceSignal,125f);
+		
+		//Very basic configuration of predicted customer demand as 
+		// a Conssant.  We could be more sophisticated than this or 
+		// possibly this gives us an aspirational target...
+		this.predictedCustomerDemand = new float[ticksPerDay];
+		//Put in a constant predicted demand
+		//Arrays.fill(this.predictedCustomerDemand, 5);
+		//Or - put in a variable one
+		for (int j = 0; j < ticksPerDay; j++)
+		{
+			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
+		}
+		this.predictedCustomerDemandLength = ticksPerDay;
+	}
+	
+	
 
-	public float getNetDemand()
-	{
-		return netDemand;
+	/**
+	 * Returns a string representation of this agent and its key values 
+	 * Currently is used by Repast as the method which produces and returns the probe ID.  
+	 * @return  a string representation of this agent
+	 **/
+	@ProbeID()
+	public String toString() {	
+		return getClass().getName()+" "+getAgentID();
 	}
 
-	public void setNetDemand(float newDemand)
-	{
-		netDemand = newDemand;
-	}
-
-	/*
-	 * Communication functions
+	/**
+	 * Returns a string representing the state of this agent. This 
+	 * method is intended to be used for debugging purposes, and the 
+	 * content and format of the returned string are left to the implementing 
+	 * concrete subclasses. The returned string may be empty but may not be 
+	 * <code>null</code>.
+	 * 
+	 * @return a string representation of this agent's state parameters
 	 */
+	//protected abstract String paramStringReport();
 
-	/*
-	 * This method receives the centralised value signal
-	 * and stores it to the Prosumer's memory.
+
+	/**
+	 * Returns the agent's ID. 
+	 * @return  unique ID number of this agent
 	 */
-	public boolean receiveValueSignal()
-	{
-		boolean success = true;
-
-		return success;
+	public long getAgentID(){
+		return this.agentID;
 	}
 
-	public boolean receiveInfluence()
-	{
-		boolean success = true;
-
-		return success;
+	/**
+	 * Returns the agent's name. If the name has not been explicitly set, 
+	 * the default base name will be used.  
+	 * @return  agent's name as string
+	 */
+	public String getAgentName() {
+		if (this.agentName == null && !nameExplicitlySet) {
+			this.agentName = this.agentBaseName;
+		}
+		return this.agentName;
 	}
+
+	/**
+	 * Sets name of this agent  
+	 * @param name the string that is to be this agent's name
+	 * @see #getName
+	 */
+	public void setAgentName(String name) {
+		this.agentName = name;
+		nameExplicitlySet = true;
+	}
+
+
+
+	/**
+	 * Returns the net demand <code>netDemand</code> for this agent 
+	 * @return  the <code>netDemand</code> 
+	 **/
+	public float getNetDemand() {
+		return this.netDemand;
+	}
+	/**
+	 * Sets the <code>netDemand</code> of this agent  
+	 * @param nd the new net demand for the agent
+	 * @see #getNetDemand
+	 */
+	public void setNetDemand(float nd) {
+		this.netDemand = nd;
+	}
+	
 	
 	public float getCurrentPriceSignal()
 	{
 		double time = RepastEssentials.GetTickCount();
 		return priceSignal[(int) time % priceSignalLength];
-	}
+	} 
 
 	/*
 	 * Step behaviour
@@ -188,6 +310,8 @@ public class AggregatorAgent implements ICognitiveAgent {
 		return returnValue;
 
 	}
+	
+	// ------------------------------
 	
 	void setPriceSignalFlatRate(float price)
 	{
@@ -288,7 +412,7 @@ public class AggregatorAgent implements ICognitiveAgent {
 				// signals valid at an offset from now.
 				if (Consts.DEBUG)
 				{
-					System.out.println("Broadcasting to " + a.agentID);
+					//System.out.println("Broadcasting to " + a.sAgentID);
 				}
 				a.receiveValueSignal(broadcastSignal, broadcastLength);
 			}
@@ -297,83 +421,6 @@ public class AggregatorAgent implements ICognitiveAgent {
 		priceSignalChanged = false;
 	}
 	
-    /**
-    *
-    * This value is used to automatically generate agent identifiers.
-    * @field serialVersionUID
-    *
-    */
-   private static final long serialVersionUID = 1L;
-
-   /**
-    *
-    * This value is used to automatically generate agent identifiers.
-    * @field agentIDCounter
-    *
-    */
-   protected static long agentIDCounter = 1;
-
-   /**
-    *
-    * This value is the agent's identifier.
-    * @field agentID
-    *
-    */
-   protected String agentID = "Aggregator " + (agentIDCounter++);
-	
-    /**
-    *
-    * This method provides a human-readable name for the agent.
-    * @method toString
-    *
-    */
-   @ProbeID()
-   public String toString() {
-       // Set the default agent identifier.
-       String returnValue = this.agentID;
-       // Return the results.
-       return returnValue;
-
-   }
-   
-   public String getAgentID()
-   {
-	   return this.agentID;
-   }
 	
 
-	/**
-	 * @param Parameters for this setup
-	 */
-	public AggregatorAgent(String myContext, float[] baseDemand, Parameters parm) {
-		super();
-		this.ticksPerDay = (Integer) parm.getValue("ticksPerDay");
-		this.contextName = myContext;
-		this.overallSystemDemandLength = baseDemand.length;
-		this.priceSignalLength = baseDemand.length;
-		
-		if (overallSystemDemandLength % ticksPerDay != 0)
-		{
-			System.err.println("baseDemand array imported to aggregator not a whole number of days");
-			System.err.println("May cause unexpected behaviour - unless you intend to repeat the signal within a day");
-		}
-		this.priceSignal = new float [priceSignalLength];
-		this.overallSystemDemand = new float [overallSystemDemandLength];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
-		//Start initially with a flat price signal of 12.5p per kWh
-		Arrays.fill(priceSignal,125f);
-		
-		//Very basic configuration of predicted customer demand as 
-		// a Conssant.  We could be more sophisticated than this or 
-		// possibly this gives us an aspirational target...
-		this.predictedCustomerDemand = new float[ticksPerDay];
-		//Put in a constant predicted demand
-		//Arrays.fill(this.predictedCustomerDemand, 5);
-		//Or - put in a variable one
-		for (int j = 0; j < ticksPerDay; j++)
-		{
-			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
-		}
-		this.predictedCustomerDemandLength = ticksPerDay;
-	}
 }

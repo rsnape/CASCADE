@@ -73,7 +73,7 @@ public class WattboxController{
 	void optimiseSetPointProfile(float[] predictedCostSignal)
 	{ 		
 		float[] localSetPointArray;
-		localSetPointArray = new float [owner.ticksPerDay];
+		localSetPointArray = new float [owner.getContext().getTickPerDay()]; //TODO: tickPerDay should be resolved
 		Arrays.fill(localSetPointArray, 0, localSetPointArray.length - 1, owner.getSetPoint());
 		float profileCost = 0;
 		float oldProfileCost = Float.POSITIVE_INFINITY;

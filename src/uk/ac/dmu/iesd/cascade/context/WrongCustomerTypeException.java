@@ -5,7 +5,6 @@ public class WrongCustomerTypeException extends RuntimeException{
 /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 
 public WrongCustomerTypeException() {
 	System.err.println("Wrong type of customer found connected to aggregator");

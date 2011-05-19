@@ -5,6 +5,8 @@ package uk.ac.dmu.iesd.cascade;
 
 import repast.simphony.context.Context;
 import repast.simphony.parameter.Parameters;
+import uk.ac.dmu.iesd.cascade.context.AggregatorFactory;
+import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.context.ProsumerFactory;
 
 
@@ -17,8 +19,12 @@ import uk.ac.dmu.iesd.cascade.context.ProsumerFactory;
 
 public class FactoryFinder {
 	
-	public static ProsumerFactory createProsumerFactory(Context context, Parameters par) {
-		return new ProsumerFactory(context, par);
+	public static ProsumerFactory createProsumerFactory(CascadeContext context) {
+		return new ProsumerFactory(context);
 	}
+	public static AggregatorFactory createAggregatorFactory(CascadeContext context) {
+		return new AggregatorFactory(context);
+	}
+
 
 }

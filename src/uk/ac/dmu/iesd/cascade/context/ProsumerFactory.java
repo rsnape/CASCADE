@@ -3,22 +3,28 @@
  */
 package uk.ac.dmu.iesd.cascade.context;
 
+import javax.accessibility.AccessibleContext;
+
 import repast.simphony.context.Context;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.random.RandomHelper;
+import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.Consts.*;
 
 /**
- * A class factory for creating instances of <tt>ProsumerAgent</tt> class 
+ * This class is a factory for creating instances of <tt>ProsumerAgent</tt> concrete subclasses
+ * Its public creator method's signatures are defined by {@link IProsumerFactory} interface.
+ *   
  * @author Babak Mahdavi
  * @version $Revision: 1.0 $ $Date: 2011/05/16 14:00:00 $
  */
 public class ProsumerFactory implements IProsumerFactory {
-	Parameters params;
-	Context cascadeMainContext;
+	//Parameters params;
+	CascadeContext cascadeMainContext;
 	
 	
-	public ProsumerFactory(Context context, Parameters par) {
-		this.params = par;
+	public ProsumerFactory(CascadeContext context) {
+		//this.params = par;
 		this.cascadeMainContext= context;
 		
 	}
@@ -33,7 +39,7 @@ public class ProsumerFactory implements IProsumerFactory {
 	
 	public HouseholdProsumer createHouseholdProsumer(float[] baseProfileArray, boolean addNoise) {
 		HouseholdProsumer pAgent;
-		int ticksPerDay = (Integer) params.getValue("ticksPerDay");
+		int ticksPerDay = cascadeMainContext.getTickPerDay();
 		if (baseProfileArray.length % ticksPerDay != 0)
 		{
 			System.err.println("Household base demand array not a whole number of days");
@@ -42,11 +48,11 @@ public class ProsumerFactory implements IProsumerFactory {
 		
 		if (addNoise) 
 		{
-			pAgent = new HouseholdProsumer((String) cascadeMainContext.getId(), createRandomHouseholdDemand(baseProfileArray), params);
+			pAgent = new HouseholdProsumer(cascadeMainContext, createRandomHouseholdDemand(baseProfileArray));
 		}
 		else
 		{
-			pAgent = new HouseholdProsumer((String) cascadeMainContext.getId(), baseProfileArray, params);
+			pAgent = new HouseholdProsumer(cascadeMainContext, baseProfileArray);
 		}
 		//thisAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > 0.5);
 		pAgent.hasSmartControl = (RandomHelper.nextDouble() > 0.9);
@@ -69,13 +75,13 @@ public class ProsumerFactory implements IProsumerFactory {
 	 * or something which time-shifts demand somewhat, or select one of a number of typical profiles
 	 * based on occupancy.
 	 */
-	private float[] createRandomHouseholdDemand(float[] baseProfile){
-		float[] newProfile = new float[baseProfile.length];
+	private float[] createRandomHouseholdDemand(float[] baseProfileArray){
+		float[] newProfile = new float[baseProfileArray.length];
 		
 		//add amplitude randomisation
 		for (int i = 0; i < newProfile.length; i++)
 		{
-			newProfile[i] = baseProfile[i] * (float)(1 + 0.3*(RandomHelper.nextDouble() - 0.5));
+			newProfile[i] = baseProfileArray[i] * (float)(1 + 0.3*(RandomHelper.nextDouble() - 0.5));
 		}
 		
 		//add time jitter
@@ -91,6 +97,32 @@ public class ProsumerFactory implements IProsumerFactory {
 		return newProfile;
 	}
 	
+	
+	/*
+	 * Creates a prosumer to represent a pure generator.  Therefore zero
+	 * base demand, set the generator type and capacity.
+	 * 
+	 * TODO: should the base demand be zero or null???
+	 * 
+	 * @param Capacity - the generation capacity of this agent (kWh)
+	 * @param type - the type of this generator (from an enumerator of all types)
+	 */
+	
+	public ProsumerAgent createPureGenerator(float capacity, Consts.GENERATOR_TYPE genType) {
+		GeneratorProsumer thisAgent = null;
+		
+		// Create a prosumer with zero base demand
+		// TODO: Should this be null?  or zero as implemented?
+		float[] nilDemand = new float[1];
+		nilDemand[0] = 0;
+		switch (genType){
+		case WIND:
+			thisAgent = new WindGeneratorProsumer(cascadeMainContext, nilDemand, capacity);
+			break;			
+		}
+
+		return thisAgent;
+	} 
 	
 	
 

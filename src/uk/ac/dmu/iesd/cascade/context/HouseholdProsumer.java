@@ -53,13 +53,13 @@ import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
  * @author J. Richard Snape
- * @version $Revision: 1.00 $ $Date: 2011/03/17 12:00:00 $
-  * Babak test
+ * @author Babak Mahdavi
+ * @version $Revision: 1.1 $ $Date: 2011/05/18 12:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
  * 1.0 - Initial split of categories of prosumer from the abstract class representing all prosumers
- * 
+ * 1.1 - 
  * 
  */
 public class HouseholdProsumer extends ProsumerAgent{
@@ -164,37 +164,28 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * TODO: May make some of these private to respect agent conventions of autonomy / realistic simulation of humans
 	 */
 
-	public float getNetDemand() {
-		return netDemand;
-	}
-	
+
 	public float getSetPoint() {
 		return setPoint;
 	}
 
 
-	public void setNetDemand(float newDemand) {
-		netDemand = newDemand;
-	}
+	
+	  /**
+     * Returns a string representing the state of this agent. This 
+     * method is intended to be used for debugging purposes, and the 
+     * content and format of the returned string should include the states (variables/parameters)
+     * which are important for debugging purpose.
+     * The returned string may be empty but may not be <code>null</code>.
+     * 
+     * @return  a string representation of this agent's state parameters
+     */
+    protected String paramStringReport(){
+    	String str="";
+    	return str;
+    	
+    }
 
-	public int getSmartControlForCount()
-	{
-		if (hasSmartControl){
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	public int getPredictedCostSignalLength() {
-		return predictedCostSignalLength;
-	}
-
-	public void setPredictedCostSignalLength(int length) {
-		predictedCostSignalLength = length;
-	}
 
 	public float getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
@@ -202,71 +193,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return (baseDemandProfile[index]) - currentGeneration();
 	}
 
-	public float getCurrentPrediction() {
-		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
-		if (predictedCostSignalLength > 0) {
-			return predictedCostSignal[timeSinceSigValid % predictedCostSignalLength];
-		}
-		else
-		{
-			return 0;
-		}
-	}
 
 
-	public float getInsolation() {
-		return insolation;
-	}
-
-	public float getWindSpeed() {
-		return windSpeed;
-	}
-
-	public float getAirTemperature() {
-		return airTemperature;
-	}
-	/**
-	 * @return the predictionValidTime
-	 */
-	public int getPredictionValidTime() {
-		return predictionValidTime;
-	}
-
-	/**
-	 * @param predictionValidTime the predictionValidTime to set
-	 */
-	public void setPredictionValidTime(int predictionValidTime) {
-		this.predictionValidTime = predictionValidTime;
-	}
-
-	/*
-	 * Communication functions
-	 */
-
-	/*
-	 * Helper method for the common case where the signal transmitted is valid from the 
-	 * current time
-	 * 
-	 * @param signal - the array containing the cost signal - one member per time tick
-	 * @param length - the length of the signal
-	 * 
-	 */
-	public boolean receiveValueSignal(float[] signal, int length) {
-		boolean success = true;
-
-		receiveValueSignal(signal, length, (int) RepastEssentials.GetTickCount());
-
-		return success;
-	}
-
-
-	
-
-	public boolean receiveInfluence() {
-		boolean success = true;
-
-		return success;
-	}
 
 	/*
 	 * Step behaviour
@@ -281,7 +209,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * executes succesfully
 	 ******************/
 	@ScheduledMethod(start = 1, interval = 1, shuffle = true)
-	public boolean step() {
+	public void step() {
 
 		// Define the return value variable.  Set this false if errors encountered.
 		boolean returnValue = true;
@@ -291,7 +219,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
 		int time = (int) RepastEssentials.GetTickCount();
 		int timeOfDay = (time % ticksPerDay);
-		CascadeContext myContext = (CascadeContext) FindContext(contextName);
+		CascadeContext myContext = this.getContext();
+		
 
 		checkWeather(time);
 
@@ -323,7 +252,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 
 		// Return (this will be false if problems encountered).
-		return returnValue;
+		//return returnValue;
 
 	}
 
@@ -596,58 +525,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 	}
 
-	/**
-	 *
-	 * This value is used to automatically generate agent identifiers.
-	 * @field serialVersionUID
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+
 
 	/**
-	 *
-	 * This value is used to automatically generate agent identifiers.
-	 * @field agentIDCounter
-	 *
+	 * Constructor
 	 */
-	protected static long agentIDCounter = 1;
-
-	/**
-	 *
-	 * This value is the agent's identifier.
-	 * @field agentID
-	 *
-	 */
-	protected String agentID = "Prosumer " + (agentIDCounter++);
-
-	/**
-	 *
-	 * This method provides a human-readable name for the agent.
-	 * @method toString
-	 *
-	 */
-	@ProbeID()
-	public String toString() {
-		// Set the default agent identifier.
-		String returnValue = this.agentID;
-		// Return the results.
-		return returnValue;
-
-	}
-
-	public String getAgentID()
-	{
-		return this.agentID;
-	}
-
-	/*
-	 * Constructor function(s)
-	 */
-	public HouseholdProsumer(String myContext, float[] baseDemand, Parameters parm) {
-		super();
-		this.contextName = myContext;
+	public HouseholdProsumer(CascadeContext context, float[] baseDemand) {
+		super(context);
 		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.5);
-		this.ticksPerDay = (Integer) parm.getValue("ticksPerDay");
+		this.ticksPerDay = context.getTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0)
 		{
 			System.err.println("baseDemand array not a whole number of days");
@@ -661,10 +547,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
 	}
 
-	/*
-	 * No argument constructor - basic prosumer created
-	 */
-	public HouseholdProsumer() {
-		super();
-	}
+
+	
 }
