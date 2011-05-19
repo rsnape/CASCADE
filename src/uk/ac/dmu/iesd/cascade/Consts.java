@@ -26,11 +26,11 @@ public final class Consts {
 		BATTERY, HYDRO, HEAT, FLYWHEEL, EV
 	}
 
-	public static final int MAX_GENERATOR_CAPACITY = 5;	
+	public static final float MAX_GENERATOR_CAPACITY_GWATTS = 5f;	
 	public static boolean DEBUG = false;  //use for debugging, default is false
-	public static final int MAX_SUPPLY_CAPACITY = 45;
+	public static final float MAX_SUPPLY_CAPACITY_GWATTS = 45f;
 	public static final int NUM_DEMAND_COLUMNS = 1;
-
-
+	public static final float MAX_SYSTEM_BUY_PRICE_PNDSPERMWH = 1000f;
+	public static final int TOTAL_SYSTEM_CUSTOMERS = 23000000;
 }
 
