@@ -1,7 +1,7 @@
 /**
  * 
  */
-package prosumermodel.styles;
+package uk.ac.dmu.iesd.cascade.ui;
 
 /**
  * @author jsnape

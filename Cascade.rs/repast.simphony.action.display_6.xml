@@ -49,7 +49,7 @@
     <duration>-1.0</duration>
     <frequency>ONE_TIME</frequency>
   </schedParams>
-  <layoutClassName>prosumermodel.styles.LargeNetwork</layoutClassName>
+  <layoutClassName>uk.ac.dmu.iesd.cascade.ui.LargeNetwork</layoutClassName>
   <layoutProjection>infoNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
