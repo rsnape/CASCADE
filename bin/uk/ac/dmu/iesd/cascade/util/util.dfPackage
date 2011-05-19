@@ -1,4 +1,4 @@
-package idm451gnlhffr7gnlkbg6q;
+package id3l7pjgnlhffr7gnlkhuh5;
 
 /**
 @version 2.0
@@ -7,7 +7,7 @@ package idm451gnlhffr7gnlkbg6q;
 */
 class diagram {
 /**
-@__ref <oiref:design#Class#id2ap4kgnlhffr7gnlkbgtu.diagram:oiref><oihard>
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.util.ArrayUtils:oiref><oihard>
 @__modelType reference 
 */
 class reference {

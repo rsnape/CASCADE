@@ -1,4 +1,4 @@
-package id2ap4kgnlhffr7gnlkbgtu;
+package id3j9cdgnlhffr7gnlkhuh3;
 
 /**
 @version 2.0
@@ -7,7 +7,7 @@ package id2ap4kgnlhffr7gnlkbgtu;
 */
 class diagram {
 /**
-@__ref <oiref:design#Class#id3n13egnlhffr7gnlkbhhm.diagram:oiref><oihard>
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.io.CSVReader:oiref><oihard>
 @__modelType reference 
 */
 class reference {
@@ -21,7 +21,7 @@ class __tags {
 */
 class __options {
 }/**
-@__positions 
+@__positions <oigroup:<oiref:java#Class#uk.ac.dmu.iesd.cascade.io.CSVReader:oiref>=10,10,219,375,1:oigroup> 
 */
 class __positions {
 }

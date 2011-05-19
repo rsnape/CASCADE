@@ -1,0 +1,42 @@
+package idsmc8gnlhffr7gnlkhugz;
+
+/**
+@version 2.0
+@physicalPackage
+@__modelType diagram 
+*/
+class diagram {
+/**
+@__ref <oiref:design#Class#id4ci2pgnlhffr7gnlkhuhi.diagram:oiref><oihard>
+@__modelType reference 
+*/
+class reference {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.Behaviour:oiref><oihard>
+@__modelType reference 
+*/
+class reference16 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.Learner:oiref><oihard>
+@__modelType reference 
+*/
+class reference17 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.Action:oiref><oihard>
+@__modelType reference 
+*/
+class reference18 {
+}}/**
+@__tags
+@shapeType ClassDiagram 
+*/
+class __tags {
+}/**
+@__options 
+*/
+class __options {
+}/**
+@__positions 
+*/
+class __positions {
+}

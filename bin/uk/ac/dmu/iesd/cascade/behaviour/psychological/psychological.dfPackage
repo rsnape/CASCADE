@@ -1,0 +1,72 @@
+package id4ci2pgnlhffr7gnlkhuhi;
+
+/**
+@version 2.0
+@physicalPackage
+@__modelType diagram 
+*/
+class diagram {
+/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.SimpleRelationship:oiref><oihard>
+@__modelType reference 
+*/
+class reference {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.Relationship:oiref><oihard>
+@__modelType reference 
+*/
+class reference19 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.SimpleConstruct:oiref><oihard>
+@__modelType reference 
+*/
+class reference20 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.UnmeasuredConstruct:oiref><oihard>
+@__modelType reference 
+*/
+class reference21 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.VariableWeightRelationship:oiref><oihard>
+@__modelType reference 
+*/
+class reference22 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.SimpleModel:oiref><oihard>
+@__modelType reference 
+*/
+class reference23 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.MeasuredConstruct:oiref><oihard>
+@__modelType reference 
+*/
+class reference24 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.Construct:oiref><oihard>
+@__modelType reference 
+*/
+class reference25 {
+}/**
+@__ref <oiref:design#Class#id157t3gnlhffr7gnlkhuih.diagram:oiref><oihard>
+@__modelType reference 
+*/
+class reference26 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.behaviour.psychological.BehaviourConstruct:oiref><oihard>
+@__modelType reference 
+*/
+class reference27 {
+}}/**
+@__tags
+@shapeType ClassDiagram 
+*/
+class __tags {
+}/**
+@__options 
+*/
+class __options {
+}/**
+@__positions 
+*/
+class __positions {
+}

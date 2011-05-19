@@ -1,4 +1,4 @@
-package id4uprdgnlhffr7gnlkb82g;
+package id3d4zdgnlhffr7gnlkb4x4;
 
 /**
 @version 2.0
@@ -7,7 +7,7 @@ package id4uprdgnlhffr7gnlkb82g;
 */
 class diagram {
 /**
-@__ref <oiref:design#Class#idm451gnlhffr7gnlkbg6q.diagram:oiref><oihard>
+@__ref <oiref:design#Class#id2iucsgnlhffr7gnlkb81g.diagram:oiref><oihard>
 @__modelType reference 
 */
 class reference {
@@ -21,7 +21,7 @@ class __tags {
 */
 class __options {
 }/**
-@__positions 
+@__positions <oigroup:<oiref:design#Class#id2iucsgnlhffr7gnlkb81g.diagram:oiref>=10,10,63,82,1:oigroup> 
 */
 class __positions {
 }
