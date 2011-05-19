@@ -29,6 +29,7 @@ import uk.ac.dmu.iesd.cascade.util.*;
 
 /**
  * @author J. Richard Snape
+ * @author Babak Mahdavi
  * @version $Revision: 1.2 $ $Date: 2011/05/13 14:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
@@ -58,7 +59,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	Parameters params; // parameters for the model run environment 	
 	int numProsumers; //number of Prosumers
 	float[] householdBaseDemandArray = null;
-	int ticksPerDay;
+	//int ticksPerDay;
 	int numDemandColumns = Consts.NUM_DEMAND_COLUMNS;
 
 	
@@ -91,7 +92,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		String householdAttrFileName = (String)params.getValue("householdBaseAttributeFile");
 		String elecLayoutFilename = (String)params.getValue("electricalNetworkLayoutFile");
 		numProsumers = (Integer) params.getValue("defaultProsumersPerFeeder");
-		ticksPerDay = (Integer) params.getValue("ticksPerDay");
+		cascadeMainContext.setTickPerDay((Integer) params.getValue("ticksPerDay"));
 		cascadeMainContext.verbose = (Boolean) params.getValue("verboseOutput");
 
 		/*
@@ -103,7 +104,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
 		CSVReader systemBasePriceReader = null;
 		File householdAttrFile = new File(dataDirectory, householdAttrFileName);
-		CSVReader demandReader = null;
+		CSVReader baseDemandReader = null;
 
 		try {
 			weatherReader = new CSVReader(weatherFile);
@@ -119,7 +120,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}
-		if (cascadeMainContext.weatherDataLength % ticksPerDay != 0)
+		if (cascadeMainContext.weatherDataLength % cascadeMainContext.getTickPerDay() != 0)
 		{
 			System.err.println("Weather data array not a whole number of days. This may cause unexpected behaviour ");
 		}
@@ -135,20 +136,20 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}		
-		if (cascadeMainContext.systemPriceSignalDataLength % ticksPerDay != 0)
+		if (cascadeMainContext.systemPriceSignalDataLength % cascadeMainContext.getTickPerDay()!= 0)
 		{
 			System.err.println("Base System Demand array not a whole number of days. This may cause unexpected behaviour");
 		}
 
 		try {
-			demandReader = new CSVReader(householdAttrFile);
-			demandReader.parseByColumn();
-			numDemandColumns = demandReader.columnsStarting("demand");
+			baseDemandReader = new CSVReader(householdAttrFile);
+			baseDemandReader.parseByColumn();
+			numDemandColumns = baseDemandReader.columnsStarting("demand");
 
 			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
 			if (cascadeMainContext.verbose)
 				System.out.println("householdBaseDemandArray is initialised with profile " + demandName);
-			householdBaseDemandArray = ArrayUtils.convertStringArraytofloatArray(demandReader.getColumn(demandName));
+			householdBaseDemandArray = ArrayUtils.convertStringArraytofloatArray(baseDemandReader.getColumn(demandName));
 
 
 		} catch (FileNotFoundException e) {
@@ -182,12 +183,24 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		// thisContext.addSubContext(new DefaultContext("Households"));
 		// Context householdContext = RepastEssentials.CreateNetwork(parentContextPath, netName, isDirected, agentClassName, fileName, format)
 		
-		ProsumerFactory prosumerFactroy = FactoryFinder.createProsumerFactory(this.cascadeMainContext, this.params);
+		ProsumerFactory prosumerFactroy = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 		
 		for (int i = 0; i < numProsumers; i++) {
 			HouseholdProsumer hhProsAgent = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
 			cascadeMainContext.add(hhProsAgent);			
 		}
+		
+		
+		//A 2 MW windmill
+		ProsumerAgent firstWindmill = prosumerFactroy.createPureGenerator(2000, GENERATOR_TYPE.WIND);
+		//ProsumerAgent firstWindmill = createPureGenerator(2000, GENERATOR_TYPE.WIND);
+		cascadeMainContext.add(firstWindmill);
+		
+	
+		//Secondly add aggregator(s)
+		AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(firstAggregator);
+		
 		
 		//Create the household social network before other agent types are added to the context.
 		NetworkFactory smartFactory = NetworkFactoryFinder.createNetworkFactory(null);
@@ -207,23 +220,13 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			((RepastEdge) thisEdge).setWeight(RandomHelper.nextDouble());			
 		}
 		//Add in some generators
-		
-		//A 2 MW windmill
-		ProsumerAgent firstWindmill = createPureGenerator(2000, GENERATOR_TYPE.WIND);
-		cascadeMainContext.add(firstWindmill);
-		
-		//Secondly add aggregator(s)
-		AggregatorAgent firstAggregator = new AggregatorAgent((String) cascadeMainContext.getId(), cascadeMainContext.systemPriceSignalDataArray, params);
-		cascadeMainContext.add(firstAggregator);
-		
+	
 		/*
 		 * Create the projections needed in the context and add agents to those projections
 		 */
 		GeographyParameters geoParams = new GeographyParameters();
 		Geography geography = GeographyFactoryFinder.createGeographyFactory(null).createGeography("Geography", cascadeMainContext, geoParams);
 
-		
-		
 		// Create null networks for other than social at this point.
 		
 		// Economic network should be hierarchical aggregator to prosumer 
@@ -252,132 +255,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		
 	}
-	
-	/*
-	 * Helper methods
-	 */
-	
-	/*
-	 * This method simply adds a random element to the base profile to create a household demand
-	 * It should be over-ridden in the future to use something better - for instance melody's model
-	 * or something which time-shifts demand somewhat, or select one of a number of typical profiles
-	 * based on occupancy.
-	 */
-	/*private float[] createRandomHouseholdDemand(float[] baseProfile){
-		float[] newProfile = new float[baseProfile.length];
-		
-		//add amplitude randomisation
-		for (int i = 0; i < newProfile.length; i++)
-		{
-			newProfile[i] = baseProfile[i] * (float)(1 + 0.3*(RandomHelper.nextDouble() - 0.5));
-		}
-		
-		//add time jitter
-		float jitterFactor = (float) RandomHelper.nextDouble() - 0.5f;
-		System.out.println("Applying jitter" + jitterFactor);
-		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
-		for (int i = 1; i < (newProfile.length - 1); i++)
-		{
-			newProfile[i] = (jitterFactor * newProfile[i]) + ((1 - jitterFactor) * newProfile[i+1]);
-		}
-		newProfile[newProfile.length - 1] = (jitterFactor * newProfile[newProfile.length - 1]) + ((1 - jitterFactor) * newProfile[0]);
-		
-		return newProfile;
-	} */
-	
-	/*
-	 * Creates a prosumer to represent a pure storage.  Therefore zero
-	 * base demand, set the generator type and capacity.
-	 * 
-	 * TODO: should the base demand be zero or null???
-	 * 
-	 * @param Capacity - the generation capacity of this agent (kWh)
-	 * @param type - the type of this generator (from an enumerator of all types)
-	 */
-	public ProsumerAgent createStorageProsumer(int Capacity, STORAGE_TYPE type) {
-		StorageProsumer thisAgent;
-		
-		// Create a prosumer with zero base demand
-		float[] nilDemand = new float[1];
-		nilDemand[0] = 0;
-		thisAgent = new StorageProsumer((String) cascadeMainContext.getId(), nilDemand, params);
-		switch (type){
-		}
-		
-		return thisAgent;
-	}
-	
-	/*
-	 * Creates a prosumer to represent a pure generator.  Therefore zero
-	 * base demand, set the generator type and capacity.
-	 * 
-	 * TODO: should the base demand be zero or null???
-	 * 
-	 * @param Capacity - the generation capacity of this agent (kWh)
-	 * @param type - the type of this generator (from an enumerator of all types)
-	 */
-	public ProsumerAgent createPureGenerator(float capacity, GENERATOR_TYPE type) {
-		GeneratorProsumer thisAgent = null;
-		
-		// Create a prosumer with zero base demand
-		// TODO: Should this be null?  or zero as implemented?
-		float[] nilDemand = new float[1];
-		nilDemand[0] = 0;
-		switch (type){
-		case WIND:
-			thisAgent = new WindGeneratorProsumer((String) cascadeMainContext.getId(), nilDemand, capacity, params);
-			break;			
-		}
-		
-		return thisAgent;
-	}
-	
-	/*
-	 * Creates a household prosumer with a basic consumption profile as supplied
-	 * with or without added noise
-	 * 
-	 * @param baseProfile - an array of the basic consumption profile for this prosumer (kWh per tick)
-	 * @param addNoise - boolean specifying whether or not to add noise to the profile
-	 */
-	/*
-	public HouseholdProsumer createHouseholdProsumer(float[] baseProfile, boolean addNoise) {
-		HouseholdProsumer thisAgent;
-		
-		if (addNoise) 
-		{
-			thisAgent = new HouseholdProsumer((String) cascadeMainContext.getId(), createRandomHouseholdDemand(baseProfile), params);
-		}
-		else
-		{
-			thisAgent = new HouseholdProsumer((String) cascadeMainContext.getId(), baseProfile, params);
-		}
-		//thisAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > 0.5);
-		thisAgent.hasSmartControl = (RandomHelper.nextDouble() > 0.9);
-		thisAgent.exercisesBehaviourChange = true;
-		thisAgent.hasSmartMeter = true;
-		thisAgent.costThreshold = 125;  //Threshold in price signal at which behaviour change is prompted (if agent is willing)
-		thisAgent.minSetPoint = 18;
-		thisAgent.maxSetPoint = 21;
-		thisAgent.currentInternalTemp = 19;
-		
-		return thisAgent;
-	}*/
-	
-	/*
-	 * Creates a non-domestic prosumer with a basic consumption profile as supplied
-	 * with or without added noise
-	 * 
-	 * @param baseProfile - an array of the basic consumption profile for this prosumer (kWh per tick)
-	 * @param addNoise - boolean specifying whether or not to add noise to the profile
-	 */
-	public ProsumerAgent createNonDomesticProsumer(float[] baseProfile, boolean addNoise) {
-		ProsumerAgent thisAgent;
-		
-		// Create a prosumer with  base demand as specified
-		thisAgent = new NonDomesticProsumer((String) cascadeMainContext.getId(),baseProfile, params);
-				
-		return thisAgent;
-	}
+
 
 }
 

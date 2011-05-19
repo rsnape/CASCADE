@@ -47,7 +47,7 @@ import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
  * @author J. Richard Snape
- * @version $Revision: 1.1 $ $Date: 2011/05/12 11:00:00 $
+ * @version $Revision: 1.2 $ $Date: 2011/05/12 11:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
@@ -68,26 +68,64 @@ public class CascadeContext extends DefaultContext{
 	 * start and stored for the entire duration of the simulation.
 	 * 
 	 */
-	
+
 	// Note at the moment, no geographical info is needed to read the weather
 	// this is because weather is a flat file and not spatially differentiated
-	
+
 	int weatherDataLength; // length of arrays - note that it is a condition that each row of the input file
-							// represents one time step, but the model is agnostic to what time period each
-							// tick represents.
+	// represents one time step, but the model is agnostic to what time period each
+	// tick represents.
 	float[] insolationArray; //Note this is an integrated value in Wh per metre squared
 	float[] windSpeedArray;// instantaneous value
 	float[] windDirectionArray; // Direction in degrees from North.  May not be needed as yet, but useful to have potentially
 	float[] airTemperatureArray; // instantaneous value
 	float[] systemPriceSignalDataArray;
 	int systemPriceSignalDataLength;
-	boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
+	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
+	private int ticksPerDay;
+
+
+	/**
+     * Constructs the cascade context 
+     * 
+     */
+	public CascadeContext(Context context)
+	{
+		super(context.getId(), context.getTypeID());
+		if (verbose)
+			System.out.println("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
+
+		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
+
+		while (projIterator.hasNext()) {
+			Projection proj = projIterator.next();
+			this.addProjection(proj);
+			if (verbose)
+				System.out.println("Added projection: "+ proj.getName());
+		}
+
+		this.setId(context.getId());
+		this.setTypeID(context.getTypeID());
+	}
+	
 	
 	@ScheduledMethod(start = 1)
 	 public void step() {
 	   	// Can put any "global" behavior here
 		// Use with great caution
 	 }
+	
+	/**
+	 * This method return the number of <tt> tickPerDay </tt>
+	 * @return <code>tickPerDay</code>
+	 */
+	public int getTickPerDay() {
+		return this.ticksPerDay;
+	}
+	
+	public void setTickPerDay(int tick) {
+		this.ticksPerDay = tick;
+	}
 	
 	/*
 	 * Accesor methods to context variables
@@ -218,40 +256,7 @@ public class CascadeContext extends DefaultContext{
 		this.systemPriceSignalDataArray = systemPriceSignalData;
 	}
 
-	/*
-	 * Constructors required to override DefaultContext
-	 */
-	public CascadeContext() {
-		super();
-		System.out.println("CascadeContext created");
-	}
 
-	public CascadeContext(Object name) {
-		super(name);
-		System.out.println("CascadeContext created with name " + name.toString());
-	}
-
-	public CascadeContext(Object name, Object typeID) {
-		super(name, typeID);
-		System.out.println("CascadeContext created with name " + name.toString() + " and type " + typeID.toString());
-	}
-	
-	public CascadeContext(Context context)
-	{
-		super(context.getId(), context.getTypeID());
-		
-		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
-		
-		while (projIterator.hasNext()) {
-			Projection proj = projIterator.next();
-			this.addProjection(proj);
-			System.out.println("Added projection: "+ proj.getName());
-		}
-		
-		this.setId(context.getId());
-		this.setTypeID(context.getTypeID());
-			
-	}
 	
 	/*
 	 * Have a nice toString() method to give good

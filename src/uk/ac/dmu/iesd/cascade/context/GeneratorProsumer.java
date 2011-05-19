@@ -54,6 +54,7 @@ import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
  * @author J. Richard Snape
+ * 
  * @version $Revision: 1.00 $ $Date: 2011/03/17 12:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
@@ -101,37 +102,20 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	float percentageMoveableDemand;  // This can be set constant, or calculated from available appliances
 	int maxTimeShift; // The "furthest" a demand may be moved in time.  This can be constant or calculated dynamically.
 
+	
+
+	/**
+	 *  constructor
+	 */
+	public GeneratorProsumer(CascadeContext context) {
+		super(context);
+	}
 	/*
 	 * Accessor functions (NetBeans style)
 	 * TODO: May make some of these private to respect agent conventions of autonomy / realistic simulation of humans
 	 */
 
-	public float getNetDemand() {
-		return netDemand;
-	}
 
-	public void setNetDemand(float newDemand) {
-		netDemand = newDemand;
-	}
-
-	public int getSmartControlForCount()
-	{
-		if (hasSmartControl){
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	public int getPredictedCostSignalLength() {
-		return predictedCostSignalLength;
-	}
-
-	public void setPredictedCostSignalLength(int length) {
-		predictedCostSignalLength = length;
-	}
 
 	public float getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
@@ -139,98 +123,7 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 		return (baseDemandProfile[index]) - currentGeneration();
 	}
 
-	public float getCurrentPrediction() {
-		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
-		if (predictedCostSignalLength > 0) {
-			return predictedCostSignal[timeSinceSigValid % predictedCostSignalLength];
-		}
-		else
-		{
-			return 0;
-		}
-	}
 
-
-	public float getInsolation() {
-		return insolation;
-	}
-
-	public float getWindSpeed() {
-		return windSpeed;
-	}
-
-	public float getAirTemperature() {
-		return airTemperature;
-	}
-	/**
-	 * @return the predictionValidTime
-	 */
-	public int getPredictionValidTime() {
-		return predictionValidTime;
-	}
-
-	/**
-	 * @param predictionValidTime the predictionValidTime to set
-	 */
-	public void setPredictionValidTime(int predictionValidTime) {
-		this.predictionValidTime = predictionValidTime;
-	}
-
-	/*
-	 * Communication functions
-	 */
-
-	/*
-	 * Helper method for the common case where the signal transmitted is valid from the 
-	 * current time
-	 * 
-	 * @param signal - the array containing the cost signal - one member per time tick
-	 * @param length - the length of the signal
-	 * 
-	 */
-	public boolean receiveValueSignal(float[] signal, int length) {
-		boolean success = true;
-
-		receiveValueSignal(signal, length, (int) RepastEssentials.GetTickCount());
-
-		return success;
-	}
-
-
-	
-
-	public boolean receiveInfluence() {
-		boolean success = true;
-
-		return success;
-	}
-
-	/*
-	 * Step behaviour
-	 */
-
-	/******************
-	 * This method defines the step behaviour of a prosumer agent
-	 * 
-	 * Input variables: none
-	 * 
-	 * Return variables: boolean returnValue - returns true if the method
-	 * executes succesfully
-	 ******************/
-	@ScheduledMethod(start = 1, interval = 1, shuffle = true)
-	public boolean step() {
-
-		// Define the return value variable.  Set this false if errors encountered.
-		boolean returnValue = true;
-		/*
-		 * TODO - think about any step function that will be true for
-		 * all bulk generators, but not all Prosumers.  This should go here
-		 * At this stage - purely a place-holder
-		 */
-		// Return (this will be false if problems encountered).
-		return returnValue;
-
-	}
 
 	/**
 	 * @return
@@ -305,55 +198,4 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
 	}
 
-
-	/**
-	 *
-	 * This value is used to automatically generate agent identifiers.
-	 * @field serialVersionUID
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 *
-	 * This value is used to automatically generate agent identifiers.
-	 * @field agentIDCounter
-	 *
-	 */
-	protected static long agentIDCounter = 1;
-
-	/**
-	 *
-	 * This value is the agent's identifier.
-	 * @field agentID
-	 *
-	 */
-	protected String agentID = "Prosumer " + (agentIDCounter++);
-
-	/**
-	 *
-	 * This method provides a human-readable name for the agent.
-	 * @method toString
-	 *
-	 */
-	@ProbeID()
-	public String toString() {
-		// Set the default agent identifier.
-		String returnValue = this.agentID;
-		// Return the results.
-		return returnValue;
-
-	}
-
-	public String getAgentID()
-	{
-		return this.agentID;
-	}
-
-	/*
-	 * No argument constructor - basic prosumer created
-	 */
-	public GeneratorProsumer() {
-		super();
-	}
 }
