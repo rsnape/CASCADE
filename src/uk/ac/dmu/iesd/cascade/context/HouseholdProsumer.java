@@ -257,7 +257,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 	}
 
 	/**
-	 * @return
+	 * Method to return the realtime generation of this Household Prosumer (as distinct
+	 * from the net demand for the prosumer).
+	 * 
+	 * @return a float giving the realtime generation of this Household Prosumer
+	 *
 	 */
 	private float currentGeneration() {
 		float returnAmount = 0;
@@ -301,15 +305,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	private float windGeneration() {
-		if(hasWind){
-			//TODO: get a realistic model of wind production - this just linear between 
-			//5 and 25 metres per second, zero below, max power above
-			return (Math.max((Math.min(getWindSpeed(),25) - 5),0))/20 * ratedPowerWind;
-		}
-		else
-		{
-			return 0;
-		}
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	/**
@@ -532,7 +529,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 */
 	public HouseholdProsumer(CascadeContext context, float[] baseDemand) {
 		super(context);
-		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.5);
+		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
 		this.ticksPerDay = context.getTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0)
 		{

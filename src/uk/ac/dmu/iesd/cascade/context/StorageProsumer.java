@@ -68,7 +68,7 @@ public class StorageProsumer extends ProsumerAgent{
 
 	/*
 	 * NOTE 
-	 * @TODO - It is possible that we should have some kind of hierarchical
+	 * TODO: - It is possible that we should have some kind of hierarchical
 	 * inheritance and this should also be abstract, sub-classed to specific types
 	 * of non-dom consumer.  For now, it is a placeholder.
 	 */

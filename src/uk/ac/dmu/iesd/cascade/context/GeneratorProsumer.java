@@ -126,21 +126,11 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 
 
 	/**
-	 * @return
+	 * This method must be implemented by all classes which extend this class. 
+	 * 
+	 * @return a floating point number of the real time generation of this prosumer
 	 */
-	private float currentGeneration() {
-		float returnAmount = 0;
-
-		returnAmount = returnAmount + CHPGeneration() + windGeneration() + hydroGeneration() + thermalGeneration() + PVGeneration();
-		if (Consts.DEBUG)
-		{
-			if (returnAmount != 0)
-			{
-				System.out.println("Generating " + returnAmount);
-			}
-		}
-		return returnAmount;
-	}
+	protected abstract float currentGeneration();
 
 	/**
 	 * @return
@@ -164,21 +154,6 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	private float hydroGeneration() {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-
-	/**
-	 * @return
-	 */
-	private float windGeneration() {
-		if(hasWind){
-			//TODO: get a realistic model of wind production - this just linear between 
-			//5 and 25 metres per second, zero below, max power above
-			return (Math.max((Math.min(getWindSpeed(),25) - 5),0))/20 * ratedPowerWind;
-		}
-		else
-		{
-			return 0;
-		}
 	}
 
 	/**

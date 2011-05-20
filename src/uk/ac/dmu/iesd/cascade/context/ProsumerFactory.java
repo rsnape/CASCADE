@@ -54,14 +54,14 @@ public class ProsumerFactory implements IProsumerFactory {
 		{
 			pAgent = new HouseholdProsumer(cascadeMainContext, baseProfileArray);
 		}
-		//thisAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > 0.5);
-		pAgent.hasSmartControl = (RandomHelper.nextDouble() > 0.9);
+		
+		pAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WILLING_TO_CHANGE_BEHAVIOUR));
+		pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
 		pAgent.exercisesBehaviourChange = true;
 		pAgent.hasSmartMeter = true;
-		pAgent.costThreshold = 125;  //Threshold in price signal at which behaviour change is prompted (if agent is willing)
-		pAgent.minSetPoint = 18;
-		pAgent.maxSetPoint = 21;
-		pAgent.currentInternalTemp = 19;
+		pAgent.costThreshold = Consts.HOUSEHOLD_COST_THRESHOLD;
+		pAgent.minSetPoint = Consts.HOUSEHOLD_MIN_SETPOINT;
+		pAgent.maxSetPoint = Consts.HOUSEHOLD_MAX_SETPOINT;
 		
 		pAgent.transmitPropensitySmartControl = (float) RandomHelper.nextDouble();
 		
@@ -69,9 +69,12 @@ public class ProsumerFactory implements IProsumerFactory {
 	}
 	
 	
-	/*
-	 * This method simply adds a random element to the base profile to create a household demand
-	 * It should be over-ridden in the future to use something better - for instance melody's model
+	/**
+	 * Adds a random noise to the base profile to create a household demand.
+	 * For amplitude multiplies each point on the base profile by a random float uniformly distributed between 0.7 and 1.3 (arbitrary)
+	 * then selects a uniformly distributed time based <code> jitterFactor </code> between -0.5 and + 0.5 and shifts the demand in time by <code> jitterFactor </code> timesteps
+	 * 
+	 * TODO: It should be over-ridden in the future to use something better - for instance melody's model
 	 * or something which time-shifts demand somewhat, or select one of a number of typical profiles
 	 * based on occupancy.
 	 */
@@ -86,7 +89,12 @@ public class ProsumerFactory implements IProsumerFactory {
 		
 		//add time jitter
 		float jitterFactor = (float) RandomHelper.nextDouble() - 0.5f;
-		//System.out.println("Applying jitter" + jitterFactor);
+		
+		if (Consts.DEBUG)
+		{
+			System.out.println("Applying jitter" + jitterFactor);
+		}
+		
 		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
 		for (int i = 1; i < (newProfile.length - 1); i++)
 		{

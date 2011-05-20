@@ -1,27 +1,43 @@
 <repast.simphony.visualization.engine.DefaultDisplayDescriptor>
-  <name>Social Network</name>
+  <name>Economic Network</name>
   <type>TWO_D</type>
   <styles>
     <entry>
+      <string>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
+    </entry>
+    <entry>
       <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
+    </entry>
+    <entry>
+      <string>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</string>
       <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
+      <string>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</string>
+      <string>ProsumerAgent.style_2.xml</string>
+    </entry>
+    <entry>
       <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
-      <string>HouseholdProsumer.style_1.xml</string>
+      <string>HouseholdProsumer.style_2.xml</string>
+    </entry>
+    <entry>
+      <string>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</string>
+      <string>AggregatorAgent.style_2.xml</string>
     </entry>
   </editedStyles>
   <netStyles>
     <entry>
-      <string>socialNetwork</string>
+      <string>economicNetwork</string>
       <string>repast.simphony.visualizationOGL2D.DefaultEdgeStyleOGL2D</string>
     </entry>
   </netStyles>
   <editedNetStyles>
     <entry>
-      <string>socialNetwork</string>
+      <string>economicNetwork</string>
       <null/>
     </entry>
   </editedNetStyles>
@@ -33,18 +49,26 @@
     <duration>-1.0</duration>
     <frequency>ONE_TIME</frequency>
   </schedParams>
-  <layoutClassName>repast.simphony.visualization.visualization2D.layout.CircleLayout2D</layoutClassName>
-  <layoutProjection>socialNetwork</layoutProjection>
+  <layoutClassName>uk.ac.dmu.iesd.cascade.ui.LargeNetwork</layoutClassName>
+  <layoutProjection>economicNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
+      <string>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</string>
       <int>0</int>
+    </entry>
+    <entry>
+      <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
+      <int>1</int>
+    </entry>
+    <entry>
+      <string>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</string>
+      <int>2</int>
     </entry>
   </layerOrder>
   <projections>
     <repast.simphony.scenario.data.ProjectionData>
-      <id>socialNetwork</id>
+      <id>economicNetwork</id>
       <attributes/>
       <type>NETWORK</type>
     </repast.simphony.scenario.data.ProjectionData>
@@ -52,7 +76,7 @@
   <valueLayers/>
   <projectionDescriptors>
     <entry>
-      <string>socialNetwork</string>
+      <string>economicNetwork</string>
       <repast.simphony.visualization.engine.DefaultProjectionDescriptor>
         <proj reference="../../../../projections/repast.simphony.scenario.data.ProjectionData"/>
         <props/>

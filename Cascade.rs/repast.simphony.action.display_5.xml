@@ -1,5 +1,5 @@
 <repast.simphony.visualization.engine.DefaultDisplayDescriptor>
-  <name>Economic Network</name>
+  <name>Information network</name>
   <type>TWO_D</type>
   <styles>
     <entry>
@@ -18,26 +18,26 @@
   <editedStyles>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</string>
-      <string>ProsumerAgent.style_2.xml</string>
+      <string>ProsumerAgent.style_3.xml</string>
     </entry>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
-      <string>HouseholdProsumer.style_2.xml</string>
+      <string>HouseholdProsumer.style_3.xml</string>
     </entry>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</string>
-      <string>AggregatorAgent.style_2.xml</string>
+      <string>AggregatorAgent.style_3.xml</string>
     </entry>
   </editedStyles>
   <netStyles>
     <entry>
-      <string>economicNetwork</string>
+      <string>infoNetwork</string>
       <string>repast.simphony.visualizationOGL2D.DefaultEdgeStyleOGL2D</string>
     </entry>
   </netStyles>
   <editedNetStyles>
     <entry>
-      <string>economicNetwork</string>
+      <string>infoNetwork</string>
       <null/>
     </entry>
   </editedNetStyles>
@@ -50,7 +50,7 @@
     <frequency>ONE_TIME</frequency>
   </schedParams>
   <layoutClassName>uk.ac.dmu.iesd.cascade.ui.LargeNetwork</layoutClassName>
-  <layoutProjection>economicNetwork</layoutProjection>
+  <layoutProjection>infoNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
@@ -68,7 +68,7 @@
   </layerOrder>
   <projections>
     <repast.simphony.scenario.data.ProjectionData>
-      <id>economicNetwork</id>
+      <id>infoNetwork</id>
       <attributes/>
       <type>NETWORK</type>
     </repast.simphony.scenario.data.ProjectionData>
@@ -76,7 +76,7 @@
   <valueLayers/>
   <projectionDescriptors>
     <entry>
-      <string>economicNetwork</string>
+      <string>infoNetwork</string>
       <repast.simphony.visualization.engine.DefaultProjectionDescriptor>
         <proj reference="../../../../projections/repast.simphony.scenario.data.ProjectionData"/>
         <props/>

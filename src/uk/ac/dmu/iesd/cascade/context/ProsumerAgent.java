@@ -62,7 +62,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected static String agentBaseName = "prosumer";
 
 	/**
-	 * A boolen to determine whether the name has
+	 * A boolean to determine whether the name has
 	 * been set explicitly. <code>nameExplicitlySet</code> will
 	 * be false if the name has not been set and true if it has.
 	 * @see #getName
@@ -71,8 +71,6 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected boolean nameExplicitlySet = false;
 
 	protected CascadeContext mainContext;
-
-	//protected String contextName;
 
 	protected int ticksPerDay; //TODO: This needs to be removed 
 
@@ -94,6 +92,9 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 
 	/*
 	 * Weather and temperature variables
+	 * 
+	 * TODO: (from RS) These can (and should?) be simply read from the context whenever needed
+	 * 
 	 */
 	protected float insolation; //current insolation at the given half hour tick
 	protected float windSpeed; //current wind speed at the given half hour tick
@@ -102,6 +103,10 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 
 	/*
 	 * Electrical properties
+	 * 
+	 * TODO: (from RS) I think the Electrical properties should be here as every Prosumer
+	 * must have them.  This is what distinguishes prosumer from other agents - it
+	 * has a physical grid connection.
 	 */
 	//protected int nodeID;
 	//protected int connectionNominalVoltage;

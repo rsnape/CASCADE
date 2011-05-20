@@ -60,7 +60,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	int numProsumers; //number of Prosumers
 	float[] householdBaseDemandArray = null;
 	//int ticksPerDay;
-	int numDemandColumns = Consts.NUM_DEMAND_COLUMNS;
+	int numDemandColumns ;
 
 	
 	/*
@@ -146,6 +146,15 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			baseDemandReader.parseByColumn();
 			numDemandColumns = baseDemandReader.columnsStarting("demand");
 
+			if (numDemandColumns == 0)
+			{
+				System.err.println("The household demand data files appears to have no demand data columns");
+				System.err.println("Demand data columns should be headed 'demand' followed by an integer e.g. 'demand0', 'demand1'...");
+				System.err.println("Proceeding with no demand data would cause failure, so the program will now terminate");
+				System.err.println("Please check file " + householdAttrFile.getAbsolutePath());
+				System.exit(1);
+			}
+			
 			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
 			if (cascadeMainContext.verbose)
 				System.out.println("householdBaseDemandArray is initialised with profile " + demandName);
