@@ -16,7 +16,8 @@ import uk.ac.dmu.iesd.cascade.Consts.*;
  * Its public creator method's signatures are defined by {@link IProsumerFactory} interface.
  *   
  * @author Babak Mahdavi
- * @version $Revision: 1.0 $ $Date: 2011/05/16 14:00:00 $
+ * @author Richard Snape
+ * @version $Revision: 1.0 $ $Date: 2011/05/16 14:00:00 $ 
  */
 public class ProsumerFactory implements IProsumerFactory {
 	//Parameters params;
@@ -131,7 +132,5 @@ public class ProsumerFactory implements IProsumerFactory {
 
 		return thisAgent;
 	} 
-	
-	
 
 }

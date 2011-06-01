@@ -16,6 +16,19 @@ import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 
 /**
+ * Parses comma-separated variable (CSV) files and reads them into string arrays.
+ * 
+ * This implementation is designed for reading data organised in columns with a
+ * single header row and many data rows.  Data files in other formats may be read,
+ * however retrieval may be less efficient.
+ * 
+ * It can also return rows, however the implementation of this is currently inefficient
+ * 
+ * Implementation detail: 
+ * Column headers are stored as a String array, one member per column.
+ * Data are stored in an ArrayList, with each member itself being a
+ * String array (i.e. String[]) with one member per row.
+ * 
  * @author jsnape
  * @version $Revision: 1.0 $ $Date: 2010/11/17 17:00:00 $
  * 
@@ -142,6 +155,34 @@ public class CSVReader {
 		else
 		{
 			System.err.println("CSVReader contentsByColumn is null!!  Check Parse output and file contents!");
+			System.err.println("Reader name is " + CSVFileName);
+			System.err.println("Number of columns is " + numCols + " with names " + Arrays.toString(colHeaders));
+		}
+
+		return returnArray;
+	}
+	
+	public String[] getRow(int rowIndex){
+		String[] returnArray = new String[dataArray.length];
+		
+		if (dataArray != null)
+		{
+			if (dataArray[0].size() > rowIndex)
+			{
+				for(int i = 0; i < dataArray.length; i++)
+				{
+					returnArray[i] = dataArray[i].get(rowIndex);
+				}
+			}
+			else
+			{
+				System.err.println("File does not have that many rows!  Available rows are :");
+				System.err.println(dataArray[0].size());
+			}
+		}
+		else
+		{
+			System.err.println("CSVReader dataArray is null!!  Check Parse output and file contents!");
 			System.err.println("Reader name is " + CSVFileName);
 			System.err.println("Number of columns is " + numCols + " with names " + Arrays.toString(colHeaders));
 		}
