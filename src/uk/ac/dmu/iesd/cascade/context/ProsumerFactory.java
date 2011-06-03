@@ -83,7 +83,7 @@ public class ProsumerFactory implements IProsumerFactory {
 		{
 			newProfile[i] = baseProfileArray[i] * (float)(1 + 0.3*(RandomHelper.nextDouble() - 0.5));
 		}
-		
+	
 		//add time jitter
 		float jitterFactor = (float) RandomHelper.nextDouble() - 0.5f;
 		//System.out.println("Applying jitter" + jitterFactor);
@@ -93,6 +93,7 @@ public class ProsumerFactory implements IProsumerFactory {
 			newProfile[i] = (jitterFactor * newProfile[i]) + ((1 - jitterFactor) * newProfile[i+1]);
 		}
 		newProfile[newProfile.length - 1] = (jitterFactor * newProfile[newProfile.length - 1]) + ((1 - jitterFactor) * newProfile[0]);
+		
 		
 		return newProfile;
 	}

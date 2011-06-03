@@ -28,6 +28,12 @@ import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.util.*;
 
 /**
+ * <em>CascadeContextBuilder</em> is the Repast specific starting point class 
+ * (i.e. a <code>ContextBuilder</code>) for 
+ * building the context (i.e.{@link CascadeContext}) for the <em>Cascade</em> framework.
+ * Building a context consists of filling it with agents and other actors/components/etc. and
+ * constructing displays/views for the model and so forth. 
+ * 
  * @author J. Richard Snape
  * @author Babak Mahdavi
  * @version $Revision: 1.2 $ $Date: 2011/05/13 14:00:00 $
@@ -43,27 +49,17 @@ import uk.ac.dmu.iesd.cascade.util.*;
  *       Babak 
  * 
  */
-
-
-/**
- * Builds and returns a context. Building a context consists of filling it with
- * agents, adding projects and so forth. 
- * 
- * TODO: 
- * @param context
- * @return the built context.
- */
 public class CascadeContextBuilder implements ContextBuilder<Object> {
 
-	CascadeContext cascadeMainContext;  // cascade main context
-	Parameters params; // parameters for the model run environment 	
-	int numProsumers; //number of Prosumers
-	float[] householdBaseDemandArray = null;
+	private CascadeContext cascadeMainContext;  // cascade main context
+	private Parameters params; // parameters for the model run environment 	
+	private int numProsumers; //number of Prosumers
+	private float[] householdBaseDemandArray = null;
 	//int ticksPerDay;
-	int numDemandColumns = Consts.NUM_DEMAND_COLUMNS;
+	private int numDemandColumns = Consts.NUM_DEMAND_COLUMNS;
 
 	
-	/*
+	/**
 	 * Builds the <tt> Cascade Context </tt> (by calling other private sub-methods)
 	 * @see uk.ac.dmu.iesd.cascade.context.CascadeContext
 	 * @see repast.simphony.dataLoader.ContextBuilder#build(repast.simphony.context.Context)
@@ -75,6 +71,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
 		readParamsAndInitializeArrays();
 		populateContext();
+	
+		//buildNetworks();
+		
 		if (cascadeMainContext.verbose)	
 			System.out.println("Cascade Main Context created: "+cascadeMainContext.toString());
 		return cascadeMainContext;
@@ -160,12 +159,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	}
 	
 
-	/*
+	/**
 	 * Populate the context(by creating agents, actors, objects, etc)
 	 */
 	private void populateContext() {
-		
-
 		
 		//Convert base demand to half hourly (or whatever fraction of a day we are working with)
 		// NOTE - I am assuming input in kWh.  If in kW, this should average rather than sum!!
@@ -190,20 +187,33 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			cascadeMainContext.add(hhProsAgent);			
 		}
 		
-		
 		//A 2 MW windmill
 		ProsumerAgent firstWindmill = prosumerFactroy.createPureGenerator(2000, GENERATOR_TYPE.WIND);
 		//ProsumerAgent firstWindmill = createPureGenerator(2000, GENERATOR_TYPE.WIND);
 		cascadeMainContext.add(firstWindmill);
 		
-	
 		//Secondly add aggregator(s)
-		AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
+		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
+		RECO firstAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
+		//AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(firstAggregator);
 		
+		buildNetworks(firstAggregator);
+	}
+	
+	
+	/**
+	 * This method will build all the networks
+	 * TODO: This method will need to be refined later
+	 * At this moment, there is only one aggregator and links are simply created
+	 * between this aggregator and all the prosumers in the context.
+	 * Later this method (or its breakup(s)) can receive parameters such as EdgeSource and EdgeTarget 
+	 * to create edges between a source and a target
+	 */
+	private void buildNetworks(AggregatorAgent firstAggregator) {
 		
 		//Create the household social network before other agent types are added to the context.
-		NetworkFactory smartFactory = NetworkFactoryFinder.createNetworkFactory(null);
+		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);
 		
 		// create a small world social network
 		double beta = 0.1;
@@ -211,16 +221,18 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		boolean directed = true;
 		boolean symmetric = true;
 		NetworkGenerator gen = new WattsBetaSmallWorldGenerator(beta, degree, symmetric);
-		Network social = smartFactory.createNetwork("socialNetwork", cascadeMainContext, gen, directed);
+		Network socialNet = networkFactory.createNetwork("socialNetwork", cascadeMainContext, gen, directed);
 		//set weight of each social contact - initially random
 		//this will represent the influence a contact may have on another
 		//Note that influence of x on y may not be same as y on x - which is realistic
-		for (Object thisEdge : social.getEdges())
+		for (Object thisEdge : socialNet.getEdges())
 		{
 			((RepastEdge) thisEdge).setWeight(RandomHelper.nextDouble());			
 		}
 		//Add in some generators
-	
+		
+		this.cascadeMainContext.setSocialNetwork(socialNet);
+		
 		/*
 		 * Create the projections needed in the context and add agents to those projections
 		 */
@@ -232,26 +244,74 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		// Economic network should be hierarchical aggregator to prosumer 
 		// TODO: Decide what economic network between aggregators looks like?
 		// TODO: i.e. what is market design for aggregators?
-		Network economicNet = smartFactory.createNetwork("economicNetwork", cascadeMainContext, directed);
+		Network economicNet = networkFactory.createNetwork("economicNetwork", cascadeMainContext, directed);
 		
 		// TODO: replace this with something better.  Next iteration of code
 		// should probably take network design from a file
-		for (ProsumerAgent thisAgent:(Iterable<ProsumerAgent>) (cascadeMainContext.getObjects(ProsumerAgent.class)) )
+		for (ProsumerAgent prAgent:(Iterable<ProsumerAgent>) (cascadeMainContext.getObjects(ProsumerAgent.class)) )
 		{
-			economicNet.addEdge(firstAggregator, thisAgent);
+			economicNet.addEdge(firstAggregator, prAgent);
 		}
+		
+		this.cascadeMainContext.setEconomicNetwork(economicNet);
+
 		
 		// We should create a bespoke network for the electrical networks.
 		// ProsumerAgents only - edges should have nominal voltage and capacity
 		// attributes.  TODO: How do we deal with transformers??
-		Network physicalNet = smartFactory.createNetwork("electricalNetwork", cascadeMainContext, directed);
+		Network physicalNet = networkFactory.createNetwork("electricalNetwork", cascadeMainContext, directed);
 		// TODO: How does info network differ from economic network?
-		Network infoNet = smartFactory.createNetwork("infoNetwork", cascadeMainContext, directed);
+		Network infoNet = networkFactory.createNetwork("infoNetwork", cascadeMainContext, directed);
 		
-		for (ProsumerAgent thisAgent:(Iterable<ProsumerAgent>) (cascadeMainContext.getObjects(ProsumerAgent.class)) )
+				
+		for (ProsumerAgent prAgent:(Iterable<ProsumerAgent>) (cascadeMainContext.getObjects(ProsumerAgent.class)) )
 		{
-			infoNet.addEdge(firstAggregator, thisAgent);
+			infoNet.addEdge(firstAggregator, prAgent);
 		}
+		
+		//+++Babak network testing ++++++++
+		
+		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
+		RECO secondAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(secondAggregator);
+		
+		ProsumerFactory prosumerFactroy = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
+		HouseholdProsumer hhPros1 = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
+		hhPros1.setAgentName("HH-Pro1");
+		cascadeMainContext.add(hhPros1);
+		HouseholdProsumer hhPros2 = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
+		hhPros2.setAgentName("HH-Pro2");
+		cascadeMainContext.add(hhPros2);
+		HouseholdProsumer hhPros3 = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
+		hhPros3.setAgentName("HH-Pro3");
+		cascadeMainContext.add(hhPros3);
+		HouseholdProsumer hhPros4 = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
+		hhPros4.setAgentName("HH-Pro4");
+		cascadeMainContext.add(hhPros4);
+
+
+		
+		//Network recoCostumersNet = networkFactory.createNetwork(firstAggregator.toString(), cascadeMainContext, directed);
+	
+		Network aggTestNet = networkFactory.createNetwork("BabakTestNetwork", cascadeMainContext, directed);
+		
+		
+		aggTestNet.addEdge(firstAggregator, hhPros1);
+		aggTestNet.addEdge(firstAggregator, hhPros2);
+		
+		aggTestNet.addEdge(secondAggregator, hhPros3);
+		aggTestNet.addEdge(secondAggregator, hhPros4);
+		
+		for (ProsumerAgent prAgent:(Iterable<ProsumerAgent>) (cascadeMainContext.getObjects(ProsumerAgent.class)) )
+		{
+			/*if ((prAgent.getAgentID() == 2) || (prAgent.getAgentID() == 4))
+				aggTestNet.addEdge(firstAggregator, prAgent);
+			if ((prAgent.getAgentID() == 3) || (prAgent.getAgentID() == 5))
+				aggTestNet.addEdge(secondAggregator, prAgent); */
+			
+			
+		}
+		// ------End of test ---------------------------
 
 		
 	}

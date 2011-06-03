@@ -15,5 +15,5 @@ package uk.ac.dmu.iesd.cascade.context;
 public interface IProsumerFactory {
 	//public ProsumerAgent creatProsumer();
 	public HouseholdProsumer createHouseholdProsumer(float[] baseProfile, boolean addNoise);
-
+	
 }

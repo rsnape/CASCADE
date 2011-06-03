@@ -2,12 +2,14 @@ package uk.ac.dmu.iesd.cascade.context;
 
 
 import java.util.*;
-import java.util.Vector;
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.*;
 import repast.simphony.ui.probe.*;
 import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.util.IObservable;
+import uk.ac.dmu.iesd.cascade.util.IObserver;
+import uk.ac.dmu.iesd.cascade.util.ObservableComponent;
 
 
 /**
@@ -28,7 +30,7 @@ import uk.ac.dmu.iesd.cascade.Consts;
  * 1.2 - Made the class abstract; modified the constructor, added/modified/removed fields/methods
  *       made some methods abstract (Babak)
  */
-public class AggregatorAgent implements ICognitiveAgent {
+public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 
 	/*
 	 * Agent properties
@@ -43,7 +45,7 @@ public class AggregatorAgent implements ICognitiveAgent {
 
 	/**
 	 * This field is used for counting number of agents 
-	 * instantiated by descendants of this class  
+	 * instantiated by concrete descendants of this class  
 	 **/	
 	private static long agentIDCounter = 0; 
 
@@ -70,6 +72,8 @@ public class AggregatorAgent implements ICognitiveAgent {
 	
 	protected CascadeContext mainContext;
 	
+	protected ObservableComponent observableProxy;
+	
 	boolean autoControl;
 	//String contextName;
 	/*
@@ -88,78 +92,17 @@ public class AggregatorAgent implements ICognitiveAgent {
 	//True by default as it will always be new until the first broadcast
 	int ticksPerDay;
 
-
+	
 	/**
-	 * @param Parameters for this setup
+	 * Constructs a prosumer agent with the context in which is created
+	 * @param context the context in which this agent is situated 
 	 */
-	
-	/*public AggregatorAgent(String myContext, float[] baseDemand, Parameters parm) {
-		super();
-		
-		this.ticksPerDay = (Integer) parm.getValue("ticksPerDay");
-		this.contextName = myContext;
-		this.overallSystemDemandLength = baseDemand.length;
-		this.priceSignalLength = baseDemand.length;
-		
-		if (overallSystemDemandLength % ticksPerDay != 0)
-		{
-			System.err.println("baseDemand array imported to aggregator not a whole number of days");
-			System.err.println("May cause unexpected behaviour - unless you intend to repeat the signal within a day");
-		}
-		this.priceSignal = new float [priceSignalLength];
-		this.overallSystemDemand = new float [overallSystemDemandLength];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
-		//Start initially with a flat price signal of 12.5p per kWh
-		Arrays.fill(priceSignal,125f);
-		
-		//Very basic configuration of predicted customer demand as 
-		// a Conssant.  We could be more sophisticated than this or 
-		// possibly this gives us an aspirational target...
-		this.predictedCustomerDemand = new float[ticksPerDay];
-		//Put in a constant predicted demand
-		//Arrays.fill(this.predictedCustomerDemand, 5);
-		//Or - put in a variable one
-		for (int j = 0; j < ticksPerDay; j++)
-		{
-			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
-		}
-		this.predictedCustomerDemandLength = ticksPerDay;
+	public AggregatorAgent(CascadeContext context) {
+		this.agentID = agentIDCounter++;
+		this.mainContext = context;
+		observableProxy = new ObservableComponent();
 	}
-	*/
-	
-	public AggregatorAgent(CascadeContext context, float[] baseDemand) {
-	
-		this.ticksPerDay = context.getTickPerDay();
-		//this.contextName = myContext;
-		this.overallSystemDemandLength = baseDemand.length;
-		this.priceSignalLength = baseDemand.length;
-		
-		if (overallSystemDemandLength % ticksPerDay != 0)
-		{
-			System.err.println("baseDemand array imported to aggregator not a whole number of days");
-			System.err.println("May cause unexpected behaviour - unless you intend to repeat the signal within a day");
-		}
-		this.priceSignal = new float [priceSignalLength];
-		this.overallSystemDemand = new float [overallSystemDemandLength];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
-		//Start initially with a flat price signal of 12.5p per kWh
-		Arrays.fill(priceSignal,125f);
-		
-		//Very basic configuration of predicted customer demand as 
-		// a Conssant.  We could be more sophisticated than this or 
-		// possibly this gives us an aspirational target...
-		this.predictedCustomerDemand = new float[ticksPerDay];
-		//Put in a constant predicted demand
-		//Arrays.fill(this.predictedCustomerDemand, 5);
-		//Or - put in a variable one
-		for (int j = 0; j < ticksPerDay; j++)
-		{
-			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
-		}
-		this.predictedCustomerDemandLength = ticksPerDay;
-	}
-	
-	
+
 
 	/**
 	 * Returns a string representation of this agent and its key values 
@@ -180,7 +123,7 @@ public class AggregatorAgent implements ICognitiveAgent {
 	 * 
 	 * @return a string representation of this agent's state parameters
 	 */
-	//protected abstract String paramStringReport();
+	protected abstract String paramStringReport();
 
 
 	/**
@@ -214,7 +157,6 @@ public class AggregatorAgent implements ICognitiveAgent {
 	}
 
 
-
 	/**
 	 * Returns the net demand <code>netDemand</code> for this agent 
 	 * @return  the <code>netDemand</code> 
@@ -232,86 +174,78 @@ public class AggregatorAgent implements ICognitiveAgent {
 	}
 	
 	
+	/**
+	 * This method should define the step for the agents.
+	 * They should be scheduled appropriately by 
+	 * concrete implementing subclasses 
+	 */
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	abstract public void step();
+
+	/**
+	 * Add an observer to the list of observer objects
+	 * @param anIObserver the observer (IObsever) who wants to be added and updated
+	 *                    when a specific state changes or event occurs 
+	 */
+	public void addObserver(IObserver anIObserver){
+		observableProxy.addObserver(anIObserver);
+	}
+	
+
+	/**
+	 * Deletes an observer from the list of observer objects
+	 * @param anIObserver the observer (IObsever) who wants to be removed from the observers' list
+	 */
+	public void deleteObserver(IObserver anIObserver) {
+		observableProxy.deleteObserver(anIObserver);
+	}
+	
+	/**
+	 * Clears the list of observers
+	 */
+	public void deleteObservers(){
+		observableProxy.deleteObservers();
+	}
+	
+	/**
+	 * Returns the number of observers in the list
+	 * @return number (count) of observers (in the list) 
+	 */
+	public int countObservers(){
+		return observableProxy.countObservers();
+	}
+
+	/**
+	 * This method can be called when a specific state in an aggregator object 
+	 * (in which an observer object is interested) has changed. 
+	 * It notifies all of its observers by calling their  <code>update</code> method.
+	 * Here this task is delegated to an instance of <code>ObservableComponent</code> (observableProxy)
+	 * which implements the necessary code for doing performing the task.
+	 * @param   obs the observed object.
+	 * @param   changeCodeArg the changed code argument.
+	 * @see   ObservableComponent#notifyObservers(Object,Object)
+	 * @see   IObserver#update(Object,Object)
+	 */
+	protected void notifyObservers(Object obs, Object changeCodeArg) {
+		observableProxy.notifyObservers(obs, changeCodeArg);
+	}
+	
+	// ------------------------------------------------------------------------------
+	/* TODO: 
+	 * the methods defined below will be checked later. 
+	 * In part, it must be determined which are the common behavior of  
+	 * all aggregator agents and whether different specific aggregator agents
+	 * behave differently or the same when it comes to an specific method.
+	 * These will determine which method signatures should stay here (and the implementation will 
+	 * be the concrete agrregator responsibility) and which one stay here as common behavior for
+	 * all aggregator agent (like the ones defined above). / Babak  
+	 */
+	
 	public float getCurrentPriceSignal()
 	{
 		double time = RepastEssentials.GetTickCount();
 		return priceSignal[(int) time % priceSignalLength];
 	} 
-
-	/*
-	 * Step behaviour
-	 */
-
-	/******************
-	 * This method defines the step behaviour of an aggregator agent
-	 * 
-	 * Input variables: 	none
-	 * 
-	 * Return variables: 	boolean returnValue - returns true if the 
-	 * 						method executes succesfully
-	 ******************/
-	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
-	public boolean step() {
-
-		// Define the return value variable.
-		boolean returnValue = true;
-
-		// Note the simulation time if needed.
-		double time = RepastEssentials.GetTickCount();
-		int timeOfDay = (int) (time % ticksPerDay);
-
-		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
-		List<RepastEdge> linkages = RepastEssentials.GetOutEdges("CascadeContextMain/economicNetwork", this);
-		if(Consts.DEBUG) {
-			System.out.println("Agent " + agentID + " has " + linkages.size() + "links in economic network");
-		}
-		for (RepastEdge edge : linkages) {
-			Object linkSource = edge.getTarget();
-			if (linkSource instanceof ProsumerAgent){
-				customers.add((ProsumerAgent) linkSource);    		
-			}
-			else
-			{
-				throw (new WrongCustomerTypeException(linkSource));
-			}
-		}
-
-		float sumDemand = 0;
-		for (ProsumerAgent a : customers)
-		{
-			sumDemand = sumDemand + a.getNetDemand();
-		}
-
-		setNetDemand(sumDemand);
-		//Set the predicted demand for next day to the sum of the demand at this time today.
-		//TODO: This is naive
-		
-		System.out.println("Setting predicted demand at " + timeOfDay + " to " + sumDemand);
-		predictedCustomerDemand[timeOfDay] = sumDemand;
-
-		//TODO I've started too complicated here - first put out flat prices (as per today), then E7, then stepped ToU, then a real dynamic one like this...
-		
-		//setPriceSignalFlatRate(125f);
-		//setPriceSignalEconomySeven(125f, 48f);
-		
-		// Co-efficients estimated from Figure 4 in Roscoe and Ault
-		setPriceSignalRoscoeAndAult(0.0006f, 12f, 40f);
-		
-		//Here, we simply broadcast the electricity value signal each midnight
-		if (timeOfDay == 0) {
-
-			int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
-			broadcastLength = priceSignal.length; // but in this case we choose not to
-
-			broadcastDemandSignal(customers, time, broadcastLength);
-		}    	
-
-		// Return the results.
-		return returnValue;
-
-	}
-	
-	// ------------------------------
 	
 	void setPriceSignalFlatRate(float price)
 	{
@@ -338,7 +272,7 @@ public class AggregatorAgent implements ICognitiveAgent {
 		{			
 			x = (predictedCustomerDemand[i % ticksPerDay] / 10 ) / (Consts.MAX_SUPPLY_CAPACITY - Consts.MAX_GENERATOR_CAPACITY);
 			price = (float) (A * Math.exp(B * x) + C);
-			System.out.println("Price at tick" + i + " is " + price);
+			//System.out.println("Price at tick" + i + " is " + price);
 			if (price > 1000) 
 			{
 				price = 1000f;
@@ -372,50 +306,6 @@ public class AggregatorAgent implements ICognitiveAgent {
 			}
 			priceSignalChanged = true; }
 	}
-	
-	/*
-	 * helper methods
-	 */
-	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
-
-
-		// To avoid computational load (and realistically model a reasonable broadcast strategy)
-		// only prepare and transmit the price signal if it has changed.
-		if(priceSignalChanged)
-		{
-			//populate the broadcast signal with the price signal starting from now and continuing for
-			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
-			//broadcast signal out.
-			float[] broadcastSignal= new float[broadcastLength];
-			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignalLength);
-			int startIndex = (int) time % priceSignalLength;
-			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignalLength - startIndex);
-			for (int i = 1; i <= numCopies; i++)
-			{
-				int addIndex = (priceSignalLength - startIndex) * i;
-				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignalLength);
-			}
-
-			if (broadcastLength > (((numCopies + 1) * priceSignalLength) - startIndex))
-			{
-				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignalLength) - startIndex, broadcastLength - (((numCopies + 1) * priceSignalLength) - startIndex));
-			}
-
-			for (ProsumerAgent a : broadcastCusts){
-				// Broadcast signal to all customers - note we simply say that the signal is valid
-				// from now currently, in future implementations we may want to be able to insert
-				// signals valid at an offset from now.
-				if (Consts.DEBUG)
-				{
-					//System.out.println("Broadcasting to " + a.sAgentID);
-				}
-				a.receiveValueSignal(broadcastSignal, broadcastLength);
-			}
-		}
-
-		priceSignalChanged = false;
-	}
-	
 	
 
 }

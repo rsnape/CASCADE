@@ -17,14 +17,14 @@ public class ArrayUtils {
 	
 	public static int[] convertStringArraytoIntArray(String[] sarray) {
 		if (sarray != null) {
-		int intarray[] = new int[sarray.length];
-		for (int i = 0; i < sarray.length; i++) {
-		intarray[i] = Integer.parseInt(sarray[i]);
-		}
-		return intarray;
+			int intarray[] = new int[sarray.length];
+			for (int i = 0; i < sarray.length; i++) {
+				intarray[i] = Integer.parseInt(sarray[i]);
+			}
+			return intarray;
 		}
 		return null;
-		}
+	}
 	
 	public static float[] convertStringArraytofloatArray(String[] sarray) {
 		if (sarray != null) {

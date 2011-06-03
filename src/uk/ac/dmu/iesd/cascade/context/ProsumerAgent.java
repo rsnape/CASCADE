@@ -8,8 +8,6 @@ import repast.simphony.parameter.*;
 import repast.simphony.ui.probe.*;
 import uk.ac.dmu.iesd.cascade.Consts;
 
-
-
 /**
  *  A <em>ProsumerAgent</em> is an object which can both consume and generate 
  *  electricity at the same time. 
@@ -163,7 +161,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 **/
 	@ProbeID()
 	public String toString() {	
-		return getClass().getName()+" "+getAgentID();
+		return getAgentName()+" "+getAgentID();
 	}
 
 	/**

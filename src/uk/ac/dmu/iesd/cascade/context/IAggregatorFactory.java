@@ -16,6 +16,10 @@ import javax.accessibility.AccessibleContext;
  */
 
 public interface IAggregatorFactory {
-	public RECO createRECO(float[] baseProfile, boolean addNoise);
+	/**
+     * This method is used to create an instance of <code>RECO</code> (Retail Company) agent 
+     * @param   baseProfile   an array of float values
+     */
+	public RECO createRECO(float[] baseProfile);
 
 }

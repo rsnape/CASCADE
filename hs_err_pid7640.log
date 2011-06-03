@@ -1,0 +1,173 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x6d0b6b30, pid=7640, tid=6940
+#
+# JRE version: 6.0_22-b04
+# Java VM: Java HotSpot(TM) Client VM (17.1-b03 mixed mode windows-x86 )
+# Problematic frame:
+# C  [awt.dll+0xb6b30]
+#
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x01a01800):  JavaThread "AWT-Windows" daemon [_thread_in_native, id=6940, stack(0x26650000,0x27050000)]
+
+siginfo: ExceptionCode=0xc0000005, reading address 0x00000000
+
+Registers:
+EAX=0x2704f724, EBX=0x24bff020, ECX=0x000001d4, EDX=0x000000c0
+ESP=0x2704f70c, EBP=0x2704f8b8, ESI=0x00000000, EDI=0x000000c0
+EIP=0x6d0b6b30, EFLAGS=0x00010206
+
+Top of Stack: (sp=0x2704f70c)
+0x2704f70c:   2704f724 00001000 000004ba 24c9d9c8
+0x2704f71c:   00000015 000004ba 24c9d9c8 6d0aed4b
+0x2704f72c:   00000000 24d1df94 24c9d9c8 24c9d9c8
+0x2704f73c:   2704f71c 2704f8b8 0000032d 000004ba
+0x2704f74c:   24c9d9c8 6d0b271f 44974000 444b4000
+0x2704f75c:   000004ba 0000032d 24d1df80 6d0b31e1
+0x2704f76c:   6d0b367d 00000000 00000000 000004ba
+0x2704f77c:   00000015 00009824 01a01918 00000001 
+
+Instructions: (pc=0x6d0b6b30)
+0x6d0b6b20:   05 00 20 00 00 50 c1 e2 05 8d 44 24 14 50 8b fa
+0x6d0b6b30:   8b 16 57 c1 e1 05 51 56 ff 52 2c 85 c0 0f 8c 93 
+
+
+Stack: [0x26650000,0x27050000],  sp=0x2704f70c,  free space=27fd2704f228k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [awt.dll+0xb6b30]
+C  [awt.dll+0x9c74c]
+C  [USER32.dll+0x186ef]
+C  [USER32.dll+0x18876]
+C  [USER32.dll+0x170f4]
+C  [USER32.dll+0x1738f]
+C  [ntdll.dll+0x4627e]
+C  [USER32.dll+0x192a9]
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  sun.awt.windows.WToolkit.eventLoop()V+0
+j  sun.awt.windows.WToolkit.run()V+52
+j  java.lang.Thread.run()V+11
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x01a03400 JavaThread "D3D Screen Updater" daemon [_thread_blocked, id=7984, stack(0x2c0d0000,0x2cad0000)]
+  0x01a03000 JavaThread "DestroyJavaVM" [_thread_blocked, id=7960, stack(0x01ac0000,0x024c0000)]
+  0x01a02800 JavaThread "TimerQueue" daemon [_thread_blocked, id=1592, stack(0x2aa30000,0x2b430000)]
+  0x01a02400 JavaThread "AWT-EventQueue-0" [_thread_in_native, id=7688, stack(0x29f30000,0x2a930000)]
+=>0x01a01800 JavaThread "AWT-Windows" daemon [_thread_in_native, id=6940, stack(0x26650000,0x27050000)]
+  0x01a01000 JavaThread "AWT-Shutdown" [_thread_blocked, id=6428, stack(0x25c50000,0x26650000)]
+  0x01a00c00 JavaThread "Java2D Disposer" daemon [_thread_blocked, id=7416, stack(0x25250000,0x25c50000)]
+  0x01a00400 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=2972, stack(0x23e80000,0x24880000)]
+  0x01a14800 JavaThread "CompilerThread0" daemon [_thread_blocked, id=6992, stack(0x23e30000,0x23e80000)]
+  0x01a00000 JavaThread "Attach Listener" daemon [_thread_blocked, id=7516, stack(0x23430000,0x23e30000)]
+  0x019ff800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=6508, stack(0x22a30000,0x23430000)]
+  0x019d5400 JavaThread "Finalizer" daemon [_thread_blocked, id=5004, stack(0x22030000,0x22a30000)]
+  0x019d0800 JavaThread "Reference Handler" daemon [_thread_blocked, id=6800, stack(0x21630000,0x22030000)]
+
+Other Threads:
+  0x019ce000 VMThread [stack: 0x215e0000,0x21630000] [id=5968]
+  0x24890800 WatcherThread [stack: 0x24a80000,0x24ad0000] [id=6708]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ def new generation   total 4992K, used 4057K [0x044c0000, 0x04a20000, 0x0ca10000)
+  eden space 4480K,  90% used [0x044c0000, 0x048b0a78, 0x04920000)
+  from space 512K,   4% used [0x04920000, 0x049259e8, 0x049a0000)
+  to   space 512K,   0% used [0x049a0000, 0x049a0000, 0x04a20000)
+ tenured generation   total 10944K, used 9124K [0x0ca10000, 0x0d4c0000, 0x1d4c0000)
+   the space 10944K,  83% used [0x0ca10000, 0x0d2f9340, 0x0d2f9400, 0x0d4c0000)
+ compacting perm gen  total 19712K, used 19553K [0x1d4c0000, 0x1e800000, 0x214c0000)
+   the space 19712K,  99% used [0x1d4c0000, 0x1e7d87b8, 0x1e7d8800, 0x1e800000)
+No shared spaces configured.
+
+Dynamic libraries:
+0x00400000 - 0x00424000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\javaw.exe
+0x775c0000 - 0x776fd000 	C:\Windows\SYSTEM32\ntdll.dll
+0x77380000 - 0x77454000 	C:\Windows\system32\kernel32.dll
+0x759c0000 - 0x75a0a000 	C:\Windows\system32\KERNELBASE.dll
+0x76e10000 - 0x76eb0000 	C:\Windows\system32\ADVAPI32.dll
+0x76b70000 - 0x76c1c000 	C:\Windows\system32\msvcrt.dll
+0x76820000 - 0x76839000 	C:\Windows\SYSTEM32\sechost.dll
+0x76ac0000 - 0x76b61000 	C:\Windows\system32\RPCRT4.dll
+0x76fb0000 - 0x77079000 	C:\Windows\system32\USER32.dll
+0x76870000 - 0x768be000 	C:\Windows\system32\GDI32.dll
+0x777e0000 - 0x777ea000 	C:\Windows\system32\LPK.dll
+0x76780000 - 0x7681d000 	C:\Windows\system32\USP10.dll
+0x76840000 - 0x7685f000 	C:\Windows\system32\IMM32.DLL
+0x772b0000 - 0x7737c000 	C:\Windows\system32\MSCTF.dll
+0x7c340000 - 0x7c396000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\msvcr71.dll
+0x6d7f0000 - 0x6da97000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\client\jvm.dll
+0x73d60000 - 0x73d92000 	C:\Windows\system32\WINMM.dll
+0x75640000 - 0x7568b000 	C:\Windows\system32\apphelp.dll
+0x6d7a0000 - 0x6d7ac000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\verify.dll
+0x6d320000 - 0x6d33f000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\java.dll
+0x6d280000 - 0x6d288000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\hpi.dll
+0x76d60000 - 0x76d65000 	C:\Windows\system32\PSAPI.DLL
+0x6d7e0000 - 0x6d7ef000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\zip.dll
+0x6d000000 - 0x6d14a000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\awt.dll
+0x73190000 - 0x731e1000 	C:\Windows\system32\WINSPOOL.DRV
+0x77460000 - 0x775bc000 	C:\Windows\system32\ole32.dll
+0x743d0000 - 0x7456e000 	C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.7600.16661_none_420fe3fa2b8113bd\COMCTL32.dll
+0x76db0000 - 0x76e07000 	C:\Windows\system32\SHLWAPI.dll
+0x74060000 - 0x74073000 	C:\Windows\system32\DWMAPI.DLL
+0x74350000 - 0x74390000 	C:\Windows\system32\uxtheme.dll
+0x75690000 - 0x7569c000 	C:\Windows\system32\CRYPTBASE.dll
+0x6c7a0000 - 0x6c963000 	C:\Windows\system32\d3d9.dll
+0x74b60000 - 0x74b69000 	C:\Windows\system32\VERSION.dll
+0x74a20000 - 0x74a26000 	C:\Windows\system32\d3d8thk.dll
+0x6b730000 - 0x6c0da000 	C:\Windows\system32\nvd3dum.dll
+0x747e0000 - 0x74805000 	C:\Windows\system32\powrprof.dll
+0x77110000 - 0x772ad000 	C:\Windows\system32\SETUPAPI.dll
+0x75960000 - 0x75987000 	C:\Windows\system32\CFGMGR32.dll
+0x77080000 - 0x7710f000 	C:\Windows\system32\OLEAUT32.dll
+0x758b0000 - 0x758c2000 	C:\Windows\system32\DEVOBJ.dll
+0x6d230000 - 0x6d27f000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\fontmanager.dll
+0x75a10000 - 0x76659000 	C:\Windows\system32\shell32.dll
+0x6d600000 - 0x6d613000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\net.dll
+0x76d70000 - 0x76da5000 	C:\Windows\system32\WS2_32.dll
+0x77700000 - 0x77706000 	C:\Windows\system32\NSI.dll
+0x75170000 - 0x751ac000 	C:\Windows\system32\mswsock.dll
+0x75260000 - 0x75266000 	C:\Windows\System32\wship6.dll
+0x6d620000 - 0x6d629000 	C:\RepastSimphony-2.0-beta\eclipse\jre\bin\nio.dll
+0x766f0000 - 0x76773000 	C:\Windows\system32\CLBCatQ.DLL
+
+VM Arguments:
+jvm_args: -Xss10M -Xmx400M -Dfile.encoding=Cp1252 
+java_command: repast.simphony.runtime.RepastMain C:\RepastSimphony-2.0-beta\workspace\Cascade/Cascade.rs
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+CLASSPATH=.;C:\Program Files\Java\jre6\lib\ext\QTJava.zip
+PATH=C:/RepastSimphony-2.0-beta/eclipse/jre/bin/client;C:/RepastSimphony-2.0-beta/eclipse/jre/bin;C:/RepastSimphony-2.0-beta/eclipse/jre/lib/i386;C:\Program Files\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Intel\DMIX;C:\Program Files\QuickTime\QTSystem\
+USERNAME=bmahda00
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=x86 Family 6 Model 30 Stepping 5, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 7 Build 7600 
+
+CPU:total 8 (8 cores per cpu, 2 threads per core) family 6 model 30 stepping 5, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, ht
+
+Memory: 4k page, physical 3603752k(1897676k free), swap 7205740k(4618572k free)
+
+vm_info: Java HotSpot(TM) Client VM (17.1-b03) for windows-x86 JRE (1.6.0_22-b04), built on Sep 15 2010 00:56:36 by "java_re" with MS VC++ 7.1 (VS2003)
+
+time: Tue May 24 14:22:15 2011
+elapsed time: 3721 seconds
+

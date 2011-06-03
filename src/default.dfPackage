@@ -7,7 +7,7 @@ package id3d4zdgnlhffr7gnlkb4x4;
 */
 class diagram {
 /**
-@__ref <oiref:design#Class#id2iucsgnlhffr7gnlkb81g.diagram:oiref><oihard>
+@__ref <oiref:design#Class#idqe95go2vr06rgo2vttfs.diagram:oiref><oihard>
 @__modelType reference 
 */
 class reference {
@@ -21,7 +21,7 @@ class __tags {
 */
 class __options {
 }/**
-@__positions <oigroup:<oiref:design#Class#id2iucsgnlhffr7gnlkb81g.diagram:oiref>=10,10,63,82,1:oigroup> 
+@__positions 
 */
 class __positions {
 }
