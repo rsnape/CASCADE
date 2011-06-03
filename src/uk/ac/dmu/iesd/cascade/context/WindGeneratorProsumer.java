@@ -159,7 +159,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	/**
 	 * @return
 	 */
-	private float currentGeneration() {
+	protected float currentGeneration() {
 		float returnAmount = 0;
 
 		returnAmount = returnAmount + windGeneration();
