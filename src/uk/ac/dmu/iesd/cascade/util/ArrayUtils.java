@@ -15,7 +15,7 @@ package uk.ac.dmu.iesd.cascade.util;
  */
 public class ArrayUtils {
 	
-	public static int[] convertStringArraytoIntArray(String[] sarray) {
+	public static int[] convertStringArrayToIntArray(String[] sarray) {
 		if (sarray != null) {
 		int intarray[] = new int[sarray.length];
 		for (int i = 0; i < sarray.length; i++) {
@@ -26,7 +26,7 @@ public class ArrayUtils {
 		return null;
 		}
 	
-	public static float[] convertStringArraytofloatArray(String[] sarray) {
+	public static float[] convertStringArrayToFloatArray(String[] sarray) {
 		if (sarray != null) {
 		float floatarray[] = new float[sarray.length];
 		for (int i = 0; i < sarray.length; i++) {
@@ -37,17 +37,22 @@ public class ArrayUtils {
 		return null;
 		}
 	
-	public static double[] convertStringArraytodoubleArray(String[] sarray) {
-		if (sarray != null) {
-		double doublearray[] = new double[sarray.length];
-		for (int i = 0; i < sarray.length; i++) {
-		doublearray[i] = Double.parseDouble(sarray[i]);
-		
+	
+	/*
+	 * Tried a different implementation here - could test which is quicker...
+	 */
+	public static double[] convertStringArrayToDoubleArray(String[] array)
+	{
+		int i = 0;
+		double[] returnArray = new double[array.length];
+		for(String s: array)
+		{
+			returnArray[i] = Double.parseDouble(s);
+			i++;
 		}
-		return doublearray;
-		}
-		return null;
-		}
+		return returnArray;
+	}
+
 	
 	public static int sum(int[] intArray)
 	{
@@ -228,5 +233,7 @@ public class ArrayUtils {
 		
 		return index;
 	}
+	
+
 
 }

@@ -127,7 +127,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float minSetPoint;  // The minimum temperature for this Household's building in centigrade (where relevant)
 	float maxSetPoint;  // The maximum temperature for this Household's building in centigrade (where relevant)
 	float currentInternalTemp;
-	
+
 	//Occupancy information
 	int numOccupants;
 	int numAdults;
@@ -152,12 +152,22 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float transmitPropensityProEnvironmental;
 	float visibilityMicrogen;
 
-	
+
 	/*
 	 * This may or may not be used, but is a threshold cost above which actions
 	 * take place for the household
 	 */
 	float costThreshold;
+
+	/**
+	 * Richard hack to get DEFRA profiles going
+	 */
+	protected float microgenPropensity;
+	protected float insulationPropensity;
+	protected float HEMSPropensity;
+	protected float EVPropensity;
+	protected float habit;
+	protected int defraCategory;
 
 	/*
 	 * Accessor functions (NetBeans style)
@@ -170,21 +180,21 @@ public class HouseholdProsumer extends ProsumerAgent{
 	}
 
 
-	
-	  /**
-     * Returns a string representing the state of this agent. This 
-     * method is intended to be used for debugging purposes, and the 
-     * content and format of the returned string should include the states (variables/parameters)
-     * which are important for debugging purpose.
-     * The returned string may be empty but may not be <code>null</code>.
-     * 
-     * @return  a string representation of this agent's state parameters
-     */
-    protected String paramStringReport(){
-    	String str="";
-    	return str;
-    	
-    }
+
+	/**
+	 * Returns a string representing the state of this agent. This 
+	 * method is intended to be used for debugging purposes, and the 
+	 * content and format of the returned string should include the states (variables/parameters)
+	 * which are important for debugging purpose.
+	 * The returned string may be empty but may not be <code>null</code>.
+	 * 
+	 * @return  a string representation of this agent's state parameters
+	 */
+	protected String paramStringReport(){
+		String str="";
+		return str;
+
+	}
 
 
 	public float getUnadaptedDemand(){
@@ -193,6 +203,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return (baseDemandProfile[index]) - currentGeneration();
 	}
 
+	public int getDefraCategory()
+	{
+		return defraCategory;
+	}
 
 
 
@@ -220,7 +234,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		int time = (int) RepastEssentials.GetTickCount();
 		int timeOfDay = (time % ticksPerDay);
 		CascadeContext myContext = this.getContext();
-		
+
 
 		checkWeather(time);
 
@@ -239,7 +253,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else if (hasSmartMeter && exercisesBehaviourChange) {
 			learnBehaviourChange();
 			setNetDemand(evaluateBehaviour(time));
-			//learnSmartAdoptionDecision(time);
+			learnSmartAdoptionDecision(time);
 		}
 		else
 		{
@@ -433,7 +447,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
 		}
 	}
-	
+
 	private void smartControlLearn(int time)
 	{
 		// smart device (optimisation) learning in here
@@ -442,7 +456,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 		float moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
 		float [] daysCostSignal = new float [ticksPerDay];
 		float [] daysOptimisedDemand = new float [ticksPerDay];
-		System.out.println("predictedCostSignal "+predictedCostSignal+" time "+time+ " predictionValidTime "+predictionValidTime+" daysCostSignal "+ daysCostSignal +" ticksPerDay "+ticksPerDay);
+		if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
+		{
+			System.out.println("predictedCostSignal "+predictedCostSignal+" time "+time+ " predictionValidTime "+predictionValidTime+" daysCostSignal "+ daysCostSignal +" ticksPerDay "+ticksPerDay);
+		}
 		System.arraycopy(predictedCostSignal, time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
 
 		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
@@ -490,18 +507,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 		hasSmartControl = false;
 		return;
 	}
-	
+
 	private void learnSmartAdoptionDecision(int time)
 	{
-		
+
 		// TODO: implement learning whether to adopt smart control in here
 		// Could be a TpB based model.
 		float inwardInfluence = 0;
-		float internalInfluence = 0;
+		float internalInfluence = this.HEMSPropensity;
 		Iterable socialConnections = FindNetwork("socialNetwork").getInEdges(this);
 		// Get social influence - note communication is not every tick
 		// hence the if clause
-		if ((time % (21 * ticksPerDay)) == 0)
+		//if ((time % (21 * ticksPerDay)) == 0)
 		{
 
 			for (Object thisConn: socialConnections)
@@ -516,6 +533,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 
 		float decisionCriterion = inwardInfluence + internalInfluence;
+		this.HEMSPropensity = decisionCriterion;
 		if(decisionCriterion > (Double) GetParameter("smartControlDecisionThreshold")) 
 		{
 			hasSmartControl = true;
@@ -545,5 +563,5 @@ public class HouseholdProsumer extends ProsumerAgent{
 	}
 
 
-	
+
 }

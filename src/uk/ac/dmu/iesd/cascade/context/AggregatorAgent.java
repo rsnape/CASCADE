@@ -286,7 +286,10 @@ public class AggregatorAgent implements ICognitiveAgent {
 		//Set the predicted demand for next day to the sum of the demand at this time today.
 		//TODO: This is naive
 		
+		if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
+		{
 		System.out.println("Setting predicted demand at " + timeOfDay + " to " + sumDemand);
+		}
 		predictedCustomerDemand[timeOfDay] = sumDemand;
 
 		//TODO I've started too complicated here - first put out flat prices (as per today), then E7, then stepped ToU, then a real dynamic one like this...
@@ -343,7 +346,10 @@ public class AggregatorAgent implements ICognitiveAgent {
 			//TODO: unify units throughout the model
 			x = (predictedCustomerDemand[i % ticksPerDay] / 10 ) / (Consts.MAX_SUPPLY_CAPACITY_GWATTS - Consts.MAX_GENERATOR_CAPACITY_GWATTS);
 			price = (float) (A * Math.exp(B * x) + C);
+			if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
+			{
 			System.out.println("Price at tick" + i + " is " + price);
+			}
 			if (price > Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH) 
 			{
 				price = Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH;
