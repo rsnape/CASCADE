@@ -29,6 +29,8 @@ import uk.ac.dmu.iesd.cascade.Consts;
  * 1.2. - implements ICognitiveAgent (Babak)
  * 1.3. - changed constructor, modified/added/removed methods, made the class properly abstract,
  *        sub-classes will/should not override the methodes defined here, except those made abstract (Babak) 
+ *    
+ *        ----Extra comment added to test git ignore----
  */
 public abstract class ProsumerAgent implements ICognitiveAgent {
 
