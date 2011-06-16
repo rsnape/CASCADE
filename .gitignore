@@ -1,3 +1,5 @@
 # Ignored files
 velocity.log
+bin/
+*ModelOutput*
 
