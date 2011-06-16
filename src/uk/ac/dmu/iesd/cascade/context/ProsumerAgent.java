@@ -260,6 +260,36 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	//TODO: methodes declcared from here until the end of this class 
 	//may be changed/removed
 	//---------------------------------------------------------------
+	
+	/*
+	 * Method used by display visualisation.  Shouldn't normally be read by others outside
+	 * the scope...
+	 * 
+	 * TODO: Is this implementation the best?
+	 * 
+	 * @return boolean indicating whether this prosumer has a smart control device
+	 */
+	public boolean getHasSmartControl()
+	{
+		return hasSmartControl;
+	}
+	
+	/*
+	 * Hacky mcHack to get the Repast Simphony visualisation working with this agent quickly
+	 * 
+	 * TODO:  Something better than this needed...
+	 */
+	public float getHasSmartControlAsFloat()
+	{
+		if (hasSmartControl)
+		{
+			return 1f;
+		}
+		else
+		{
+			return 0f;
+		}
+	}
 
 	public int getPredictedCostSignalLength() {
 		return predictedCostSignalLength;

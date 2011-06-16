@@ -3,6 +3,8 @@ package uk.ac.dmu.iesd.cascade.context;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.Iterator;
+
 import repast.simphony.context.Context;
 import repast.simphony.context.DefaultContext;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -14,6 +16,7 @@ import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.Parameters;
+import repast.simphony.query.*;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
@@ -110,9 +113,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			weatherReader = new CSVReader(weatherFile);
 			weatherReader.parseByColumn();
 
-			cascadeMainContext.insolationArray = ArrayUtils.convertStringArraytofloatArray(weatherReader.getColumn("insolation"));
-			cascadeMainContext.windSpeedArray = ArrayUtils.convertStringArraytofloatArray(weatherReader.getColumn("windSpeed"));
-			cascadeMainContext.airTemperatureArray = ArrayUtils.convertStringArraytofloatArray(weatherReader.getColumn("airTemp"));
+			cascadeMainContext.insolationArray = ArrayUtils.convertStringArrayToFloatArray(weatherReader.getColumn("insolation"));
+			cascadeMainContext.windSpeedArray = ArrayUtils.convertStringArrayToFloatArray(weatherReader.getColumn("windSpeed"));
+			cascadeMainContext.airTemperatureArray = ArrayUtils.convertStringArrayToFloatArray(weatherReader.getColumn("airTemp"));
 			cascadeMainContext.weatherDataLength = cascadeMainContext.insolationArray.length;
 
 		} catch (FileNotFoundException e) {
@@ -128,7 +131,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		try {
 			systemBasePriceReader = new CSVReader(systemDemandFile);
 			systemBasePriceReader.parseByColumn();
-			float[] systemBasePriceSignal = ArrayUtils.convertStringArraytofloatArray(systemBasePriceReader.getColumn("demand"));
+			float[] systemBasePriceSignal = ArrayUtils.convertStringArrayToFloatArray(systemBasePriceReader.getColumn("demand"));
 			cascadeMainContext.systemPriceSignalDataLength = systemBasePriceSignal.length;
 			cascadeMainContext.systemPriceSignalDataArray = Arrays.copyOf(systemBasePriceSignal, systemBasePriceSignal.length);
 		} catch (FileNotFoundException e) {
@@ -158,7 +161,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
 			if (cascadeMainContext.verbose)
 				System.out.println("householdBaseDemandArray is initialised with profile " + demandName);
-			householdBaseDemandArray = ArrayUtils.convertStringArraytofloatArray(baseDemandReader.getColumn(demandName));
+			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
 
 
 		} catch (FileNotFoundException e) {
@@ -192,25 +195,24 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		// thisContext.addSubContext(new DefaultContext("Households"));
 		// Context householdContext = RepastEssentials.CreateNetwork(parentContextPath, netName, isDirected, agentClassName, fileName, format)
 		
-		ProsumerFactory prosumerFactroy = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
+		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 		
-		for (int i = 0; i < numProsumers; i++) {
+		/* -----------
+		 * Richard's DEFRA TEST *****
+		 * 
+		 * replaced the loop here with the DEFRA consumers
+		 */
+	/*	for (int i = 0; i < numProsumers; i++) {
 			HouseholdProsumer hhProsAgent = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
 			cascadeMainContext.add(hhProsAgent);			
-		}
+		} */
 		
+		String dataFileFolderPath = (String)params.getValue("dataFileFolder");
+		String DEFRAcatFileName = dataFileFolderPath + "\\" + (String)params.getValue("defraCategories");
+		String DEFRAprofileFileName = dataFileFolderPath + "\\" + (String)params.getValue("defraProfiles");
 		
-		//A 2 MW windmill
-		ProsumerAgent firstWindmill = prosumerFactroy.createPureGenerator(2000, GENERATOR_TYPE.WIND);
-		//ProsumerAgent firstWindmill = createPureGenerator(2000, GENERATOR_TYPE.WIND);
-		cascadeMainContext.add(firstWindmill);
-		
-	
-		//Secondly add aggregator(s)
-		AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
-		cascadeMainContext.add(firstAggregator);
-		
-		
+		cascadeMainContext.addAll(prosumerFactory.createDEFRAHouseholds(numProsumers, DEFRAcatFileName, DEFRAprofileFileName));
+				
 		//Create the household social network before other agent types are added to the context.
 		NetworkFactory smartFactory = NetworkFactoryFinder.createNetworkFactory(null);
 		
@@ -224,12 +226,46 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		//set weight of each social contact - initially random
 		//this will represent the influence a contact may have on another
 		//Note that influence of x on y may not be same as y on x - which is realistic
+
+		
 		for (Object thisEdge : social.getEdges())
 		{
 			((RepastEdge) thisEdge).setWeight(RandomHelper.nextDouble());			
 		}
+		
+		Query<HouseholdProsumer> cat1Query = new PropertyEquals(cascadeMainContext, "defraCategory",1);
+		Iterable<HouseholdProsumer> cat1Agents = cat1Query.query();
+		
+		//TODO: This is a test specific block - remove JRS
+		int k=0;
+		Iterator cat1Iterator = cat1Agents.iterator();
+		while(cat1Iterator.hasNext())
+		{
+			cat1Iterator.next();
+			k++;
+		}
+		System.out.println(" There are " + k + " category 1 agents");
+		
+		for (HouseholdProsumer prAgent : cat1Agents)
+		{
+			for (HouseholdProsumer target : cat1Agents)
+			{
+				social.addEdge(prAgent, target, Consts.COMMON_INTEREST_GROUP_WEIGHT);
+			}
+		}
+		
 		//Add in some generators
+		//A 2 MW windmill
+		ProsumerAgent firstWindmill = prosumerFactory.createPureGenerator(2000, GENERATOR_TYPE.WIND);
+		//ProsumerAgent firstWindmill = createPureGenerator(2000, GENERATOR_TYPE.WIND);
+		cascadeMainContext.add(firstWindmill);
+		
 	
+		//Secondly add aggregator(s)
+		AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(firstAggregator);
+		
+		
 		/*
 		 * Create the projections needed in the context and add agents to those projections
 		 */

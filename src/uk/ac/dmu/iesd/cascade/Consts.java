@@ -77,7 +77,16 @@ public final class Consts {
 	/**
 	 * Initial fraction of households who have a smart controller.
 	 */
-	public static final double HOUSEHOLDS_WITH_SMART_CONTROL = 0.1;  
+	public static final double HOUSEHOLDS_WITH_SMART_CONTROL = 0.1;
+
+
+	/**
+	 * System exit error codes for different types of error
+	 */
+	public static final int BAD_FILE_ERR_CODE = 1;
+
+
+	public static final double COMMON_INTEREST_GROUP_WEIGHT = 0.95;  
 	
 	/*
 	 * Generators
