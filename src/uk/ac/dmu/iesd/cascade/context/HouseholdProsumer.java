@@ -89,7 +89,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	boolean hasHotWaterStorage = false;
 	boolean hasSpaceHeatStorage = false;
 
-
 	/*
 	 * the rated power of the various technologies / appliances we are interested in
 	 * 
@@ -112,6 +111,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float ratedCapacityHotWaterStorage;
 	float ratedCapacitySpaceHeatStorage; // Note - related to thermal mass
 
+	/*
+	 * Appliance ownership parameters.  All default to false - should
+	 * be set whilst building the scenario
+	 */
+	boolean hasFridgeFreezer;	
+	boolean hasRefrigerator;	
+	boolean hasUprightFreezer;	
+	boolean hasChestFreezer;		
+	boolean hasWashingMachine;	
+	boolean hasWasherDryer;	
+	boolean hasTumbleDryer;	
+	boolean hasDishWasher;
 
 	// For Households' heating requirements
 	float buildingHeatCapacity;
@@ -135,7 +146,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	int numTeenagers;
 	int[] occupancyProfile;
 
-
 	/*
 	 * Specifically, a household may have a certain percentage of demand
 	 * that it believes is moveable and / or a certain maximum time shift of demand
@@ -151,7 +161,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float transmitPropensitySmartControl;
 	float transmitPropensityProEnvironmental;
 	float visibilityMicrogen;
-
 
 	/*
 	 * This may or may not be used, but is a threshold cost above which actions
@@ -169,17 +178,80 @@ public class HouseholdProsumer extends ProsumerAgent{
 	protected float habit;
 	protected int defraCategory;
 
-	/*
+	/**
 	 * Accessor functions (NetBeans style)
 	 * TODO: May make some of these private to respect agent conventions of autonomy / realistic simulation of humans
 	 */
 
-
 	public float getSetPoint() {
 		return setPoint;
 	}
+	
+	public boolean isHasElectricalWaterHeat() {
+		return hasElectricalWaterHeat;
+	}
 
+	public void setHasElectricalWaterHeat(boolean hasElectricalWaterHeat) {
+		this.hasElectricalWaterHeat = hasElectricalWaterHeat;
+	}
 
+	public boolean isHasElectricalSpaceHeat() {
+		return hasElectricalSpaceHeat;
+	}
+
+	public void setHasElectricalSpaceHeat(boolean hasElectricalSpaceHeat) {
+		this.hasElectricalSpaceHeat = hasElectricalSpaceHeat;
+	}
+	public boolean isHasWashingMachine() {
+		return hasWashingMachine;
+	}
+
+	public void setHasWashingMachine(boolean hasWashingMachine) {
+		this.hasWashingMachine = hasWashingMachine;
+	}
+
+	public boolean isHasWasherDryer() {
+		return hasWasherDryer;
+	}
+
+	public void setHasWasherDryer(boolean hasWasherDryer) {
+		this.hasWasherDryer = hasWasherDryer;
+	}
+
+	public boolean isHasTumbleDryer() {
+		return hasTumbleDryer;
+	}
+
+	public void setHasTumbleDryer(boolean hasTumbleDryer) {
+		this.hasTumbleDryer = hasTumbleDryer;
+	}
+
+	public boolean isHasDishWasher() {
+		return hasDishWasher;
+	}
+
+	public void setHasDishWasher(boolean hasDishWasher) {
+		this.hasDishWasher = hasDishWasher;
+	}
+
+	public int getNumOccupants() {
+		return numOccupants;
+	}
+
+	public void setNumOccupants(int numOccupants) {
+		this.numOccupants = numOccupants;
+	}
+
+	public float getUnadaptedDemand(){
+		// Cope with tick count being null between project initialisation and start.
+		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
+		return (baseDemandProfile[index]) - currentGeneration();
+	}
+
+	public int getDefraCategory()
+	{
+		return defraCategory;
+	}
 
 	/**
 	 * Returns a string representing the state of this agent. This 
@@ -195,24 +267,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return str;
 
 	}
-
-
-	public float getUnadaptedDemand(){
-		// Cope with tick count being null between project initialisation and start.
-		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
-		return (baseDemandProfile[index]) - currentGeneration();
-	}
-
-	public int getDefraCategory()
-	{
-		return defraCategory;
-	}
-
-
-
-	/*
-	 * Step behaviour
-	 */
 
 	/******************
 	 * This method defines the step behaviour of a prosumer agent
@@ -262,8 +316,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 			learnSmartAdoptionDecision(time);
 		}
-
-
 
 		// Return (this will be false if problems encountered).
 		//return returnValue;
@@ -540,7 +592,38 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 	}
 
+	/**
+	 * This method uses rule set as described in Boait et al draft paper to assign
+	 * cold appliance ownership on a stochastic, but statistically representative, basis.
+	 */
+	private void setUpColdApplianceOwnership()
+	{
+		// Set up cold appliance ownership
+		if(RandomHelper.nextDouble() < 0.651)
+		{
+			this.hasFridgeFreezer = true;
+			if (RandomHelper.nextDouble() < 0.15)
+			{
+				this.hasRefrigerator = true;
+			}
+		}
+		else
+		{
+			if (RandomHelper.nextDouble() < 0.95)
+			{
+				this.hasRefrigerator = true;
+			}
+			if (RandomHelper.nextDouble() < 0.835)
+			{
+				this.hasUprightFreezer = true;
+			}
+		}
 
+		if (RandomHelper.nextDouble() < 0.163)
+		{
+			this.hasChestFreezer = true;
+		}
+	}
 
 	/**
 	 * Constructor
@@ -549,6 +632,12 @@ public class HouseholdProsumer extends ProsumerAgent{
 		super(context);
 		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
 		this.ticksPerDay = context.getTickPerDay();
+		//Assign hot water storage capacity - note from a uniform distribution - may not be realistic.  TODO: Add realistic pdf of this distribution
+		this.ratedCapacityHotWaterStorage = RandomHelper.nextIntFromTo(Consts.MIN_HOUSHOLD_HOT_WATER_CAP, Consts.MAX_HOUSHOLD_HOT_WATER_CAP);
+		this.waterTemperature = Consts.DOMESTIC_SAFE_WATER_TEMP;
+
+		setUpColdApplianceOwnership();
+
 		if (baseDemand.length % ticksPerDay != 0)
 		{
 			System.err.println("baseDemand array not a whole number of days");

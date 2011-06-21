@@ -15,6 +15,8 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 
+import uk.ac.dmu.iesd.cascade.Consts;
+
 /**
  * Parses comma-separated variable (CSV) files and reads them into string arrays.
  * 
@@ -134,8 +136,10 @@ public class CSVReader {
 			}
 		}
 
-		System.out.println("Parsed file - " + numCols + " columns and " + numRows + " rows.");
-
+		if(Consts.DEBUG)
+		{
+			System.out.println("Parsed file - " + numCols + " columns and " + numRows + " rows.");
+		}
 	}
 
 	public String[] getColumn(String colName){

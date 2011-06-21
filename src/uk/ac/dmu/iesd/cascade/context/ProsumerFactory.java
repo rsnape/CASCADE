@@ -179,7 +179,6 @@ public class ProsumerFactory implements IProsumerFactory {
 
 		Empirical myDist = RandomHelper.createEmpirical(ArrayUtils.convertStringArrayToDoubleArray(defraCategories.getColumn("Population_fraction")), Empirical.NO_INTERPOLATION);
 
-		System.out.println("Trying to find category");
 		for (int j = 0; j < number; j++)
 		{
 
@@ -195,7 +194,7 @@ public class ProsumerFactory implements IProsumerFactory {
 				i++;
 			}
 
-			//if (Consts.DEBUG)
+			if (Consts.DEBUG)
 			{
 				System.out.println("DEFRA Customer segment is"  + custSegment);
 			}
@@ -213,7 +212,6 @@ public class ProsumerFactory implements IProsumerFactory {
 			prAgent.hasElectricVehicle =  (RandomHelper.nextDouble() < prAgent.EVPropensity);
 
 			returnList.add(prAgent);
-			System.out.println("Added prosumer " + prAgent.agentName);
 		}
 
 		return returnList;

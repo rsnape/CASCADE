@@ -24,7 +24,6 @@ import uk.ac.dmu.iesd.cascade.Consts;
  * Version history (for intermediate steps see Git repository history
  * 
  * 1.0 - Initial basic functionality including pure elastic reaction to price signal
- * 1.01 - Introduction of smart adaptation in addition to elastic behavioural adaptation
  * 1.1 - refactor to an abstract class holding only generic prosumer functions
  * 1.2. - implements ICognitiveAgent (Babak)
  * 1.3. - changed constructor, modified/added/removed methods, made the class properly abstract,

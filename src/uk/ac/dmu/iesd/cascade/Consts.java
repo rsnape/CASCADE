@@ -78,7 +78,21 @@ public final class Consts {
 	 * Initial fraction of households who have a smart controller.
 	 */
 	public static final double HOUSEHOLDS_WITH_SMART_CONTROL = 0.1;
-
+	
+	/**
+	 * Maximum domestic hot water storage capacity (litres)
+	 */
+	public static final int MAX_HOUSHOLD_HOT_WATER_CAP = 50;
+	
+	/**
+	 * Minimum domestic hot water storage capacity (litres)
+	 */
+	public static final int MIN_HOUSHOLD_HOT_WATER_CAP = 20;
+	
+	/**
+	 * Mimimum hot water temperature for safety (degrees C)
+	 */
+	public static final int DOMESTIC_SAFE_WATER_TEMP = 50;
 
 	/**
 	 * System exit error codes for different types of error
@@ -86,7 +100,11 @@ public final class Consts {
 	public static final int BAD_FILE_ERR_CODE = 1;
 
 
-	public static final double COMMON_INTEREST_GROUP_WEIGHT = 0.95;  
+	public static final double COMMON_INTEREST_GROUP_EDGE_WEIGHT = 0.95;  
+	
+	public static final Integer[] NUM_OF_OCCUPANTS_ARRAY = {0,1,2,3,4,5,6,7,8};
+	public static final double[] OCCUPANCY_PROBABILITY_ARRAY = {0.300206371,0.341735335,0.15506365,0.133630415,0.049359587,0.014498622,0.003377304,0.002128716};
+	
 	
 	/*
 	 * Generators
