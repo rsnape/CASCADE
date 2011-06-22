@@ -382,6 +382,73 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	/**
+	 * Method to return current demand.
+	 * 
+	 * 
+	 */
+	private float currentDemand() {
+		float returnAmount = 0;
+
+		returnAmount = returnAmount + lightingDemand() + miscBrownDemand() + cookingDemand() + coldApplianceDemand() + wetApplianceDemand() + heatingDemand();
+		if (Consts.DEBUG)
+		{
+			if (returnAmount != 0)
+			{
+				System.out.println("Total demand (not net against generation) " + returnAmount);
+			}
+		}
+		return returnAmount;
+	}
+
+	/**
+	 * @return
+	 */
+	private float heatingDemand() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private float wetApplianceDemand() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private float cookingDemand() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private float coldApplianceDemand() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private float miscBrownDemand() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return
+	 */
+	private float lightingDemand() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 	/**
 	 * @param time
