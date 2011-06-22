@@ -82,17 +82,22 @@ public final class Consts {
 	/**
 	 * Maximum domestic hot water storage capacity (litres)
 	 */
-	public static final int MAX_HOUSHOLD_HOT_WATER_CAP = 50;
+	public static final int MAX_HOUSHOLD_HOT_WATER_USE = 50;
 	
 	/**
 	 * Minimum domestic hot water storage capacity (litres)
 	 */
-	public static final int MIN_HOUSHOLD_HOT_WATER_CAP = 20;
+	public static final int MIN_HOUSHOLD_HOT_WATER_USE = 20;
 	
 	/**
 	 * Mimimum hot water temperature for safety (degrees C)
 	 */
 	public static final int DOMESTIC_SAFE_WATER_TEMP = 50;
+	
+	/**
+	 * The typical heat pump coefficient of performance for a domestic dwelling
+	 */
+	public static final float DOMESTIC_HEAT_PUMP_COP = 2.4f;
 
 	/**
 	 * System exit error codes for different types of error
@@ -105,7 +110,13 @@ public final class Consts {
 	public static final Integer[] NUM_OF_OCCUPANTS_ARRAY = {0,1,2,3,4,5,6,7,8};
 	public static final double[] OCCUPANCY_PROBABILITY_ARRAY = {0.300206371,0.341735335,0.15506365,0.133630415,0.049359587,0.014498622,0.003377304,0.002128716};
 	
-	
+	public static final float[] BASIC_AVERAGE_SET_POINT_PROFILE = {19.5f,19,18.5f,18,18,18,18,18,18,18,18,18,18.25f,18.5f,18.75f,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19.2f,19.4f,19.6f,19.8f,20,20.2f,20.4f,20.6f,20.8f,21,21,21,21,21,21,21,20.5f,20};
+
+
+	public static final float HEAT_PUMP_THRESHOLD_TEMP_DIFF = 3;
+
+
+	public static final float[] MONTHLY_MAINS_WATER_TEMP = {5,5,6,8,10,12,12,12,10,8,6,5};
 	/*
 	 * Generators
 	 */

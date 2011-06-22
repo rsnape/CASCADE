@@ -9,7 +9,7 @@ import uk.ac.dmu.iesd.cascade.context.ProsumerAgent;
  * @author jsnape
  *
  */
-public class BasicSmartController {
+public class BasicSmartController implements ISmartController {
 
 	ProsumerAgent owner;
 	

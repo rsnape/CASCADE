@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import cern.jet.random.Normal;
+
 import repast.simphony.context.Context;
 import repast.simphony.context.DefaultContext;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -39,7 +41,7 @@ import uk.ac.dmu.iesd.cascade.util.*;
 /**
  * @author J. Richard Snape
  * @author Babak Mahdavi
- * @version $Revision: 1.2 $ $Date: 2011/05/13 14:00:00 $
+ * @version $Revision: 1.3 $ $Date: 2011/06/21 12:52:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
@@ -50,6 +52,9 @@ import uk.ac.dmu.iesd.cascade.util.*;
  *       Restructured the build method by adding private sub-methods;
  *       ContextBuilder type has been changed from ProsumerAgent to Object
  *       Babak 
+ * 1.3 - Added facility to pre-condition household prosumer agents with statistically determined
+ * 		 occupancy and appliance ownership.  This enables far greater detail of
+ * 		 demand calculation within the prosumer agents.  Richard
  * 
  */
 
@@ -69,8 +74,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	int numProsumers; //number of Prosumers
 	float[] householdBaseDemandArray = null;
 	//int ticksPerDay;
-	int numDemandColumns ;
-
+	int numDemandColumns;
+	Normal thermalMassGenerator = RandomHelper.createNormal(275,75);
+	Normal buildingLossRateGenerator = RandomHelper.createNormal(12.5, 2.5);
+	float[] monthlyMainsWaterTemp = new float[12];
 
 	/*
 	 * Builds the <tt> Cascade Context </tt> (by calling other private sub-methods)
@@ -175,6 +182,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}
+		
+		this.monthlyMainsWaterTemp = Consts.MONTHLY_MAINS_WATER_TEMP;
 	}
 
 
@@ -257,6 +266,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			{
 				thisAgent.hasDishWasher = true;
 			}
+			
+			thisAgent.setBuildingHeatLossRate((float) buildingLossRateGenerator.nextDouble());
+			thisAgent.setBuildingThermalMass((float) thermalMassGenerator.nextDouble());
+
 		}
 
 		//assign electric water heating and space heating
@@ -313,18 +326,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		Query<HouseholdProsumer> cat1Query = new PropertyEquals(cascadeMainContext, "defraCategory",1);
 		Iterable<HouseholdProsumer> cat1Agents = cat1Query.query();
 
-		//TODO: This is a test specific block - remove JRS
-		int k=0;
-		Iterator cat1Iterator = cat1Agents.iterator();
-		while(cat1Iterator.hasNext())
-		{
-			cat1Iterator.next();
-			k++;
-		}
-
 		if(Consts.DEBUG)
 		{
-			System.out.println(" There are " + k + " category 1 agents");
+			System.out.println(" There are " + IterableUtils.count(cat1Agents) + " category 1 agents");
 		}
 
 		for (HouseholdProsumer prAgent : cat1Agents)

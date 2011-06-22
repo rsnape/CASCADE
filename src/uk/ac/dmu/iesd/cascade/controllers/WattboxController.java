@@ -23,7 +23,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
  * projected load for the following day
  * 
  */
-public class WattboxController{
+public class WattboxController implements ISmartController{
 	
 	HouseholdProsumer owner;
 	WattboxUserProfile userProfile;
