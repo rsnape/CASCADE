@@ -57,7 +57,7 @@ public class ArrayUtils {
 	public static int sum(int[] intArray)
 	{
 		int sum = 0;
-		for (int i = 1; i < intArray.length; i++)
+		for (int i = 0; i < intArray.length; i++)
 		{
 			sum = sum + intArray[i];
 		}
@@ -67,7 +67,7 @@ public class ArrayUtils {
 	public static double sum(double[] doubleArray)
 	{
 		double sum = 0;
-		for (int i = 1; i < doubleArray.length; i++)
+		for (int i = 0; i < doubleArray.length; i++)
 		{
 			sum = sum + doubleArray[i];
 		}
@@ -77,7 +77,7 @@ public class ArrayUtils {
 	public static float sum(float[] floatArray)
 	{
 		float sum = 0;
-		for (int i = 1; i < floatArray.length; i++)
+		for (int i = 0; i < floatArray.length; i++)
 		{
 			sum = sum + floatArray[i];
 		}
@@ -232,6 +232,31 @@ public class ArrayUtils {
 		}
 		
 		return index;
+	}
+	
+	public static float[] add(float[]... arrays)
+	{
+		int arrayLength = arrays[0].length;
+		float[] returnArray = new float[arrayLength];
+		for ( float[] array : arrays)
+		{
+			for (int i = 0; i < arrayLength; i++)
+			{
+				returnArray[i] = returnArray[i] + array[i];
+			}
+		}
+		
+		return returnArray;
+	}
+	
+	public static float[] negate(float[] array)
+	{
+		float[] returnArray = new float[array.length];
+		for (int i = 0; i < array.length; i++)
+		{
+			returnArray[i] = -array[i];
+		}
+		return returnArray;
 	}
 	
 }

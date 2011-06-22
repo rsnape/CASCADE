@@ -117,6 +117,19 @@ public final class Consts {
 
 
 	public static final float[] MONTHLY_MAINS_WATER_TEMP = {5,5,6,8,10,12,12,12,10,8,6,5};
+
+
+	public static final float MAX_INSOLATION = 170f;
+	
+	public static final int HEAT_PUMP_MIN_SWITCHOFF = 1;
+	public static final int HEAT_PUMP_MAX_SWITCHOFF = 8;
+
+
+	public static final int MELODY_MODELS_TICKS_PER_DAY = 48;
+
+
+	public static final int DAYS_PER_YEAR = 365;
+	
 	/*
 	 * Generators
 	 */

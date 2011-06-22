@@ -343,7 +343,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		// TODO: may have to refine this - do we differentiate smart meter and smart display - i.e. whether receive only or Tx/Rx
 		if(hasSmartMeter && predictedCostSignalLength > 0)
 		{
-			float predictedCostNow = predictedCostSignal[timeSinceSigValid % predictedCostSignalLength];
+			float predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % predictedCostSignalLength];
 			if ( predictedCostNow > costThreshold){
 				//Infinitely elastic version (i.e. takes no account of percenteageMoveableDemand
 				// TODO: Need a better logging system than this - send logs with a level and output to
@@ -390,7 +390,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		float moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
 		float [] daysCostSignal = new float [ticksPerDay];
 		float [] daysOptimisedDemand = new float [ticksPerDay];
-		System.arraycopy(predictedCostSignal, time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
 
 		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
 
@@ -431,7 +431,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		float moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
 		float [] daysCostSignal = new float [ticksPerDay];
 		float [] daysOptimisedDemand = new float [ticksPerDay];
-		System.arraycopy(predictedCostSignal, time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
 
 		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
 

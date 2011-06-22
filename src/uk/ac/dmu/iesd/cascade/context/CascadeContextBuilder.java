@@ -63,7 +63,6 @@ import uk.ac.dmu.iesd.cascade.util.*;
  * Builds and returns a context. Building a context consists of filling it with
  * agents, adding projects and so forth. 
  * 
- * TODO: 
  * @param context
  * @return the built context.
  */

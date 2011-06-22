@@ -122,7 +122,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * Imported signals and profiles.
 	 */
 	protected float[] baseDemandProfile;
-	protected float[] predictedCostSignal;
+	private float[] predictedCostSignal;
 	protected int predictedCostSignalLength;
 	protected int predictionValidTime;
 
@@ -303,7 +303,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	public float getCurrentPrediction() {
 		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
 		if (predictedCostSignalLength > 0) {
-			return predictedCostSignal[timeSinceSigValid % predictedCostSignalLength];
+			return getPredictedCostSignal()[timeSinceSigValid % predictedCostSignalLength];
 		}
 		else  {
 			return 0;
@@ -363,27 +363,27 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 				newSignalLength = newSignalLength - signalOffset;
 			}
 
-			if ((predictedCostSignal == null) || (newSignalLength != getPredictedCostSignalLength()))
+			if ((getPredictedCostSignal() == null) || (newSignalLength != getPredictedCostSignalLength()))
 			{
 				if (Consts.DEBUG)
 				{
 					System.out.println("Re-defining length of signal in agent" + agentID);
 				}
 				setPredictedCostSignalLength(newSignalLength);
-				predictedCostSignal = new float[newSignalLength];
+				setPredictedCostSignal(new float[newSignalLength]);
 			}
 
 			if (signalOffset < 0)
 			{
 				// This is a signal projected into the future.
 				// pad the signal with copies of what was in it before and then add the new signal on
-				System.arraycopy(signal, 0, predictedCostSignal, 0 - signalOffset, length);
+				System.arraycopy(signal, 0, getPredictedCostSignal(), 0 - signalOffset, length);
 			}
 			else
 			{
 				// This was valid from now or some point in the past.  Copy in the portion that is still valid and 
 				// then "wrap" the front bits round to the end of the array.
-				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
+				System.arraycopy(signal, signalOffset, getPredictedCostSignal(), 0, length);
 			}
 
 			if (Consts.DEBUG)
@@ -420,6 +420,20 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		insolation = mainContext.getInsolation(time);
 		windSpeed = mainContext.getWindSpeed(time);
 		airTemperature = mainContext.getAirTemperature(time);		
+	}
+
+	/**
+	 * @param predictedCostSignal the predictedCostSignal to set
+	 */
+	public void setPredictedCostSignal(float[] predictedCostSignal) {
+		this.predictedCostSignal = predictedCostSignal;
+	}
+
+	/**
+	 * @return the predictedCostSignal
+	 */
+	public float[] getPredictedCostSignal() {
+		return predictedCostSignal;
 	}
 
 
