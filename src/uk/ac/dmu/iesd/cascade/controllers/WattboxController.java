@@ -37,15 +37,14 @@ public class WattboxController implements ISmartController{
 	//Prior day's temperature profile.  Works on the principle that
 	// in terms of temperature, today is likely to be similar to yesterday
 	float[] priorDayExternalTempProfile;
-
 	float[] coldApplianceProfile;
 	float[] wetApplianceProfile;
 	float[] heatPumpDemandProfile;
-	
+
 	float[] EVChargingProfile;
 
 	boolean[] heatPumpOnOffProfile;
-	
+
 	/**
 	 * Boolean configuration options for what elements of the owner's
 	 * electrical demand are controlled by the Wattbox.
@@ -75,10 +74,13 @@ public class WattboxController implements ISmartController{
 	 */
 	public void update(int timeStep)
 	{
-		this.dayPredictedCostSignal = owner.getPredictedCostSignal();
-		this.coldApplianceProfile = owner.coldApplianceBaseProfile;
-		this.heatPumpDemandProfile = calculatePredictedHeatPumpDemand(timeStep);
+		float[] ownersCostSignal = owner.getPredictedCostSignal();
+		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
 		this.setPointProfile = owner.getSetPointProfile();
+		this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length), (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
+		this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
+		this.heatPumpDemandProfile = calculatePredictedHeatPumpDemand(heatPumpOnOffProfile);
+
 
 		//TODO: Think about whether / how water and space heating are coupled.
 
@@ -108,18 +110,55 @@ public class WattboxController implements ISmartController{
 	}
 
 	/**
+	 * method to return all the optimised profiles currently held by this Wattbox
+	 */
+	public WeakHashMap getCurrentProfiles()
+	{
+		WeakHashMap returnMap = new WeakHashMap();
+		returnMap.put("HeatPump", heatPumpOnOffProfile);
+		returnMap.put("ColdApps", coldApplianceProfile);
+		returnMap.put("WetApps", wetApplianceProfile);
+		return returnMap;
+	}
+
+	/**
 	 * @return
 	 */
-	private float[] calculatePredictedHeatPumpDemand(int timeStep) {
+	private float[] calculatePredictedHeatPumpDemand(boolean[] heatPumpProfile) {
 
 		float[] power = new float[ticksPerDay];
 		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
+		float tempLoss = 0;
+		// t is time since last heating in seconds
+		int t = 0;
 
 		for (int i = 0; i < ticksPerDay; i++)
 		{
-			if (deltaT[i] > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF)
+			float internalTemp = setPointProfile[i] - tempLoss;
+
+			if (deltaT[i] > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF && heatPumpProfile[i])
 			{
-				power[i] = deltaT[i] * (owner.buildingHeatLossRate / Consts.DOMESTIC_HEAT_PUMP_COP);
+				float setPointMaintenancePower = deltaT[i] * (owner.buildingHeatLossRate / Consts.DOMESTIC_HEAT_PUMP_COP);
+				//TODO: This assumes that all lost temp is recovered in one time period.  This surely can't be the case
+				float heatLossRecoveryPower = tempLoss * (owner.buildingHeatLossRate / Consts.DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY);
+				t = 0;
+				power[i] = setPointMaintenancePower + heatLossRecoveryPower;
+			}
+			else
+			{	
+				power[i] = 0;
+				float tau = owner.buildingThermalMass / owner.buildingHeatLossRate;
+				t = t + Consts.SECONDS_PER_HALF_HOUR;
+				float newTemp = priorDayExternalTempProfile[i] + deltaT[i] * (float) Math.exp(-(t / tau));
+				tempLoss = setPointProfile[i] - newTemp;
+				if(tempLoss > Consts.DAYTIME_TEMP_LOSS_THRESHOLD)
+				{
+					// Bit of a hack - setting the power sky high in the profile for an invalid
+					// profile will ensure it is never selected.
+					//System.err.println("This profile is invalid - too much heat loss");
+					power[i] = Float.MAX_VALUE;
+				}
+
 			}
 		}
 
@@ -139,17 +178,19 @@ public class WattboxController implements ISmartController{
 	 * 
 	 */
 	private void optimiseSpaceHeatProfile() {
-		
+
 		float[] initialPredictedCosts = ArrayUtils.mtimes(this.dayPredictedCostSignal, this.heatPumpDemandProfile);
 		float bestCost = ArrayUtils.sum(initialPredictedCosts);
 		//Go through all timeslots switching the heat pump off for certain periods
 		//subject to constraints and find the least cost option.
 
+		//TODO: This is "brute force" optimisation - there will be a better way...
+
 		boolean[] tempPumpOnOffProfile = new boolean[ticksPerDay];
 		Arrays.fill(tempPumpOnOffProfile,true);
 		float[] tempHeatPumpProfile = new float[ticksPerDay];
 		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
-		
+
 		for (int i = 0; i < ticksPerDay; i++)
 		{
 			for ( int j = Consts.HEAT_PUMP_MIN_SWITCHOFF - 1; j <= Consts.HEAT_PUMP_MAX_SWITCHOFF; j++)
@@ -158,34 +199,29 @@ public class WattboxController implements ISmartController{
 				if (i+j < ticksPerDay - 1)
 				{
 					float thisCost = 0;
-					tempPumpOnOffProfile[i + j] = false;
-					
+					for(int k = i; k < i+j; k++)
+					{
+						tempPumpOnOffProfile[k] = false;
+					}
+
+					tempHeatPumpProfile = calculatePredictedHeatPumpDemand(tempPumpOnOffProfile);
+					thisCost = ArrayUtils.sum(ArrayUtils.mtimes(this.dayPredictedCostSignal, tempHeatPumpProfile));
+
 					if (thisCost < bestCost)
 					{
-						
+
 						bestCost = thisCost;
 						this.heatPumpOnOffProfile = tempPumpOnOffProfile;
 						this.heatPumpDemandProfile = tempHeatPumpProfile;
 					}
 				}
 			}
-			
+
 			//reset to always on and try the next timeslot;
 			Arrays.fill(tempPumpOnOffProfile,true);
 		}
-		
-		/*
-		owner.setPoint = owner.getSetPointProfile()[timeStep % ticksPerDay];
-		float deltaT =  owner.setPoint - extTemp;
-		float tau = owner.buildingThermalMass / owner.buildingHeatLossRate;
-		if (owner.spaceHeatPumpOn[timeStep])
-		{
-			owner.currentInternalTemp = owner.setPoint;
-		}
-		else
-		{
-			owner.currentInternalTemp = extTemp + deltaT * (float) Math.exp(-(timeStep / tau));
-		}*/
+
+		Arrays.toString(this.heatPumpOnOffProfile);
 	}
 
 	/**
@@ -212,16 +248,11 @@ public class WattboxController implements ISmartController{
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
 		// First pass - simply move the cold load in this period to the next timeslot
 		//TODO: very crude and will give nasty positive feedback in all likelihood
-		coldApplianceProfile[maxIndex + 1] = coldApplianceProfile[maxIndex + 1] + coldApplianceProfile[maxIndex];
-		coldApplianceProfile[maxIndex] = 0;
-	}
-
-	public WeakHashMap getCurrentProfiles()
-	{
-		WeakHashMap returnMap = new WeakHashMap();
-		returnMap.put("HeatPump", heatPumpOnOffProfile);
-		returnMap.put("ColdApps", coldApplianceProfile);
-		return returnMap;
+		if (maxIndex < (coldApplianceProfile.length -1 ))
+		{
+			coldApplianceProfile[maxIndex + 1] = coldApplianceProfile[maxIndex + 1] + coldApplianceProfile[maxIndex];
+			coldApplianceProfile[maxIndex] = 0;
+		}
 	}
 
 
@@ -259,7 +290,9 @@ public class WattboxController implements ISmartController{
 	public WattboxController(HouseholdProsumer owner) {
 		this.owner = owner;
 		this.priorDayExternalTempProfile = INITIALIZATION_TEMPS;
+		this.heatPumpOnOffProfile = owner.spaceHeatPumpOn;
 		ticksPerDay = owner.getContext().getTickPerDay();
+		this.coldApplianceProfile = owner.coldApplianceProfile;
 	}
 
 	/**

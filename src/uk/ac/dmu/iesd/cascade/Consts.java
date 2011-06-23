@@ -129,6 +129,21 @@ public final class Consts {
 
 
 	public static final int DAYS_PER_YEAR = 365;
+
+
+	public static final float DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY = 2.0f;
+
+
+	public static final int SECONDS_PER_HALF_HOUR = 1800;
+
+
+	public static final float DAYTIME_TEMP_LOSS_THRESHOLD = 0.5f;
+
+
+	public static final int DAYS_PER_WEEK = 7;
+
+
+	public static final float[] ZERO_COST_SIGNAL = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	
 	/*
 	 * Generators

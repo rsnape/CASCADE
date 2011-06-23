@@ -1,5 +1,5 @@
 # Ignored files
-velocity.log
+velocity.log*
 bin/
 *ModelOutput*
 Repast.settings

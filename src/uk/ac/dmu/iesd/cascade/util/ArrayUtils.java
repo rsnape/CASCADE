@@ -3,6 +3,8 @@
  */
 package uk.ac.dmu.iesd.cascade.util;
 
+import java.util.Arrays;
+
 /**
  * @author J. Richard Snape
  * @version $Revision: 1.01 $ $Date: 2010/12/09 12:00:00 $
@@ -101,7 +103,7 @@ public class ArrayUtils {
 		
 		if (array1.length != array2.length)
 		{
-			System.err.println("Tried to dot product arrays of differetn length - undefined");
+			System.err.println("Tried to convolve arrays of different lengths  " + array1.length + array2.length + " result - undefined");
 		}
 		else
 		{
@@ -121,7 +123,7 @@ public class ArrayUtils {
 		
 		if (array1.length != array2.length)
 		{
-			System.err.println("Tried to dot product arrays of differetn length - undefined");
+			System.err.println("Tried to dot product arrays of different lengths " + array1.length + array2.length + " result - undefined");
 		}
 		else
 		{

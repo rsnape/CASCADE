@@ -124,7 +124,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	boolean hasDishWasher;
 
 	// For Households' heating requirements
-	private float buildingThermalMass;
+	public float buildingThermalMass;
 	public float buildingHeatLossRate;
 
 	/*
@@ -176,7 +176,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float EVPropensity;
 	float habit;
 	int defraCategory;
-	boolean[] spaceHeatPumpOn; 
+	public boolean[] spaceHeatPumpOn; 
 	private boolean waterHeaterOn;
 
 	/**
@@ -190,7 +190,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * Available smart devices
 	 */
 	ISmartController mySmartController;
-	public float[] coldApplianceBaseProfile;
+	WeakHashMap currentSmartProfiles;
+	public float[] coldApplianceProfile;
+	public float[] wetApplianceProfile;
 
 	/**
 	 * Accessor functions (NetBeans style)
@@ -204,7 +206,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	public float[] getSetPointProfile() {
 		return setPointProfile;
 	}
-	
+
 	public boolean isHasElectricVehicle() {
 		return hasElectricVehicle;
 	}
@@ -310,7 +312,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * Input variables: none
 	 * 
 	 ******************/
-	@ScheduledMethod(start = 1, interval = 1, shuffle = true)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true)
 	public void step() {
 		// Note the simulation time if needed.
 		// Note - Repast can cope with fractions of a tick (a double is returned)
@@ -328,8 +330,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
 			if (hasSmartControl){
 				mySmartController.update(time);
-				WeakHashMap currentProfiles = mySmartController.getCurrentProfiles();
-				smartOptimisedProfile = ArrayUtils.add(this.baseDemandProfile, (float[]) currentProfiles.get("ColdApps"));
+				currentSmartProfiles = mySmartController.getCurrentProfiles();
+				this.coldApplianceProfile = (float[]) currentSmartProfiles.get("ColdApps");
+				this.wetApplianceProfile = (float[]) currentSmartProfiles.get("WetApps");
 			}
 		}
 
@@ -337,11 +340,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		//Every step we do these actions
 		if (hasSmartControl){
-			setNetDemand(smartDemand(time));
+			setNetDemand(evaluateElasticBehaviour(time) + smartDemand(time));
 		}
 		else if (hasSmartMeter && exercisesBehaviourChange) {
 			learnBehaviourChange();
-			setNetDemand(evaluateBehaviour(time));
+			setNetDemand(evaluateElasticBehaviour(time));
 			learnSmartAdoptionDecision(time);
 		}
 		else
@@ -437,24 +440,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return 0;
 	}
 
-	/**
-	 * Method to return current demand.
-	 * 
-	 * 
-	 */
-	private float currentDemand() {
-		float returnAmount = 0;
 
-		returnAmount = returnAmount + nonDispaceableDemand() + coldApplianceDemand() + wetApplianceDemand() + heatingDemand();
-		if (Consts.DEBUG)
-		{
-			if (returnAmount != 0)
-			{
-				System.out.println("Total demand (not net against generation) " + returnAmount);
-			}
-		}
-		return returnAmount;
-	}
 
 	/**
 	 * @return
@@ -462,6 +448,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private float nonDispaceableDemand() {
 		//TODO: For expediency just used melody's model for this, however could use
 		// finer grained model of lighting, brown and cooking
+		
 		//return lightingDemand() + miscBrownDemand() + cookingDemand();
 		return baseDemandProfile[time % baseDemandProfile.length];
 	}
@@ -492,31 +479,30 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	private float wetApplianceDemand() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.wetApplianceProfile[timeOfDay];
 	}
 
 	/**
 	 * @return
 	 */
 	private float cookingDemand() {
-		// TODO Auto-generated method stub
+		// Currently incorporated into the base demand
 		return 0;
 	}
 
 	/**
 	 * @return
 	 */
-	private float coldApplianceDemand() {
-		// TODO Auto-generated method stub
-		return 0;
+	private float coldApplianceDemand() 
+	{
+		return this.coldApplianceProfile[timeOfDay];
 	}
 
 	/**
 	 * @return
 	 */
 	private float miscBrownDemand() {
-		// TODO Auto-generated method stub
+		// Currently incorporated into the base demand
 		return 0;
 	}
 
@@ -524,7 +510,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	private float lightingDemand() {
-		// TODO Auto-generated method stub
+		// Currently incorporated into the base demand
 		return 0;
 	}
 
@@ -557,7 +543,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.setPoint = this.setPointProfile[timeStep % ticksPerDay];
 		float deltaT =  this.setPoint - extTemp;
 		float tau = this.buildingThermalMass / this.buildingHeatLossRate;
-		if (spaceHeatPumpOn[timeStep])
+		if (spaceHeatPumpOn[timeOfDay])
 		{
 			this.currentInternalTemp = this.setPoint;
 		}
@@ -599,8 +585,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * Logic helper methods
 	 */
 
-	/*
-	 * Evaluates the net demand mediated by the prosumers behaviour in a given half hour.
+	/**
+	 * Evaluates the net demand mediated by the prosumers elastic behaviour in a given half hour.
 	 * 
 	 * NOTE: 	As implemented - this method does not enforce total demand parity over a given day (i.e.
 	 * 			integral of netDemand over a day is not necessarily constant.
@@ -608,13 +594,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @param 	int time	- the simulation time in ticks at which to evaluate this prosumer's behaviour
 	 * @return 	float myDemand		- the demand for this half hour, mediated via behaviour change
 	 */
-	private float evaluateBehaviour(int time)
+	private float evaluateElasticBehaviour(int time)
 	{
 		float myDemand;
 		int timeSinceSigValid = time - predictionValidTime;
 
-		//As a basic strategy ("pass-through"), we set the demand now to
-		//basic demand as of now.
+		//As a basic strategy only the base (non-displaceable) demand is
+		//elastic
 		myDemand = baseDemandProfile[time % baseDemandProfile.length];
 
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
@@ -624,24 +610,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 		if(hasSmartMeter && predictedCostSignalLength > 0)
 		{
 			float predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % predictedCostSignalLength];
-			if ( predictedCostNow > costThreshold){
-				//Infinitely elastic version (i.e. takes no account of percenteageMoveableDemand
-				// TODO: Need a better logging system than this - send logs with a level and output to
-				// console or file.  Can we use log4j?
-				if (Consts.DEBUG)
-				{
-					System.out.println("Agent " + this.agentID + "Changing demand at time " + time + " with price signal " + (predictedCostNow - costThreshold) + " above threshold");
-				}
-				myDemand = myDemand * (1 - percentageMoveableDemand * (1 - (float) Math.exp( - ((predictedCostNow - costThreshold) / costThreshold))));
-
-			}
+			myDemand = myDemand * (1 - predictedCostNow * dailyElasticity[time % ticksPerDay]);
 		}
-
 
 		return myDemand;
 	}
 
-	/*
+	/**
 	 * Evaluates the net demand mediated by smart controller behaviour at a given tick.
 	 * 
 	 * NOTE: 	As implemented - this method enforces total demand parity over a given day (i.e.
@@ -652,11 +627,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 */
 	private float smartDemand(int time)
 	{
-		//Very simple function at the moment - just return the smart profile for this time
-		//Previously defined by smartControlLearn()
-		float myDemand;
-		myDemand = smartOptimisedProfile[time % smartOptimisedProfile.length];
-		return myDemand;
+
+		// Evaluate behaviour applies elasticity behaviour to the base
+		// (non-displaceable) load.
+		float returnAmount = evaluateElasticBehaviour(time) + coldApplianceDemand() + wetApplianceDemand() + heatingDemand();
+		if (Consts.DEBUG)
+		{
+			if (returnAmount != 0)
+			{
+				System.out.println("Total demand (not net against generation) " + returnAmount);
+			}
+		}
+		return returnAmount;
 	}
 
 	private void learnBehaviourChange()
@@ -728,7 +710,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		Iterable socialConnections = FindNetwork("socialNetwork").getInEdges(this);
 		// Get social influence - note communication is not every tick
 		// hence the if clause
-		//if ((time % (21 * ticksPerDay)) == 0)
+		if ((time % (21 * ticksPerDay)) == 0)
 		{
 
 			for (Object thisConn: socialConnections)
@@ -803,7 +785,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.waterSetPoint = Consts.DOMESTIC_SAFE_WATER_TEMP;
 		//TODO: Something more sophisticated than this very basic set point profile assignment and then add offset
 		this.setPointProfile = Consts.BASIC_AVERAGE_SET_POINT_PROFILE;
-		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2)); 
+		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2));
+		this.setPredictedCostSignal(Consts.ZERO_COST_SIGNAL);
 		setUpColdApplianceOwnership();
 		this.dailyElasticity = new float[ticksPerDay];
 		//TODO - get more thoughtful elasticity model than this random formulation
@@ -819,16 +802,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		this.baseDemandProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
-		this.coldApplianceBaseProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, this.hasRefrigerator, this.hasFridgeFreezer, (this.hasUprightFreezer && this.hasChestFreezer));
-
-		/*
-		 *Set up "smart" stuff here
-		 */
-		this.mySmartController = new WattboxController(this);
+		this.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, this.hasRefrigerator, this.hasFridgeFreezer, (this.hasUprightFreezer && this.hasChestFreezer));
 		// Initialise the base case where heat pump is on all day
 		spaceHeatPumpOn = new boolean[ticksPerDay];
 		Arrays.fill(spaceHeatPumpOn, true);
 		
+		/*
+		 *Set up "smart" stuff here
+		 */
+		this.mySmartController = new WattboxController(this);
+		this.hasSmartControl = true;
+
+
 		//Initialise the smart optimised profile to be the same as base demand
 		//smart controller will alter this
 		this.smartOptimisedProfile = new float [baseDemand.length];

@@ -2,12 +2,12 @@ package uk.ac.dmu.iesd.cascade.context;
 
 
 import java.util.*;
-import java.util.Vector;
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.*;
 import repast.simphony.ui.probe.*;
 import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 
 /**
@@ -298,7 +298,10 @@ public class AggregatorAgent implements ICognitiveAgent {
 		//setPriceSignalEconomySeven(125f, 48f);
 		
 		// Co-efficients estimated from Figure 4 in Roscoe and Ault
-		setPriceSignalRoscoeAndAult(0.0006f, 12f, 40f);
+		//setPriceSignalRoscoeAndAult(0.0006f, 12f, 40f);
+		
+		setPriceSignalScratchTest();
+		//setPriceSignalZero();
 		
 		//Here, we simply broadcast the electricity value signal each midnight
 		if (timeOfDay == 0) {
@@ -382,6 +385,29 @@ public class AggregatorAgent implements ICognitiveAgent {
 				priceSignal[(int) time % priceSignalLength + ticksPerDay] = (float) (priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
 			}
 			priceSignalChanged = true; }
+	}
+	
+	void setPriceSignalScratchTest()
+	{
+		//This is where we may alter the signal based on the demand
+		// In this simple implementation, we simply scale the signal based on deviation of 
+		// actual demand from projected demand for use next time round.
+		
+		//Define a variable to hold the aggregator's predicted demand at this instant.
+		
+		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
+		// demand, have a less dynamic but still non-zero predicted demand 
+		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
+		
+		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+				
+		priceSignal = ArrayUtils.multiply(overallSystemDemand, 1 / ArrayUtils.max(overallSystemDemand));
+	}
+	
+	void setPriceSignalZero()
+	{
+		Arrays.fill(priceSignal,0f);
+		priceSignalChanged = true;
 	}
 	
 	/*

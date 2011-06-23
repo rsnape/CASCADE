@@ -71,7 +71,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	CascadeContext cascadeMainContext;  // cascade main context
 	Parameters params; // parameters for the model run environment 	
 	int numProsumers; //number of Prosumers
-	float[] householdBaseDemandArray = null;
+	CSVReader baseDemandReader = null;
+
 	//int ticksPerDay;
 	int numDemandColumns;
 	Normal thermalMassGenerator = RandomHelper.createNormal(275,75);
@@ -119,7 +120,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
 		CSVReader systemBasePriceReader = null;
 		File householdAttrFile = new File(dataDirectory, householdAttrFileName);
-		CSVReader baseDemandReader = null;
+
 
 		try {
 			weatherReader = new CSVReader(weatherFile);
@@ -170,18 +171,13 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				System.exit(1);
 			}
 
-			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
-			if (cascadeMainContext.verbose)
-				System.out.println("householdBaseDemandArray is initialised with profile " + demandName);
-			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
-
 
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not find file with name " + householdAttrFileName);
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}
-		
+
 		this.monthlyMainsWaterTemp = Consts.MONTHLY_MAINS_WATER_TEMP;
 	}
 
@@ -216,16 +212,25 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		 * 
 		 * replaced the loop here with the DEFRA consumers
 		 */
-		/*	for (int i = 0; i < numProsumers; i++) {
-			HouseholdProsumer hhProsAgent = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
-			cascadeMainContext.add(hhProsAgent);			
-		} */
+		float[] householdBaseDemandArray = null;
+		for (int i = 0; i < numProsumers; i++) {
 
-		String dataFileFolderPath = (String)params.getValue("dataFileFolder");
+			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
+			if (cascadeMainContext.verbose)
+			{
+				System.out.println("householdBaseDemandArray is initialised with profile " + demandName);
+			}
+			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
+
+			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(householdBaseDemandArray, true);
+			cascadeMainContext.add(hhProsAgent);			
+		} 
+
+		/*String dataFileFolderPath = (String)params.getValue("dataFileFolder");
 		String DEFRAcatFileName = dataFileFolderPath + "\\" + (String)params.getValue("defraCategories");
 		String DEFRAprofileFileName = dataFileFolderPath + "\\" + (String)params.getValue("defraProfiles");
 
-		cascadeMainContext.addAll(prosumerFactory.createDEFRAHouseholds(numProsumers, DEFRAcatFileName, DEFRAprofileFileName));
+		cascadeMainContext.addAll(prosumerFactory.createDEFRAHouseholds(numProsumers, DEFRAcatFileName, DEFRAprofileFileName));*/
 		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
 
 		/*----------------
@@ -265,9 +270,12 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			{
 				thisAgent.hasDishWasher = true;
 			}
-			
+
 			thisAgent.setBuildingHeatLossRate((float) buildingLossRateGenerator.nextDouble());
 			thisAgent.setBuildingThermalMass((float) thermalMassGenerator.nextDouble());
+
+			thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
+
 
 		}
 
@@ -340,9 +348,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		//Add in some generators
 		//A 2 MW windmill
-		ProsumerAgent firstWindmill = prosumerFactory.createPureGenerator(2000, GENERATOR_TYPE.WIND);
+		//		ProsumerAgent firstWindmill = prosumerFactory.createPureGenerator(2000, GENERATOR_TYPE.WIND);
 		//ProsumerAgent firstWindmill = createPureGenerator(2000, GENERATOR_TYPE.WIND);
-		cascadeMainContext.add(firstWindmill);
+		//		cascadeMainContext.add(firstWindmill);
 
 
 		//Secondly add aggregator(s)
