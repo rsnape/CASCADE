@@ -51,6 +51,10 @@ import uk.ac.dmu.iesd.cascade.util.*;
  */
 public class CascadeContextBuilder implements ContextBuilder<Object> {
 
+	
+	private Context tempCont; //temp; to remove
+	
+	//*** Babak end of test 
 	private CascadeContext cascadeMainContext;  // cascade main context
 	private Parameters params; // parameters for the model run environment 	
 	private int numProsumers; //number of Prosumers
@@ -68,11 +72,13 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	public CascadeContext build(Context context) {
 		// Instantiate the Cascade context, passing in the context that was given to this builder
 		// to clone any existing parameters
+		tempCont =context;
 		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
 		readParamsAndInitializeArrays();
 		populateContext();
 	
 		//buildNetworks();
+		
 		
 		if (cascadeMainContext.verbose)	
 			System.out.println("Cascade Main Context created: "+cascadeMainContext.toString());
@@ -188,7 +194,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		}
 		
 		//A 2 MW windmill
-		ProsumerAgent firstWindmill = prosumerFactroy.createPureGenerator(2000, GENERATOR_TYPE.WIND);
+		//ProsumerAgent firstWindmill = prosumerFactroy.createPureGenerator(2000, GENERATOR_TYPE.WIND);
+		ProsumerAgent firstWindmill = prosumerFactroy.createPureGenerator(5, GENERATOR_TYPE.WIND);
+
 		//ProsumerAgent firstWindmill = createPureGenerator(2000, GENERATOR_TYPE.WIND);
 		cascadeMainContext.add(firstWindmill);
 		
@@ -269,13 +277,27 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			infoNet.addEdge(firstAggregator, prAgent);
 		}
 		
-		//+++Babak network testing ++++++++
 		
+		
+		//+++Babak TESTS +++++++++++++++++++++++++++++++++++++
+		
+		/*
+		//AggregatorContext aggContext2 = new AggregatorContext(tempCont);
+		//aggContext2.getTickPerDay()
+		//System.out.println(" cascadeContext. getTick perday: "+this.cascadeMainContext.getTickPerDay());
+		//System.out.println(" aggContext2. getTick perday: "+aggContext2.getTickPerDay());
+
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
+		//AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(aggContext2);
+	
 		RECO secondAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(secondAggregator);
 		
+		//aggContext2.add(secondAggregator);
+		
 		ProsumerFactory prosumerFactroy = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
+		//ProsumerFactory prosumerFactroy = FactoryFinder.createProsumerFactory(aggContext2);
+
 		HouseholdProsumer hhPros1 = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
 		hhPros1.setAgentName("HH-Pro1");
 		cascadeMainContext.add(hhPros1);
@@ -288,30 +310,26 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		HouseholdProsumer hhPros4 = prosumerFactroy.createHouseholdProsumer(householdBaseDemandArray, true);
 		hhPros4.setAgentName("HH-Pro4");
 		cascadeMainContext.add(hhPros4);
-
-
 		
 		//Network recoCostumersNet = networkFactory.createNetwork(firstAggregator.toString(), cascadeMainContext, directed);
 	
+		//Network aggTestNet = networkFactory.createNetwork("BabakTestNetwork", cascadeMainContext, directed);
+		//AggregatorContext aggContext = new AggregatorContext();
+		//aggContext2.add(hhPros3);
+		//aggContext2.add(hhPros4);
+		
+		//cascadeMainContext.addSubContext(aggContext2);
+		//Network aggTestNet = networkFactory.createNetwork("BabakTestNetwork", aggContext2, directed);
 		Network aggTestNet = networkFactory.createNetwork("BabakTestNetwork", cascadeMainContext, directed);
-		
-		
+
 		aggTestNet.addEdge(firstAggregator, hhPros1);
 		aggTestNet.addEdge(firstAggregator, hhPros2);
 		
 		aggTestNet.addEdge(secondAggregator, hhPros3);
 		aggTestNet.addEdge(secondAggregator, hhPros4);
 		
-		for (ProsumerAgent prAgent:(Iterable<ProsumerAgent>) (cascadeMainContext.getObjects(ProsumerAgent.class)) )
-		{
-			/*if ((prAgent.getAgentID() == 2) || (prAgent.getAgentID() == 4))
-				aggTestNet.addEdge(firstAggregator, prAgent);
-			if ((prAgent.getAgentID() == 3) || (prAgent.getAgentID() == 5))
-				aggTestNet.addEdge(secondAggregator, prAgent); */
-			
-			
-		}
-		// ------End of test ---------------------------
+	 */
+		// ------End of tests ---------------------------
 
 		
 	}

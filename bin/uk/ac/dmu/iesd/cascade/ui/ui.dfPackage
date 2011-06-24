@@ -1,4 +1,4 @@
-package idqe95go2vr06rgo2vttfs;
+package id2ghbngo2vr06rgo2vttgs;
 
 /**
 @version 2.0
@@ -7,7 +7,7 @@ package idqe95go2vr06rgo2vttfs;
 */
 class diagram {
 /**
-@__ref <oiref:design#Class#id2meljgo2vr06rgo2vttgb.diagram:oiref><oihard>
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.ui.LargeNetwork:oiref><oihard>
 @__modelType reference 
 */
 class reference {

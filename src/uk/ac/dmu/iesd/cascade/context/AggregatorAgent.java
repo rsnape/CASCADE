@@ -2,6 +2,7 @@ package uk.ac.dmu.iesd.cascade.context;
 
 
 import java.util.*;
+
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.*;
@@ -10,6 +11,7 @@ import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.util.IObservable;
 import uk.ac.dmu.iesd.cascade.util.IObserver;
 import uk.ac.dmu.iesd.cascade.util.ObservableComponent;
+import flanagan.math.Matrix;
 
 
 /**
@@ -90,8 +92,74 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	int priceSignalLength;
 	boolean priceSignalChanged = true;  //set true when we wish to send a new and different price signal.  
 	//True by default as it will always be new until the first broadcast
-	int ticksPerDay;
-
+	protected int ticksPerDay;
+	
+	
+	//-----------------------------
+	
+	/**
+	 * This field (e) is "price elasticity factor" at timeslot i
+	 * It is extend to which total demand in the day is reduced or increased by the value of S
+	 * (given S*e) 
+	 * there are 48 of them (day divided into 48 timeslots)
+	 * When a single no zero value of S is broadcast by the aggregator in the ith timeslot, 
+	 * the total aggregated response from the prosumers will involve changes to demand form 
+	 * baseline in some or all timeslots. If those changes are added up for the day, the 
+	 * net value which may be + or - tells us the value of S*e. 
+	 * Since we know S, we can get the e for the ith timeslot in which the S was broadcast. 
+	 **/
+	float[] e_i_arr; 
+	
+	/**
+	 * This field (k) is "displacement factor" at timeslot ij
+	 * There are 48^2 of them (48 values at each timeslot; a day divided into 48 timeslots)
+	 * It is calculated in the training process. 
+	 **/
+	float[][] k_ij_arr; 
+	
+	/**
+	 * This field (S) is "signal" at timeslot i sent to customer's (prosumers)
+	 * so that they response to it accordingly. For example, if S=0, the aggregator can 
+	 * assume that the prosumers respond with their default behavior, so there is 
+	 * no timeshifting or demand or elastic response to price and the result is a baseline
+	 * demand aggregate B
+	 * When Si is not zero, the aggregator can calculate 
+	 * the resultant aggregate deviation (delta_Bi)
+	 **/
+	float[] S_i_arr;  // (S) signal at timeslot i
+	
+	float[] B_i_arr;  // (B) baseline at timeslot i
+	
+	/**
+	 * This field (C) is the "marginal cost" per KWh in the ith timeslot 
+	 * (which aggregator can predict 24 hours ahead).
+	 * This is the cost for the part that cosumer's demand that cannot be predicted further
+	 * ahead and supplied via long term contracts because it is variable due to weather, TV schedules, or owns
+	 * generators not being able to meet part of the predicated demand. 
+	 * For the inital experiment, C would be proportional to national demand Ni with 
+	 * the option to make it Ni^2 or fractional power
+	 **/
+	float[] C_i_arr; 
+	
+	/**
+	 * This 2D-array is used to keep the usual baseline aggregate demand of all prosumers at each timeslot 
+	 * of the day during the profile building period (usually 4-7 days). 
+	 * In other words, the length of the columns of this 2D history array is equal to number of timeslot 
+	 * during a day and the length of its rows is equal to the number of days the profile building last
+	 * This will be wrapped within the matrix for easier manipulation.  
+	 * 
+	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
+	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
+	 **/
+	float[][] hist_B_ij_arr; 
+	
+	/**
+	 * This array is used to keep the average of the baseline aggregate demand (BAD)
+	 * kept in the 2D history BAD array (hist_B_ij_arr)  
+	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
+	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
+	 **/
+	float[] histAvg_B_i_arr; 
 	
 	/**
 	 * Constructs a prosumer agent with the context in which is created
@@ -229,6 +297,143 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	protected void notifyObservers(Object obs, Object changeCodeArg) {
 		observableProxy.notifyObservers(obs, changeCodeArg);
 	}
+	
+	
+	/**
+	 * This method calculates and returns the price (Pi) per kWh 
+	 * at given time-slot.
+	 * (It implements the formula proposed by P. Boait, Formula #2) 
+	 * Parameters a and b are "fixed pricing" parameters  and set by the aggregator and 
+	 * known to the prosumer's smart meter and other devices so they react to Pi.  
+	 * The summation of all Si to zero simplifies their calculation!
+	 * In practice, it would be helpful to use normalized values between 1 and -1 to make up S
+	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return Price(Pi) per KWh at given timeslot (i) 
+	 */
+	protected float calcualte_Price_Pi(int timeslot) {
+		float a = 2f; // the value of a must be set to a fixed price, e.g. ~baseline price 
+		float b = 0.2f;  //this value of b amplifies the S value signal, to reduce or increase the price
+		
+		float Si = this.S_i_arr[timeslot];
+        float Pi = a+ (b*Si);
+        
+		return Pi;
+	}
+	
+
+	/**
+	 * This method calculates and returns the baseline aggregate deviation (DeltaBi) at 
+	 * given time-slot.
+	 * It is invoked by aggregator when the Si is not zero and the aggregator
+	 * wants to form a response.
+	 * (It implements the formula proposed by P. Boait, Formula #3) 
+	 * @param   timeslot_i time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return Baseline aggregate deviation (DelatBi) at given timeslot (i) 
+	 */
+
+	private float calculate_BaselineAggregateDemandDeviation_DeltaBi(int timeslot_i) {	
+		float sumOf_SjKijBi=0;
+		for (int j = 0; j < ticksPerDay; j++) {
+			if (j != timeslot_i) // i!=j
+				sumOf_SjKijBi = this.S_i_arr[timeslot_i]*this.k_ij_arr[timeslot_i][j]*this.B_i_arr[timeslot_i];
+		}
+		float leftSideEq = this.S_i_arr[timeslot_i]*this.k_ij_arr[timeslot_i][timeslot_i]*this.B_i_arr[timeslot_i];
+		float deltaBi = leftSideEq + sumOf_SjKijBi;
+		return deltaBi;
+	}
+
+	/**
+	 * This method calculates and returns the demand predicted by the aggregator in each
+	 * time-slot, taking account of both elastic and displacement changes.
+	 * (It implements the formula proposed by P. Boait, Formula #4)
+	 * When e=0 (i.e. all ei=0), then the sum of all Di = sum of all Bi
+	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return Demand (Di) predicted by the aggregator at given timeslot (i) 
+	 */
+	protected float calcualte_PredictedTimeslotDemand_Di(int timeslot) {
+		float Bi = this.B_i_arr[timeslot];
+		float Si = this.S_i_arr[timeslot];
+		float ei = this.e_i_arr[timeslot];
+
+		float delta_Bi = calculate_BaselineAggregateDemandDeviation_DeltaBi(timeslot);
+
+		float Di= Bi + (Si*ei*Bi) + delta_Bi;
+		return Di;
+	}
+	
+	/**
+	 * This method calculates and returns "price elasticity factor" (e) at a given time-slot.
+	 * (It implements the formula proposed by P. Boait, Formula #6)
+	 * By definition, all demand displacements add up to zero, any change in total prosumer 
+	 * demand in respnose to the tranining signal must be caused by ei
+	 * By stepping Si=1 through all the timeslots over 48 days, the aggregator obtains
+	 * complete set of estimates for e and k. By repeating this training (if necessary) more
+	 * accurate estimates can be obtained. 
+	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return elasticity price factor (ei) at given timeslot (i) 
+	 */
+	protected float calcualte_e_i(int timeslot) {
+		
+		float total_D = 0;
+		float total_B = 0;
+		
+		for (int j = 0; j < ticksPerDay; j++) {
+			total_D = total_D + this.calcualte_PredictedTimeslotDemand_Di(timeslot);
+			total_B = total_B + this.B_i_arr[timeslot];
+		}
+		
+		float e_i = (total_D - total_B) / (this.S_i_arr[timeslot]* this.B_i_arr[timeslot]);
+	
+		return e_i;
+	}
+	
+	/**
+	 * This method calculates and returns "displacement factor" (k) at given time-slots.
+	 * (It implements the formula proposed by P. Boait, Formula #7 and #8)
+	 * By stepping Si=1 through all the timeslots over 48 days, the aggregator obtains
+	 * complete set of estimates for e and k. By repeating this training (if necessary) more
+	 * accurate estimates can be obtained. 
+	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return displacement factor (Kij) at given timeslots (i and j) 
+	 */
+	protected float calcualte_k_ij(int t_i, int t_j) {
+
+		float k_ij = 0;
+		float divisor = 1;
+
+		if (t_i == t_j) {  // calculate Kii
+			float delta_Bi= this.calculate_BaselineAggregateDemandDeviation_DeltaBi(t_i);
+			float divident = delta_Bi - (this.S_i_arr[t_i] * this.e_i_arr[t_i] * this.B_i_arr[t_i]);
+			divisor= this.S_i_arr[t_i] * this.B_i_arr[t_i];
+			k_ij = divident/divisor;
+		}
+		
+		else {  // calculate Kij
+			float delta_Bj= this.calculate_BaselineAggregateDemandDeviation_DeltaBi(t_j);
+			divisor= this.S_i_arr[t_i] * this.B_i_arr[t_j];
+			k_ij = delta_Bj /divisor;
+		}
+
+		return k_ij;
+	}
+	
+	/**
+	 * This method calculates the predict demand at each given time-slot.
+	 * @param   t timeslot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return displacement factor (Kij) at given timeslots (i and j) 
+	 */
+	protected void predictDemand(List<ProsumerAgent> customersList, int t) {
+		
+		float sumDemand = 0;
+		for (ProsumerAgent a : customersList)
+		{
+			sumDemand = sumDemand + a.getNetDemand();
+		}
+		this.B_i_arr[t] = sumDemand;
+		
+	}
+
+	
 	
 	// ------------------------------------------------------------------------------
 	/* TODO: 

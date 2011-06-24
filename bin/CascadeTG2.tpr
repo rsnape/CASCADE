@@ -66,7 +66,7 @@ Root.21=$TGH$/help/together-help.jar
 Root.21.access=import
 Root.21.package_prefix=
 [genHTML]
-folder=C:\\BM\\ProgFiles\\out\\webpublish\\CascadeTG2
+folder=C:\\RepastSimphony-2.0-beta\\workspace\\Cascade\\docs
 generateFor=all_packages
 includeDiagrams=true
 launchBrowser=true

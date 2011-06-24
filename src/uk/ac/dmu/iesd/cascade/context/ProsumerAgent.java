@@ -71,6 +71,12 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected CascadeContext mainContext;
 
 	//protected String contextName;
+	
+	/**
+	 * a prosumer agent's (price) elasticity factor 
+	 * e in Peter Boait formula
+	 * */
+	protected float e_factor; 
 
 	protected int ticksPerDay; //TODO: This needs to be removed 
 
@@ -150,6 +156,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param context the context in which this agent is situated 
 	 */
 	public ProsumerAgent(CascadeContext context) {
+		
 		this.agentID = agentIDCounter++;
 		this.mainContext = context;
 	}
@@ -239,14 +246,33 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	}
 	
 	/**
-	 * this method should define the step for the agents.
-	 * They should be scheduled starting appropriately by 
-	 * concrete implementing subclasses 
+	 * this method should define the step for Prosumer agents.
+	 * The schedule should start at right timeslot among all concrete subclasses.
+	 * Currently it starts at 0, 
+	 * however it does not have any priority restriction (such as being the last)
+	 * so, it will be executed first (before the Aggreagator which has the LAST priority)  
 	 */
-	//@ScheduledMethod(start =1 , interval = 1, shuffle = true)
+	//@ScheduledMethod(start =0 , interval = 1, shuffle = true)
 	abstract protected void step();
 
 
+	/**
+	 * Sets the <code>price elasticity factor</code> of this agent  
+	 * @param e (price) elasticity factor
+	 * @see #getElasticityFactor
+	 */
+	public void setElasticityFactor(float e) {
+		this.e_factor = e;
+	}
+	
+	/**
+	 * Get the <code>price elasticity factor</code> of this agent  
+	 * @return e (price) elasticity factor
+	 * @see #getElasticityFactor
+	 */
+	public float getElasticityFactor() {
+		return this.e_factor;
+	}
 	
 	
 	//---------------------------------------------------------------
@@ -304,6 +330,8 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();
+		//System.out.println(validTime+ " HHProsumer recive signal at ticktime "+ RepastEssentials.GetTickCount());
+
 		if (hasSmartMeter)
 		{
 			// Note the time from which the signal is valid.
@@ -315,7 +343,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 			float[] tempArray;
 
 			int signalOffset = time - validTime;
-
+			//System.out.println("time: "+time+ " validTime"+validTime);
 			if (signalOffset != 0)
 			{
 				if (Consts.DEBUG)
@@ -355,6 +383,37 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		}
 
 		return success;
+	}
+	
+	private void setSignalType_S(float[] signal){
+		
+	}
+	
+	/**
+	 * This method is used by other agents (e.g. Aggregator) to send their signal
+	 * to prosumer's agent. 
+	 * It receives different types of signals containing Real values.
+	 * 
+	 * TODO: in reality, these signals are sent to customer's device, so if in the 
+	 * future, there will be a separate smart device object, this method should be implemented 
+	 * there and not in the prosumer's agent directly. 
+	 *  
+	 * @param signal the array containing the signal
+	 * @param length the length of the signal
+	 * @param signalType the type of the signal 
+	 * @return true if signal received successfully, false otherwise 
+	 */
+	public boolean receiveSignal(float[] signal, int length, Consts.SIGNAL_TYPE signalType) {
+		boolean signalRecievedSuccessfully = false;
+
+		switch (signalType) { 
+		case S: 
+			setSignalType_S(signal);
+			break;
+		default:  //
+			break;
+		}
+		return signalRecievedSuccessfully;
 	}
 
 

@@ -30,6 +30,7 @@ import repast.simphony.space.projection.*;
  */
 public class CascadeContext extends DefaultContext{
 	
+
 	/*
 	 * Context parameters
 	 * 
@@ -53,7 +54,7 @@ public class CascadeContext extends DefaultContext{
 	float[] systemPriceSignalDataArray;
 	int systemPriceSignalDataLength;
 	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
-	private int ticksPerDay;
+	protected int ticksPerDay;
 	
 	private Network socialNetwork;
 	private Network economicNetwork;
@@ -81,6 +82,7 @@ public class CascadeContext extends DefaultContext{
 		this.setId(context.getId());
 		this.setTypeID(context.getTypeID());
 	}
+	
 	
 	/**
 	 * This method return the social network 

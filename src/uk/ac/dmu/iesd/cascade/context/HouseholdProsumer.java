@@ -128,11 +128,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 	public HouseholdProsumer(CascadeContext context, float[] baseDemand) {
 		super(context);
 		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.5);
+		setElasticityFactor(percentageMoveableDemand);
 		this.ticksPerDay = context.getTickPerDay();
+
 		if (baseDemand.length % ticksPerDay != 0)
 		{
-			System.err.println("baseDemand array not a whole number of days");
-			System.err.println("Will be truncated and may cause unexpected behaviour");
+			System.err.print("Error/Warning message from "+this.getClass()+" "+this.toString()+": BaseDemand array not a whole number of days.");
+			System.err.println(" Will be truncated and may cause unexpected behaviour");
 		}
 		this.baseDemandProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
@@ -140,6 +142,26 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//smart controller will alter this
 		this.smartOptimisedProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
+		
+		
+		//-----------------------------------------------
+		/*
+		if (hasSmartControl){
+			setNetDemand(smartDemand(0)); //at time=0
+		}
+		else if (hasSmartMeter && exercisesBehaviourChange) {
+			//learnBehaviourChange();
+			setNetDemand(evaluateBehaviour(0));
+			//learnSmartAdoptionDecision(time);
+		}
+		else
+		{
+			//No adaptation case
+			setNetDemand(baseDemandProfile[0] - currentGeneration());
+
+			learnSmartAdoptionDecision(0);
+		} */
+		//---------------------------------------------------
 	}
 
 
@@ -163,9 +185,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * This method defines how this specific object behaves (what it does)
 	 * at at a given scheduled time throughout the simulation
 	 */
-	@ScheduledMethod(start = 1, interval = 1, shuffle = true)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true)
 	public void step() {
-		//System.out.println("HHProsumer step called: "+ RepastEssentials.GetTickCount());
+		
 
 		// Define the return value variable.  Set this false if errors encountered.
 		boolean returnValue = true;
@@ -176,7 +198,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		int time = (int) RepastEssentials.GetTickCount();
 		int timeOfDay = (time % ticksPerDay);
 		CascadeContext myContext = this.getContext();
-		
+		//System.out.println(timeOfDay+ " HHProsumer step called at ticktime "+ RepastEssentials.GetTickCount());
+
 
 		checkWeather(time);
 
@@ -206,6 +229,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		
 		
+		/*
 		//----- Babak Network test ----------------------------------------------
 		Network costumerNetwork = FindNetwork("BabakTestNetwork");
 		Iterable costumersIter = costumerNetwork.getInEdges(this);
@@ -216,7 +240,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			AggregatorAgent agg = (AggregatorAgent) myConn.getSource();
 			System.out.println(this.toString()+ " is provided by: "+ agg.toString()); 
 
-		}
+		} */
 		//System.out.println("------------------");
 		// -- End of test --------------------------------------------------------
 
@@ -431,8 +455,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		float [] daysCostSignal = new float [ticksPerDay];
 		float [] daysOptimisedDemand = new float [ticksPerDay];
 		//System.out.println("predictedCostSignal "+predictedCostSignal+" time "+time+ " predictionValidTime "+predictionValidTime+" daysCostSignal "+ daysCostSignal +" ticksPerDay "+ticksPerDay);
-		//if (predictedCostSignal != null)
-		System.arraycopy(predictedCostSignal, time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+		if (predictedCostSignal != null)
+			System.arraycopy(predictedCostSignal, time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
 
 		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
 

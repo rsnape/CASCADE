@@ -77,7 +77,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	 * Return variables: boolean returnValue - returns true if the method
 	 * executes successfully
 	 ******************/
-	@ScheduledMethod(start = 1, interval = 1, shuffle = true)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true)
 	public void step() {
 
 		// Define the return value variable. Set this false if errors
@@ -177,9 +177,8 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		this.maxTimeShift = 0;
 		this.ticksPerDay = context.getTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0) {
-			System.err.println("baseDemand array not a whole number of days");
-			System.err
-					.println("Will be truncated and may cause unexpected behaviour");
+			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
+			System.err.println(" Will be truncated and may cause unexpected behaviour");
 		}
 		this.baseDemandProfile = new float[baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0,
