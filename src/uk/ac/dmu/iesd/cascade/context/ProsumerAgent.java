@@ -367,7 +367,8 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();
 		//System.out.println(validTime+ " HHProsumer recive signal at ticktime "+ RepastEssentials.GetTickCount());
-
+		//System.out.println("This prosumer hasSmartMeter = " + hasSmartMeter + " and receives signal " + Arrays.toString(signal));
+		
 		if (hasSmartMeter)
 		{
 			// Note the time from which the signal is valid.
@@ -409,7 +410,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 			{
 				// This was valid from now or some point in the past.  Copy in the portion that is still valid and 
 				// then "wrap" the front bits round to the end of the array.
-				System.arraycopy(signal, signalOffset, getPredictedCostSignal(), 0, length);
+				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
 			}
 
 			if (Consts.DEBUG)

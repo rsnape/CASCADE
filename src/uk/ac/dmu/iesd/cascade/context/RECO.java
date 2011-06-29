@@ -80,7 +80,9 @@ public class RECO extends AggregatorAgent{
 		this.overallSystemDemand = new float [overallSystemDemandLength];
 		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
 		//Start initially with a flat price signal of 12.5p per kWh
-		Arrays.fill(priceSignal,125f);
+		//Arrays.fill(priceSignal,125f);
+		Arrays.fill(priceSignal,0f);
+
 		
 		//Very basic configuration of predicted customer demand as 
 		// a Conssant.  We could be more sophisticated than this or 
@@ -294,8 +296,9 @@ public class RECO extends AggregatorAgent{
 		case S_TRAINING: 
 			List <ProsumerAgent> paList = broadcasteesList;
 			for (ProsumerAgent agent : paList){
-				//System.out.println("sendSignalType_S, send signal to " + a.toString());
-				isSignalSentSuccessfully = agent.receiveSignal(arr_i_S, arr_i_S.length, Consts.SIGNAL_TYPE.S);
+				//System.out.println("sendSignalType_S, send signal to " + agent.toString());
+				//isSignalSentSuccessfully = agent.receiveSignal(arr_i_S, arr_i_S.length, Consts.SIGNAL_TYPE.S);
+				isSignalSentSuccessfully = agent.receiveValueSignal(arr_i_S, arr_i_S.length);
 			}
 			break;
 		default:  //
@@ -324,7 +327,9 @@ public class RECO extends AggregatorAgent{
 			/**This section is designed to send signal of s[timeslot]=1 and s[othertimes] = -1/47 (at each timeslot)*/
 			this.arr_i_S = buildSignal(signalType,timeslot);
 			//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(signalArr));
-			//System.out.println(ArrayUtils.isSumEqualZero(signalArr));
+			//System.out.println(ArrayUtils.isSumEqualZero(arr_i_S));
+			this.priceSignal = arr_i_S;
+			this.priceSignalLength = arr_i_S.length;
 			isSignalSentSuccessfully = sendSignal(signalType, arr_i_S, broadcasteesList, timeslot);
 			break;
 
@@ -435,33 +440,28 @@ public class RECO extends AggregatorAgent{
 		//setPriceSignalEconomySeven(125f, 48f);
 
 		// Co-efficients estimated from Figure 4 in Roscoe and Ault
-		setPriceSignalRoscoeAndAult(0.0006f, 12f, 40f);
+		//setPriceSignalRoscoeAndAult(0.0006f, 12f, 40f);
 
 		//Here, we simply broadcast the electricity value signal each midnight
-		if (timeOfDay == 0) {
+	/*if (timeOfDay == 0) {
 
 			int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
 			broadcastLength = priceSignal.length; // but in this case we choose not to
 
 			broadcastDemandSignal(customers, time, broadcastLength);
-		}   
+		}   */
 		
 		
 		//****************** Babak Test ******************
-		float [][]arr = new float[5][4];
-		for (int row = 0; row < arr.length; row++) {
-			for (int col = 0; col < arr[row].length; col++) {
-				arr[row][col]= row*1f;
-			}
-		}
+		
 			
 		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(ArrayUtils.avgCols2DFloatArray(arr)));
 			
-		List<ProsumerAgent> customers2 = getCustomersList();
+		//List<ProsumerAgent> customers2 = getCustomersList();
 		
 	    if (!isAggregateDemandProfileBuildingPeriodCompleted()) { // history profile building period
 	    	//updateBaselineAggregateDemandHistory(customers2, timeOfDay, histProfileBuilding_B_ij_arr);
-	    	updateAggregateDemandHistoryArray(customers2, timeOfDay, hist_arr_ij_D); 
+	    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D); 
 	    }
 	    else { //End of history profile building period 
 	    	
@@ -479,14 +479,14 @@ public class RECO extends AggregatorAgent{
 
 	    	if (!isTrainingPeriodCompleted()) {  //training period 
 	    		//signals should be send S=1 for 48 days
-	    		broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers2, timeOfDay);
-		    	updateAggregateDemandHistoryArray(customers2, timeOfDay, hist_arr_ij_D);
+	    		broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
+		    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
 		    	
 	    	}
 	    	else { //End of training period 
 	    		float [][] trainingPeriodBAD = ArrayUtils.subArrayCopy(hist_arr_ij_D, Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE, hist_arr_ij_D.length);
 	    		arr_i_e = calculateElasticityFactors_e(trainingPeriodBAD,arr_i_B);
-	    		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(arr_i_e));	
+	    		System.out.println(ArrayUtils.getPrintableOutputForFloatArray(arr_i_e));	
 
 	    		
 	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(ArrayUtils.getSubArrayCopy(hist_B_ij_arr,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));	

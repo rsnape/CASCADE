@@ -1,39 +1,39 @@
 <repast.simphony.visualization.engine.DefaultDisplayDescriptor>
-  <name>Adoption</name>
+  <name>Social Network</name>
   <type>TWO_D</type>
   <styles>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
-      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
+      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
-      <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer.style_1.xml</string>
+      <null/>
     </entry>
   </editedStyles>
   <netStyles>
     <entry>
       <string>socialNetwork</string>
-      <string>repast.simphony.visualization.editedStyle.EditedEdgeStyle2D</string>
+      <string>repast.simphony.visualizationOGL2D.DefaultEdgeStyleOGL2D</string>
     </entry>
   </netStyles>
   <editedNetStyles>
     <entry>
       <string>socialNetwork</string>
-      <string>socialNetwork.style_0.xml</string>
+      <null/>
     </entry>
   </editedNetStyles>
   <frequency>ON_NEW</frequency>
   <schedParams>
     <start>1.0</start>
-    <interval>1.0</interval>
+    <interval>0.0</interval>
     <priority>-Infinity</priority>
     <duration>-1.0</duration>
-    <frequency>REPEAT</frequency>
+    <frequency>ONE_TIME</frequency>
   </schedParams>
-  <layoutClassName>repast.simphony.visualization.visualization2D.Random2DLayout</layoutClassName>
+  <layoutClassName>repast.simphony.visualization.visualization2D.layout.CircleLayout2D</layoutClassName>
   <layoutProjection>socialNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>

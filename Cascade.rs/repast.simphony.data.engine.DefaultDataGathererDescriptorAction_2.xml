@@ -37,16 +37,16 @@
     </nameMappingTable>
     <mappingNameTable>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CurrentPrediction</string>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
       </entry>
       <entry>
         <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
         <string>AgentID</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
-        <string>Tick</string>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentPrediction</string>
       </entry>
     </mappingNameTable>
   </dataMappingContainer>
