@@ -180,11 +180,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * Accessor functions (NetBeans style)
 	 * TODO: May make some of these private to respect agent conventions of autonomy / realistic simulation of humans
 	 */
-	public HouseholdProsumer(CascadeContext context, float[] baseDemand) {
-		super(context);
-		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.5);
-		setElasticityFactor(percentageMoveableDemand);
-		this.ticksPerDay = context.getTickPerDay();
 
 	public float getSetPoint() {
 		return setPoint;
@@ -251,9 +246,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 	public void setNumOccupants(int numOccupants) {
 		this.numOccupants = numOccupants;
-	}
->>>>>>> origin/master
-
 	}
 
 	public int getDefraCategory()
@@ -369,10 +361,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return (baseDemandProfile[index]) - currentGeneration();
 	}
 
-
-	public float getSetPoint() {
-		return setPoint;
-	}
 	
 	/**
 	 * Method to return the realtime generation of this Household Prosumer (as distinct

@@ -94,7 +94,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	public CascadeContext build(Context context) {
 		// Instantiate the Cascade context, passing in the context that was given to this builder
 		// to clone any existing parameters
-		tempCont =context;
+		//tempCont =context;
 		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
 		readParamsAndInitializeArrays();
 		populateContext();
@@ -313,6 +313,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			System.out.println("Tumble Dryer: " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasTumbleDryer",true)).query()) / householdProsumers.size());
 			System.out.println("Dish Washer : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
 		}
+		
+		buildSocialNetwork();
 
 		//Secondly add aggregator(s)
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
@@ -325,6 +327,60 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	
 	
 	/**
+	 * This method will builds the social networks
+	 * TODO: This method will need to be refined later
+	 * At this moment, there is only one aggregator and links are simply created
+	 * between this aggregator and all the prosumers in the context.
+	 * Later this method (or its breakup(s)) can receive parameters such as EdgeSource and EdgeTarget 
+	 * to create edges between a source and a target
+	 */
+	private void buildSocialNetwork() {
+		
+		//Create the household social network before other agent types are added to the context.
+		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);	
+	// create a small world social network
+	double beta = 0.1;
+	int degree = 2;
+	boolean directed = true;
+	boolean symmetric = true;
+	NetworkGenerator gen = new WattsBetaSmallWorldGenerator(beta, degree, symmetric);
+	Network socialNet = networkFactory.createNetwork("socialNetwork", cascadeMainContext, gen, directed);
+	//set weight of each social contact - initially random
+	//this will represent the influence a contact may have on another
+	//Note that influence of x on y may not be same as y on x - which is realistic
+
+
+	for (Object thisEdge : socialNet.getEdges())
+	{
+		((RepastEdge) thisEdge).setWeight(RandomHelper.nextDouble());			
+	}
+
+	/* -----
+	 * Richard test block to fully connect a certain number of agents based
+	 * on a property (in this case DEFRA category
+	 */
+	Query<HouseholdProsumer> cat1Query = new PropertyEquals(cascadeMainContext, "defraCategory",1);
+	Iterable<HouseholdProsumer> cat1Agents = cat1Query.query();
+
+	if(Consts.DEBUG)
+	{
+		System.out.println(" There are " + IterableUtils.count(cat1Agents) + " category 1 agents");
+	}
+
+	for (HouseholdProsumer prAgent : cat1Agents)
+	{
+		for (HouseholdProsumer target : cat1Agents)
+		{
+			socialNet.addEdge(prAgent, target, Consts.COMMON_INTEREST_GROUP_EDGE_WEIGHT);
+		}
+	}
+
+	//Add in some generators
+	
+	this.cascadeMainContext.setSocialNetwork(socialNet);
+}
+	
+	/**
 	 * This method will build all the networks
 	 * TODO: This method will need to be refined later
 	 * At this moment, there is only one aggregator and links are simply created
@@ -333,51 +389,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	 * to create edges between a source and a target
 	 */
 	private void buildNetworks(AggregatorAgent firstAggregator) {
+		boolean directed = true;
 		
 		//Create the household social network before other agent types are added to the context.
-		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);
-		
-
-		// create a small world social network
-		double beta = 0.1;
-		int degree = 2;
-		boolean directed = true;
-		boolean symmetric = true;
-		NetworkGenerator gen = new WattsBetaSmallWorldGenerator(beta, degree, symmetric);
-		Network socialNet = networkFactory.createNetwork("socialNetwork", cascadeMainContext, gen, directed);
-		//set weight of each social contact - initially random
-		//this will represent the influence a contact may have on another
-		//Note that influence of x on y may not be same as y on x - which is realistic
-
-
-		for (Object thisEdge : social.getEdges())
-		{
-			((RepastEdge) thisEdge).setWeight(RandomHelper.nextDouble());			
-		}
-
-		/* -----
-		 * Richard test block to fully connect a certain number of agents based
-		 * on a property (in this case DEFRA category
-		 */
-		Query<HouseholdProsumer> cat1Query = new PropertyEquals(cascadeMainContext, "defraCategory",1);
-		Iterable<HouseholdProsumer> cat1Agents = cat1Query.query();
-
-		if(Consts.DEBUG)
-		{
-			System.out.println(" There are " + IterableUtils.count(cat1Agents) + " category 1 agents");
-		}
-
-		for (HouseholdProsumer prAgent : cat1Agents)
-		{
-			for (HouseholdProsumer target : cat1Agents)
-			{
-				social.addEdge(prAgent, target, Consts.COMMON_INTEREST_GROUP_EDGE_WEIGHT);
-			}
-		}
-
-		//Add in some generators
-		
-		this.cascadeMainContext.setSocialNetwork(socialNet);
+		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);		
 		
 		/*
 		 * Create the projections needed in the context and add agents to those projections

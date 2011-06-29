@@ -169,8 +169,7 @@ public final class Consts {
 		BATTERY, HYDRO, HEAT, FLYWHEEL, EV
 	}
 
-	public static final int MAX_GENERATOR_CAPACITY = 5;	
-	public static boolean DEBUG = false;  //use for debugging, default is false
+	public static final int MAX_GENERATOR_CAPACITY = 5;
 	public static final int MAX_SUPPLY_CAPACITY = 45;
 	public static final int NUM_DEMAND_COLUMNS = 1;
 	
