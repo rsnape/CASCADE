@@ -459,11 +459,13 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	
 	void setPriceSignalEconomySeven(float highprice, float lowprice)
 	{
+		int morningChangeTimeIndex = (int) (ticksPerDay / (24 / 7.5));
+		int eveningChangeTimeIndex = (int) (ticksPerDay / (24 / 23.5));
 		float[] oldPrice = priceSignal;
-		Arrays.fill(priceSignal, 0, 16, lowprice);
-		Arrays.fill(priceSignal, 17, 46, highprice);
-		priceSignal[47] = lowprice;
-		priceSignalChanged = Arrays.equals(priceSignal, oldPrice);;
+		Arrays.fill(priceSignal, 0, morningChangeTimeIndex, lowprice);
+		Arrays.fill(priceSignal, morningChangeTimeIndex + 1, eveningChangeTimeIndex, highprice);
+		Arrays.fill(priceSignal, eveningChangeTimeIndex + 1, priceSignal.length - 1, lowprice);
+		priceSignalChanged = Arrays.equals(priceSignal, oldPrice);
 	}
 	
 	void setPriceSignalRoscoeAndAult(float A, float B, float C)
@@ -472,13 +474,19 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 		float x;
 		
 		for (int i = 0; i < priceSignalLength; i++)
-		{			
-			x = (predictedCustomerDemand[i % ticksPerDay] / 10 ) / (Consts.MAX_SUPPLY_CAPACITY - Consts.MAX_GENERATOR_CAPACITY);
+		{	
+			//Note that the division by 10 is to convert the units of predicted customer demand
+			//to those compatible with capacities expressed in GW.
+			//TODO: unify units throughout the model
+			x = (predictedCustomerDemand[i % ticksPerDay] / 10 ) / (Consts.MAX_SUPPLY_CAPACITY_GWATTS - Consts.MAX_GENERATOR_CAPACITY_GWATTS);
 			price = (float) (A * Math.exp(B * x) + C);
-			//System.out.println("Price at tick" + i + " is " + price);
-			if (price > 1000) 
+			if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 			{
-				price = 1000f;
+			System.out.println("Price at tick" + i + " is " + price);
+			}
+			if (price > Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH) 
+			{
+				price = Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH;
 			}
 			priceSignal[i] = price;
 		}
@@ -509,6 +517,73 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 			}
 			priceSignalChanged = true; }
 	}
+	
+	void setPriceSignalScratchTest()
+	{
+		//This is where we may alter the signal based on the demand
+		// In this simple implementation, we simply scale the signal based on deviation of 
+		// actual demand from projected demand for use next time round.
+		
+		//Define a variable to hold the aggregator's predicted demand at this instant.
+		
+		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
+		// demand, have a less dynamic but still non-zero predicted demand 
+		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
+		
+		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+				
+		priceSignal = ArrayUtils.multiply(overallSystemDemand, 1 / ArrayUtils.max(overallSystemDemand));
+	}
+	
+	void setPriceSignalZero()
+	{
+		Arrays.fill(priceSignal,0f);
+		priceSignalChanged = true;
+	}
+	
+	/*
+	 * helper methods
+	 */
+	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
+
+
+		// To avoid computational load (and realistically model a reasonable broadcast strategy)
+		// only prepare and transmit the price signal if it has changed.
+		if(priceSignalChanged)
+		{
+			//populate the broadcast signal with the price signal starting from now and continuing for
+			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
+			//broadcast signal out.
+			float[] broadcastSignal= new float[broadcastLength];
+			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignalLength);
+			int startIndex = (int) time % priceSignalLength;
+			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignalLength - startIndex);
+			for (int i = 1; i <= numCopies; i++)
+			{
+				int addIndex = (priceSignalLength - startIndex) * i;
+				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignalLength);
+			}
+
+			if (broadcastLength > (((numCopies + 1) * priceSignalLength) - startIndex))
+			{
+				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignalLength) - startIndex, broadcastLength - (((numCopies + 1) * priceSignalLength) - startIndex));
+			}
+
+			for (ProsumerAgent a : broadcastCusts){
+				// Broadcast signal to all customers - note we simply say that the signal is valid
+				// from now currently, in future implementations we may want to be able to insert
+				// signals valid at an offset from now.
+				if (Consts.DEBUG)
+				{
+					//System.out.println("Broadcasting to " + a.sAgentID);
+				}
+				a.receiveValueSignal(broadcastSignal, broadcastLength);
+			}
+		}
+
+		priceSignalChanged = false;
+	}
+	
 	
 
 }

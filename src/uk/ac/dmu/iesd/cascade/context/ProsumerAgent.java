@@ -22,11 +22,12 @@ import uk.ac.dmu.iesd.cascade.Consts;
  * Version history (for intermediate steps see Git repository history
  * 
  * 1.0 - Initial basic functionality including pure elastic reaction to price signal
- * 1.01 - Introduction of smart adaptation in addition to elastic behavioural adaptation
  * 1.1 - refactor to an abstract class holding only generic prosumer functions
  * 1.2. - implements ICognitiveAgent (Babak)
  * 1.3. - changed constructor, modified/added/removed methods, made the class properly abstract,
  *        sub-classes will/should not override the methodes defined here, except those made abstract (Babak) 
+ *    
+ *        ----Extra comment added to test git ignore----
  */
 public abstract class ProsumerAgent implements ICognitiveAgent {
 
@@ -60,7 +61,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected static String agentBaseName = "prosumer";
 
 	/**
-	 * A boolen to determine whether the name has
+	 * A boolean to determine whether the name has
 	 * been set explicitly. <code>nameExplicitlySet</code> will
 	 * be false if the name has not been set and true if it has.
 	 * @see #getName
@@ -69,8 +70,6 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected boolean nameExplicitlySet = false;
 
 	protected CascadeContext mainContext;
-
-	//protected String contextName;
 	
 	/**
 	 * a prosumer agent's (price) elasticity factor 
@@ -98,6 +97,9 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 
 	/*
 	 * Weather and temperature variables
+	 * 
+	 * TODO: (from RS) These can (and should?) be simply read from the context whenever needed
+	 * 
 	 */
 	protected float insolation; //current insolation at the given half hour tick
 	protected float windSpeed; //current wind speed at the given half hour tick
@@ -106,6 +108,10 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 
 	/*
 	 * Electrical properties
+	 * 
+	 * TODO: (from RS) I think the Electrical properties should be here as every Prosumer
+	 * must have them.  This is what distinguishes prosumer from other agents - it
+	 * has a physical grid connection.
 	 */
 	//protected int nodeID;
 	//protected int connectionNominalVoltage;
@@ -120,7 +126,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * Imported signals and profiles.
 	 */
 	protected float[] baseDemandProfile;
-	protected float[] predictedCostSignal;
+	private float[] predictedCostSignal;
 	protected int predictedCostSignalLength;
 	protected int predictionValidTime;
 
@@ -279,6 +285,36 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	//TODO: methodes declcared from here until the end of this class 
 	//may be changed/removed
 	//---------------------------------------------------------------
+	
+	/*
+	 * Method used by display visualisation.  Shouldn't normally be read by others outside
+	 * the scope...
+	 * 
+	 * TODO: Is this implementation the best?
+	 * 
+	 * @return boolean indicating whether this prosumer has a smart control device
+	 */
+	public boolean getHasSmartControl()
+	{
+		return hasSmartControl;
+	}
+	
+	/*
+	 * Hacky mcHack to get the Repast Simphony visualisation working with this agent quickly
+	 * 
+	 * TODO:  Something better than this needed...
+	 */
+	public float getHasSmartControlAsFloat()
+	{
+		if (hasSmartControl)
+		{
+			return 1f;
+		}
+		else
+		{
+			return 0f;
+		}
+	}
 
 	public int getPredictedCostSignalLength() {
 		return predictedCostSignalLength;
@@ -291,7 +327,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	public float getCurrentPrediction() {
 		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
 		if (predictedCostSignalLength > 0) {
-			return predictedCostSignal[timeSinceSigValid % predictedCostSignalLength];
+			return getPredictedCostSignal()[timeSinceSigValid % predictedCostSignalLength];
 		}
 		else  {
 			return 0;
@@ -353,27 +389,27 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 				newSignalLength = newSignalLength - signalOffset;
 			}
 
-			if ((predictedCostSignal == null) || (newSignalLength != getPredictedCostSignalLength()))
+			if ((getPredictedCostSignal() == null) || (newSignalLength != getPredictedCostSignalLength()))
 			{
 				if (Consts.DEBUG)
 				{
 					System.out.println("Re-defining length of signal in agent" + agentID);
 				}
 				setPredictedCostSignalLength(newSignalLength);
-				predictedCostSignal = new float[newSignalLength];
+				setPredictedCostSignal(new float[newSignalLength]);
 			}
 
 			if (signalOffset < 0)
 			{
 				// This is a signal projected into the future.
 				// pad the signal with copies of what was in it before and then add the new signal on
-				System.arraycopy(signal, 0, predictedCostSignal, 0 - signalOffset, length);
+				System.arraycopy(signal, 0, getPredictedCostSignal(), 0 - signalOffset, length);
 			}
 			else
 			{
 				// This was valid from now or some point in the past.  Copy in the portion that is still valid and 
 				// then "wrap" the front bits round to the end of the array.
-				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
+				System.arraycopy(signal, signalOffset, getPredictedCostSignal(), 0, length);
 			}
 
 			if (Consts.DEBUG)
@@ -441,6 +477,20 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		insolation = mainContext.getInsolation(time);
 		windSpeed = mainContext.getWindSpeed(time);
 		airTemperature = mainContext.getAirTemperature(time);		
+	}
+
+	/**
+	 * @param predictedCostSignal the predictedCostSignal to set
+	 */
+	public void setPredictedCostSignal(float[] predictedCostSignal) {
+		this.predictedCostSignal = predictedCostSignal;
+	}
+
+	/**
+	 * @return the predictedCostSignal
+	 */
+	public float[] getPredictedCostSignal() {
+		return predictedCostSignal;
 	}
 
 

@@ -3,6 +3,8 @@
  */
 package uk.ac.dmu.iesd.cascade.context;
 
+import java.util.ArrayList;
+
 /**
  * Interface IProsumerFactory defines possible ways where prosumer factory 
  * can/should create (/initiate) different instances of prosumer concrete subclasses 
@@ -15,5 +17,6 @@ package uk.ac.dmu.iesd.cascade.context;
 public interface IProsumerFactory {
 	//public ProsumerAgent creatProsumer();
 	public HouseholdProsumer createHouseholdProsumer(float[] baseProfile, boolean addNoise);
-	
+
+	public ArrayList<ProsumerAgent> createDEFRAHouseholds(int number, String categoryFile, String profileFile);
 }

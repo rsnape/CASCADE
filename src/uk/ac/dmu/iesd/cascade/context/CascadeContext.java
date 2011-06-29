@@ -142,7 +142,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the insolation
 	 * @return the insolation at the time (in ticks) passed in
 	 */
-	float getInsolation(int time)
+	public float getInsolation(int time)
 	{
 		return insolationArray[time % weatherDataLength];
 	}
@@ -151,7 +151,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the wind speed
 	 * @return the wind speed at the time (in ticks) passed in
 	 */
-	float getWindSpeed(int time)
+	public float getWindSpeed(int time)
 	{
 		return windSpeedArray[time % weatherDataLength];
 	}
@@ -160,9 +160,39 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the air temperature
 	 * @return the air temperature at the time (in ticks) passed in
 	 */
-	float getAirTemperature(int time)
+	public float getAirTemperature(int time)
 	{
 		return airTemperatureArray[time % weatherDataLength];
+	}
+	/**
+	 * @param time - the time in ticks for which to get the insolation
+	 * @return the insolation at the time (in ticks) passed in
+	 */
+	public float[] getInsolation(int time, int length)
+	{
+		int start = time % weatherDataLength;
+		return Arrays.copyOfRange(insolationArray, start, start + length);
+	
+	}
+
+	/**
+	 * @param time - the time in ticks for which to get the wind speed
+	 * @return the wind speed at the time (in ticks) passed in
+	 */
+	public float[] getWindSpeed(int time, int length)
+	{
+		int start = time % weatherDataLength;
+		return Arrays.copyOfRange(windSpeedArray, start, start + length);
+	
+	}
+	/**
+	 * @param time - the time in ticks for which to get the air temperature
+	 * @return the air temperature at the time (in ticks) passed in
+	 */
+	public float[] getAirTemperature(int time, int length)
+	{
+		int start = time % weatherDataLength;
+		return Arrays.copyOfRange(airTemperatureArray, start, start + length);
 	}
 	
 	

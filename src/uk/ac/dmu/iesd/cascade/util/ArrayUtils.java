@@ -3,6 +3,8 @@
  */
 package uk.ac.dmu.iesd.cascade.util;
 
+import java.util.Arrays;
+
 /**
  * @author J. Richard Snape
  * @author Babak Mahdavi 
@@ -20,7 +22,7 @@ package uk.ac.dmu.iesd.cascade.util;
  */
 public class ArrayUtils {
 	
-	public static int[] convertStringArraytoIntArray(String[] sarray) {
+	public static int[] convertStringArrayToIntArray(String[] sarray) {
 		if (sarray != null) {
 			int intarray[] = new int[sarray.length];
 			for (int i = 0; i < sarray.length; i++) {
@@ -31,7 +33,7 @@ public class ArrayUtils {
 		return null;
 	}
 	
-	public static float[] convertStringArraytofloatArray(String[] sarray) {
+	public static float[] convertStringArrayToFloatArray(String[] sarray) {
 		if (sarray != null) {
 		float floatarray[] = new float[sarray.length];
 		for (int i = 0; i < sarray.length; i++) {
@@ -42,25 +44,28 @@ public class ArrayUtils {
 		return null;
 		}
 	
-	public static double[] convertStringArraytodoubleArray(String[] sarray) {
-		if (sarray != null) {
-		double doublearray[] = new double[sarray.length];
-		for (int i = 0; i < sarray.length; i++) {
-		doublearray[i] = Double.parseDouble(sarray[i]);
-		
+	
+	/*
+	 * Tried a different implementation here - could test which is quicker...
+	 */
+	public static double[] convertStringArrayToDoubleArray(String[] array)
+	{
+		int i = 0;
+		double[] returnArray = new double[array.length];
+		for(String s: array)
+		{
+			returnArray[i] = Double.parseDouble(s);
+			i++;
 		}
-		return doublearray;
-		}
-		return null;
-		}
+		return returnArray;
+	}
+
 	
 	
 	public static int sum(int[] intArray)
 	{
 		int sum = 0;
-		//for (int i = 1; i < intArray.length; i++)
 		for (int i = 0; i < intArray.length; i++)
-
 		{
 			sum = sum + intArray[i];
 		}
@@ -104,7 +109,7 @@ public class ArrayUtils {
 		
 		if (array1.length != array2.length)
 		{
-			System.err.println("Tried to dot product arrays of differetn length - undefined");
+			System.err.println("Tried to convolve arrays of different lengths  " + array1.length + array2.length + " result - undefined");
 		}
 		else
 		{
@@ -124,7 +129,7 @@ public class ArrayUtils {
 		
 		if (array1.length != array2.length)
 		{
-			System.err.println("Tried to dot product arrays of differetn length - undefined");
+			System.err.println("Tried to dot product arrays of different lengths " + array1.length + array2.length + " result - undefined");
 		}
 		else
 		{
@@ -236,7 +241,7 @@ public class ArrayUtils {
 		
 		return index;
 	}
-	
+
 	
 	/**
 	 * This utility function verifies if the sum of the values in
@@ -378,5 +383,28 @@ public class ArrayUtils {
 		return output;
 	}
 	
-
+	public static float[] add(float[]... arrays)
+	{
+		int arrayLength = arrays[0].length;
+		float[] returnArray = new float[arrayLength];
+		for ( float[] array : arrays)
+		{
+			for (int i = 0; i < arrayLength; i++)
+			{
+				returnArray[i] = returnArray[i] + array[i];
+			}
+		}
+		
+		return returnArray;
+	}
+	
+	public static float[] negate(float[] array)
+	{
+		float[] returnArray = new float[array.length];
+		for (int i = 0; i < array.length; i++)
+		{
+			returnArray[i] = -array[i];
+		}
+		return returnArray;
+	}
 }

@@ -35,23 +35,20 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	 * to respect agent conventions of autonomy / realistic simulation of humans
 	 */
 
+	/**
+	 * Returns a string representing the state of this agent. This method is
+	 * intended to be used for debugging purposes, and the content and format of
+	 * the returned string should include the states (variables/parameters)
+	 * which are important for debugging purpose. The returned string may be
+	 * empty but may not be <code>null</code>.
+	 * 
+	 * @return a string representation of this agent's state parameters
+	 */
+	protected String paramStringReport() {
+		String str = "";
+		return str;
 
-	
-	  /**
-     * Returns a string representing the state of this agent. This 
-     * method is intended to be used for debugging purposes, and the 
-     * content and format of the returned string should include the states (variables/parameters)
-     * which are important for debugging purpose.
-     * The returned string may be empty but may not be <code>null</code>.
-     * 
-     * @return  a string representation of this agent's state parameters
-     */
-    protected String paramStringReport(){
-    	String str="";
-    	return str;
-    	
-    }
-
+	}
 
 	public float getUnadaptedDemand() {
 		// Cope with tick count being null between project initialisation and
@@ -61,7 +58,6 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 						0);
 		return (baseDemandProfile[index]) - currentGeneration();
 	}
-
 
 	/*
 	 * Step behaviour
@@ -110,14 +106,14 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		setNetDemand(0 - currentGeneration());
 
 		// Return (this will be false if problems encountered).
-		//return returnValue;
+		// return returnValue;
 
 	}
 
 	/**
 	 * @return
 	 */
-	private float currentGeneration() {
+	protected float currentGeneration() {
 		float returnAmount = 0;
 
 		returnAmount = returnAmount + windGeneration();
@@ -155,12 +151,11 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 				baseProfileIndex, baseProfileIndex + ticksPerDay - 1));
 	}
 
-
-
 	/*
 	 * Constructor function(s)
 	 */
-	public WindGeneratorProsumer(CascadeContext context, float[] baseDemand, float capacity) {
+	public WindGeneratorProsumer(CascadeContext context, float[] baseDemand,
+			float capacity) {
 		/*
 		 * If number of wind turbines not specified, assume 1
 		 */

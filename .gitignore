@@ -1,0 +1,6 @@
+# Ignored files
+velocity.log*
+bin/
+*ModelOutput*
+Repast.settings
+
