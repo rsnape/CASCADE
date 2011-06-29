@@ -1,66 +1,20 @@
 package uk.ac.dmu.iesd.cascade.context;
 
-import java.io.*;
-import java.math.*;
 import java.util.*;
-import javax.measure.unit.*;
-
-import org.apache.tools.ant.taskdefs.Sync.MyCopy;
-import org.hsqldb.lib.ArrayUtil;
-import org.jfree.util.ArrayUtilities;
-import org.jscience.mathematics.number.*;
-import org.jscience.mathematics.vector.*;
-import org.jscience.physics.amount.*;
-
-//import cern.colt.Arrays;
-import repast.simphony.adaptation.neural.*;
-import repast.simphony.adaptation.regression.*;
-import repast.simphony.context.*;
-import repast.simphony.context.space.continuous.*;
-import repast.simphony.context.space.gis.*;
-import repast.simphony.context.space.graph.*;
-import repast.simphony.context.space.grid.*;
-import repast.simphony.engine.environment.*;
 import repast.simphony.engine.schedule.*;
-import repast.simphony.engine.watcher.*;
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.groovy.math.*;
-import repast.simphony.integration.*;
-import repast.simphony.matlab.link.*;
-import repast.simphony.query.*;
-import repast.simphony.query.space.continuous.*;
-import repast.simphony.query.space.gis.*;
-import repast.simphony.query.space.graph.*;
-import repast.simphony.query.space.grid.*;
-import repast.simphony.query.space.projection.*;
-import repast.simphony.parameter.*;
-import repast.simphony.random.*;
-import repast.simphony.space.continuous.*;
-import repast.simphony.space.gis.*;
-import repast.simphony.space.graph.*;
-import repast.simphony.space.grid.*;
-import repast.simphony.space.projection.*;
-import repast.simphony.ui.probe.*;
-import repast.simphony.util.*;
-import simphony.util.messages.*;
 import uk.ac.dmu.iesd.cascade.Consts;
-import uk.ac.dmu.iesd.cascade.Consts.*;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
-import static java.lang.Math.*;
-import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
  * @author J. Richard Snape
  * @author Babak Mahdavi
  * @version $Revision: 1.1 $ $Date: 2011/05/18 12:00:00 $
  * 
- *          Version history (for intermediate steps see Git repository history
- * 
- *          1.0 - Initial split of categories of prosumer from the abstract
- *          class representing all prosumers 1.1 - eliminated redundant methods
- *          (inherited from ProsumerAgent)
- * 
- * 
+ * Version history (for intermediate steps see Git repository history
+ * 1.0 - Initial split of categories of prosumer from the abstract
+ * class representing all prosumers
+ * 1.1 - eliminated redundant methods (inherited from superclass ProsumerAgent)
  */
 public class WindGeneratorProsumer extends GeneratorProsumer {
 
@@ -119,7 +73,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	 * Return variables: boolean returnValue - returns true if the method
 	 * executes successfully
 	 ******************/
-	@ScheduledMethod(start = 1, interval = 1, shuffle = true)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true)
 	public void step() {
 
 		// Define the return value variable. Set this false if errors
@@ -218,9 +172,8 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		this.maxTimeShift = 0;
 		this.ticksPerDay = context.getTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0) {
-			System.err.println("baseDemand array not a whole number of days");
-			System.err
-					.println("Will be truncated and may cause unexpected behaviour");
+			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
+			System.err.println(" Will be truncated and may cause unexpected behaviour");
 		}
 		this.baseDemandProfile = new float[baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0,

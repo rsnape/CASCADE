@@ -1,6 +1,3 @@
-/**
- * 
- */
 package uk.ac.dmu.iesd.cascade.context;
 
 /**
@@ -20,9 +17,9 @@ CascadeContext cascadeMainContext;
 		this.cascadeMainContext= context;
 	}
 	
-	
-	public RECO createRECO(float[] baseProfile, boolean addNoise){
-		return null;
+	public RECO createRECO(float[] baseProfile){
+		RECO aCO = new RECO(cascadeMainContext,baseProfile);
+		return aCO;
 	}
 
 }

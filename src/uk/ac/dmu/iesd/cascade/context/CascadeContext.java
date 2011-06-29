@@ -1,57 +1,28 @@
 package uk.ac.dmu.iesd.cascade.context;
 
-import java.io.*;
-import java.math.*;
 import java.util.*;
-
-
-import javax.measure.unit.*;
-import org.jscience.mathematics.number.*;
-import org.jscience.mathematics.vector.*;
-import org.jscience.physics.amount.*;
-
-
-import repast.simphony.adaptation.neural.*;
-import repast.simphony.adaptation.regression.*;
 import repast.simphony.context.*;
-import repast.simphony.context.space.continuous.*;
-import repast.simphony.context.space.gis.*;
-import repast.simphony.context.space.graph.*;
-import repast.simphony.context.space.grid.*;
-import repast.simphony.dataLoader.*;
-import repast.simphony.engine.environment.*;
 import repast.simphony.engine.schedule.*;
-import repast.simphony.engine.watcher.*;
-import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.groovy.math.*;
-import repast.simphony.integration.*;
-import repast.simphony.matlab.link.*;
-import repast.simphony.query.*;
-import repast.simphony.query.space.continuous.*;
-import repast.simphony.query.space.gis.*;
-import repast.simphony.query.space.graph.*;
-import repast.simphony.query.space.grid.*;
-import repast.simphony.query.space.projection.*;
-import repast.simphony.parameter.*;
-import repast.simphony.random.*;
-import repast.simphony.space.continuous.*;
-import repast.simphony.space.gis.*;
-import repast.simphony.space.graph.*;
-import repast.simphony.space.grid.*;
+import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.*;
-import repast.simphony.ui.probe.*;
-import repast.simphony.util.*;
-import simphony.util.messages.*;
-import static java.lang.Math.*;
-import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
+ * <em>CascadeContext</em> is the main context for the <em>Cascade</em> framework.
+ * Context can be seen as container or a virtual environment that is populated 
+ * with agents, proto-agents or other actors/components, etc.
+ * The <code>CascadeContext</code> holds internal states (information) that could be 
+ * useful for population (e.g. agents) about the world (environment) in which they live in.
+ * At this moment, for instance, the information about the weather is provided to agents
+ * through the public interface implemented by this class. These can be seen a global
+ * information/behaviour. 
+ *   
  * @author J. Richard Snape
+ * @author Babak Mahdavi
  * @version $Revision: 1.2 $ $Date: 2011/05/12 11:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
- * 1.1 - File Initial scenario creator
+ * 1.1 - File Initial scenario creator (??)
  * 1.2 - Class name has been changed
  *       Boolean verbose variable has been added
  *       Name of some variables changed
@@ -59,6 +30,7 @@ import static repast.simphony.essentials.RepastEssentials.*;
  */
 public class CascadeContext extends DefaultContext{
 	
+
 	/*
 	 * Context parameters
 	 * 
@@ -82,7 +54,10 @@ public class CascadeContext extends DefaultContext{
 	float[] systemPriceSignalDataArray;
 	int systemPriceSignalDataLength;
 	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
-	private int ticksPerDay;
+	protected int ticksPerDay;
+	
+	private Network socialNetwork;
+	private Network economicNetwork;
 
 
 	/**
@@ -109,11 +84,44 @@ public class CascadeContext extends DefaultContext{
 	}
 	
 	
-	@ScheduledMethod(start = 1)
-	 public void step() {
-	   	// Can put any "global" behavior here
-		// Use with great caution
-	 }
+	/**
+	 * This method return the social network 
+	 * @return <tt>socialNetwork</tt> associated to the context
+	 * @see #setSocialNetwork
+	 */
+	public Network getSocialNetwork(){
+		return this.socialNetwork;
+	}
+	
+	/**
+	 * Sets the social network associated to this context 
+	 * @param n the social network
+	 * @see #getSocialNetwork
+	 */
+	public void setSocialNetwork(Network n){
+		this.socialNetwork = n;
+	}
+	
+	
+	/**
+	 * This method return the social network 
+	 * @return <tt>economicNetwork</tt> associated to the context
+	 * @see #setEconomicNetwork
+	 */
+	public Network getEconomicNetwork(){
+		return this.economicNetwork;
+	}
+	
+	/**
+	 * Sets the economic network associated to this context 
+	 * @param n the economic network
+	 * @see #getEconomicNetwork
+	 */
+	public void setEconomicNetwork(Network n){
+		this.economicNetwork = n;
+	}
+
+
 	
 	/**
 	 * This method return the number of <tt> tickPerDay </tt>

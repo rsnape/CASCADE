@@ -16,6 +16,11 @@ class reference {
 @__modelType reference 
 */
 class reference30 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.controllers.SmartDevice:oiref><oihard>
+@__modelType reference 
+*/
+class reference19 {
 }}/**
 @__tags
 @shapeType ClassDiagram 

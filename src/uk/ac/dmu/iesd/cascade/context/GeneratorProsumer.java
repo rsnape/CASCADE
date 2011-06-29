@@ -1,65 +1,20 @@
 package uk.ac.dmu.iesd.cascade.context;
 
-import java.io.*;
-import java.math.*;
 import java.util.*;
-import javax.measure.unit.*;
-
-import org.apache.tools.ant.taskdefs.Sync.MyCopy;
-import org.hsqldb.lib.ArrayUtil;
-import org.jfree.util.ArrayUtilities;
-import org.jscience.mathematics.number.*;
-import org.jscience.mathematics.vector.*;
-import org.jscience.physics.amount.*;
-
-
-
-//import cern.colt.Arrays;
-import repast.simphony.adaptation.neural.*;
-import repast.simphony.adaptation.regression.*;
-import repast.simphony.context.*;
-import repast.simphony.context.space.continuous.*;
-import repast.simphony.context.space.gis.*;
-import repast.simphony.context.space.graph.*;
-import repast.simphony.context.space.grid.*;
-import repast.simphony.engine.environment.*;
-import repast.simphony.engine.schedule.*;
-import repast.simphony.engine.watcher.*;
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.groovy.math.*;
-import repast.simphony.integration.*;
-import repast.simphony.matlab.link.*;
-import repast.simphony.query.*;
-import repast.simphony.query.space.continuous.*;
-import repast.simphony.query.space.gis.*;
-import repast.simphony.query.space.graph.*;
-import repast.simphony.query.space.grid.*;
-import repast.simphony.query.space.projection.*;
-import repast.simphony.parameter.*;
-import repast.simphony.random.*;
-import repast.simphony.space.continuous.*;
-import repast.simphony.space.gis.*;
-import repast.simphony.space.graph.*;
-import repast.simphony.space.grid.*;
-import repast.simphony.space.projection.*;
-import repast.simphony.ui.probe.*;
-import repast.simphony.util.*;
-import simphony.util.messages.*;
 import uk.ac.dmu.iesd.cascade.Consts;
-import uk.ac.dmu.iesd.cascade.Consts.*;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
-import static java.lang.Math.*;
-import static repast.simphony.essentials.RepastEssentials.*;
-
 
 /**
  * @author J. Richard Snape
+ * @author Babak Mahdavi
  * 
- * @version $Revision: 1.00 $ $Date: 2011/03/17 12:00:00 $
+ * @version $Revision: 1.1 $ $Date: 2011/05/19 12:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
  * 1.0 - Initial split of categories of prosumer from the abstract class representing all prosumers
+ * 1.1 - Factored out (eliminated) those methodes already defined in the superclass (Babak)
  * 
  * 
  */

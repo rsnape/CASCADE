@@ -7,26 +7,31 @@ import java.util.Arrays;
 
 /**
  * @author J. Richard Snape
- * @version $Revision: 1.01 $ $Date: 2010/12/09 12:00:00 $
+ * @author Babak Mahdavi 
+ * @version $Revision: 1.05 $ $Date: 2011/06/28 12:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
  * 1.0 - Initial basic functionality
  * 1.01 - added dot product functionality and normalization
- *
+ * 1.02 - added method isSumEqualZero(floatArray); isSumEqualZero(intArray) [Babak] 
+ * 1.03 - added avg, avgCols2DFloatArry
+ * 1.04 - added getPrintableOutputFor2DFloatArrary, getPrintableOutputForFloatArray, 
+ *              getPrintableOutputFor2DIntArrary, getPrintableOutputForIntArrary
+ * 1.05 - added subArrayCopy, rowCopy             
  */
 public class ArrayUtils {
 	
 	public static int[] convertStringArrayToIntArray(String[] sarray) {
 		if (sarray != null) {
-		int intarray[] = new int[sarray.length];
-		for (int i = 0; i < sarray.length; i++) {
-		intarray[i] = Integer.parseInt(sarray[i]);
-		}
-		return intarray;
+			int intarray[] = new int[sarray.length];
+			for (int i = 0; i < sarray.length; i++) {
+				intarray[i] = Integer.parseInt(sarray[i]);
+			}
+			return intarray;
 		}
 		return null;
-		}
+	}
 	
 	public static float[] convertStringArrayToFloatArray(String[] sarray) {
 		if (sarray != null) {
@@ -55,6 +60,7 @@ public class ArrayUtils {
 		return returnArray;
 	}
 
+	
 	
 	public static int sum(int[] intArray)
 	{
@@ -235,6 +241,147 @@ public class ArrayUtils {
 		
 		return index;
 	}
+
+	
+	/**
+	 * This utility function verifies if the sum of the values in
+	 * the given array (float) are equal zero. If the sum is zero it returns true; otherwise false
+	 * @param   floatArray to be verified if its sum is equal zero 	 
+	 * @return true if the sum of array elements are zero; false otherwise 
+	 */
+	public static boolean isSumEqualZero(float[] floatArray) {	
+		boolean sumIsEqualZero = false;
+		float sum= sum(floatArray);
+		if (sum ==0)
+			sumIsEqualZero=true;
+		//System.out.println("ArryUtils.isSumEqualZero: "+sum);
+		return sumIsEqualZero;
+	}
+	
+	/**
+	 * This utility function verifies if the sum of the values in
+	 * the given array (int) are equal zero. If the sum is zero it returns true; otherwise false
+	 * @param   intArray to be verified if its sum is equal zero 	 
+	 * @return true if the sum of array elements are zero; false otherwise 
+	 */
+	public static boolean isSumEqualZero(int[] intArray) {	
+		boolean sumIsEqualZero = false;
+		float sum= sum(intArray);
+		if (sum ==0)
+			sumIsEqualZero=true;
+		return sumIsEqualZero;
+	}
+	
+	/**
+	 * This utility function returns a copy of the specific column of a passed 2D float array
+	 * as a one dimensional float array. 
+	 * @param  twoDfloatArray a 2D float array whose column is supposed to be fetched and return
+	 * @param  col the number of column whose values are supposed to be returned as array  	 
+	 * @return an array (float) containing a copy of the passed column number and 2D array 
+	 */
+	public static float[] colCopy(float[][] twoDfloatArray, int col) {
+		float[] aCol = new float[twoDfloatArray.length];
+		for (int i = 0; i < twoDfloatArray.length; i++) {
+	        aCol[i]=twoDfloatArray[i][col];
+	    }
+		return aCol;
+	}
+	
+	/**
+	 * This utility function returns a sub-array copy of a given 2D array (with the same columns' size)
+	 * by passing/specifying a startRow and endRow indices.
+	 * @param twoDfloatArray the original 2D float array from which a sub-array is built
+	 * @param startRow a starting row index which indicates the beginning row of the sub-array 
+	 * @param endRow an ending row index which indicates the last row of original array included in the sub-array 
+	 * @return an 2D sub-array (float) containing a copy of the passed 2D-array up from startRow to endRow
+	 */
+	public static float[][] subArrayCopy(float[][] twoDfloatArray, int startRow, int endRow) {
+		if(startRow>endRow)throw new IllegalArgumentException("endRow is bigger than startRow");
+		int subArrRowLength = endRow-startRow;
+		float[][] subArr = new float[subArrRowLength][twoDfloatArray[0].length];
+	
+		for (int i = 0; i < subArrRowLength; i++) {
+			for (int col = 0; col < twoDfloatArray[0].length; col++) {
+				subArr[i][col]=twoDfloatArray[i+startRow][col];
+			}
+	    }
+		return subArr;
+	}
+	
+	/**
+	 * This utility function returns an array copy containing of passed row index of a given 2D array 
+	 * @param twoDfloatArray the original 2D float array from which a row will be copied and return as an array
+	 * @param row a row index indicating the row which needs to be taken out (copied and returned)
+	 * @return an array (float) containing a copy of its needed row (index passed as argument)
+	 */
+	public static float[] rowCopy(float[][] twoDfloatArray, int row) {
+		float[] rowCopyArr = new float[twoDfloatArray[0].length];
+			for (int col = 0; col < twoDfloatArray[0].length; col++) {
+				rowCopyArr[col]=twoDfloatArray[row][col];
+			}
+		return rowCopyArr;
+	}
+
+	/**
+	 * This utility function calculates the average of an float array values and returns it.
+	 * @param   a floatArray  	 
+	 * @return average of array's elements/values 
+	 */
+	public static float avg(float[] floatArray) {
+		float avg=0;
+		if (floatArray.length !=0) {
+			float sum = sum(floatArray);
+			avg = sum/floatArray.length;
+		}
+		return avg;
+	}
+	
+	/**
+	 * This utility function builds an printable string of the elements (values) of a given float array
+	 * and returns it. The string could be used in any standard print/output function (such as println)
+	 * @param   a floatArray to be printed 	 
+	 * @return a ready-to-be-printed string of array values 
+	 */
+	public static String getPrintableOutputForFloatArray(float[] floatArray) {	
+		String output = "["; 
+		for (int i = 0; i < floatArray.length; i++) {
+			output += " " + floatArray[i];
+		}
+		output += "]";
+		return output;
+	}
+
+	/**
+	 * This utility function builds an printable string of the elements (values) of a given 2D integer array
+	 * and returns it. The string could be used in any standard print/output function (such as println)
+	 * @param   a 2D intArray to be printed 	 
+	 * @return a ready-to-be-printed string of array elements/values 
+	 */
+	public static float[] avgCols2DFloatArray(float[][] twoDfloatArray) {	
+		float[] avgArr = new float[twoDfloatArray[0].length];
+		for (int col = 0; col < twoDfloatArray[0].length; col++) {
+			avgArr[col] = avg(colCopy(twoDfloatArray, col));
+		}
+		return avgArr;
+	}
+
+	/**
+	 * This utility function builds an printable string of the elements (values) of a given 2D float array
+	 * and returns it. The string could be used in any standard print/output function (such as println)
+	 * @param   a 2D floatArray to be printed 	 
+	 * @return a ready-to-be-printed string of array elements/values 
+	 */
+	public static String getPrintableOutputFor2DFloatArray(float[][] twoDfloatArray) {	
+		String output = ""; 
+		for (int row = 0; row < twoDfloatArray.length; row++) {
+			output += "r"+row+" [";
+			for (int col = 0; col < twoDfloatArray[row].length; col++) {
+				output += " " + twoDfloatArray[row][col];
+			}
+			output += "]"+"\n";
+		}
+		return output;
+	}
 	
 	public static float[] add(float[]... arrays)
 	{
@@ -260,5 +407,4 @@ public class ArrayUtils {
 		}
 		return returnArray;
 	}
-	
 }

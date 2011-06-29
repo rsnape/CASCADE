@@ -520,11 +520,12 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		super(context);
 	
 		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.5);
+		setElasticityFactor(percentageMoveableDemand);
 		this.ticksPerDay = context.getTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0)
 		{
-			System.err.println("baseDemand array not a whole number of days");
-			System.err.println("Will be truncated and may cause unexpected behaviour");
+			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
+			System.err.println(" Will be truncated and may cause unexpected behaviour");
 		}
 		this.baseDemandProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);

@@ -20,27 +20,9 @@ import repast.simphony.context.space.graph.*;
 import repast.simphony.context.space.grid.*;
 import repast.simphony.engine.environment.*;
 import repast.simphony.engine.schedule.*;
-import repast.simphony.engine.watcher.*;
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.groovy.math.*;
-import repast.simphony.integration.*;
-import repast.simphony.matlab.link.*;
-import repast.simphony.query.*;
-import repast.simphony.query.space.continuous.*;
-import repast.simphony.query.space.gis.*;
-import repast.simphony.query.space.graph.*;
-import repast.simphony.query.space.grid.*;
-import repast.simphony.query.space.projection.*;
-import repast.simphony.parameter.*;
 import repast.simphony.random.*;
-import repast.simphony.space.continuous.*;
-import repast.simphony.space.gis.*;
 import repast.simphony.space.graph.*;
-import repast.simphony.space.grid.*;
-import repast.simphony.space.projection.*;
-import repast.simphony.ui.probe.*;
-import repast.simphony.util.*;
-import simphony.util.messages.*;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.controllers.*;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
@@ -266,12 +248,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.numOccupants = numOccupants;
 	}
 
-	public float getUnadaptedDemand(){
-		// Cope with tick count being null between project initialisation and start.
-		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
-		return (baseDemandProfile[index]) - currentGeneration();
-	}
-
 	public int getDefraCategory()
 	{
 		return defraCategory;
@@ -354,12 +330,38 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 			learnSmartAdoptionDecision(time);
 		}
+		
+		
+		/*
+		//----- Babak Network test ----------------------------------------------
+		Network costumerNetwork = FindNetwork("BabakTestNetwork");
+		Iterable costumersIter = costumerNetwork.getInEdges(this);
+		
+		for (Object thisConn: costumersIter)
+		{
+			RepastEdge myConn = ((RepastEdge) thisConn);
+			AggregatorAgent agg = (AggregatorAgent) myConn.getSource();
+			System.out.println(this.toString()+ " is provided by: "+ agg.toString()); 
+
+		} */
+		//System.out.println("------------------");
+		// -- End of test --------------------------------------------------------
 
 		// Return (this will be false if problems encountered).
 		//return returnValue;
 
 	}
 
+	
+
+
+	public float getUnadaptedDemand(){
+		// Cope with tick count being null between project initialisation and start.
+		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
+		return (baseDemandProfile[index]) - currentGeneration();
+	}
+
+	
 	/**
 	 * Method to return the realtime generation of this Household Prosumer (as distinct
 	 * from the net demand for the prosumer).
