@@ -96,30 +96,15 @@ public class RECO extends AggregatorAgent{
 		this.predictedCustomerDemandLength = ticksPerDay;
 		
 		///+++++++++++++++++++++++++++++++++++++++
-		this.B_i_arr = new float [ticksPerDay];
-		this.e_i_arr = new float [ticksPerDay];
-		this.S_i_arr = new float [ticksPerDay];
-		this.C_i_arr = new float [ticksPerDay];
-		this.k_ij_arr = new float [ticksPerDay][ticksPerDay];
-		this.hist_B_ij_arr = new float[Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE][ticksPerDay];
-		this.histAvg_B_i_arr = new float[ticksPerDay];
-		//this.hist_B_mat = new Matrix(hist_B_ij_arr);
-		
-		
-		//this.B_i_arr = this.predictedCustomerDemand;
-		//this.B_i_arr = this.overallSystemDemand;
-		this.B_i_arr = baseDemand; 
-		
-		for (int i = 0; i < ticksPerDay; i++) {
-			this.S_i_arr[i] = 1;
-			this.e_i_arr[i] = 0;
-			for (int j = 0; j < ticksPerDay; j++) {
-				this.k_ij_arr[i][j]=0;
-			}
-		}
-		
-		
-		System.arraycopy(baseDemand, 0, C_i_arr, 0, ticksPerDay);
+		this.arr_i_B = new float [ticksPerDay];
+		this.arr_i_e = new float [ticksPerDay];
+		this.arr_i_S = new float [ticksPerDay];
+		this.arr_i_C = new float [ticksPerDay];
+		this.arr_ij_k = new float [ticksPerDay][ticksPerDay];
+		this.hist_arr_ij_D = new float [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
+
+		//this.arr_i_B = baseDemand; 
+
 		//+++++++++++++++++++++++++++++++++++++++++++
 	}
 	
@@ -160,10 +145,10 @@ public class RECO extends AggregatorAgent{
 				sum_e = sum_e+agent.getElasticityFactor();
 		}
 
-		this.B_i_arr[time]=sumDemand;
+		this.arr_i_B[time]=sumDemand;
 
 		if (!isTraining)
-			this.e_i_arr[time]= sum_e;
+			this.arr_i_e[time]= sum_e;
 	}
 	
 	/**
@@ -173,9 +158,10 @@ public class RECO extends AggregatorAgent{
 	 * @see Consts#AGGREGATOR_PROFILE_BUILDING_PERIODE
 	 * @return true if the profile building period is completed, false otherwise 
 	 */
-	private boolean isBaselineDemandProfileBuildingPeriodCompleted() {
+	private boolean isAggregateDemandProfileBuildingPeriodCompleted() {
 		boolean isEndOfProfilBuilding = true;
 	    int daysSoFar = getCountDay();
+	    //System.out.println("BaslineB days so far: "+daysSoFar);
 		if (daysSoFar < Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
 			isEndOfProfilBuilding = false;
 		return isEndOfProfilBuilding;	
@@ -188,12 +174,13 @@ public class RECO extends AggregatorAgent{
 	 * which starts to be counted after the 'profile building' period has already completed.
 	 * @see Consts#AGGREGATOR_TRAINING_PERIODE
 	 * @see Consts#AGGREGATOR_PROFILE_BUILDING_PERIODE
-	 * @see #isBaselineDemandProfileBuildingPeriodCompleted()
+	 * @see #isAggregateDemandProfileBuildingPeriodCompleted()
 	 * @return true if the profile building period is completed, false otherwise 
 	 */
 	private boolean isTrainingPeriodCompleted() {
 		boolean isEndOfTraining = true;
 	    int daysSoFar = getCountDay();
+	    //System.out.println("days so far: "+daysSoFar);
 		if (daysSoFar < (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
 			isEndOfTraining = false;
 		return isEndOfTraining;		
@@ -214,17 +201,15 @@ public class RECO extends AggregatorAgent{
 		return daysSoFar;	
 	}
 	
-
-	
 	/**
-	 * This method is used update baseline aggregate demand (BAD or simply B) 
+	 * This method is used to update baseline aggregate demand (BAD or simply B) 
 	 * history matrix by obtaining each customers/prosumers' demand and adding them up and putting it in the right array cell
 	 * (i.e. right day [row], timeslot [column]) 
 	 * @param customersList the List of cusstumersList (of <code>ProsumerAgent</code> type)
 	 * @param timeOfDay the current timeslot (for a day divided to 48 timeslot, a value between 0 to 47)
 	 * @param hist_B_arr a 2D array for keeping baseline aggregate demand values for each timeslot of the day(column) and for different days (row)  
 	 */
-	private void updateBaselineAggregateDemandHistory(List<ProsumerAgent> customersList,int timeOfDay, float[][] hist_B_arr) {
+	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList,int timeOfDay, float[][] hist_B_arr) {
 		float sumDemand = 0;
 		//System.out.println(" customersList size "+customersList.size());
 		//System.out.println(" RECO is calling prosumer getND at ticktime "+ RepastEssentials.GetTickCount());
@@ -232,7 +217,6 @@ public class RECO extends AggregatorAgent{
 		for (ProsumerAgent a : customersList) {
 			sumDemand = sumDemand + a.getNetDemand();
 			//System.out.println("enter loop: agentND "+a.getNetDemand());
-
 		}	
 	    int dayCount = getCountDay();
 	   //System.out.println("sumDemand: "+sumDemand +" timeOfDay: "+timeOfDay);
@@ -242,38 +226,18 @@ public class RECO extends AggregatorAgent{
 	
 	
 	/**
-	 * This method calculates the average of baseline aggregate demands (BAD)
+	 * This method calculates the average/ Baseline Aggregate Demands (BAD)
 	 * for each timeslot of the day during different days from 2D history array where 
 	 * each row represent a (different) day and each columns represent a timeslot of a day (usually divided to half-hour slots)
 	 * It is basically a function to provide better readability to the program, as it simply calls 
 	 * ArrayUtils average calculating function for 2D arrays, which could be also called direclty
-	 * @param hist_B_arr a 2D array containing historical baseline aggregate demand values for each timeslot of the day(column) and for different days (row)
+	 * @param hist_arr_2D a 2D array containing historical baseline aggregate demand values for each timeslot of the day(column) and for different days (row)
 	 * @return float array of average baseline aggregate demands 
-
 	 */
-	private float[] calculateAverageBADfromHistory(float[][] hist_B_arr) {	
-		return ArrayUtils.avgCols2DFloatArray(hist_B_arr);	
+	private float[] calculateBADfromHistoryArray(float[][] hist_arr_2D) {	
+		return ArrayUtils.avgCols2DFloatArray(hist_arr_2D);	
 	}
 	
-	/**
-	 * This method is used send signal to of type S to prosumers
-	 * defined by Peter Boait 
-	 * @param broadcasteesList the list of broadcastees
-	 * @return true if signal has been sent and received successfully by receiver, false otherwise 
-	 */
-	private boolean sendSignalType_S(List broadcasteesList) {
-		
-		boolean isSignalSentSuccessfully = false;
-		List <ProsumerAgent> paList = broadcasteesList;
-
-		for (ProsumerAgent pa : paList){
-			
-			//System.out.println("sendSignalType_S, send signal to " + a.toString());
-			pa.receiveSignal(S_i_arr, S_i_arr.length, Consts.SIGNAL_TYPE.S);
-		}
-		
-		return isSignalSentSuccessfully;
-	}
 	
 	/**
 	 * This method broadcasts a signal (of different type) to a list of provided broadcastees (e.g. Prosumers)
@@ -305,6 +269,7 @@ public class RECO extends AggregatorAgent{
 				}
 			}
 			break;
+			
 		default:  //
 			break;
 		}
@@ -330,15 +295,12 @@ public class RECO extends AggregatorAgent{
 			List <ProsumerAgent> paList = broadcasteesList;
 			for (ProsumerAgent agent : paList){
 				//System.out.println("sendSignalType_S, send signal to " + a.toString());
-				agent.receiveSignal(S_i_arr, S_i_arr.length, Consts.SIGNAL_TYPE.S);
+				isSignalSentSuccessfully = agent.receiveSignal(arr_i_S, arr_i_S.length, Consts.SIGNAL_TYPE.S);
 			}
 			break;
-			
 		default:  //
 			break;
 		}
-
-		
 		return isSignalSentSuccessfully;
 	}
 	
@@ -351,27 +313,51 @@ public class RECO extends AggregatorAgent{
 	 * @return true if signal has been sent and received successfully by receiver, false otherwise 
 	 */
 	private boolean broadcastSignal(Consts.SIGNAL_TYPE signalType, List<?> broadcasteesList, int timeslot) {
-		
+
 		boolean isSignalSentSuccessfully = false;
-		
+
 		switch (signalType) { 
 		case S: 
-			isSignalSentSuccessfully = sendSignalType_S(broadcasteesList);
+			//isSignalSentSuccessfully = sendSignalType_S(broadcasteesList);
 			break;
 		case S_TRAINING: 
 			/**This section is designed to send signal of s[timeslot]=1 and s[othertimes] = -1/47 (at each timeslot)*/
-			float[] signalArr = buildSignal(signalType,timeslot);
+			this.arr_i_S = buildSignal(signalType,timeslot);
 			//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(signalArr));
 			//System.out.println(ArrayUtils.isSumEqualZero(signalArr));
-			isSignalSentSuccessfully = sendSignal(signalType, signalArr, broadcasteesList, timeslot);
+			isSignalSentSuccessfully = sendSignal(signalType, arr_i_S, broadcasteesList, timeslot);
 			break;
-			
+
 		default:  //
 			break;
 		}
 
 		return isSignalSentSuccessfully;
 	}
+	
+
+	/**
+	 * This method calculates elasticity factors (e) for each timeslot during a day (usally 48)
+	 * by accepting a 48 days D values for obtaining during training phase (by sending s=1 signals),
+	 * and a average baseline aggregate demand array built during profile building period.
+	 * @param hist_arr2D_D a 2D array containing aggregate demand (D) values obtaining during traning periods (usually 48 days)
+	 * @param arr_B an array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
+	 * @return float array of elasticity factors (e) 
+	 * @see #calculate_e(float[], float[], float, float)
+
+	 */
+	private float[] calculateElasticityFactors_e(float[][] training_arr2D_D, float[] arr_B) {	
+		
+		float[] arr_D;
+		float[] arr_e = new float[this.ticksPerDay];
+		for (int i = 0; i< this.ticksPerDay; i++) {
+			arr_D = ArrayUtils.rowCopy(training_arr2D_D, i);
+			arr_e[i]= calculate_e(arr_D, arr_B, 1f, arr_B[i]);
+		}
+		return arr_e;
+		
+	}
+	
 	
 
 	/**
@@ -470,28 +456,42 @@ public class RECO extends AggregatorAgent{
 		}
 			
 		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(ArrayUtils.avgCols2DFloatArray(arr)));
-		
-		
+			
 		List<ProsumerAgent> customers2 = getCustomersList();
 		
-	    if (!isBaselineDemandProfileBuildingPeriodCompleted()) { // history profile building period
-	    	updateBaselineAggregateDemandHistory(customers2, timeOfDay, hist_B_ij_arr);
+	    if (!isAggregateDemandProfileBuildingPeriodCompleted()) { // history profile building period
+	    	//updateBaselineAggregateDemandHistory(customers2, timeOfDay, histProfileBuilding_B_ij_arr);
+	    	updateAggregateDemandHistoryArray(customers2, timeOfDay, hist_arr_ij_D); 
 	    }
 	    else { //End of history profile building period 
 	    	
 	    	//histAvg_B_i_arr = ArrayUtils.avgCols2DFloatArray(hist_B_ij_arr);
 	    	//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(this.hist_B_ij_arr));
+	    	//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(ArrayUtils.getSubArrayCopy(hist_B_ij_arr,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));
+	    	//histAvg_B_i_arr = calculateAverageBADfromHistory(histProfileBuilding_B_ij_arr);
+	    	//histAvg_B_i_arr = calculateAverageBADfromHistory(hist_B_ij_arr);
+	    	//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(histAvg_B_i_arr));
+	    	//System.out.println("=====");
+	    	//float [][] buildingProfilePeriod = ArrayUtils.getSubArrayCopy(hist_B_ij_arr, Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE);
+	    	arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
 	    	//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(histAvg_B_i_arr));
 
-	    	histAvg_B_i_arr = calculateAverageBADfromHistory(hist_B_ij_arr);
 
 	    	if (!isTrainingPeriodCompleted()) {  //training period 
 	    		//signals should be send S=1 for 48 days
 	    		broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers2, timeOfDay);
-
-
+		    	updateAggregateDemandHistoryArray(customers2, timeOfDay, hist_arr_ij_D);
+		    	
 	    	}
 	    	else { //End of training period 
+	    		float [][] trainingPeriodBAD = ArrayUtils.subArrayCopy(hist_arr_ij_D, Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE, hist_arr_ij_D.length);
+	    		arr_i_e = calculateElasticityFactors_e(trainingPeriodBAD,arr_i_B);
+	    		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(arr_i_e));	
+
+	    		
+	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(ArrayUtils.getSubArrayCopy(hist_B_ij_arr,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));	
+	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(hist_B_ij_arr));	
+	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(trainingPeriodBAD));	
 	    	
 	    		//Calculate k and e
 	    		

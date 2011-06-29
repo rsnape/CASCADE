@@ -3,11 +3,14 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.util.*;
 
+import org.hsqldb.lib.ArrayUtil;
+
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.*;
 import repast.simphony.ui.probe.*;
 import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.IObservable;
 import uk.ac.dmu.iesd.cascade.util.IObserver;
 import uk.ac.dmu.iesd.cascade.util.ObservableComponent;
@@ -108,14 +111,14 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * net value which may be + or - tells us the value of S*e. 
 	 * Since we know S, we can get the e for the ith timeslot in which the S was broadcast. 
 	 **/
-	float[] e_i_arr; 
+	float[] arr_i_e; 
 	
 	/**
 	 * This field (k) is "displacement factor" at timeslot ij
 	 * There are 48^2 of them (48 values at each timeslot; a day divided into 48 timeslots)
 	 * It is calculated in the training process. 
 	 **/
-	float[][] k_ij_arr; 
+	float[][] arr_ij_k; 
 	
 	/**
 	 * This field (S) is "signal" at timeslot i sent to customer's (prosumers)
@@ -126,9 +129,9 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * When Si is not zero, the aggregator can calculate 
 	 * the resultant aggregate deviation (delta_Bi)
 	 **/
-	float[] S_i_arr;  // (S) signal at timeslot i
+	float[] arr_i_S;  // (S) signal at timeslot i
 	
-	float[] B_i_arr;  // (B) baseline at timeslot i
+	float[] arr_i_B;  // (B) baseline at timeslot i
 	
 	/**
 	 * This field (C) is the "marginal cost" per KWh in the ith timeslot 
@@ -139,27 +142,29 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * For the inital experiment, C would be proportional to national demand Ni with 
 	 * the option to make it Ni^2 or fractional power
 	 **/
-	float[] C_i_arr; 
-	
+	float[] arr_i_C; 
+		
 	/**
-	 * This 2D-array is used to keep the usual baseline aggregate demand of all prosumers at each timeslot 
-	 * of the day during the profile building period (usually 4-7 days). 
+	 * This 2D-array is used to keep the usual aggregate demand of all prosumers at each timeslot 
+	 * of the day during both profile building and training periods (usually about 7 + 48 days). 
 	 * In other words, the length of the columns of this 2D history array is equal to number of timeslot 
-	 * during a day and the length of its rows is equal to the number of days the profile building last
-	 * This will be wrapped within the matrix for easier manipulation.  
-	 * 
+	 * during a day and the length of its rows is equal to the number of days the profile building and training 
+	 * periods last.
+	 *  
 	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
 	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
 	 **/
-	float[][] hist_B_ij_arr; 
+	float[][] hist_arr_ij_D; 
 	
 	/**
-	 * This array is used to keep the average of the baseline aggregate demand (BAD)
-	 * kept in the 2D history BAD array (hist_B_ij_arr)  
+	 * This array is used to keep the average (i.e. baseline) of aggregate demands (D)
+	 * (usually kept in the 2D history D array (hist_D_ij_arr))  
 	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
 	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
 	 **/
-	float[] histAvg_B_i_arr; 
+	//float[] histAvg_B_i_arr; 
+
+
 	
 	/**
 	 * Constructs a prosumer agent with the context in which is created
@@ -310,11 +315,11 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
 	 * @return Price(Pi) per KWh at given timeslot (i) 
 	 */
-	protected float calcualte_Price_Pi(int timeslot) {
+	protected float calculate_Price_P(int timeslot) {
 		float a = 2f; // the value of a must be set to a fixed price, e.g. ~baseline price 
 		float b = 0.2f;  //this value of b amplifies the S value signal, to reduce or increase the price
 		
-		float Si = this.S_i_arr[timeslot];
+		float Si = this.arr_i_S[timeslot];
         float Pi = a+ (b*Si);
         
 		return Pi;
@@ -331,13 +336,13 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * @return Baseline aggregate deviation (DelatBi) at given timeslot (i) 
 	 */
 
-	private float calculate_BaselineAggregateDemandDeviation_DeltaBi(int timeslot_i) {	
+	private float calculate_deltaB(int timeslot_i) {	
 		float sumOf_SjKijBi=0;
 		for (int j = 0; j < ticksPerDay; j++) {
 			if (j != timeslot_i) // i!=j
-				sumOf_SjKijBi = this.S_i_arr[timeslot_i]*this.k_ij_arr[timeslot_i][j]*this.B_i_arr[timeslot_i];
+				sumOf_SjKijBi = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][j]*this.arr_i_B[timeslot_i];
 		}
-		float leftSideEq = this.S_i_arr[timeslot_i]*this.k_ij_arr[timeslot_i][timeslot_i]*this.B_i_arr[timeslot_i];
+		float leftSideEq = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][timeslot_i]*this.arr_i_B[timeslot_i];
 		float deltaBi = leftSideEq + sumOf_SjKijBi;
 		return deltaBi;
 	}
@@ -350,12 +355,12 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
 	 * @return Demand (Di) predicted by the aggregator at given timeslot (i) 
 	 */
-	protected float calcualte_PredictedTimeslotDemand_Di(int timeslot) {
-		float Bi = this.B_i_arr[timeslot];
-		float Si = this.S_i_arr[timeslot];
-		float ei = this.e_i_arr[timeslot];
+	protected float calcualte_PredictedDemand_D(int timeslot) {
+		float Bi = this.arr_i_B[timeslot];
+		float Si = this.arr_i_S[timeslot];
+		float ei = this.arr_i_e[timeslot];
 
-		float delta_Bi = calculate_BaselineAggregateDemandDeviation_DeltaBi(timeslot);
+		float delta_Bi = calculate_deltaB(timeslot);
 
 		float Di= Bi + (Si*ei*Bi) + delta_Bi;
 		return Di;
@@ -364,27 +369,20 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	/**
 	 * This method calculates and returns "price elasticity factor" (e) at a given time-slot.
 	 * (It implements the formula proposed by P. Boait, Formula #6)
-	 * By definition, all demand displacements add up to zero, any change in total prosumer 
-	 * demand in respnose to the tranining signal must be caused by ei
-	 * By stepping Si=1 through all the timeslots over 48 days, the aggregator obtains
-	 * complete set of estimates for e and k. By repeating this training (if necessary) more
-	 * accurate estimates can be obtained. 
-	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
-	 * @return elasticity price factor (ei) at given timeslot (i) 
+	 * @param arr_D a float array containing aggregate demand (D) values for a timeslot of a day (usually 48 timeslots)
+	 * @param arr_B a float array containing average baseline aggregate demand (B) values for each timeslot of a day (usulaly 48 timeslots) 
+	 * @param s signal value at timeslot i
+	 * @param B average baseline aggregate demand (B) value at timeslot i	 	 
+	 * @return elasticity price factor (e) [at timeslot i]
 	 */
-	protected float calcualte_e_i(int timeslot) {
+	protected float calculate_e(float[] arr_D, float[] arr_B, float s, float B) {
 		
-		float total_D = 0;
-		float total_B = 0;
-		
-		for (int j = 0; j < ticksPerDay; j++) {
-			total_D = total_D + this.calcualte_PredictedTimeslotDemand_Di(timeslot);
-			total_B = total_B + this.B_i_arr[timeslot];
-		}
-		
-		float e_i = (total_D - total_B) / (this.S_i_arr[timeslot]* this.B_i_arr[timeslot]);
-	
-		return e_i;
+	    float e=0;
+		float sum_D = ArrayUtils.sum(arr_D);
+		float sum_B = ArrayUtils.sum(arr_B);
+		if (( s!=0) && (B!=0))
+			e = (sum_D - sum_B) / (s*B);
+		return e;
 	}
 	
 	/**
@@ -396,21 +394,21 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
 	 * @return displacement factor (Kij) at given timeslots (i and j) 
 	 */
-	protected float calcualte_k_ij(int t_i, int t_j) {
+	protected float calculate_k(int t_i, int t_j) {
 
 		float k_ij = 0;
 		float divisor = 1;
 
 		if (t_i == t_j) {  // calculate Kii
-			float delta_Bi= this.calculate_BaselineAggregateDemandDeviation_DeltaBi(t_i);
-			float divident = delta_Bi - (this.S_i_arr[t_i] * this.e_i_arr[t_i] * this.B_i_arr[t_i]);
-			divisor= this.S_i_arr[t_i] * this.B_i_arr[t_i];
+			float delta_Bi= this.calculate_deltaB(t_i);
+			float divident = delta_Bi - (this.arr_i_S[t_i] * this.arr_i_e[t_i] * this.arr_i_B[t_i]);
+			divisor= this.arr_i_S[t_i] * this.arr_i_B[t_i];
 			k_ij = divident/divisor;
 		}
 		
 		else {  // calculate Kij
-			float delta_Bj= this.calculate_BaselineAggregateDemandDeviation_DeltaBi(t_j);
-			divisor= this.S_i_arr[t_i] * this.B_i_arr[t_j];
+			float delta_Bj= this.calculate_deltaB(t_j);
+			divisor= this.arr_i_S[t_i] * this.arr_i_B[t_j];
 			k_ij = delta_Bj /divisor;
 		}
 
@@ -429,7 +427,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 		{
 			sumDemand = sumDemand + a.getNetDemand();
 		}
-		this.B_i_arr[t] = sumDemand;
+		this.arr_i_B[t] = sumDemand;
 		
 	}
 

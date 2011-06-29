@@ -6,14 +6,17 @@ package uk.ac.dmu.iesd.cascade.util;
 /**
  * @author J. Richard Snape
  * @author Babak Mahdavi 
- * @version $Revision: 1.02 $ $Date: 2011/06/23 12:00:00 $
+ * @version $Revision: 1.05 $ $Date: 2011/06/28 12:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
  * 1.0 - Initial basic functionality
  * 1.01 - added dot product functionality and normalization
  * 1.02 - added method isSumEqualZero(floatArray); isSumEqualZero(intArray) [Babak] 
- *
+ * 1.03 - added avg, avgCols2DFloatArry
+ * 1.04 - added getPrintableOutputFor2DFloatArrary, getPrintableOutputForFloatArray, 
+ *              getPrintableOutputFor2DIntArrary, getPrintableOutputForIntArrary
+ * 1.05 - added subArrayCopy, rowCopy             
  */
 public class ArrayUtils {
 	
@@ -271,12 +274,47 @@ public class ArrayUtils {
 	 * @param  col the number of column whose values are supposed to be returned as array  	 
 	 * @return an array (float) containing a copy of the passed column number and 2D array 
 	 */
-	public static float[] getColCopy(float[][] twoDfloatArray, int col) {
+	public static float[] colCopy(float[][] twoDfloatArray, int col) {
 		float[] aCol = new float[twoDfloatArray.length];
 		for (int i = 0; i < twoDfloatArray.length; i++) {
 	        aCol[i]=twoDfloatArray[i][col];
 	    }
 		return aCol;
+	}
+	
+	/**
+	 * This utility function returns a sub-array copy of a given 2D array (with the same columns' size)
+	 * by passing/specifying a startRow and endRow indices.
+	 * @param twoDfloatArray the original 2D float array from which a sub-array is built
+	 * @param startRow a starting row index which indicates the beginning row of the sub-array 
+	 * @param endRow an ending row index which indicates the last row of original array included in the sub-array 
+	 * @return an 2D sub-array (float) containing a copy of the passed 2D-array up from startRow to endRow
+	 */
+	public static float[][] subArrayCopy(float[][] twoDfloatArray, int startRow, int endRow) {
+		if(startRow>endRow)throw new IllegalArgumentException("endRow is bigger than startRow");
+		int subArrRowLength = endRow-startRow;
+		float[][] subArr = new float[subArrRowLength][twoDfloatArray[0].length];
+	
+		for (int i = 0; i < subArrRowLength; i++) {
+			for (int col = 0; col < twoDfloatArray[0].length; col++) {
+				subArr[i][col]=twoDfloatArray[i+startRow][col];
+			}
+	    }
+		return subArr;
+	}
+	
+	/**
+	 * This utility function returns an array copy containing of passed row index of a given 2D array 
+	 * @param twoDfloatArray the original 2D float array from which a row will be copied and return as an array
+	 * @param row a row index indicating the row which needs to be taken out (copied and returned)
+	 * @return an array (float) containing a copy of its needed row (index passed as argument)
+	 */
+	public static float[] rowCopy(float[][] twoDfloatArray, int row) {
+		float[] rowCopyArr = new float[twoDfloatArray[0].length];
+			for (int col = 0; col < twoDfloatArray[0].length; col++) {
+				rowCopyArr[col]=twoDfloatArray[row][col];
+			}
+		return rowCopyArr;
 	}
 
 	/**
@@ -317,7 +355,7 @@ public class ArrayUtils {
 	public static float[] avgCols2DFloatArray(float[][] twoDfloatArray) {	
 		float[] avgArr = new float[twoDfloatArray[0].length];
 		for (int col = 0; col < twoDfloatArray[0].length; col++) {
-			avgArr[col] = avg(getColCopy(twoDfloatArray, col));
+			avgArr[col] = avg(colCopy(twoDfloatArray, col));
 		}
 		return avgArr;
 	}
