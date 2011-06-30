@@ -208,7 +208,7 @@ public class ProsumerFactory implements IProsumerFactory {
 			prAgent.EVPropensity = Float.parseFloat(defraCategories.getColumn("EV_propensity")[custSegment - 1]);
 			prAgent.habit = Float.parseFloat(defraCategories.getColumn("Habit_factor")[custSegment - 1]);
 
-			prAgent.hasSmartControl = (RandomHelper.nextDouble() < prAgent.HEMSPropensity);
+			// prAgent.hasSmartControl = (RandomHelper.nextDouble() < prAgent.HEMSPropensity);
 			prAgent.hasElectricVehicle =  (RandomHelper.nextDouble() < prAgent.EVPropensity);
 
 			returnList.add(prAgent);

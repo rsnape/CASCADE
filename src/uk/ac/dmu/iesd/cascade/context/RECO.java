@@ -479,7 +479,9 @@ public class RECO extends AggregatorAgent{
 
 	    	if (!isTrainingPeriodCompleted()) {  //training period 
 	    		//signals should be send S=1 for 48 days
-	    		broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
+	    		int dayOfTrainingPeriod = (getCountDay() - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE);
+	    		System.out.println(dayOfTrainingPeriod);
+	    		broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, dayOfTrainingPeriod);
 		    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
 		    	
 	    	}
