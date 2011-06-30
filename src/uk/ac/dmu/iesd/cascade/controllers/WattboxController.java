@@ -213,6 +213,12 @@ public class WattboxController implements ISmartController{
 						bestCost = thisCost;
 						this.heatPumpOnOffProfile = tempPumpOnOffProfile;
 						this.heatPumpDemandProfile = tempHeatPumpProfile;
+						if (owner.getAgentID() == 0)
+						{
+							//Some debugging output for one agent only
+							System.out.println("On off profile " + Arrays.toString(heatPumpOnOffProfile));
+							System.out.println("HP demand profile " + Arrays.toString(heatPumpDemandProfile));
+						}
 					}
 				}
 			}
