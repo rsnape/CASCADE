@@ -55,60 +55,215 @@ public class RECO extends AggregatorAgent{
 	 **/	
 	protected boolean isProfileBuidling = true;
 	
-	/**
-	 * Constructs a RECO agent with the context in which is created and its
-	 * base demand.
-	 * @param context the context in which this agent is situated
-	 * @param baseDemand an array containing the base demand  
-	 */
-	public RECO(CascadeContext context, float[] baseDemand) {
-
-		super(context);
-		//System.out.println("RECO created ");
-		this.ticksPerDay = context.getTickPerDay();
-		//this.contextName = myContext;
-		this.overallSystemDemandLength = baseDemand.length;
-		this.priceSignalLength = baseDemand.length;
-		//System.out.println("RECO ticksPerDay "+ ticksPerDay);
 	
-		if (overallSystemDemandLength % ticksPerDay != 0)
-		{
-			System.err.print("Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
-			System.err.println(" May cause unexpected behaviour - unless you intend to repeat the signal within a day");
-		}
-		this.priceSignal = new float [priceSignalLength];
-		this.overallSystemDemand = new float [overallSystemDemandLength];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
-		//Start initially with a flat price signal of 12.5p per kWh
-		//Arrays.fill(priceSignal,125f);
-		Arrays.fill(priceSignal,0f);
-
+	/**
+	 * This field (e) is "price elasticity factor" at timeslot i
+	 * It is extend to which total demand in the day is reduced or increased by the value of S
+	 * (given S*e) 
+	 * there are 48 of them (day divided into 48 timeslots)
+	 * When a single no zero value of S is broadcast by the aggregator in the ith timeslot, 
+	 * the total aggregated response from the prosumers will involve changes to demand form 
+	 * baseline in some or all timeslots. If those changes are added up for the day, the 
+	 * net value which may be + or - tells us the value of S*e. 
+	 * Since we know S, we can get the e for the ith timeslot in which the S was broadcast. 
+	 **/
+	float[] arr_i_e; 
+	
+	/**
+	 * This field (k) is "displacement factor" at timeslot ij
+	 * There are 48^2 of them (48 values at each timeslot; a day divided into 48 timeslots)
+	 * It is calculated in the training process. 
+	 **/
+	float[][] arr_ij_k; 
+	
+	/**
+	 * This field (S) is "signal" at timeslot i sent to customer's (prosumers)
+	 * so that they response to it accordingly. For example, if S=0, the aggregator can 
+	 * assume that the prosumers respond with their default behavior, so there is 
+	 * no timeshifting or demand or elastic response to price and the result is a baseline
+	 * demand aggregate B
+	 * When Si is not zero, the aggregator can calculate 
+	 * the resultant aggregate deviation (delta_Bi)
+	 **/
+	float[] arr_i_S;  // (S) signal at timeslot i
+	
+	float[] arr_i_B;  // (B) baseline at timeslot i
+	
+	/**
+	 * This field (C) is the "marginal cost" per KWh in the ith timeslot 
+	 * (which aggregator can predict 24 hours ahead).
+	 * This is the cost for the part that cosumer's demand that cannot be predicted further
+	 * ahead and supplied via long term contracts because it is variable due to weather, TV schedules, or owns
+	 * generators not being able to meet part of the predicated demand. 
+	 * For the inital experiment, C would be proportional to national demand Ni with 
+	 * the option to make it Ni^2 or fractional power
+	 **/
+	float[] arr_i_C; 
 		
-		//Very basic configuration of predicted customer demand as 
-		// a Conssant.  We could be more sophisticated than this or 
-		// possibly this gives us an aspirational target...
-		this.predictedCustomerDemand = new float[ticksPerDay];
-		//Put in a constant predicted demand
-		//Arrays.fill(this.predictedCustomerDemand, 5);
-		//Or - put in a variable one
-		for (int j = 0; j < ticksPerDay; j++)
-		{
-			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
-		}
-		this.predictedCustomerDemandLength = ticksPerDay;
+	/**
+	 * This 2D-array is used to keep the usual aggregate demand of all prosumers at each timeslot 
+	 * of the day during both profile building and training periods (usually about 7 + 48 days). 
+	 * In other words, the length of the columns of this 2D history array is equal to number of timeslot 
+	 * during a day and the length of its rows is equal to the number of days the profile building and training 
+	 * periods last.
+	 *  
+	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
+	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
+	 **/
+	float[][] hist_arr_ij_D; 
+	
+	/**
+	 * This array is used to keep the average (i.e. baseline) of aggregate demands (D)
+	 * (usually kept in the 2D history D array (hist_D_ij_arr))  
+	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
+	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
+	 **/
+	//float[] histAvg_B_i_arr; 
+
+	
+	/**
+	 * This method calculates and returns the price (Pi) per kWh 
+	 * at given time-slot.
+	 * (It implements the formula proposed by P. Boait, Formula #2) 
+	 * Parameters a and b are "fixed pricing" parameters  and set by the aggregator and 
+	 * known to the prosumer's smart meter and other devices so they react to Pi.  
+	 * The summation of all Si to zero simplifies their calculation!
+	 * In practice, it would be helpful to use normalized values between 1 and -1 to make up S
+	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return Price(Pi) per KWh at given timeslot (i) 
+	 */
+	protected float calculate_Price_P(int timeslot) {
+		float a = 2f; // the value of a must be set to a fixed price, e.g. ~baseline price 
+		float b = 0.2f;  //this value of b amplifies the S value signal, to reduce or increase the price
 		
-		///+++++++++++++++++++++++++++++++++++++++
-		this.arr_i_B = new float [ticksPerDay];
-		this.arr_i_e = new float [ticksPerDay];
-		this.arr_i_S = new float [ticksPerDay];
-		this.arr_i_C = new float [ticksPerDay];
-		this.arr_ij_k = new float [ticksPerDay][ticksPerDay];
-		this.hist_arr_ij_D = new float [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
-
-		//this.arr_i_B = baseDemand; 
-
-		//+++++++++++++++++++++++++++++++++++++++++++
+		float Si = this.arr_i_S[timeslot];
+        float Pi = a+ (b*Si);
+        
+		return Pi;
 	}
+	
+
+	/**
+	 * This method calculates and returns the baseline aggregate deviation (DeltaBi) at 
+	 * given time-slot.
+	 * It is invoked by aggregator when the Si is not zero and the aggregator
+	 * wants to form a response.
+	 * (It implements the formula proposed by P. Boait, Formula #3) 
+	 * @param   timeslot_i time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return Baseline aggregate deviation (DelatBi) at given timeslot (i) 
+	 */
+
+	private float calculate_deltaB(int timeslot_i) {	
+		float sumOf_SjKijBi=0;
+		for (int j = 0; j < ticksPerDay; j++) {
+			if (j != timeslot_i) // i!=j
+				sumOf_SjKijBi = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][j]*this.arr_i_B[timeslot_i];
+		}
+		float leftSideEq = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][timeslot_i]*this.arr_i_B[timeslot_i];
+		float deltaBi = leftSideEq + sumOf_SjKijBi;
+		return deltaBi;
+	}
+
+	/**
+	 * This method calculates and returns the demand predicted by the aggregator in each
+	 * time-slot, taking account of both elastic and displacement changes.
+	 * (It implements the formula proposed by P. Boait, Formula #4)
+	 * When e=0 (i.e. all ei=0), then the sum of all Di = sum of all Bi
+	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return Demand (Di) predicted by the aggregator at given timeslot (i) 
+	 */
+	protected float calcualte_PredictedDemand_D(int timeslot) {
+		float Bi = this.arr_i_B[timeslot];
+		float Si = this.arr_i_S[timeslot];
+		float ei = this.arr_i_e[timeslot];
+
+		float delta_Bi = calculate_deltaB(timeslot);
+
+		float Di= Bi + (Si*ei*Bi) + delta_Bi;
+		return Di;
+	}
+	
+	/**
+	 * This method calculates and returns "price elasticity factor" (e) at a given time-slot.
+	 * (It implements the formula proposed by P. Boait, Formula #6)
+	 * @param arr_D a float array containing aggregate demand (D) values for a timeslot of a day (usually 48 timeslots)
+	 * @param arr_B a float array containing average baseline aggregate demand (B) values for each timeslot of a day (usulaly 48 timeslots) 
+	 * @param s signal value at timeslot i
+	 * @param B average baseline aggregate demand (B) value at timeslot i	 	 
+	 * @return elasticity price factor (e) [at timeslot i]
+	 */
+	protected float calculate_e(float[] arr_D, float[] arr_B, float s, float B) {
+		
+	    float e=0;
+		float sum_D = ArrayUtils.sum(arr_D);
+		float sum_B = ArrayUtils.sum(arr_B);
+		if (( s!=0) && (B!=0))
+			e = (sum_D - sum_B) / (s*B);
+		return e;
+	}
+	
+	/**
+	 * This method calculates and returns "displacement factor" (k) at given time-slots.
+	 * (It implements the formula proposed by P. Boait, Formula #7 and #8)
+	 * By stepping Si=1 through all the timeslots over 48 days, the aggregator obtains
+	 * complete set of estimates for e and k. By repeating this training (if necessary) more
+	 * accurate estimates can be obtained. 
+	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return displacement factor (Kij) at given timeslots (i and j) 
+	 */
+	protected float calculate_k(int t_i, int t_j) {
+
+		float k_ij = 0;
+		float divisor = 1;
+
+		if (t_i == t_j) {  // calculate Kii
+			float delta_Bi= this.calculate_deltaB(t_i);
+			float divident = delta_Bi - (this.arr_i_S[t_i] * this.arr_i_e[t_i] * this.arr_i_B[t_i]);
+			divisor= this.arr_i_S[t_i] * this.arr_i_B[t_i];
+			k_ij = divident/divisor;
+		}
+		
+		else {  // calculate Kij
+			float delta_Bj= this.calculate_deltaB(t_j);
+			divisor= this.arr_i_S[t_i] * this.arr_i_B[t_j];
+			k_ij = delta_Bj /divisor;
+		}
+
+		return k_ij;
+	}
+	
+	/**
+	 * This method calculates the predict demand at each given time-slot.
+	 * @param   t timeslot of the day (often/usually 1 day = 48 timeslot)	 
+	 * @return displacement factor (Kij) at given timeslots (i and j) 
+	 */
+	protected void predictDemand(List<ProsumerAgent> customersList, int t) {
+		
+		float sumDemand = 0;
+		for (ProsumerAgent a : customersList)
+		{
+			sumDemand = sumDemand + a.getNetDemand();
+		}
+		this.arr_i_B[t] = sumDemand;
+		
+	}
+	
+	private void setB_and_e(List<ProsumerAgent> customers, int time, boolean isTraining) {
+		float sumDemand = 0;
+		float sum_e =0;
+		for (ProsumerAgent agent : customers) {
+			sumDemand = sumDemand + agent.getNetDemand();
+			if (!isTraining)
+				sum_e = sum_e+agent.getElasticityFactor();
+		}
+
+		this.arr_i_B[time]=sumDemand;
+
+		if (!isTraining)
+			this.arr_i_e[time]= sum_e;
+	}
+
+	
 	
 	/**
 	 * This method returns the list of customers (prosusmers) 
@@ -137,22 +292,7 @@ public class RECO extends AggregatorAgent{
 		}
 		return customers;
 	}
-	
-	private void setB_and_e(List<ProsumerAgent> customers, int time, boolean isTraining) {
-		float sumDemand = 0;
-		float sum_e =0;
-		for (ProsumerAgent agent : customers) {
-			sumDemand = sumDemand + agent.getNetDemand();
-			if (!isTraining)
-				sum_e = sum_e+agent.getElasticityFactor();
-		}
-
-		this.arr_i_B[time]=sumDemand;
-
-		if (!isTraining)
-			this.arr_i_e[time]= sum_e;
-	}
-	
+		
 	/**
 	 * This method is used to check whether the 'profile building' period has completed.
 	 * the 'profile building' period (the initial part of the training period, usually 4-7 days) is 
@@ -162,7 +302,7 @@ public class RECO extends AggregatorAgent{
 	 */
 	private boolean isAggregateDemandProfileBuildingPeriodCompleted() {
 		boolean isEndOfProfilBuilding = true;
-	    int daysSoFar = getCountDay();
+	    int daysSoFar = mainContext.getCountDay();
 	    //System.out.println("BaslineB days so far: "+daysSoFar);
 		if (daysSoFar < Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
 			isEndOfProfilBuilding = false;
@@ -181,27 +321,13 @@ public class RECO extends AggregatorAgent{
 	 */
 	private boolean isTrainingPeriodCompleted() {
 		boolean isEndOfTraining = true;
-	    int daysSoFar = getCountDay();
+	    int daysSoFar = mainContext.getCountDay();
 	    //System.out.println("days so far: "+daysSoFar);
 		if (daysSoFar < (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
 			isEndOfTraining = false;
 		return isEndOfTraining;		
 	}
 	
-	/**
-	 * This method returns the elapse of time in number of days.
-	 * It depends on how a day is initially defined. If a day is divided up to 48 timeslots, 
-	 * then the second day starts at timeslot 49. 
-	 * However, in order to have it usefully workable with arrays, the first day is returned as 0, second day as 1 and so forth.
-	 * @return the elapsed time in terms of number of day, starting from 0
-	 * TODO: this method can be a cascade utility method, which means as a public method it can place in
-	 * classes such as environment/CascadeContext.
-	 */
-	private int getCountDay() {
-		int overallElapsedTime = (int) RepastEssentials.GetTickCount();
-	    int daysSoFar = overallElapsedTime/this.ticksPerDay;
-		return daysSoFar;	
-	}
 	
 	/**
 	 * This method is used to update baseline aggregate demand (BAD or simply B) 
@@ -220,7 +346,7 @@ public class RECO extends AggregatorAgent{
 			sumDemand = sumDemand + a.getNetDemand();
 			//System.out.println("enter loop: agentND "+a.getNetDemand());
 		}	
-	    int dayCount = getCountDay();
+	    int dayCount = mainContext.getCountDay();
 	   //System.out.println("sumDemand: "+sumDemand +" timeOfDay: "+timeOfDay);
 		//this.hist_B_ij_arr[dayCount][timeOfDay]=sumDemand;
 		hist_B_arr[dayCount][timeOfDay]=sumDemand;
@@ -258,15 +384,20 @@ public class RECO extends AggregatorAgent{
 			break;
 			
 		case S_TRAINING: 
-			
-			sArr[timeslot] = 1;
-			if (timeslot > 0) {
-				for (int i = 0; i < timeslot; i++) {
+			/** S_TRAINING signal is an array equal to the size of timeslots per day (usually 48 per day).
+			 * Att each training day (at least 48 days) a signal consists of s=1 for a specific timeslot of the day
+			 * while the rest of timeslots will be s= -1/47
+			 */
+			int daysSoFar = mainContext.getCountDay();
+			int indexFor1 = (daysSoFar - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)%this.ticksPerDay; 
+			sArr[indexFor1] = 1f;
+			if (indexFor1 > 0) {
+				for (int i = 0; i < indexFor1; i++) {
 					sArr[i] = (-1f/(this.ticksPerDay-1));
 				}
 			}
-			if (timeslot < this.ticksPerDay) {
-				for (int i = timeslot+1; i < sArr.length; i++) {
+			if (indexFor1 < this.ticksPerDay) {
+				for (int i = indexFor1+1; i < sArr.length; i++) {
 					sArr[i] = (-1f/(this.ticksPerDay-1));
 				}
 			}
@@ -326,7 +457,7 @@ public class RECO extends AggregatorAgent{
 		case S_TRAINING: 
 			/**This section is designed to send signal of s[timeslot]=1 and s[othertimes] = -1/47 (at each timeslot)*/
 			this.arr_i_S = buildSignal(signalType,timeslot);
-			//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(signalArr));
+			//System.out.println(timeslot+Arrays.toString(arr_i_S));
 			//System.out.println(ArrayUtils.isSumEqualZero(arr_i_S));
 			this.priceSignal = arr_i_S;
 			this.priceSignalLength = arr_i_S.length;
@@ -359,11 +490,9 @@ public class RECO extends AggregatorAgent{
 			arr_D = ArrayUtils.rowCopy(training_arr2D_D, i);
 			arr_e[i]= calculate_e(arr_D, arr_B, 1f, arr_B[i]);
 		}
-		return arr_e;
-		
+		return arr_e;	
 	}
-	
-	
+
 
 	/**
 	 * This method defines how this object behaves (what it does)
@@ -482,13 +611,21 @@ public class RECO extends AggregatorAgent{
 	    		broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
 		    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
 		    	
+		    	if (mainContext.isBeginningOfDay(timeOfDay) && mainContext.isDayChangedSince(Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
+		    		// calcualtion of e and k will happen here at the end of each day.
+		    		
+		    	}
+  
+		    	
+		    	
 	    	}
 	    	else { //End of training period 
 	    		float [][] trainingPeriodBAD = ArrayUtils.subArrayCopy(hist_arr_ij_D, Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE, hist_arr_ij_D.length);
 	    		arr_i_e = calculateElasticityFactors_e(trainingPeriodBAD,arr_i_B);
-	    		System.out.println(ArrayUtils.getPrintableOutputForFloatArray(arr_i_e));	
-
 	    		
+	    		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(arr_i_e));	
+	    		//System.out.println(Arrays.toString(hist_arr_ij_D));
+	    
 	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(ArrayUtils.getSubArrayCopy(hist_B_ij_arr,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));	
 	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(hist_B_ij_arr));	
 	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(trainingPeriodBAD));	
@@ -499,11 +636,6 @@ public class RECO extends AggregatorAgent{
 
 	    }
 	
-		
-	
-		
-	
-		
 		
 		//System.out.println("predictTimeslotDemand("+(timeOfDay+1)+ "): "+ calcualte_PredictedTimeslotDemand_Di(timeOfDay));
 		
@@ -547,7 +679,6 @@ public class RECO extends AggregatorAgent{
 
 	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
 
-
 		// To avoid computational load (and realistically model a reasonable broadcast strategy)
 		// only prepare and transmit the price signal if it has changed.
 		if(priceSignalChanged)
@@ -586,6 +717,61 @@ public class RECO extends AggregatorAgent{
 		}
 
 		priceSignalChanged = false;
+	}
+	
+	/**
+	 * Constructs a RECO agent with the context in which is created and its
+	 * base demand.
+	 * @param context the context in which this agent is situated
+	 * @param baseDemand an array containing the base demand  
+	 */
+	public RECO(CascadeContext context, float[] baseDemand) {
+
+		super(context);
+		//System.out.println("RECO created ");
+		this.ticksPerDay = context.getTickPerDay();
+		//this.contextName = myContext;
+		this.overallSystemDemandLength = baseDemand.length;
+		this.priceSignalLength = baseDemand.length;
+		//System.out.println("RECO ticksPerDay "+ ticksPerDay);
+	
+		if (overallSystemDemandLength % ticksPerDay != 0)
+		{
+			System.err.print("Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
+			System.err.println(" May cause unexpected behaviour - unless you intend to repeat the signal within a day");
+		}
+		this.priceSignal = new float [priceSignalLength];
+		this.overallSystemDemand = new float [overallSystemDemandLength];
+		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
+		//Start initially with a flat price signal of 12.5p per kWh
+		//Arrays.fill(priceSignal,125f);
+		Arrays.fill(priceSignal,0f);
+
+		
+		//Very basic configuration of predicted customer demand as 
+		// a Conssant.  We could be more sophisticated than this or 
+		// possibly this gives us an aspirational target...
+		this.predictedCustomerDemand = new float[ticksPerDay];
+		//Put in a constant predicted demand
+		//Arrays.fill(this.predictedCustomerDemand, 5);
+		//Or - put in a variable one
+		for (int j = 0; j < ticksPerDay; j++)
+		{
+			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
+		}
+		this.predictedCustomerDemandLength = ticksPerDay;
+		
+		///+++++++++++++++++++++++++++++++++++++++
+		this.arr_i_B = new float [ticksPerDay];
+		this.arr_i_e = new float [ticksPerDay];
+		this.arr_i_S = new float [ticksPerDay];
+		this.arr_i_C = new float [ticksPerDay];
+		this.arr_ij_k = new float [ticksPerDay][ticksPerDay];
+		this.hist_arr_ij_D = new float [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
+
+		//this.arr_i_B = baseDemand; 
+
+		//+++++++++++++++++++++++++++++++++++++++++++
 	}
 
 
