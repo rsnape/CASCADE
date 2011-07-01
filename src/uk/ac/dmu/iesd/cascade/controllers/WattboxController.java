@@ -62,10 +62,11 @@ public class WattboxController implements ISmartController{
 
 	/**
 	 * method to re-evaluate the internal probabilities held by this Wattbox
+	 * 
+	 * TODO: currently unimplemented
 	 */
 	private void evaluateProbabilities()
 	{
-
 	}
 
 	/**
@@ -122,10 +123,18 @@ public class WattboxController implements ISmartController{
 	}
 
 	/**
-	 * @return
+	 * turns a heat pump switching profile, in combination with the outside temperature
+	 * profile and building physics parameters into a predicted demand curve
+	 * for the heat pump.
+	 * 
+	 * Returns null if the pump switching profile passed in violates constraints on 
+	 * temperature deviation from the set point.
+	 * 
+	 * @return the predicted heat pump demand for a certain heat pump switching profile
+	 * given an estimate for the temperature profile for the day when it is used
 	 */
-	private float[] calculatePredictedHeatPumpDemand(boolean[] heatPumpProfile) {
-
+	private float[] calculatePredictedHeatPumpDemand(boolean[] heatPumpProfile) 
+	{
 		float[] power = new float[ticksPerDay];
 		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
 		float tempLoss = 0;
@@ -135,55 +144,78 @@ public class WattboxController implements ISmartController{
 		for (int i = 0; i < ticksPerDay; i++)
 		{
 			float internalTemp = setPointProfile[i] - tempLoss;
+			float heatLossRecoveryPower = 0;
 
 			if (deltaT[i] > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF && heatPumpProfile[i])
 			{
-				float setPointMaintenancePower = deltaT[i] * (owner.buildingHeatLossRate / Consts.DOMESTIC_HEAT_PUMP_COP);
+				float setPointMaintenancePower = deltaT[i] * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / Consts.DOMESTIC_HEAT_PUMP_COP);
 				//TODO: This assumes that all lost temp is recovered in one time period.  This surely can't be the case
-				float heatLossRecoveryPower = tempLoss * (owner.buildingHeatLossRate / Consts.DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY);
 				t = 0;
 				power[i] = setPointMaintenancePower + heatLossRecoveryPower;
 			}
 			else
 			{	
 				power[i] = 0;
-				float tau = owner.buildingThermalMass / owner.buildingHeatLossRate;
+				float tau = (owner.buildingThermalMass * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / owner.buildingHeatLossRate;
 				t = t + Consts.SECONDS_PER_HALF_HOUR;
-				float newTemp = priorDayExternalTempProfile[i] + deltaT[i] * (float) Math.exp(-(t / tau));
+				float newTemp = priorDayExternalTempProfile[i] + (deltaT[i] * (float) Math.exp(-(t / tau)));
 				tempLoss = setPointProfile[i] - newTemp;
+				heatLossRecoveryPower = tempLoss * (owner.buildingThermalMass / Consts.DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY);
+				//System.out.print("Temp loss is " + tempLoss);
 				if(tempLoss > Consts.DAYTIME_TEMP_LOSS_THRESHOLD)
 				{
-					// Bit of a hack - setting the power sky high in the profile for an invalid
-					// profile will ensure it is never selected.
-					//System.err.println("This profile is invalid - too much heat loss");
-					power[i] = Float.MAX_VALUE;
+					//if the temperature drop is too great, this profile is unfeasible and we return null
+					return null;
 				}
-
 			}
 		}
 
 		return power;
-
 	}
 
 	/**
+	 * Optimise the Electric Vehicle charging profile for the household
+	 * which owns this Wattbox.
 	 * 
+	 * TODO: Not yet implemented.
 	 */
 	private void optimiseEVProfile() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
+	 * finds an optimised heat pump switching profile for the day ahead 
+	 * based on the projected temperature
+	 * and therefore predicted heat pump demand.  This is combined with the 
+	 * signal (sent by the aggregator) as a proxy for predicted cost of 
+	 * electricity for the day ahead to produce the estimated cost of the 
+	 * switching profile.
 	 * 
+	 * Subject to constraints that temperature drop in switch off periods must
+	 * not exceed a certain amount.
+	 * 
+	 * Currently uses a "brute force" algorithm to evaluate all profiles with between
+	 * 1 and 7 periods of continuous "switch off".  It uses the profile which minimises
+	 * the predicted cost of operation.
 	 */
-	private void optimiseSpaceHeatProfile() {
+	private void optimiseSpaceHeatProfile() 
+	{
+		float bestCost;
 
-		float[] initialPredictedCosts = ArrayUtils.mtimes(this.dayPredictedCostSignal, this.heatPumpDemandProfile);
-		float bestCost = ArrayUtils.sum(initialPredictedCosts);
+		if(this.heatPumpDemandProfile == null)
+		{
+			// If the demand profile is null, this means the switiching profile
+			// is invalid or undefined, so set a very high cost to this
+			// so that all alternatives will be better.
+			bestCost = Float.MAX_VALUE;
+		}
+		else
+		{
+			float[] initialPredictedCosts = ArrayUtils.mtimes(this.dayPredictedCostSignal, this.heatPumpDemandProfile);
+			bestCost = ArrayUtils.sum(initialPredictedCosts);
+		}
+
 		//Go through all timeslots switching the heat pump off for certain periods
 		//subject to constraints and find the least cost option.
-
 		//TODO: This is "brute force" optimisation - there will be a better way...
 
 		boolean[] tempPumpOnOffProfile = new boolean[ticksPerDay];
@@ -193,31 +225,42 @@ public class WattboxController implements ISmartController{
 
 		for (int i = 0; i < ticksPerDay; i++)
 		{
-			for ( int j = Consts.HEAT_PUMP_MIN_SWITCHOFF - 1; j <= Consts.HEAT_PUMP_MAX_SWITCHOFF; j++)
+			for ( int j = Consts.HEAT_PUMP_MIN_SWITCHOFF - 1; j < Consts.HEAT_PUMP_MAX_SWITCHOFF; j++)
 			{
 				//Don't try impossible combinations - can't recover heat beyond the day boundary
 				if (i+j < ticksPerDay - 1)
 				{
 					float thisCost = 0;
-					for(int k = i; k < i+j; k++)
-					{
-						tempPumpOnOffProfile[k] = false;
-					}
+
+					tempPumpOnOffProfile[i+j] = false;
+
 
 					tempHeatPumpProfile = calculatePredictedHeatPumpDemand(tempPumpOnOffProfile);
-					thisCost = ArrayUtils.sum(ArrayUtils.mtimes(this.dayPredictedCostSignal, tempHeatPumpProfile));
-
-					if (thisCost < bestCost)
+					if (Consts.DEBUG && owner.getAgentID() == 1)
 					{
+						//Some debugging output for one agent only
+						System.out.println("On off profile for calculation " + Arrays.toString(tempPumpOnOffProfile));
+						System.out.println("HP demand profile " + Arrays.toString(tempHeatPumpProfile));
+					}
 
-						bestCost = thisCost;
-						this.heatPumpOnOffProfile = tempPumpOnOffProfile;
-						this.heatPumpDemandProfile = tempHeatPumpProfile;
-						if (owner.getAgentID() == 0)
+					if (tempHeatPumpProfile != null)
+					{
+						thisCost = ArrayUtils.sum(ArrayUtils.mtimes(this.dayPredictedCostSignal, tempHeatPumpProfile));
+						if (thisCost < bestCost)
 						{
-							//Some debugging output for one agent only
-							System.out.println("On off profile " + Arrays.toString(heatPumpOnOffProfile));
-							System.out.println("HP demand profile " + Arrays.toString(heatPumpDemandProfile));
+
+							bestCost = thisCost;
+							this.heatPumpOnOffProfile = tempPumpOnOffProfile;
+							this.heatPumpDemandProfile = tempHeatPumpProfile;
+							if (Consts.DEBUG && owner.getAgentID() == 1)
+							{
+								//Some debugging output for one agent only
+								System.out.println("Replacing the current profile with a better one");
+								System.out.println("On off profile to use " + Arrays.toString(heatPumpOnOffProfile));
+								System.out.println("HP demand profile " + Arrays.toString(heatPumpDemandProfile));
+								System.out.println("This cost is " + thisCost + " against best " + bestCost);
+
+							}
 						}
 					}
 				}
@@ -231,25 +274,30 @@ public class WattboxController implements ISmartController{
 	}
 
 	/**
+	 * Optimise the Water Heating profile for the household
+	 * which owns this Wattbox.
 	 * 
+	 * TODO: Not yet implemented.
 	 */
-	private void optimiseWaterHeatProfile() {
-		// TODO Auto-generated method stub
+	private void optimiseWaterHeatProfile() 
+	{
+	}
 
+	/**
+	 * Optimise the Wet appliance usage profile for the household
+	 * which owns this Wattbox.
+	 * 
+	 * TODO: Not yet implemented.
+	 */
+	private void optimiseWetProfile() 
+	{
 	}
 
 	/**
 	 * 
 	 */
-	private void optimiseWetProfile() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * 
-	 */
-	private void optimiseColdProfile() {
+	private void optimiseColdProfile() 
+	{
 		float[] currentCost = ArrayUtils.mtimes(coldApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
 		// First pass - simply move the cold load in this period to the next timeslot
@@ -265,11 +313,16 @@ public class WattboxController implements ISmartController{
 	/**
 	 * @param dayPredictedCostSignal the dayPredictedCostSignal to set
 	 */
-	public void setDayPredictedCostSignal(float[] dayPredictedCostSignal) {
+	public void setDayPredictedCostSignal(float[] dayPredictedCostSignal) 
+	{
 		this.dayPredictedCostSignal = dayPredictedCostSignal;
 	}
 
-
+	/**
+	 * Alter set point profile to use heat pump optimally
+	 * 
+	 * NOTE: currently unused - preferring a simpler model instead c.f. optimiseHeatPumpDemand
+	 */
 	void optimiseSetPointProfile()
 	{ 		
 		float[] localSetPointArray;
@@ -293,9 +346,10 @@ public class WattboxController implements ISmartController{
 	 * 
 	 * @param owner - the prosumer agent that owns this wattbox
 	 */
-	public WattboxController(HouseholdProsumer owner) {
+	public WattboxController(HouseholdProsumer owner) 
+	{
 		this.owner = owner;
-		this.priorDayExternalTempProfile = INITIALIZATION_TEMPS;
+		this.priorDayExternalTempProfile = Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
 		this.heatPumpOnOffProfile = owner.spaceHeatPumpOn;
 		ticksPerDay = owner.getContext().getTickPerDay();
 		this.coldApplianceProfile = owner.coldApplianceProfile;
@@ -311,7 +365,8 @@ public class WattboxController implements ISmartController{
 	 * @param userLifestyle
 	 */
 	public WattboxController(HouseholdProsumer owner,
-			WattboxUserProfile userProfile, WattboxLifestyle userLifestyle) {
+			WattboxUserProfile userProfile, WattboxLifestyle userLifestyle) 
+	{
 		super();
 		this.owner = owner;
 		this.userProfile = userProfile;

@@ -194,6 +194,12 @@ public final class Consts {
 	 * @see AGGREGATOR_PROFILE_BUILDING_PERIODE
 	 **/
 	public static final int AGGREGATOR_TRAINING_PERIODE = 48; // in terms of day
+
+
+	/**
+	 * factor to convert energy expressed in kWh to Joules.
+	 */
+	public static final float KWH_TO_JOULE_CONVERSION_FACTOR = 3600000;
 	
 	
 	/**

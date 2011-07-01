@@ -487,7 +487,7 @@ public class RECO extends AggregatorAgent{
 	    	else { //End of training period 
 	    		float [][] trainingPeriodBAD = ArrayUtils.subArrayCopy(hist_arr_ij_D, Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE, hist_arr_ij_D.length);
 	    		arr_i_e = calculateElasticityFactors_e(trainingPeriodBAD,arr_i_B);
-	    		System.out.println(ArrayUtils.getPrintableOutputForFloatArray(arr_i_e));	
+	    		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(arr_i_e));	
 
 	    		
 	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(ArrayUtils.getSubArrayCopy(hist_B_ij_arr,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));	
