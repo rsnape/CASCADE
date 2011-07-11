@@ -39,7 +39,7 @@ import static repast.simphony.essentials.RepastEssentials.*;
  * 
  * 1.0 - Initial split of categories of prosumer from the abstract class representing all prosumers
  * 1.1 - 
- * 1.2 - add in more sophisticated model incorporating dispaceable and non-displaceabe demand, appliance
+ * 1.2 - add in more sophisticated model incorporating displaceable and non-displaceable demand, appliance
  * 		 ownership etc.  Richard
  */
 public class HouseholdProsumer extends ProsumerAgent{
@@ -106,7 +106,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 	boolean hasDishWasher;
 
 	// For Households' heating requirements
+	/**
+	 * Thermal mass of building (expressed in kWh per deg C)
+	 */
 	public float buildingThermalMass;
+	/**
+	 * Heat loss rate for the building (expressed in Watts per degree C, or Joules per second per deg C)
+	 */
 	public float buildingHeatLossRate;
 
 	/*
@@ -786,7 +792,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.dailyHotWaterUsage = RandomHelper.nextIntFromTo(Consts.MIN_HOUSHOLD_HOT_WATER_USE, Consts.MAX_HOUSHOLD_HOT_WATER_USE);
 		this.waterSetPoint = Consts.DOMESTIC_SAFE_WATER_TEMP;
 		//TODO: Something more sophisticated than this very basic set point profile assignment and then add offset
-		this.setPointProfile = Consts.BASIC_AVERAGE_SET_POINT_PROFILE;
+		this.setPointProfile = Arrays.copyOf(Consts.BASIC_AVERAGE_SET_POINT_PROFILE, Consts.BASIC_AVERAGE_SET_POINT_PROFILE.length);
 		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2));
 		this.setPredictedCostSignal(Consts.ZERO_COST_SIGNAL);
 		setUpColdApplianceOwnership();

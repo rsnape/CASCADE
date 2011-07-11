@@ -484,7 +484,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param predictedCostSignal the predictedCostSignal to set
 	 */
 	public void setPredictedCostSignal(float[] predictedCostSignal) {
-		this.predictedCostSignal = predictedCostSignal;
+		this.predictedCostSignal = Arrays.copyOf(predictedCostSignal, predictedCostSignal.length);
 	}
 
 	/**

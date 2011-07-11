@@ -3,6 +3,7 @@ package uk.ac.dmu.iesd.cascade.context;
 import java.util.*;
 import repast.simphony.context.*;
 import repast.simphony.engine.schedule.*;
+import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.*;
 
@@ -60,29 +61,6 @@ public class CascadeContext extends DefaultContext{
 	private Network economicNetwork;
 
 
-	/**
-     * Constructs the cascade context 
-     * 
-     */
-	public CascadeContext(Context context)
-	{
-		super(context.getId(), context.getTypeID());
-		if (verbose)
-			System.out.println("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
-
-		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
-
-		while (projIterator.hasNext()) {
-			Projection proj = projIterator.next();
-			this.addProjection(proj);
-			if (verbose)
-				System.out.println("Added projection: "+ proj.getName());
-		}
-
-		this.setId(context.getId());
-		this.setTypeID(context.getTypeID());
-	}
-	
 	
 	/**
 	 * This method return the social network 
@@ -121,7 +99,6 @@ public class CascadeContext extends DefaultContext{
 		this.economicNetwork = n;
 	}
 
-
 	
 	/**
 	 * This method return the number of <tt> tickPerDay </tt>
@@ -133,6 +110,79 @@ public class CascadeContext extends DefaultContext{
 	
 	public void setTickPerDay(int tick) {
 		this.ticksPerDay = tick;
+	}
+	
+	/**
+	 * This method returns the current timeslot during a day (usually divided to 48 timeslot).
+	 * @return urrent timeslot during a day 
+	 */
+	public int getCurrentTimeslotForDay() {
+		return (int) RepastEssentials.GetTickCount();
+	}
+	
+	
+	/**
+	 * This method returns the elapse of time in number of days.
+	 * It depends on how a day is initially defined. If a day is divided up to 48 timeslots, 
+	 * then the second day starts at timeslot 49. 
+	 * However, in order to have it usefully workable with arrays, the first day is returned as 0, second day as 1 and so forth.
+	 * @return the elapsed time in terms of number of day, starting from 0
+	 */
+	public int getCountDay() {
+		return (int) RepastEssentials.GetTickCount()/this.getTickPerDay();
+	}
+	
+	/**
+	 * This method determines whether a day has changed since a given reference point.
+	 * @param sinceDay a day reference from which the elapse of day is tested.
+	 *  @return <code>true</code> if the day has changed since <tt>sinceDay</tt>
+     *          <code>false</code> otherwise
+	 * see {@link #getCountDay()}
+	 */
+	public boolean isDayChangedSince(int sinceDay) {
+		boolean dayChanged = false;
+		int daysSoFar = getCountDay();
+		int daysSinceStart = daysSoFar - sinceDay;
+		if (daysSinceStart >= 1)
+			dayChanged = true;
+		return dayChanged;
+	}
+	
+	/**
+	 * This method determines whether a given timeslot is the beginning of the day
+	 * It is built rather for readability than its functionality.
+	 * @param timeslot a timeslot of the day to be tested whether it indicates the beginning of the day
+	 * @return <code>true</code> if given timeslot corresponds to the beginning of the day, <code>false</code> otherwise
+	 */
+	public boolean isBeginningOfDay(int timeslot) {
+		if (timeslot == 0)
+			return true;
+		else return false;	
+	}
+	
+	/**
+	 * This method determines whether a given timeslot is the end of the day
+	 * It is built rather for readability than its functionality.
+	 * @param timeslot a timeslot of the day to be tested whether it indicates the end of the day
+	 * @return <code>true</code> if given timeslot corresponds to the end of the day, <code>false</code> otherwise
+	 */
+	public boolean isEndOfDay(int timeslot) {
+		if (timeslot == this.ticksPerDay-1)
+			return true;
+		else return false;	
+	}
+	
+	
+	/**
+	 * This method determines whether it is the beginning of the day
+	 * @return <code>true</code> if it is the beginning of the day, <code>false</code> otherwise
+	 */
+	public boolean isBeginningOfDay() {
+		double time = RepastEssentials.GetTickCount();
+		int timeOfDay = (int) (time % getTickPerDay());
+		if (timeOfDay == 0)
+			return true;
+		else return false;	
 	}
 	
 	/*
@@ -313,5 +363,30 @@ public class CascadeContext extends DefaultContext{
 		description = myDesc.toString();		
 		return description;
 	}
+	
+
+	/**
+     * Constructs the cascade context 
+     * 
+     */
+	public CascadeContext(Context context)
+	{
+		super(context.getId(), context.getTypeID());
+		if (verbose)
+			System.out.println("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
+
+		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
+
+		while (projIterator.hasNext()) {
+			Projection proj = projIterator.next();
+			this.addProjection(proj);
+			if (verbose)
+				System.out.println("Added projection: "+ proj.getName());
+		}
+
+		this.setId(context.getId());
+		this.setTypeID(context.getTypeID());
+	}
+	
 
 }

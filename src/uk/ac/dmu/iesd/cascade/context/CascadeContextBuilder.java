@@ -189,7 +189,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			RunEnvironment.getInstance().endRun();
 		}
 
-		this.monthlyMainsWaterTemp = Consts.MONTHLY_MAINS_WATER_TEMP;
+		this.monthlyMainsWaterTemp = Arrays.copyOf(Consts.MONTHLY_MAINS_WATER_TEMP, Consts.MONTHLY_MAINS_WATER_TEMP.length);
 	}
 
 

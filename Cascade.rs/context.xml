@@ -1,17 +1,4 @@
-<context id="CascadeContextMain">
-  <attribute id="weatherFile" display_name="weatherFile" value="oneDayWeather.csv" type="string"/>
-  <attribute id="systemBaseDemandFile" display_name="systemBaseDemandFile" value="macroDemand.csv" type="string"/>
-  <attribute id="householdBaseAttributeFile" display_name="householdBaseAttributeFile" value="aggMinuteToHH.csv" type="string"/>
-  <attribute id="electricalNetworkLayoutFile" display_name="electricalNetworkLayoutFile" value="networkTopology.csv" type="string"/>
-  <attribute id="defaultSignalLength" display_name="defaultSignalLength" value="48" type="int"/>
-  <attribute id="ticksPerDay" display_name="ticksPerDay" value="48" type="int"/>
-  <attribute id="defaultProsumersPerFeeder" display_name="defaultProsumersPerFeeder" value="1000" type="int"/>
-  <attribute id="dataFileFolder" display_name="dataFileFolder" value='C:\RepastSimphony-2.0-beta\workspace\Cascade\dataFiles' type="string"/>
-  <attribute id="smartControlDecisionThreshold" display_name="smartControlDecisionThreshold" value="0.9" type="double"/>
-  
-  
-  
-  
+<context id="CascadeContextMain">  
   <projection id="socialNetwork" type="network"/>
   <projection id="geography" type="geography"/>
   <projection id="economicNetwork" type="network"/>

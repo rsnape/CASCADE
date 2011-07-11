@@ -64,7 +64,7 @@ public class ProsumerFactory implements IProsumerFactory {
 		}
 
 		pAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WILLING_TO_CHANGE_BEHAVIOUR));
-		pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
+		//pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
 		pAgent.exercisesBehaviourChange = true;
 		pAgent.hasSmartMeter = true;
 		pAgent.costThreshold = Consts.HOUSEHOLD_COST_THRESHOLD;
@@ -208,7 +208,7 @@ public class ProsumerFactory implements IProsumerFactory {
 			prAgent.EVPropensity = Float.parseFloat(defraCategories.getColumn("EV_propensity")[custSegment - 1]);
 			prAgent.habit = Float.parseFloat(defraCategories.getColumn("Habit_factor")[custSegment - 1]);
 
-			// prAgent.hasSmartControl = (RandomHelper.nextDouble() < prAgent.HEMSPropensity);
+			prAgent.hasSmartControl = true; //(RandomHelper.nextDouble() < prAgent.HEMSPropensity);
 			prAgent.hasElectricVehicle =  (RandomHelper.nextDouble() < prAgent.EVPropensity);
 
 			returnList.add(prAgent);

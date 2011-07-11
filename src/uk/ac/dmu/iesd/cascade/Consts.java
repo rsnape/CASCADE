@@ -9,7 +9,7 @@ import simphony.util.messages.MessageCenter;
  * but rather enumerations, lookup tables, truly global variables etc.
  * 
  * @author J. Richard Snape
- * @author Baba Mahdavi
+ * @author Babak Mahdavi
  * @version $Revision: 1.2 $ $Date: 2011/06/15 17:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history)
@@ -182,7 +182,7 @@ public final class Consts {
 	 * sometimes about 3 to 7 days. 
 	 * @see AGGREGATOR_TRAINING_PERIODE
 	 **/
-	public static final int AGGREGATOR_PROFILE_BUILDING_PERIODE = 7; // in terms of day
+	public static final int AGGREGATOR_PROFILE_BUILDING_PERIODE = 7; // in terms of days
 	
 	/**
 	 * This is the aggregator training period time in terms of day (assuming it is set manually)
@@ -191,9 +191,15 @@ public final class Consts {
 	 * signals, one for each 48 timeslote of the day.  
 	 * This time is above the time that aggregator needs to gather and build an average 
 	 * baseline profile of its customers (prosumers), usually between 4-7 days 
-	 * @see AGGREGATOR_PROFILE_BUILDING_PERIODE
+	 * @see #AGGREGATOR_PROFILE_BUILDING_PERIODE
 	 **/
-	public static final int AGGREGATOR_TRAINING_PERIODE = 48; // in terms of day
+	public static final int AGGREGATOR_TRAINING_PERIODE = 48; // in terms of days
+
+
+	/**
+	 * factor to convert energy expressed in kWh to Joules.
+	 */
+	public static final float KWH_TO_JOULE_CONVERSION_FACTOR = 3600000;
 	
 	
 	/**
