@@ -616,9 +616,9 @@ public class RECO extends AggregatorAgent{
 		if (i != -1 )	 {	
 			b = arr_B[i];
 			deltaB_i = arr_D[i] - b;
-			e = arr_B[i];
+			e = arr_e[i];
 		}
-
+		
 		arr_k[i][i] =  (deltaB_i - (s*e*b)) / (s*b);
 
 		for (int j = i+1; j < this.ticksPerDay; j++) {
@@ -851,9 +851,9 @@ public class RECO extends AggregatorAgent{
 		    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
 		    	
 		    	if (mainContext.isEndOfDay(timeOfDay)) {
-		    		//System.out.print("-----Training period--------------");
-		    		//System.out.print("End of day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
-		    		//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+		    		System.out.print("-----Training period--------------");
+		    		System.out.print("End of day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
+		    		System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
 		    		float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay());
 		    		float e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
 			    	calculateDisplacementFactors_k(last_arr_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
@@ -866,7 +866,7 @@ public class RECO extends AggregatorAgent{
 			    		//System.out.println("k: ");
 			    		//System.out.println(ArrayUtils.toString(arr_ij_k));	
 			    		
-			    	/*	if (mainContext.getCountDay() == 54) {
+			    		if (mainContext.getCountDay() == 54) {
 			    			
 			    			int [] ts_arr = new int[ticksPerDay];
 			    			
@@ -891,7 +891,7 @@ public class RECO extends AggregatorAgent{
 			    			res.appendCols(arr_ij_k);
 			    			res.close(); 
 			    				    			
-			    		} */
+			    		} 
 			    		
 		    	}
 
