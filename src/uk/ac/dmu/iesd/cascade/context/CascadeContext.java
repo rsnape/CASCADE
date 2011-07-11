@@ -113,6 +113,15 @@ public class CascadeContext extends DefaultContext{
 	}
 	
 	/**
+	 * This method returns the current timeslot during a day (usually divided to 48 timeslot).
+	 * @return urrent timeslot during a day 
+	 */
+	public int getCurrentTimeslotForDay() {
+		return (int) RepastEssentials.GetTickCount();
+	}
+	
+	
+	/**
 	 * This method returns the elapse of time in number of days.
 	 * It depends on how a day is initially defined. If a day is divided up to 48 timeslots, 
 	 * then the second day starts at timeslot 49. 
@@ -120,9 +129,7 @@ public class CascadeContext extends DefaultContext{
 	 * @return the elapsed time in terms of number of day, starting from 0
 	 */
 	public int getCountDay() {
-		int overallElapsedTime = (int) RepastEssentials.GetTickCount();
-	    int daysSoFar = overallElapsedTime/this.getTickPerDay();
-		return daysSoFar;	
+		return (int) RepastEssentials.GetTickCount()/this.getTickPerDay();
 	}
 	
 	/**
@@ -143,7 +150,7 @@ public class CascadeContext extends DefaultContext{
 	
 	/**
 	 * This method determines whether a given timeslot is the beginning of the day
-	 * It is built more for readability rather than functionality.
+	 * It is built rather for readability than its functionality.
 	 * @param timeslot a timeslot of the day to be tested whether it indicates the beginning of the day
 	 * @return <code>true</code> if given timeslot corresponds to the beginning of the day, <code>false</code> otherwise
 	 */
@@ -152,6 +159,19 @@ public class CascadeContext extends DefaultContext{
 			return true;
 		else return false;	
 	}
+	
+	/**
+	 * This method determines whether a given timeslot is the end of the day
+	 * It is built rather for readability than its functionality.
+	 * @param timeslot a timeslot of the day to be tested whether it indicates the end of the day
+	 * @return <code>true</code> if given timeslot corresponds to the end of the day, <code>false</code> otherwise
+	 */
+	public boolean isEndOfDay(int timeslot) {
+		if (timeslot == this.ticksPerDay-1)
+			return true;
+		else return false;	
+	}
+	
 	
 	/**
 	 * This method determines whether it is the beginning of the day

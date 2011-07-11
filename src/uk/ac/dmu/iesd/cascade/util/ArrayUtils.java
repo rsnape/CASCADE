@@ -241,6 +241,26 @@ public class ArrayUtils {
 		
 		return index;
 	}
+	
+	/**
+	 * This utility function returns the index where the passed value is found.
+	 * If there is no such a value, it returns -1 as index.
+	 * If there are more than one occurrence, the index of the last one found is returned.
+	 * @param floatArray whose index for occurrence of <tt>val</tt> will be searched  
+	 * @param val the value whose index is sought   	 	 
+	 * @return index of the array where <tt>val</tt> has been found  
+	 */
+	public static int indexOf( float[] floatArray, float val)
+	{
+		int index = -1;
+		
+		for(int i = floatArray.length - 1; i >= 0; --i)
+		{
+			if (floatArray[i] == val) {index = i;}			
+		}
+		
+		return index;
+	}
 
 	
 	/**
@@ -335,21 +355,7 @@ public class ArrayUtils {
 		}
 		return avg;
 	}
-	
-	/**
-	 * This utility function builds an printable string of the elements (values) of a given float array
-	 * and returns it. The string could be used in any standard print/output function (such as println)
-	 * @param   a floatArray to be printed 	 
-	 * @return a ready-to-be-printed string of array values 
-	 */
-	public static String getPrintableOutputForFloatArray(float[] floatArray) {	
-		String output = "["; 
-		for (int i = 0; i < floatArray.length; i++) {
-			output += " " + floatArray[i];
-		}
-		output += "]";
-		return output;
-	}
+
 
 	/**
 	 * This utility function builds an printable string of the elements (values) of a given 2D integer array
@@ -371,18 +377,17 @@ public class ArrayUtils {
 	 * @param   a 2D floatArray to be printed 	 
 	 * @return a ready-to-be-printed string of array elements/values 
 	 */
-	public static String getPrintableOutputFor2DFloatArray(float[][] twoDfloatArray) {	
+	public static String toString(float[][] twoDfloatArray) {	
 		String output = ""; 
 		for (int row = 0; row < twoDfloatArray.length; row++) {
-			output += "r"+row+" [";
-			for (int col = 0; col < twoDfloatArray[row].length; col++) {
-				output += " " + twoDfloatArray[row][col];
-			}
-			output += "]"+"\n";
+			float [] aRowArray = rowCopy(twoDfloatArray, row);
+			output += "r"+row+Arrays.toString(aRowArray);
+			output +="\n";
 		}
 		return output;
 	}
 	
+
 	public static float[] add(float[]... arrays)
 	{
 		int arrayLength = arrays[0].length;

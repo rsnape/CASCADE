@@ -16,6 +16,7 @@ import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import flanagan.*;
 import flanagan.math.*;
@@ -39,6 +40,35 @@ import flanagan.math.Matrix;
  */
 
 public class RECO extends AggregatorAgent{
+	
+	
+	class RecoMinimisationFunction implements MinimisationFunction {
+		
+		/*public double function (double[] par) {
+			double m =0d;
+			
+			double y=0d;
+			
+			
+			
+			return m;
+		} */
+		
+		  private double a = 0.0D;
+
+		    // evaluation function
+		    public double function(double[] x){
+		        double z = a + x[0]*x[0] +  3.0D*Math.pow(x[1], 4);
+		        return z;
+		    }
+
+		    // Method to set a
+		    public void setA(double a){
+		        this.a = a;
+		    }
+
+
+	}
 
 	/**
 	 * the aggregator agent's base name  
@@ -201,6 +231,7 @@ public class RECO extends AggregatorAgent{
 			e = (sum_D - sum_B) / (s*B);
 		return e;
 	}
+
 	
 	/**
 	 * This method calculates and returns "displacement factor" (k) at given time-slots.
@@ -335,9 +366,9 @@ public class RECO extends AggregatorAgent{
 	 * (i.e. right day [row], timeslot [column]) 
 	 * @param customersList the List of cusstumersList (of <code>ProsumerAgent</code> type)
 	 * @param timeOfDay the current timeslot (for a day divided to 48 timeslot, a value between 0 to 47)
-	 * @param hist_B_arr a 2D array for keeping baseline aggregate demand values for each timeslot of the day(column) and for different days (row)  
+	 * @param hist_arr_B a 2D array for keeping baseline aggregate demand values for each timeslot of the day(column) and for different days (row)  
 	 */
-	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList,int timeOfDay, float[][] hist_B_arr) {
+	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList,int timeOfDay, float[][] hist_arr_B) {
 		float sumDemand = 0;
 		//System.out.println(" customersList size "+customersList.size());
 		//System.out.println(" RECO is calling prosumer getND at ticktime "+ RepastEssentials.GetTickCount());
@@ -349,7 +380,8 @@ public class RECO extends AggregatorAgent{
 	    int dayCount = mainContext.getCountDay();
 	   //System.out.println("sumDemand: "+sumDemand +" timeOfDay: "+timeOfDay);
 		//this.hist_B_ij_arr[dayCount][timeOfDay]=sumDemand;
-		hist_B_arr[dayCount][timeOfDay]=sumDemand;
+	    if (dayCount < hist_arr_B.length)
+	    	hist_arr_B[dayCount][timeOfDay]=sumDemand;
 	}
 	
 	
@@ -368,12 +400,11 @@ public class RECO extends AggregatorAgent{
 	
 	
 	/**
-	 * This method broadcasts a signal (of different type) to a list of provided broadcastees (e.g. Prosumers)
-	 * at a given timeslot 
+	 * This method builds a predefine signal based on the passed signal type and a timeslot. 
 	 * @param signalType the type of the signal
-	 * @param broadcasteesList the list of broadcastees
 	 * @param timeslot the time of day (usually a day is divided to 48 slots)  
-	 * @return true if signal has been sent and received successfully by receiver, false otherwise 
+	 * @return built signal as array of real numbers (float) 
+
 	 */
 	private float[] buildSignal(Consts.SIGNAL_TYPE signalType, int timeslot) {
 		
@@ -408,6 +439,20 @@ public class RECO extends AggregatorAgent{
 		}
 		
 		return sArr;
+	}
+	
+
+	/**
+	 * This method builds a predefined signal based on the passed signal type.
+	 * No timeslot is not necessary to be passed. 
+	 * It bascially calls buildSignal(SignalType, timeslot) by passing -1 as timeslot
+	 * for those signals where the construction does not require a time value. 
+	 * @param signalType the type of the signal
+	 * @return built signal as array of real numbers (float) 
+	 * @see #sendSignal(uk.ac.dmu.iesd.cascade.Consts.SIGNAL_TYPE, float[], List, int)
+	 */
+	private float[] buildSignal(Consts.SIGNAL_TYPE signalType) {
+		return buildSignal(signalType,-1);
 	}
 	
 	/**
@@ -471,6 +516,24 @@ public class RECO extends AggregatorAgent{
 		return isSignalSentSuccessfully;
 	}
 	
+	
+	/**
+	 * This method broadcasts a passed signal array (of float values) to a list of passed customers (e.g. Prosumers)
+	 * @param signalArr signal (array of real/float numbers) to be broadcasted
+	 * @param customerList the list of customers (of ProsumerAgent type)
+	 * @return true if signal has been sent and received successfully by the receiver, false otherwise 
+	 */
+	private boolean broadcastSignalToCustomers(float[] signalArr, List<ProsumerAgent> customerList) {
+
+		boolean isSignalSentSuccessfully = false;
+		//List  aList = broadcasteesList;
+		//List <ProsumerAgent> paList = aList;	
+		for (ProsumerAgent agent : customerList){			
+			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr, signalArr.length);
+		}
+		return isSignalSentSuccessfully;
+	}
+	
 
 	/**
 	 * This method calculates elasticity factors (e) for each timeslot during a day (usally 48)
@@ -482,6 +545,7 @@ public class RECO extends AggregatorAgent{
 	 * @see #calculate_e(float[], float[], float, float)
 
 	 */
+	/*
 	private float[] calculateElasticityFactors_e(float[][] training_arr2D_D, float[] arr_B) {	
 		
 		float[] arr_D;
@@ -491,6 +555,177 @@ public class RECO extends AggregatorAgent{
 			arr_e[i]= calculate_e(arr_D, arr_B, 1f, arr_B[i]);
 		}
 		return arr_e;	
+	} */
+	
+	
+	/**
+	 * This method calculates elasticity factors (e) for each timeslot during a day (usally 48)
+	 * by accepting a 48 days D values for obtaining during training phase (by sending s=1 signals),
+	 * and a average baseline aggregate demand array built during profile building period.
+	 * @param hist_arr2D_D a 2D array containing aggregate demand (D) values obtaining during traning periods (usually 48 days)
+	 * @param arr_B an array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
+	 * @return float array of elasticity factors (e) 
+	 * @see #calculate_e(float[], float[], float, float)
+
+	 */
+	/*
+	private float[][] calculateDisplacementFactors_k_old(float[] arr_D, float[] arr_B, float[] arr_S, float[] arr_e) {	
+
+		float[][] arr_k = new float[ticksPerDay][ticksPerDay];
+		
+		for (int i = 0; i< ticksPerDay; i++) {
+			for (int j = 0; j< ticksPerDay; j++) {
+				
+				if (i==j) {
+					float deltaB_i = arr_D[i]-arr_B[i];
+					if (arr_S[i] * arr_B[i] != 0)
+						arr_k[i][i] =  (deltaB_i - (arr_S[i]* arr_e[i] * arr_B[i])) / (arr_S[i] * arr_B[i]); 
+				}
+				else { // i != j
+					float deltaB_j = arr_D[j]-arr_B[j];
+					if (arr_S[i] * arr_B[j] != 0)
+						arr_k[i][i] =  deltaB_j / (arr_S[i] * arr_B[j]); 
+				}
+			}
+		}
+		return arr_k;	
+	} */
+	
+	
+	/**
+	 * This method calculates displacment factors (k) at the end of the day after S signal has been sent 
+	 * by accepting an array of D values (at the end of the day),
+	 * an average baseline aggregate demand (B) array built during profile building period, 
+	 * the (last) array containing signal (S) sent during training period,
+	 * the elasticity factors (e) array  and the reference to the array of k (deplacement factors)
+	 * where the calculated values for kii and kji will be placed into it.   
+	 * @param arr_D array containing aggregate demand (D) values at the end of the day  (usually 48 days)
+	 * @param arr_B array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
+	 * @param arr_S array containing signal values sent to customers at the begining of the day
+	 * 	param arr_e array containing elasticity factors (e) calcuated so far (at the end of each day) 
+	 * @param arr_k the reference to the displacement factor (k) 2D-array where the calculated kii and kji values will be placed into it. 
+	 */
+	private void calculateDisplacementFactors_k(float[] arr_D, float[] arr_B, float[] arr_S, float[] arr_e, float[][] arr_k) {	
+
+		float e=0;
+		float b =1;
+		float s=1;
+		float deltaB_i=0;
+
+		int i =  ArrayUtils.indexOf(arr_S, 1f);
+		if (i != -1 )	 {	
+			b = arr_B[i];
+			deltaB_i = arr_D[i] - b;
+			e = arr_B[i];
+		}
+
+		arr_k[i][i] =  (deltaB_i - (s*e*b)) / (s*b);
+
+		for (int j = i+1; j < this.ticksPerDay; j++) {
+
+			float b_j = arr_B[j];
+			float deltaB_j = arr_D[j] - b_j;
+			arr_k[j][i] =  deltaB_j  / (s*b);
+		}
+
+		for(int j = i-1; j >= 0; --j) {
+			float b_j = arr_B[j];
+			float deltaB_j = arr_D[j] - b_j;
+			arr_k[j][i] =  deltaB_j  / (s*b);
+		}
+	}
+
+	/**
+	 * This method calculates elasticity factor (e) for each timeslot during a day (usally 48)
+	 * by accepting a 48 days D values for obtaining during training phase (by sending s=1 signals),
+	 * and a average baseline aggregate demand array built during profile building period.
+	 * @param hist_arr2D_D a 2D array containing aggregate demand (D) values obtaining during traning periods (usually 48 days)
+	 * @param arr_B an array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
+	 * @return float array of elasticity factors (e) 
+	 * @see #calculate_e(float[], float[], float, float)
+
+	 */
+	/*private float[] calculateElasticityFactors_e_Old(float[] arr_D, float[] arr_B, float[] arr_S) {	
+		
+		float[] arr_e = new float[this.ticksPerDay];
+		for (int i = 0; i< this.ticksPerDay; i++) {
+			//arr_D = ArrayUtils.rowCopy(training_arr2D_D, i);
+			arr_e[i]= calculate_e(arr_D, arr_B, arr_S[i], arr_B[i]);
+		}
+		return arr_e;	
+	} */
+	
+	
+	/**
+	 * This method calculates the elasticity factor (e) for the timeslot of the day during which
+	 * S was equal to 1 (S=1), by accepting an arry of D values (at the end of the day after sending S signal),
+	 * an average baseline aggregate demand array built during profile building period, 
+	 * the (last) array signal sent during training period and the reference to the array of e (elasticity factors)
+	 * where the calculated value for the timeslot when S=1 will be placed into it.   
+	 * @param arr_D array containing aggregate demand (D) values at the end of the day  (usually 48 days)
+	 * @param arr_B array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
+	 * @param arr_S array containing signal values sent to customers at the begining of the day
+	 * @param arr_e the reference to the elasticity factor (e) array where the calcualted e value for the specific timeslot of the day when S=1 will be placed into it. 
+	 * @return float the elasticity factors (e) value for timeslot of the day when S=1 (also put into the arr_e passed passed as reference) 
+	 */
+	private float calculateElasticityFactors_e(float[] arr_D, float[] arr_B, float[] arr_S, float[] arr_e) {	
+		
+		float e=0;
+		float b =1;
+		float s=1;
+		
+		float sum_D = ArrayUtils.sum(arr_D);
+		float sum_B = ArrayUtils.sum(arr_B);
+	
+		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
+		if (timeslotWhenSwas1 != -1 )	 {	
+			b = arr_B[timeslotWhenSwas1];
+		}
+		
+		e = (sum_D - sum_B) / (s*b);
+		
+		arr_e[timeslotWhenSwas1] = e;
+		
+		return e;	
+	}
+	
+	
+	private void minimise_CD() {
+		Minimisation min = new Minimisation();
+		RecoMinimisationFunction minFunct = new RecoMinimisationFunction();
+		
+	
+        // Set value of the constant a to 5
+        minFunct.setA(5.0D);
+
+        // initial estimates
+        double[] start = {1.0D, 3.0D};
+
+        // initial step sizes
+        double[] step = {0.2D, 0.6D};
+
+        // convergence tolerance
+        double ftol = 1e-15;
+
+        // Nelder and Mead minimisation procedure
+        min.nelderMead(minFunct, start, step, ftol);
+
+        // get the minimum value
+        double minimum = min.getMinimum();
+
+        // get values of y and z at minimum
+         double[] param = min.getParamValues();
+
+        // Print results to a text file
+        min.print("MinimExampleOutput.txt");
+
+        // Output the results to screen
+        System.out.println("Minimum = " + min.getMinimum());
+        System.out.println("Value of x at the minimum = " + param[0]);
+        System.out.println("Value of y at the minimum = " + param[1]);
+
+		
+		
 	}
 
 
@@ -588,52 +823,101 @@ public class RECO extends AggregatorAgent{
 			
 		//List<ProsumerAgent> customers2 = getCustomersList();
 		
+			
 	    if (!isAggregateDemandProfileBuildingPeriodCompleted()) { // history profile building period
 	    	//updateBaselineAggregateDemandHistory(customers2, timeOfDay, histProfileBuilding_B_ij_arr);
 	    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D); 
 	    }
 	    else { //End of history profile building period 
-	    	
-	    	//histAvg_B_i_arr = ArrayUtils.avgCols2DFloatArray(hist_B_ij_arr);
-	    	//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(this.hist_B_ij_arr));
-	    	//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(ArrayUtils.getSubArrayCopy(hist_B_ij_arr,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));
-	    	//histAvg_B_i_arr = calculateAverageBADfromHistory(histProfileBuilding_B_ij_arr);
-	    	//histAvg_B_i_arr = calculateAverageBADfromHistory(hist_B_ij_arr);
-	    	//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(histAvg_B_i_arr));
-	    	//System.out.println("=====");
-	    	//float [][] buildingProfilePeriod = ArrayUtils.getSubArrayCopy(hist_B_ij_arr, Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE);
+	    	 
 	    	arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
+	    	
 	    	//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(histAvg_B_i_arr));
-
+	    	int trainingDay=0;
 
 	    	if (!isTrainingPeriodCompleted()) {  //training period 
 	    		//signals should be send S=1 for 48 days
-	    		broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
+	    		//System.out.println("bc signal at time: "+RepastEssentials.GetTickCount());
+	    		if (mainContext.isBeginningOfDay(timeOfDay)) {
+	    			
+	    			//System.out.print("day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
+		    		//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+	    			arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
+	    			//System.out.println(Arrays.toString(arr_i_S));
+		    		broadcastSignalToCustomers(arr_i_S, customers);
+		    	}
+	    		
+	    		//broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
 		    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
 		    	
-		    	if (mainContext.isBeginningOfDay(timeOfDay) && mainContext.isDayChangedSince(Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
-		    		// calcualtion of e and k will happen here at the end of each day.
-		    		
+		    	if (mainContext.isEndOfDay(timeOfDay)) {
+		    		//System.out.print("-----Training period--------------");
+		    		//System.out.print("End of day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
+		    		//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+		    		float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay());
+		    		float e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
+			    	calculateDisplacementFactors_k(last_arr_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
+			    		
+			    		//System.out.println("e: "+e);
+			    		//System.out.println("B: "+ Arrays.toString(arr_i_B));
+			    		//System.out.println("D: "+ Arrays.toString(last_arr_D));
+			    		//System.out.println("S: "+ Arrays.toString(arr_i_S));
+			    		//System.out.println("e: "+Arrays.toString(arr_i_e));
+			    		//System.out.println("k: ");
+			    		//System.out.println(ArrayUtils.toString(arr_ij_k));	
+			    		
+			    	/*	if (mainContext.getCountDay() == 54) {
+			    			
+			    			int [] ts_arr = new int[ticksPerDay];
+			    			
+			    			for (int i=0; i<ts_arr.length; i++){
+			    				ts_arr[i] = i;	
+			    			}
+			    			
+			    			CSVWriter res = new CSVWriter("Res_EndOfDay54_EndOfTrainingDay48_rs1.csv", true);
+			    			//CSVWriter res = new CSVWriter("Res_EndOfDay18_EndOfTrainingDay11_rs1.csv", true);
+
+			    			res.appendText("Timeslots:");
+			    			res.appendRow(ts_arr);
+			    			res.appendText("B:");
+			    			res.appendRow(arr_i_B);
+			    			res.appendText("D (for end of day "+mainContext.getCountDay()+"): ");
+			    			res.appendRow(last_arr_D);
+			    			res.appendText("S (for end of day "+mainContext.getCountDay()+"): ");
+			    			res.appendRow(arr_i_S);
+			    			res.appendText("e (for end of day "+mainContext.getCountDay()+"): ");
+			    			res.appendRow(arr_i_e);
+			    			res.appendText("k (for end of day "+mainContext.getCountDay()+"): ");
+			    			res.appendCols(arr_ij_k);
+			    			res.close(); 
+			    				    			
+			    		} */
+			    		
 		    	}
-  
+
+		    /*	if (mainContext.isBeginningOfDay(timeOfDay) && mainContext.isDayChangedSince(Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
+		    		
+		    		float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay()-1);
+
+		    		float e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
+		    	//	arr_ij_k = this.calculateDisplacementFactors_k(last_arr_D, arr_i_B, arr_i_S, arr_i_e);
 		    	
+		    	} */
+
 		    	
 	    	}
 	    	else { //End of training period 
-	    		float [][] trainingPeriodBAD = ArrayUtils.subArrayCopy(hist_arr_ij_D, Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE, hist_arr_ij_D.length);
-	    		arr_i_e = calculateElasticityFactors_e(trainingPeriodBAD,arr_i_B);
 	    		
-	    		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(arr_i_e));	
-	    		//System.out.println(Arrays.toString(hist_arr_ij_D));
-	    
-	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(ArrayUtils.getSubArrayCopy(hist_B_ij_arr,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));	
-	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(hist_B_ij_arr));	
-	    		//System.out.println(ArrayUtils.getPrintableOutputFor2DFloatArray(trainingPeriodBAD));	
-	    	
-	    		//Calculate k and e
+	    		//System.out.println("---End of training reached ----");
+	    		//System.out.print("day: "+mainContext.getCountDay());
+	    		//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+	    	  		
+	    		//Real/Usual business here  
+	    		//minimization process here
 	    		
+	    		//minimise_CD();
+	    		   		
 	    	}
-
 	    }
 	
 		
