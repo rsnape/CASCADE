@@ -528,6 +528,7 @@ public class RECO extends AggregatorAgent{
 		boolean isSignalSentSuccessfully = false;
 		//List  aList = broadcasteesList;
 		//List <ProsumerAgent> paList = aList;	
+		
 		for (ProsumerAgent agent : customerList){			
 			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr, signalArr.length);
 		}
@@ -866,7 +867,7 @@ public class RECO extends AggregatorAgent{
 			    		//System.out.println("k: ");
 			    		//System.out.println(ArrayUtils.toString(arr_ij_k));	
 			    		
-			    	/*	if (mainContext.getCountDay() == 54) {
+			    		if (mainContext.getCountDay() == 54) {
 			    			
 			    			int [] ts_arr = new int[ticksPerDay];
 			    			
@@ -891,7 +892,7 @@ public class RECO extends AggregatorAgent{
 			    			res.appendCols(arr_ij_k);
 			    			res.close(); 
 			    				    			
-			    		} */
+			    		} 
 			    		
 		    	}
 

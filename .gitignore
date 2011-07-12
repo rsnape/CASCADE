@@ -4,4 +4,5 @@ bin/
 *ModelOutput*
 Repast.settings
 *.orig
-
+*.csv
+!dataFiles/*

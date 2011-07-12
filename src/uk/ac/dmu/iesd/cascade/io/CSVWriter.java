@@ -5,7 +5,7 @@ import java.io.IOException;
 
 /**
  * 
- * This class can be used to create CVS (Comma Separated Values)files.
+ * This class can be used to create CSV (Comma Separated Values)files.
  * After creation of the class, the user can employ different methods to write or append
  * values (in columns) in the file. In most cases, the user should manually call the close method.
  * For convenience of writing one or two dimensional arrays rapidly, the closing is done 
