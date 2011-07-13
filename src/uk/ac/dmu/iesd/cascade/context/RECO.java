@@ -41,32 +41,46 @@ import flanagan.math.Matrix;
 
 public class RECO extends AggregatorAgent{
 	
-	
+
 	class RecoMinimisationFunction implements MinimisationFunction {
-		
-		/*public double function (double[] par) {
+
+		private float[] arr_C;
+		private float[] arr_B;
+		private float[] arr_e;		
+		private float[][] arr_k;
+
+		public double function (double[] arr_S) {
 			double m =0d;
-			
-			double y=0d;
-			
-			
-			
+
+			for (int i=0; i<arr_S.length; i++){
+
+				double sumOf_SjkijBi =0;
+				for (int j=0; j<arr_S.length; j++){
+					if (i != j)
+						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
+				}
+
+				m+= arr_C[i] + (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
+			}
+
 			return m;
-		} */
-		
-		  private double a = 0.0D;
+		} 
 
-		    // evaluation function
-		    public double function(double[] x){
-		        double z = a + x[0]*x[0] +  3.0D*Math.pow(x[1], 4);
-		        return z;
-		    }
+		public void set_C(float [] c) {
+			arr_C = c;
+		}
 
-		    // Method to set a
-		    public void setA(double a){
-		        this.a = a;
-		    }
+		public void set_B(float [] b) {
+			arr_B = b;
+		}
 
+		public void set_e(float [] e) {
+			arr_e = e;
+		}
+
+		public void set_k(float [][] k ) {
+			arr_k = k;
+		}
 
 	}
 
@@ -690,25 +704,41 @@ public class RECO extends AggregatorAgent{
 	}
 	
 	
-	private void minimise_CD() {
+	private float[] minimise_CD(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
+		
 		Minimisation min = new Minimisation();
 		RecoMinimisationFunction minFunct = new RecoMinimisationFunction();
 		
-	
-        // Set value of the constant a to 5
-        minFunct.setA(5.0D);
+		minFunct.set_C(arr_C);
+		minFunct.set_B(arr_B);
+		minFunct.set_e(arr_e);
+		minFunct.set_k(arr_ij_k);
 
         // initial estimates
-        double[] start = {1.0D, 3.0D};
+        //double[] start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+        double[] start = new double[this.ticksPerDay];      
+        Arrays.fill(start, 1);
 
         // initial step sizes
-        double[] step = {0.2D, 0.6D};
+        //double[] step = {};
 
-        // convergence tolerance
-        double ftol = 1e-15;
+        double ftol = 1e-15;   // convergence tolerance
+        
+        int[] pIndices = new int[this.ticksPerDay];
+        for (int i=0; i<this.ticksPerDay; i++)
+        	pIndices[i] = i;
+        
+        int[] plusOrMinus = new int[this.ticksPerDay];;
+        for (int i=0; i<this.ticksPerDay; i++)
+        	plusOrMinus[i] = 1;
+        
+        int direction =0;
+        double boundary =0d;
+        
+      
+        min.addConstraint(pIndices, plusOrMinus, direction, boundary);
 
-        // Nelder and Mead minimisation procedure
-        min.nelderMead(minFunct, start, step, ftol);
+        min.nelderMead(minFunct, start, ftol);
 
         // get the minimum value
         double minimum = min.getMinimum();
@@ -717,15 +747,18 @@ public class RECO extends AggregatorAgent{
          double[] param = min.getParamValues();
 
         // Print results to a text file
-        min.print("MinimExampleOutput.txt");
+        min.print("MinimCD_output.txt");
 
-        // Output the results to screen
         System.out.println("Minimum = " + min.getMinimum());
-        System.out.println("Value of x at the minimum = " + param[0]);
-        System.out.println("Value of y at the minimum = " + param[1]);
+        System.out.println("Min (S) sum = " + ArrayUtils.sum(param));
+       
+        for (int i=0; i< param.length; i++) {
+        	 System.out.println("Value of s at the minimum for "+i +" ticktime is: " + param[i]);
+        }
+        
+        float[] newOpt_S= ArrayUtils.convertDoubleArrayToFlatArray(param);
 
-		
-		
+		return newOpt_S;
 	}
 
 
@@ -915,7 +948,7 @@ public class RECO extends AggregatorAgent{
 	    		//Real/Usual business here  
 	    		//minimization process here
 	    		
-	    		//minimise_CD();
+	    		//minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 	    		   		
 	    	}
 	    }
@@ -1052,6 +1085,8 @@ public class RECO extends AggregatorAgent{
 		this.arr_i_C = new float [ticksPerDay];
 		this.arr_ij_k = new float [ticksPerDay][ticksPerDay];
 		this.hist_arr_ij_D = new float [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
+		
+		arr_i_C = ArrayUtils.pow2(baseDemand);
 
 		//this.arr_i_B = baseDemand; 
 
