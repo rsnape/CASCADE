@@ -6,6 +6,7 @@ import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.*;
+import uk.ac.dmu.iesd.cascade.Consts;
 
 /**
  * <em>CascadeContext</em> is the main context for the <em>Cascade</em> framework.
@@ -59,6 +60,8 @@ public class CascadeContext extends DefaultContext{
 	
 	private Network socialNetwork;
 	private Network economicNetwork;
+	
+	protected GregorianCalendar currentDate;
 
 
 	
@@ -364,6 +367,16 @@ public class CascadeContext extends DefaultContext{
 		return description;
 	}
 	
+	/******************
+	 * This method steps the model's internal gregorian calendar on each model tick
+	 *  
+	 * Input variables: none
+	 * 
+	 ******************/
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
+	public void calendarStep() {
+		currentDate.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
+	}
 
 	/**
      * Constructs the cascade context 

@@ -412,4 +412,23 @@ public class ArrayUtils {
 		}
 		return returnArray;
 	}
+
+	/**
+	 * Replaces the portion of the array passed in as the first argument with the content
+	 * of the second.
+	 * 
+	 * NOTE: acts directly on the array passed in.
+	 * 
+	 * @param destArray
+	 * @param replacementArray
+	 * @param startIndex
+	 */
+	public static void replaceRange(float[] destArray, float[] replacementArray,int startIndex)
+	{
+		// TODO Auto-generated method stub
+		for (int counter = 0; counter < replacementArray.length; counter++)
+		{
+			destArray[startIndex + counter] = replacementArray[counter];
+		}
+	}
 }

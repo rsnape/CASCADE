@@ -829,7 +829,8 @@ public class RECO extends AggregatorAgent{
 	    	//updateBaselineAggregateDemandHistory(customers2, timeOfDay, histProfileBuilding_B_ij_arr);
 	    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D); 
 	    }
-	    else { //End of history profile building period 
+	    else 
+	    { //End of history profile building period 
 	    	 
 	    	arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
 	    	
@@ -855,7 +856,8 @@ public class RECO extends AggregatorAgent{
 	    		//broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
 		    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
 		    	
-		    	if (mainContext.isEndOfDay(timeOfDay)) {
+		    	if (mainContext.isEndOfDay(timeOfDay)) 
+		    	{
 		    		System.out.print("-----Training period--------------");
 		    		System.out.print("End of day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
 		    		System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
@@ -896,7 +898,7 @@ public class RECO extends AggregatorAgent{
 			    			res.appendCols(arr_ij_k);
 			    			res.close(); 
 			    				    			
-			    		} 
+			    		} */
 			    		
 		    	}
 

@@ -25,6 +25,7 @@ import repast.simphony.random.*;
 import repast.simphony.space.graph.*;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.controllers.*;
+import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
 import static java.lang.Math.*;
@@ -181,6 +182,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 	WeakHashMap currentSmartProfiles;
 	public float[] coldApplianceProfile;
 	public float[] wetApplianceProfile;
+	
+	//For ease of access to a debug type outputter
+	CSVWriter sampleOutput;
 
 	/**
 	 * Accessor functions (NetBeans style)
@@ -313,9 +317,25 @@ public class HouseholdProsumer extends ProsumerAgent{
 			if (hasSmartControl){
 				mySmartController.update(time);
 				currentSmartProfiles = mySmartController.getCurrentProfiles();
-				this.coldApplianceProfile = (float[]) currentSmartProfiles.get("ColdApps");
-				this.wetApplianceProfile = (float[]) currentSmartProfiles.get("WetApps");
+				ArrayUtils.replaceRange(this.coldApplianceProfile, (float[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
+				//this.wetApplianceProfile = (float[]) currentSmartProfiles.get("WetApps");
+				this.spaceHeatPumpOn = (boolean[]) currentSmartProfiles.get("HeatPump");
 			}
+			
+			//Richard output test for prosumer behaviour
+			
+			if (sampleOutput != null)
+			{
+				sampleOutput.appendText("timeStep " + time);
+				sampleOutput.appendText("onOffProfile/n");
+				sampleOutput.appendText(Arrays.toString(spaceHeatPumpOn));
+				sampleOutput.appendText("WetAppProfile/n");
+				sampleOutput.appendRow(wetApplianceProfile);
+				sampleOutput.appendText("coldAppProfile/n");
+				sampleOutput.appendRow(coldApplianceProfile);
+		
+			}
+			
 		}
 
 		calculateInternalTemp(time);
@@ -826,5 +846,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//smart controller will alter this
 		this.smartOptimisedProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
+		
+		//Richard test - just to monitor evolution of one agent
+		if (this.agentID == 1)
+		{
+			sampleOutput = new CSVWriter("richardTestOutput.csv", false);
+		}
 	}
 }

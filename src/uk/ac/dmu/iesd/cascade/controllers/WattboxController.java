@@ -5,6 +5,8 @@ package uk.ac.dmu.iesd.cascade.controllers;
 
 import java.util.*;
 
+import repast.simphony.essentials.RepastEssentials;
+
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.context.ProsumerAgent;
@@ -78,7 +80,10 @@ public class WattboxController implements ISmartController{
 		float[] ownersCostSignal = owner.getPredictedCostSignal();
 		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
 		this.setPointProfile = owner.getSetPointProfile();
-		this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length), (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
+		System.out.println("array length , from , to");
+		System.out.println(owner.coldApplianceProfile.length +","+ (timeStep % owner.coldApplianceProfile.length) +","+ ((timeStep % owner.coldApplianceProfile.length) + ticksPerDay));
+		System.out.println(owner.wetApplianceProfile.length +","+ (timeStep % owner.wetApplianceProfile.length) +","+ ((timeStep % owner.wetApplianceProfile.length) + ticksPerDay));
+		this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length) , (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
 		this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
 		this.heatPumpDemandProfile = calculatePredictedHeatPumpDemand(heatPumpOnOffProfile);
 
@@ -250,8 +255,8 @@ public class WattboxController implements ISmartController{
 						{
 
 							bestCost = thisCost;
-							this.heatPumpOnOffProfile = tempPumpOnOffProfile;
-							this.heatPumpDemandProfile = tempHeatPumpProfile;
+							this.heatPumpOnOffProfile = Arrays.copyOf(tempPumpOnOffProfile, tempPumpOnOffProfile.length);
+							this.heatPumpDemandProfile = Arrays.copyOf(tempHeatPumpProfile, tempHeatPumpProfile.length);
 							if (Consts.DEBUG && owner.getAgentID() == 1)
 							{
 								//Some debugging output for one agent only
@@ -269,8 +274,6 @@ public class WattboxController implements ISmartController{
 			//reset to always on and try the next timeslot;
 			Arrays.fill(tempPumpOnOffProfile,true);
 		}
-
-		Arrays.toString(this.heatPumpOnOffProfile);
 	}
 
 	/**
@@ -300,12 +303,14 @@ public class WattboxController implements ISmartController{
 	{
 		float[] currentCost = ArrayUtils.mtimes(coldApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
-		// First pass - simply move the cold load in this period to the next timeslot
+		int minIndex = ArrayUtils.indexOfMin(currentCost);
+		// First pass - simply swap the load in the max cost slot with that in the min cost slot
 		//TODO: very crude and will give nasty positive feedback in all likelihood
 		if (maxIndex < (coldApplianceProfile.length -1 ))
 		{
-			coldApplianceProfile[maxIndex + 1] = coldApplianceProfile[maxIndex + 1] + coldApplianceProfile[maxIndex];
-			coldApplianceProfile[maxIndex] = 0;
+			float temp = coldApplianceProfile[minIndex];
+			coldApplianceProfile[minIndex] = coldApplianceProfile[maxIndex];
+			coldApplianceProfile[maxIndex] = temp;
 		}
 	}
 
@@ -350,9 +355,16 @@ public class WattboxController implements ISmartController{
 	{
 		this.owner = owner;
 		this.priorDayExternalTempProfile = Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
-		this.heatPumpOnOffProfile = owner.spaceHeatPumpOn;
+		this.heatPumpOnOffProfile = Arrays.copyOf(owner.spaceHeatPumpOn,owner.spaceHeatPumpOn.length);
 		ticksPerDay = owner.getContext().getTickPerDay();
-		this.coldApplianceProfile = owner.coldApplianceProfile;
+		if(owner.coldApplianceProfile != null)
+		{
+			this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.coldApplianceProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.coldApplianceProfile.length) + ticksPerDay);
+		}
+		if (owner.wetApplianceProfile != null)
+		{
+			this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.wetApplianceProfile.length), ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.wetApplianceProfile.length) + ticksPerDay);
+		}
 	}
 
 	/**
