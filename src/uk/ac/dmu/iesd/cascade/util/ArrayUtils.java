@@ -242,6 +242,75 @@ public class ArrayUtils {
 		return index;
 	}
 	
+	
+	
+	
+	
+   public static float[] pow2(float[] floatArrayBase) {	
+		/*float[] powArray = new float[floatArrayBase.length];
+		for(int i = 0; i<floatArrayBase.length; i++) {
+			powArray[i]= (float)Math.pow(floatArrayBase[i], 2);	 */
+	  return mtimes(floatArrayBase,floatArrayBase);
+	}
+	
+   /**
+	 * This utility function returns an array of double values after 
+	 * raising the values of first argument (passed float array) to the power of second
+	 * argument (exp). 
+	 * @param floatArrayBase whose base element values will be raised by <tt>exp</tt> value  
+	 * @param exp the exponent    	 	 
+	 * @return double array containing the initial array values raised by <tt>exp</tt> value  
+	 */
+	public static double[] pow(float[] floatArrayBase, float exp ) {	
+		
+		if (floatArrayBase == null)  {
+			return null;   
+		}   
+		double[] powArray = new double[floatArrayBase.length];
+		
+		for(int i = 0; i<floatArrayBase.length; i++) {
+			powArray[i]=Math.pow(floatArrayBase[i], exp);
+		}
+		
+		return powArray;	
+	}
+	
+	/**
+	 * This utility function accept a double array as an argument and returns 
+	 * a float array containing converted double values of the passed array (argument).
+	 * This is not a good/wise thing to do as information/precision could be lost, but it is
+	 * written if it would be necessary to use it!  
+	 * @param doubleArray whose  <tt>double</tt> element values will be converted to <tt>float</tt>  
+	 * @return array containing the passed array values (as argument) converted to <tt>float</tt>  
+	 */
+	public static float[] convertDoubleArrayToFlatArray(double[] array){ 
+		if (array == null)  {
+			return null;   
+		}   
+		float[] floatArray = new float[array.length];    
+		for (int i = 0; i < array.length; i++)  {
+			floatArray[i] = (float) array[i];    
+		}   
+		return floatArray; 
+	}
+	
+	/**
+	 * This utility function accept a float array as an argument and returns 
+	 * a double array containing converted double values of the passed array (argument).
+	 * @param floatArray whose  <tt>float</tt> element values will be converted to <tt>double</tt>  
+	 * @return double array containing the passed array values (as argument) converted to <tt>double</tt>  
+	 */
+	public static double[] convertFloatArrayToDoubleArray(float[] floatArray){ 
+		if (floatArray == null)  {
+			return null;   
+		}   
+		double[] doubleArray = new double[floatArray.length];    
+		for (int i = 0; i < floatArray.length; i++)  {
+			doubleArray[i] = floatArray[i];    
+		}   
+		return doubleArray; 
+	}
+	
 	/**
 	 * This utility function returns the index where the passed value is found.
 	 * If there is no such a value, it returns -1 as index.
@@ -254,11 +323,9 @@ public class ArrayUtils {
 	{
 		int index = -1;
 		
-		for(int i = floatArray.length - 1; i >= 0; --i)
-		{
+		for(int i = floatArray.length - 1; i >= 0; --i)	{
 			if (floatArray[i] == val) {index = i;}			
 		}
-		
 		return index;
 	}
 
@@ -296,13 +363,13 @@ public class ArrayUtils {
 	 * This utility function returns a copy of the specific column of a passed 2D float array
 	 * as a one dimensional float array. 
 	 * @param  twoDfloatArray a 2D float array whose column is supposed to be fetched and return
-	 * @param  col the number of column whose values are supposed to be returned as array  	 
+	 * @param  colNb the number of column whose values are supposed to be returned as array  	 
 	 * @return an array (float) containing a copy of the passed column number and 2D array 
 	 */
-	public static float[] colCopy(float[][] twoDfloatArray, int col) {
+	public static float[] colCopy(float[][] twoDfloatArray, int colNb) {
 		float[] aCol = new float[twoDfloatArray.length];
 		for (int i = 0; i < twoDfloatArray.length; i++) {
-	        aCol[i]=twoDfloatArray[i][col];
+	        aCol[i]=twoDfloatArray[i][colNb];
 	    }
 		return aCol;
 	}
