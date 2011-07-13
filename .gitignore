@@ -1,6 +1,8 @@
 # Ignored files
-velocity.log*
+*.log*
 bin/
 *ModelOutput*
 Repast.settings
-
+*.orig
+*.csv
+!dataFiles/*

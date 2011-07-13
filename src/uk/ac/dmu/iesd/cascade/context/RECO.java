@@ -542,6 +542,7 @@ public class RECO extends AggregatorAgent{
 		boolean isSignalSentSuccessfully = false;
 		//List  aList = broadcasteesList;
 		//List <ProsumerAgent> paList = aList;	
+		
 		for (ProsumerAgent agent : customerList){			
 			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr, signalArr.length);
 		}
@@ -876,6 +877,10 @@ public class RECO extends AggregatorAgent{
 	    			//System.out.print("day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
 		    		//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
 	    			arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
+	    			//Next line only needed for GUI output at this stage
+	    			System.arraycopy(arr_i_S, 0, this.priceSignal, 0, arr_i_S.length);
+	    			this.priceSignalLength = arr_i_S.length;
+	    			
 	    			//System.out.println(Arrays.toString(arr_i_S));
 		    		broadcastSignalToCustomers(arr_i_S, customers);
 		    	}
@@ -924,7 +929,7 @@ public class RECO extends AggregatorAgent{
 			    			res.appendCols(arr_ij_k);
 			    			res.close(); 
 			    				    			
-			    		} */
+			    		} 
 			    		
 		    	}
 
