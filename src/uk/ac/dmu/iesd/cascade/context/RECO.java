@@ -776,12 +776,12 @@ public class RECO extends AggregatorAgent{
 		// Note the simulation time if needed.
 		double time = RepastEssentials.GetTickCount();
 		int timeOfDay = (int) (time % ticksPerDay);
-		
+
 		//System.out.println(timeOfDay+ " RECO step called at ticktime "+ RepastEssentials.GetTickCount());
 
-		
+
 		List<ProsumerAgent> customers = getCustomersList();
-		
+
 		/*List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
 		//List<RepastEdge> linkages = RepastEssentials.GetOutEdges("CascadeContextMain/economicNetwork", this); //Ideally this must be avoided, changing the context name, will create a bug difficult to find
 		Network economicNet = this.mainContext.getEconomicNetwork();
@@ -830,7 +830,7 @@ public class RECO extends AggregatorAgent{
 		//TODO: This is naive
 
 		predictedCustomerDemand[timeOfDay] = sumDemand;
-		
+
 
 		//TODO I've started too complicated here - first put out flat prices (as per today), then E7, then stepped ToU, then a real dynamic one like this...
 
@@ -841,77 +841,77 @@ public class RECO extends AggregatorAgent{
 		//setPriceSignalRoscoeAndAult(0.0006f, 12f, 40f);
 
 		//Here, we simply broadcast the electricity value signal each midnight
-	/*if (timeOfDay == 0) {
+		/*if (timeOfDay == 0) {
 
 			int broadcastLength; // we may choose to broadcast a subset of the price signal, or a repeated pattern
 			broadcastLength = priceSignal.length; // but in this case we choose not to
 
 			broadcastDemandSignal(customers, time, broadcastLength);
 		}   */
-		
-		
-		//****************** Babak Test ******************
-		
-			
-		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(ArrayUtils.avgCols2DFloatArray(arr)));
-			
-		//List<ProsumerAgent> customers2 = getCustomersList();
-		
-			
-	    if (!isAggregateDemandProfileBuildingPeriodCompleted()) { // history profile building period
-	    	//updateBaselineAggregateDemandHistory(customers2, timeOfDay, histProfileBuilding_B_ij_arr);
-	    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D); 
-	    }
-	    else { //End of history profile building period 
-	    	 
-	    	arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
-	    	
-	    	//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(histAvg_B_i_arr));
-	    	int trainingDay=0;
 
-	    	if (!isTrainingPeriodCompleted()) {  //training period 
-	    		//signals should be send S=1 for 48 days
-	    		//System.out.println("bc signal at time: "+RepastEssentials.GetTickCount());
-	    		if (mainContext.isBeginningOfDay(timeOfDay)) {
-	    			
-	    			//System.out.print("day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
-		    		//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
-	    			arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
-	    			//Next line only needed for GUI output at this stage
-	    			System.arraycopy(arr_i_S, 0, this.priceSignal, 0, arr_i_S.length);
-	    			this.priceSignalLength = arr_i_S.length;
-	    			
-	    			//System.out.println(Arrays.toString(arr_i_S));
-		    		broadcastSignalToCustomers(arr_i_S, customers);
-		    	}
-	    		
-	    		//broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
-		    	updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
-		    	
-		    	if (mainContext.isEndOfDay(timeOfDay)) {
-		    		System.out.print("-----Training period--------------");
-		    		System.out.print("End of day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
-		    		System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
-		    		float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay());
-		    		float e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
-			    	calculateDisplacementFactors_k(last_arr_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
-			    		
-			    		//System.out.println("e: "+e);
-			    		//System.out.println("B: "+ Arrays.toString(arr_i_B));
-			    		//System.out.println("D: "+ Arrays.toString(last_arr_D));
-			    		//System.out.println("S: "+ Arrays.toString(arr_i_S));
-			    		//System.out.println("e: "+Arrays.toString(arr_i_e));
-			    		//System.out.println("k: ");
-			    		//System.out.println(ArrayUtils.toString(arr_ij_k));	
-			    		
-			    		/*if (mainContext.getCountDay() == 54) {
-			    			
+
+		//****************** Babak Test ******************
+
+
+		//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(ArrayUtils.avgCols2DFloatArray(arr)));
+
+		//List<ProsumerAgent> customers2 = getCustomersList();
+
+
+		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { // history profile building period
+			//updateBaselineAggregateDemandHistory(customers2, timeOfDay, histProfileBuilding_B_ij_arr);
+			updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D); 
+		}
+		else { //End of history profile building period 
+
+			arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
+
+			//System.out.println(ArrayUtils.getPrintableOutputForFloatArray(histAvg_B_i_arr));
+			int trainingDay=0;
+
+			if (!isTrainingPeriodCompleted()) {  //training period 
+				//signals should be send S=1 for 48 days
+				//System.out.println("bc signal at time: "+RepastEssentials.GetTickCount());
+				if (mainContext.isBeginningOfDay(timeOfDay)) {
+
+					//System.out.print("day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
+					//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
+					//Next line only needed for GUI output at this stage
+					System.arraycopy(arr_i_S, 0, this.priceSignal, 0, arr_i_S.length);
+					this.priceSignalLength = arr_i_S.length;
+
+					//System.out.println(Arrays.toString(arr_i_S));
+					broadcastSignalToCustomers(arr_i_S, customers);
+				}
+
+				//broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
+				updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
+
+				if (mainContext.isEndOfDay(timeOfDay)) {
+					System.out.print("-----Training period--------------");
+					System.out.print("End of day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
+					System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+					float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay());
+					float e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
+					calculateDisplacementFactors_k(last_arr_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
+
+					//System.out.println("e: "+e);
+					//System.out.println("B: "+ Arrays.toString(arr_i_B));
+					//System.out.println("D: "+ Arrays.toString(last_arr_D));
+					//System.out.println("S: "+ Arrays.toString(arr_i_S));
+					//System.out.println("e: "+Arrays.toString(arr_i_e));
+					//System.out.println("k: ");
+					//System.out.println(ArrayUtils.toString(arr_ij_k));	
+
+					/*if (mainContext.getCountDay() == 54) {
+
 			    			int [] ts_arr = new int[ticksPerDay];
-			    			
+
 			    			for (int i=0; i<ts_arr.length; i++){
 			    				ts_arr[i] = i;	
 			    			}
-			    			
+
 			    			CSVWriter res = new CSVWriter("Res_EndOfDay54_EndOfTrainingDay48_rs1.csv", true);
 			    			//CSVWriter res = new CSVWriter("Res_EndOfDay18_EndOfTrainingDay11_rs1.csv", true);
 
@@ -928,47 +928,48 @@ public class RECO extends AggregatorAgent{
 			    			res.appendText("k (for end of day "+mainContext.getCountDay()+"): ");
 			    			res.appendCols(arr_ij_k);
 			    			res.close(); 
-			    				    			
+
 			    		} 
-			    		
+
 		    	}
 
 		    /*	if (mainContext.isBeginningOfDay(timeOfDay) && mainContext.isDayChangedSince(Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
-		    		
+
 		    		float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay()-1);
 
 		    		float e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
 		    	//	arr_ij_k = this.calculateDisplacementFactors_k(last_arr_D, arr_i_B, arr_i_S, arr_i_e);
-		    	
+
 		    	} */
 
-		    	
-	    	}
-	    	else { //End of training period 
-	    		
-	    		//System.out.println("---End of training reached ----");
-	    		//System.out.print("day: "+mainContext.getCountDay());
-	    		//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
-	    	  		
-	    		//Real/Usual business here  
-	    		//minimization process here
-	    		
-	    		//minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-	    		   		
-	    	}
-	    }
-	
-		
+
+				}
+				else { //End of training period 
+
+					//System.out.println("---End of training reached ----");
+					//System.out.print("day: "+mainContext.getCountDay());
+					//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+
+					//Real/Usual business here  
+					//minimization process here
+
+					//minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+
+				}
+			}
+		}
+
+
 		//System.out.println("predictTimeslotDemand("+(timeOfDay+1)+ "): "+ calcualte_PredictedTimeslotDemand_Di(timeOfDay));
-		
+
 
 		//----- Babak Network test ----------------------------------------------
-	/*	Network costumerNetwork = FindNetwork("BabakTestNetwork");
-		
+		/*	Network costumerNetwork = FindNetwork("BabakTestNetwork");
+
 		costumerNetwork.getEdges(this);
 		//System.out.println("costumerNework: "+ costumerNetwork.getName());
 		Iterable costumersIter = costumerNetwork.getEdges(this);
-		
+
 		//System.out.println("costumerIter: "+ costumersIter.toString());
 		for (Object thisConn: costumersIter)
 		{
@@ -977,7 +978,7 @@ public class RECO extends AggregatorAgent{
 			System.out.println(this.toString()+ " costumer is: "+ hhPro.toString()); 
 			if (hhPro.getAgentName().matches("HH-Pro1")) 
 				costumerNetwork.removeEdge(linkEdge);
-			
+
 		}
 		System.out.println("==================="); */
 		// -- End of test --------------------------------------------------------
