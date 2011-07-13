@@ -24,7 +24,7 @@ public final class Consts {
 	/**
 	 * Model level constants
 	 */
-	public static boolean DEBUG = true;  //use for debugging, default is false
+	public static boolean DEBUG = false;  //use for debugging, default is false
 	
 	
 	/**
