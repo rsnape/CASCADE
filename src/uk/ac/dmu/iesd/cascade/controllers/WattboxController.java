@@ -13,9 +13,7 @@ import uk.ac.dmu.iesd.cascade.context.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 /**
- * @author jrsnape
- *
- * This class implements an abstracted version of the "Wattbox"
+ * * This class implements an abstracted version of the "Wattbox"
  * Smart controller developed by Dr. Peter Boait
  * 
  * The Wattbox learned variable is occupancy, with the controlled
@@ -23,6 +21,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
  * by an optimisation algorithm based upon an input signal and 
  * projected load for the following day
  * 
+ * @author jrsnape
  */
 public class WattboxController implements ISmartController{
 
@@ -33,6 +32,8 @@ public class WattboxController implements ISmartController{
 	int ticksPerDay;
 
 	float[] dayPredictedCostSignal;
+	float predictedCostToRealCostA = 1;
+	float realCostOffsetb = 10;
 	// The  temperature profile, optimised to minimise consumption "cost"
 	float[] setPointProfile;
 
@@ -80,9 +81,6 @@ public class WattboxController implements ISmartController{
 		float[] ownersCostSignal = owner.getPredictedCostSignal();
 		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
 		this.setPointProfile = owner.getSetPointProfile();
-		System.out.println("array length , from , to");
-		System.out.println(owner.coldApplianceProfile.length +","+ (timeStep % owner.coldApplianceProfile.length) +","+ ((timeStep % owner.coldApplianceProfile.length) + ticksPerDay));
-		System.out.println(owner.wetApplianceProfile.length +","+ (timeStep % owner.wetApplianceProfile.length) +","+ ((timeStep % owner.wetApplianceProfile.length) + ticksPerDay));
 		this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length) , (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
 		this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
 		this.heatPumpDemandProfile = calculatePredictedHeatPumpDemand(heatPumpOnOffProfile);
@@ -141,6 +139,7 @@ public class WattboxController implements ISmartController{
 	private float[] calculatePredictedHeatPumpDemand(boolean[] heatPumpProfile) 
 	{
 		float[] power = new float[ticksPerDay];
+		float[] energyProfile = new float[ticksPerDay];
 		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
 		float tempLoss = 0;
 		// t is time since last heating in seconds
@@ -175,7 +174,8 @@ public class WattboxController implements ISmartController{
 			}
 		}
 
-		return power;
+		energyProfile = ArrayUtils.multiply(power, Consts.SECONDS_PER_HALF_HOUR);
+		return energyProfile;
 	}
 
 	/**
@@ -195,12 +195,13 @@ public class WattboxController implements ISmartController{
 	 * electricity for the day ahead to produce the estimated cost of the 
 	 * switching profile.
 	 * 
-	 * Subject to constraints that temperature drop in switch off periods must
-	 * not exceed a certain amount.
+	 * Subject to constraints that 
+	 * <li> temperature drop in switch off periods must not exceed a certain amount.
+	 * <li> heat pump may be switched off for only one period per day
+	 * <li> the "switch off period" may be between half an hour and four hours
 	 * 
-	 * Currently uses a "brute force" algorithm to evaluate all profiles with between
-	 * 1 and 7 periods of continuous "switch off".  It uses the profile which minimises
-	 * the predicted cost of operation.
+	 * Currently uses a "brute force" algorithm to evaluate all profiles
+	 * It uses the profile which minimises the predicted cost of operation.
 	 */
 	private void optimiseSpaceHeatProfile() 
 	{
@@ -215,7 +216,7 @@ public class WattboxController implements ISmartController{
 		}
 		else
 		{
-			float[] initialPredictedCosts = ArrayUtils.mtimes(this.dayPredictedCostSignal, this.heatPumpDemandProfile);
+			float[] initialPredictedCosts = ArrayUtils.mtimes(ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal, predictedCostToRealCostA),realCostOffsetb), this.heatPumpDemandProfile);
 			bestCost = ArrayUtils.sum(initialPredictedCosts);
 		}
 
@@ -250,7 +251,7 @@ public class WattboxController implements ISmartController{
 
 					if (tempHeatPumpProfile != null)
 					{
-						thisCost = ArrayUtils.sum(ArrayUtils.mtimes(this.dayPredictedCostSignal, tempHeatPumpProfile));
+						thisCost = ArrayUtils.sum(ArrayUtils.mtimes(ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal, predictedCostToRealCostA),realCostOffsetb), tempHeatPumpProfile));
 						if (thisCost < bestCost)
 						{
 
@@ -290,13 +291,25 @@ public class WattboxController implements ISmartController{
 	 * Optimise the Wet appliance usage profile for the household
 	 * which owns this Wattbox.
 	 * 
-	 * TODO: Not yet implemented.
 	 */
 	private void optimiseWetProfile() 
 	{
+		float[] currentCost = ArrayUtils.mtimes(wetApplianceProfile, dayPredictedCostSignal);
+		int maxIndex = ArrayUtils.indexOfMax(currentCost);
+		int minIndex = ArrayUtils.indexOfMin(currentCost);
+		// First pass - simply swap the load in the max cost slot with that in the min cost slot
+		//TODO: very crude and will give nasty positive feedback in all likelihood
+		if (maxIndex < (wetApplianceProfile.length -1 ))
+		{
+			float temp = wetApplianceProfile[minIndex];
+			wetApplianceProfile[minIndex] = wetApplianceProfile[maxIndex];
+			wetApplianceProfile[maxIndex] = temp;
+		}
 	}
 
 	/**
+	 * Optimise the Cold appliance usage profile for the household
+	 * which owns this Wattbox.
 	 * 
 	 */
 	private void optimiseColdProfile() 

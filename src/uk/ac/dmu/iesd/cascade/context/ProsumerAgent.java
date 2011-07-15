@@ -412,11 +412,6 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 				// then "wrap" the front bits round to the end of the array.
 				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
 			}
-
-			if (Consts.DEBUG)
-			{
-				System.out.println(this.agentID + " received value signal "+Arrays.toString(signal));
-			}
 		}
 
 		return success;

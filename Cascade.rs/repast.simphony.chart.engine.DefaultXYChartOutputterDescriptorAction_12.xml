@@ -15,13 +15,13 @@
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
-  <autoRangeY>true</autoRangeY>
-  <visibleXRange>500.0</visibleXRange>
+  <autoRangeY>false</autoRangeY>
+  <visibleXRange>672.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
-  <yMax>0.0</yMax>
+  <yMax>3500.0</yMax>
   <precisionValue>0</precisionValue>
   <maxHistory>1500</maxHistory>
   <seriesType>LINE</seriesType>
@@ -30,7 +30,7 @@
       <seriesID>Sum of total demand</seriesID>
       <valueColumn>New Column</valueColumn>
       <hashCode>-1773597658</hashCode>
-      <proxy>true</proxy>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

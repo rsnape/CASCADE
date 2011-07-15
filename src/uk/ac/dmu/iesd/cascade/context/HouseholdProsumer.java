@@ -185,6 +185,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	
 	//For ease of access to a debug type outputter
 	CSVWriter sampleOutput;
+	private float[] recordedHeatPumpDemand;
 
 	/**
 	 * Accessor functions (NetBeans style)
@@ -322,18 +323,19 @@ public class HouseholdProsumer extends ProsumerAgent{
 				this.spaceHeatPumpOn = (boolean[]) currentSmartProfiles.get("HeatPump");
 			}
 			
-			//Richard output test for prosumer behaviour
+			//***Richard output test for prosumer behaviour***
 			
 			if (sampleOutput != null)
 			{
 				sampleOutput.appendText("timeStep " + time);
-				sampleOutput.appendText("onOffProfile/n");
-				sampleOutput.appendText(Arrays.toString(spaceHeatPumpOn));
-				sampleOutput.appendText("WetAppProfile/n");
-				sampleOutput.appendRow(wetApplianceProfile);
-				sampleOutput.appendText("coldAppProfile/n");
-				sampleOutput.appendRow(coldApplianceProfile);
-		
+				sampleOutput.appendText(Arrays.toString(baseDemandProfile));
+				sampleOutput.writeColHeaders(new String[]{"pumpSwitching", "wetApp","coldApp"});
+				String[][] outputBuilder = new String[4][spaceHeatPumpOn.length];
+				outputBuilder[0] = ArrayUtils.convertBooleanArrayToString(spaceHeatPumpOn);
+				outputBuilder[1] = ArrayUtils.convertFloatArrayToString(recordedHeatPumpDemand);
+				outputBuilder[2] = ArrayUtils.convertFloatArrayToString(wetApplianceProfile);
+				outputBuilder[3] = ArrayUtils.convertFloatArrayToString(coldApplianceProfile);
+				sampleOutput.appendCols(outputBuilder);
 			}
 			
 		}
@@ -342,7 +344,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		//Every step we do these actions
 		if (hasSmartControl){
-			setNetDemand(evaluateElasticBehaviour(time) + smartDemand(time));
+			setNetDemand(smartDemand(time));
 		}
 		else if (hasSmartMeter && exercisesBehaviourChange) {
 			learnBehaviourChange();
@@ -495,6 +497,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		if (hasElectricalSpaceHeat)
 		{
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
+			recordedHeatPumpDemand[timeOfDay] = heatPumpDemand(timeOfDay);
 			return heatPumpDemand(timeOfDay);
 		}
 		else
@@ -557,7 +560,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 		{
 			power = deltaT * (this.buildingHeatLossRate / Consts.DOMESTIC_HEAT_PUMP_COP);
 		}
-		return power;
+		
+		// Need to return in terms of kWh in this timestep
+		// **Watch out here - assumption that the timestep is half hour!!!
+		return (power * (((1 / ticksPerDay) * Consts.SECONDS_PER_DAY) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR));
 	}
 
 	/**
@@ -834,6 +840,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// Initialise the base case where heat pump is on all day
 		spaceHeatPumpOn = new boolean[ticksPerDay];
 		Arrays.fill(spaceHeatPumpOn, true);
+		recordedHeatPumpDemand = new float[ticksPerDay];
 		
 		/*
 		 *Set up "smart" stuff here

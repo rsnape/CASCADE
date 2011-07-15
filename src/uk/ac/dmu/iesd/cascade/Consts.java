@@ -25,6 +25,9 @@ public final class Consts {
 	 * Model level constants
 	 */
 	public static boolean DEBUG = false;  //use for debugging, default is false
+
+
+	public static int SECONDS_PER_DAY = 86400;
 	
 	
 	/**

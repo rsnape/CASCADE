@@ -60,7 +60,8 @@ public class RECO extends AggregatorAgent{
 						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
 				}
 
-				m+= arr_C[i] + (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
+				//m+= arr_C[i] + (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
+				m+= arr_C[i] * (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
 			}
 
 			return m;
@@ -154,7 +155,9 @@ public class RECO extends AggregatorAgent{
 	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
 	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
 	 **/
-	float[][] hist_arr_ij_D; 
+	float[][] hist_arr_ij_D;
+
+	private boolean firstTimeMinimisation = true; 
 
 	/**
 	 * This array is used to keep the average (i.e. baseline) of aggregate demands (D)
@@ -720,8 +723,16 @@ public class RECO extends AggregatorAgent{
 
 		// initial estimates
 		//double[] start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
-		double[] start = new double[this.ticksPerDay];      
-		Arrays.fill(start, 1);
+		double[] start = new double[this.ticksPerDay];
+		if(firstTimeMinimisation )
+		{
+			Arrays.fill(start, 1);
+			firstTimeMinimisation = false;
+		}
+		else
+		{
+			start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+		}
 
 		// initial step sizes
 		//double[] step = {};
@@ -750,15 +761,18 @@ public class RECO extends AggregatorAgent{
 		// get values of y and z at minimum
 		double[] param = min.getParamValues();
 
-		// Print results to a text file
-		min.print("MinimCD_output.txt");
+		if (Consts.DEBUG)
+		{
+			// Print results to a text file
+			//min.print("MinimCD_output.txt");
 
-		// Output the results to screen
-		System.out.println("Minimum = " + min.getMinimum());
-		System.out.println("Min (S) sum = " + ArrayUtils.sum(param));
+			// Output the results to screen
+			System.out.println("Minimum = " + min.getMinimum());
+			System.out.println("Min (S) sum = " + ArrayUtils.sum(param));
 
-		for (int i=0; i< param.length; i++) {
-			System.out.println("Value of s at the minimum for "+i +" ticktime is: " + param[i]);
+			for (int i=0; i< param.length; i++) {
+				System.out.println("Value of s at the minimum for "+i +" ticktime is: " + param[i]);
+			}
 		}
 
 		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFlatArray(param);
@@ -961,8 +975,21 @@ public class RECO extends AggregatorAgent{
 				//Real/Usual business here  
 				//minimization process here
 
-				arr_i_S = ArrayUtils.normalizeValues(minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S),1,true);
-				broadcastSignalToCustomers(arr_i_S, customers);
+				//Richard Test to stimulate prosumer behaviour
+				if (mainContext.isBeginningOfDay(timeOfDay)) 
+				{
+					//arr_i_S = ArrayUtils.normalizeValues(minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S));
+					//System.out.println(Arrays.toString(Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
+					float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
+					System.out.println(Arrays.toString(normalizedCosts));
+					System.out.println(Arrays.toString(arr_i_S));
+					arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					System.out.println(Arrays.toString(arr_i_S));
+					arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
+					System.out.println(Arrays.toString(arr_i_S));
+					
+					broadcastSignalToCustomers(arr_i_S, customers);
+				}
 
 			}
 

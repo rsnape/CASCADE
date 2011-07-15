@@ -19,7 +19,7 @@
 									
 		/>
 				<parameter name="systemBaseDemandFile" displayName="systemBaseDemandFile" type="java.lang.String" 
-						defaultValue="macroDemand.csv" 
+						defaultValue="macroDemandStartingMonday.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -61,7 +61,7 @@
 									
 		/>
 				<parameter name="householdBaseAttributeFile" displayName="householdBaseAttributeFile" type="java.lang.String" 
-						defaultValue="aggMinuteToHH.csv" 
+						defaultValue="1200profiles.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
