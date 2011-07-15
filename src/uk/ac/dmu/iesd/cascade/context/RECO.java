@@ -60,7 +60,7 @@ public class RECO extends AggregatorAgent{
 						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
 				}
 
-				m+= arr_C[i] + (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
+				m+= arr_C[i] * (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
 			}
 
 			return m;
@@ -617,7 +617,7 @@ public class RECO extends AggregatorAgent{
 	 * @param arr_D array containing aggregate demand (D) values at the end of the day  (usually 48 days)
 	 * @param arr_B array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
 	 * @param arr_S array containing signal values sent to customers at the begining of the day
-	 * 	param arr_e array containing elasticity factors (e) calcuated so far (at the end of each day) 
+	 * @param arr_e array containing elasticity factors (e) calcuated so far (at the end of each day) 
 	 * @param arr_k the reference to the displacement factor (k) 2D-array where the calculated kii and kji values will be placed into it. 
 	 */
 	private void calculateDisplacementFactors_k(float[] arr_D, float[] arr_B, float[] arr_S, float[] arr_e, float[][] arr_k) {	
