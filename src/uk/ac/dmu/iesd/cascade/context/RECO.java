@@ -979,7 +979,11 @@ public class RECO extends AggregatorAgent{
 				{
 					//arr_i_S = ArrayUtils.normalizeValues(minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S));
 					//System.out.println(Arrays.toString(Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
-					float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
+					
+					//Richard's test version below - with normalisation etc.
+					
+					
+					/* float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
 					System.out.println(Arrays.toString(normalizedCosts));
 					System.out.println(Arrays.toString(arr_i_S));
 					arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
@@ -988,6 +992,7 @@ public class RECO extends AggregatorAgent{
 					System.out.println(Arrays.toString(arr_i_S));
 					
 					broadcastSignalToCustomers(arr_i_S, customers);
+					*/
 				}
 
 			}
