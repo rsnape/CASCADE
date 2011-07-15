@@ -200,6 +200,9 @@ public final class Consts {
 	 * factor to convert energy expressed in kWh to Joules.
 	 */
 	public static final float KWH_TO_JOULE_CONVERSION_FACTOR = 3600000;
+
+
+	public static final int MINUTES_PER_DAY = 1440;
 	
 	
 	/**

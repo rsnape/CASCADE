@@ -4,8 +4,13 @@ import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -121,6 +126,18 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		numProsumers = (Integer) params.getValue("defaultProsumersPerFeeder");
 		cascadeMainContext.setTickPerDay((Integer) params.getValue("ticksPerDay"));
 		cascadeMainContext.verbose = (Boolean) params.getValue("verboseOutput");
+		Date startDate;
+		try {
+			startDate = (new SimpleDateFormat("dd/MM/yyyy")).parse((String) params.getValue("startDate"));
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			System.err.println("The start date parameter is in a format which cannot be parsed by this program");
+			System.err.println("The data will be set to 01/01/2000 by default");
+			startDate = new Date(2000,1,1);
+			e1.printStackTrace();
+		}
+		cascadeMainContext.currentDate = new GregorianCalendar();
+		cascadeMainContext.currentDate.setTime(startDate);
 
 		/*
 		 * Read in the necessary data files and store to the context
