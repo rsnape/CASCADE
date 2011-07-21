@@ -1,0 +1,12 @@
+<parameters>
+					<parameter name="ExtendedTest" displayName="TestName" type="java.lang.String" 
+						defaultValue="testValue" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+			
+		</parameters>
+
+
+

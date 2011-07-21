@@ -416,42 +416,23 @@ public class CascadeContext extends DefaultContext{
 
 		this.setId(context.getId());
 		this.setTypeID(context.getTypeID());
-		
-		// ------------Custom global schedule action ------------------------------------------
-		
+
 	
+		//tttttttttttttt   Babak test ttttttttttttttttttttt
 		RunState runState = RunState.getInstance();
 		GUIRegistry guiRegis = runState.getGUIRegistry();
-		List<IDisplay> listOfDisplays =  guiRegis.getDisplays();
-		
-		//JPanel panel1 = listOfDisplays.get(0).getPanel();
-		//snapshotTaker1 = new SnapshotTaker(panel1);
-		
-		//Action snapshotAction = SnapshotTaker.createSnapshotAction(panel1);
-		//snapshotAction.
-		
-		for (IDisplay display : listOfDisplays) {
-			//System.out.println("Display.toString: "+display.toString());
-			//DisplayOGL2D displayOGL2D = (DisplayOGL2D) display.getClass();
-			System.out.println("Display.class: "+display.getClass());
-			System.out.println("Display.getPanel: "+display.getPanel());
-			//System.out.println("Display.getPanel getComp: "+display.getPanel().getComponents());
-			Component[] compArr = display.getPanel().getComponents();
-			for (int i=0; i<compArr.length;i++) {
-				System.out.println("comp: "+compArr[i]);
-				//System.out.println("comp: "+compArr[i].);
+		List<IDisplay> listOfDisplays =  guiRegis.getDisplays();		
+		//System.out.println("list of displays size: "+listOfDisplays.size());
+		//tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
 
-			}
-
-
-		}
-		
+		// ------------Custom global schedule action --------------------
 
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 		int interval = 20; // this should be set as a customized parameter later
 		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
 		ScheduleParameters params = ScheduleParameters.createRepeating(0, interval);
 		schedule.schedule(params, this, "takeSnapshot"); 
+		// ----------------------------------------------------------------
 
 	}
 }
