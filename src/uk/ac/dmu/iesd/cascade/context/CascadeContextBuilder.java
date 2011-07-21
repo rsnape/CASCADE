@@ -15,6 +15,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+
 import cern.jet.random.Normal;
 
 import repast.simphony.context.Context;
@@ -25,16 +29,22 @@ import repast.simphony.context.space.graph.NetworkFactoryFinder;
 import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
+import repast.simphony.engine.controller.NullAbstractControllerAction;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.environment.RunEnvironmentBuilder;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.*;
 import repast.simphony.random.RandomHelper;
+import repast.simphony.scenario.ModelInitializer;
+import repast.simphony.scenario.Scenario;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.projection.Projection;
+import repast.simphony.ui.RSApplication;
 import repast.simphony.util.collections.IndexedIterable;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.Consts.GENERATOR_TYPE;
@@ -42,6 +52,7 @@ import uk.ac.dmu.iesd.cascade.Consts.STORAGE_TYPE;
 import uk.ac.dmu.iesd.cascade.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.util.*;
+import repast.simphony.scenario.ModelInitializer;
 
 /**
  * <em>CascadeContextBuilder</em> is the Repast specific starting point class 
@@ -78,7 +89,7 @@ import uk.ac.dmu.iesd.cascade.util.*;
  * @return the built context.
  */
 public class CascadeContextBuilder implements ContextBuilder<Object> {
-
+	
 	private CascadeContext cascadeMainContext;  // cascade main context
 	private Parameters params; // parameters for the model run environment 	
 	private int numProsumers; //number of Prosumers
@@ -106,6 +117,12 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	
 		//buildNetworks();
 		
+		//++++++++++++++Add stuff to user panel
+		JPanel customPanel = new JPanel();
+		customPanel.add(new JLabel("TestLabel"));
+		customPanel.add(new JButton("Test Button"));		
+		RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
+		//+++++++++++++++++++++++++++++++++++++
 		
 		if (cascadeMainContext.verbose)	
 			System.out.println("Cascade Main Context created: "+cascadeMainContext.toString());

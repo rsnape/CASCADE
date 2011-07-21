@@ -1,12 +1,22 @@
 package uk.ac.dmu.iesd.cascade.context;
 
+import java.awt.Component;
 import java.util.*;
+
+import javax.swing.Action;
+import javax.swing.JPanel;
+
 import repast.simphony.context.*;
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.*;
+import repast.simphony.ui.widget.SnapshotTaker;
+import repast.simphony.visualization.IDisplay;
 import uk.ac.dmu.iesd.cascade.Consts;
+import repast.simphony.engine.environment.GUIRegistry;
+import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.environment.RunState;
 
 /**
  * <em>CascadeContext</em> is the main context for the <em>Cascade</em> framework.
@@ -62,6 +72,8 @@ public class CascadeContext extends DefaultContext{
 	private Network economicNetwork;
 	
 	protected GregorianCalendar currentDate;
+	
+	SnapshotTaker snapshotTaker1;
 
 
 	
@@ -367,6 +379,11 @@ public class CascadeContext extends DefaultContext{
 		return description;
 	}
 	
+	public void takeSnapshot() {
+		//System.out.println("takeSnapshot is called");
+		//snapshotTaker1.takeSnapshot(parent)
+	}
+	
 	/******************
 	 * This method steps the model's internal gregorian calendar on each model tick
 	 *  
@@ -399,7 +416,42 @@ public class CascadeContext extends DefaultContext{
 
 		this.setId(context.getId());
 		this.setTypeID(context.getTypeID());
-	}
+		
+		// ------------Custom global schedule action ------------------------------------------
+		
 	
+		RunState runState = RunState.getInstance();
+		GUIRegistry guiRegis = runState.getGUIRegistry();
+		List<IDisplay> listOfDisplays =  guiRegis.getDisplays();
+		
+		//JPanel panel1 = listOfDisplays.get(0).getPanel();
+		//snapshotTaker1 = new SnapshotTaker(panel1);
+		
+		//Action snapshotAction = SnapshotTaker.createSnapshotAction(panel1);
+		//snapshotAction.
+		
+		for (IDisplay display : listOfDisplays) {
+			//System.out.println("Display.toString: "+display.toString());
+			//DisplayOGL2D displayOGL2D = (DisplayOGL2D) display.getClass();
+			System.out.println("Display.class: "+display.getClass());
+			System.out.println("Display.getPanel: "+display.getPanel());
+			//System.out.println("Display.getPanel getComp: "+display.getPanel().getComponents());
+			Component[] compArr = display.getPanel().getComponents();
+			for (int i=0; i<compArr.length;i++) {
+				System.out.println("comp: "+compArr[i]);
+				//System.out.println("comp: "+compArr[i].);
 
+			}
+
+
+		}
+		
+
+		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+		int interval = 20; // this should be set as a customized parameter later
+		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
+		ScheduleParameters params = ScheduleParameters.createRepeating(0, interval);
+		schedule.schedule(params, this, "takeSnapshot"); 
+
+	}
 }
