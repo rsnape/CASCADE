@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
@@ -30,6 +31,8 @@ import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.controller.NullAbstractControllerAction;
+import repast.simphony.engine.environment.GUIRegistry;
+import repast.simphony.engine.environment.GUIRegistryType;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunEnvironmentBuilder;
 import repast.simphony.engine.environment.RunState;
@@ -46,6 +49,7 @@ import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.projection.Projection;
 import repast.simphony.ui.RSApplication;
 import repast.simphony.util.collections.IndexedIterable;
+import repast.simphony.util.collections.Pair;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.Consts.GENERATOR_TYPE;
 import uk.ac.dmu.iesd.cascade.Consts.STORAGE_TYPE;
@@ -102,34 +106,6 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	float[] monthlyMainsWaterTemp = new float[12];
 
 	/*
-	 * Builds the <tt> Cascade Context </tt> (by calling other private sub-methods)
-	 * @see uk.ac.dmu.iesd.cascade.context.CascadeContext
-	 * @see repast.simphony.dataLoader.ContextBuilder#build(repast.simphony.context.Context)
-	 * @return built context
-	 */
-	public CascadeContext build(Context context) {
-		// Instantiate the Cascade context, passing in the context that was given to this builder
-		// to clone any existing parameters
-		//tempCont =context;
-		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
-		readParamsAndInitializeArrays();
-		populateContext();
-	
-		//buildNetworks();
-		
-		//++++++++++++++Add stuff to user panel
-		JPanel customPanel = new JPanel();
-		customPanel.add(new JLabel("TestLabel"));
-		customPanel.add(new JButton("Test Button"));		
-		RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
-		//+++++++++++++++++++++++++++++++++++++
-		
-		if (cascadeMainContext.verbose)	
-			System.out.println("Cascade Main Context created: "+cascadeMainContext.toString());
-		return cascadeMainContext;
-	}
-
-	/*
 	 * Read the model environment parameters and initialize arrays
 	 */
 	private void readParamsAndInitializeArrays() {
@@ -143,6 +119,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		numProsumers = (Integer) params.getValue("defaultProsumersPerFeeder");
 		cascadeMainContext.setTickPerDay((Integer) params.getValue("ticksPerDay"));
 		cascadeMainContext.verbose = (Boolean) params.getValue("verboseOutput");
+		cascadeMainContext.chartSnapshotOn = (Boolean) params.getValue("chartSnapshot");
+		cascadeMainContext.setChartSnapshotInterval((Integer) params.getValue("chartSnapshotInterval"));
+		
+		
 		Date startDate;
 		try {
 			startDate = (new SimpleDateFormat("dd/MM/yyyy")).parse((String) params.getValue("startDate"));
@@ -523,6 +503,39 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 
 	}
+	
+
+	/*
+	 * Builds the <tt> Cascade Context </tt> (by calling other private sub-methods)
+	 * @see uk.ac.dmu.iesd.cascade.context.CascadeContext
+	 * @see repast.simphony.dataLoader.ContextBuilder#build(repast.simphony.context.Context)
+	 * @return built context
+	 */
+	public CascadeContext build(Context context) {
+		// Instantiate the Cascade context, passing in the context that was given to this builder
+		// to clone any existing parameters
+		//tempCont =context;
+		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
+		readParamsAndInitializeArrays();
+		cascadeMainContext.buildCustomizedSchedules();
+		populateContext();
+	
+		//buildNetworks();
+		
+		//++++++++++++++Add stuff to user panel
+		/*JPanel customPanel = new JPanel();
+		customPanel.add(new JLabel("TestLabel"));
+		customPanel.add(new JButton("Test Button"));		
+		RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel); */
+		//+++++++++++++++++++++++++++++++++++++
+		
+		if (cascadeMainContext.verbose)	
+			System.out.println("Cascade Main Context created: "+cascadeMainContext.toString());
+		
+		
+		return cascadeMainContext;
+	}
+
 
 
 }

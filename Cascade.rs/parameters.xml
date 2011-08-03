@@ -78,10 +78,22 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
+				<parameter name="chartSnapshotInterval" displayName="chartSnapshotInterval" type="int" 
+						defaultValue="47" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
 						defaultValue="C:\RepastSimphony-2.0-beta\workspace\Cascade\dataFiles" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
+						defaultValue="false" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
 		/>
 				<parameter name="elecSpaceFraction" displayName="elecSpaceFraction" type="float" 

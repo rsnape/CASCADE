@@ -60,20 +60,20 @@
     </nameMappingTable>
     <mappingNameTable>
       <entry>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
-        <string>Air Temperature</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
-        <string>Insolation</string>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
       </entry>
       <entry>
         <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
         <string>Wind Speed</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
-        <string>Tick</string>
+        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
+        <string>Insolation</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.aggregate.MeanMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.aggregate.MeanMapping"/>
+        <string>Air Temperature</string>
       </entry>
     </mappingNameTable>
     <alternatedNameTable/>
