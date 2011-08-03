@@ -1,10 +1,16 @@
 package uk.ac.dmu.iesd.cascade.context;
 
 import java.awt.Component;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+
+import java.io.File;
 
 import repast.simphony.context.*;
 import repast.simphony.engine.schedule.*;
@@ -12,9 +18,11 @@ import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.*;
 import repast.simphony.ui.widget.SnapshotTaker;
+import repast.simphony.util.collections.Pair;
 import repast.simphony.visualization.IDisplay;
 import uk.ac.dmu.iesd.cascade.Consts;
 import repast.simphony.engine.environment.GUIRegistry;
+import repast.simphony.engine.environment.GUIRegistryType;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 
@@ -66,7 +74,9 @@ public class CascadeContext extends DefaultContext{
 	float[] systemPriceSignalDataArray;
 	int systemPriceSignalDataLength;
 	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
+	protected static boolean chartSnapshotOn = false;  // use
 	protected int ticksPerDay;
+	protected int chartSnapshotInterval;
 	
 	private Network socialNetwork;
 	private Network economicNetwork;
@@ -74,6 +84,9 @@ public class CascadeContext extends DefaultContext{
 	protected GregorianCalendar currentDate;
 	
 	SnapshotTaker snapshotTaker1;
+	Collection chartCompCollection;
+	ArrayList snapshotTakerArrList;
+	String fileChartFormatExt = ".png";
 
 
 	
@@ -126,6 +139,15 @@ public class CascadeContext extends DefaultContext{
 	public void setTickPerDay(int tick) {
 		this.ticksPerDay = tick;
 	}
+	
+	public void setChartSnapshotInterval(int interval) {
+		this.chartSnapshotInterval = interval;
+	}
+	
+	public int getChartSnapshotInterval() {
+		return this.chartSnapshotInterval;
+	}
+	
 	
 	/**
 	 * This method returns the current timeslot during a day (usually divided to 48 timeslot).
@@ -359,8 +381,6 @@ public class CascadeContext extends DefaultContext{
 		this.systemPriceSignalDataArray = systemPriceSignalData;
 	}
 
-
-	
 	/*
 	 * Have a nice toString() method to give good
 	 * debug info
@@ -379,10 +399,64 @@ public class CascadeContext extends DefaultContext{
 		return description;
 	}
 	
-	public void takeSnapshot() {
-		//System.out.println("takeSnapshot is called");
-		//snapshotTaker1.takeSnapshot(parent)
+	private String getFileNameForChart(int chartNb) {
+		String chartName;
+
+		switch (chartNb) {
+		 case 0:  chartName = "chart1_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 case 1:  chartName = "chart2_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 case 2:  chartName = "chart3_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 case 3:  chartName = "chart4_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 case 4:  chartName = "chart5_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 case 5:  chartName = "chart6_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 case 6:  chartName = "chart7_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 case 7:  chartName = "chart8_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 case 8:  chartName = "chart9_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
+		 default: chartName = "chartDefaultName_"; break;
+		}
+
+		return chartName;	
 	}
+
+	public void takeSnapshot() {
+
+		Iterator<SnapshotTaker> snapshotTakerIter = snapshotTakerArrList.iterator();
+		//String path =System.getProperty("user.dir");
+		//String path = new java.io.File(".").getCanonicalPath();
+		try {
+			for (int i=0; i<snapshotTakerArrList.size();i++) {
+				SnapshotTaker snapshotTaker = (SnapshotTaker)snapshotTakerArrList.get(i);
+				File file = new File(getFileNameForChart(i));
+				snapshotTaker.save(file, "png");
+			}
+
+		} catch (IOException e) {
+			// Print out the exception that occurred
+			System.out.println("CascadeContext: Unable to takeSnapshot "+e.getMessage());
+		}
+	}
+
+	public void setChartCompCollection(Collection c) {
+		chartCompCollection=c;
+		Iterator<JComponent> compIter= chartCompCollection.iterator();
+		snapshotTakerArrList = new ArrayList();
+		while ( compIter.hasNext() ){
+			JComponent chartComp = (JComponent) compIter.next();
+			SnapshotTaker snapshotTaker = new SnapshotTaker(chartComp);
+			snapshotTakerArrList.add(snapshotTaker);
+		}
+	}
+	
+	public void buildCustomizedSchedules() {
+		
+		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
+		ScheduleParameters params = ScheduleParameters.createRepeating(0, getChartSnapshotInterval());
+		schedule.schedule(params, this, "takeSnapshot"); 
+		
+	}
+	
+	
 	
 	/******************
 	 * This method steps the model's internal gregorian calendar on each model tick
@@ -421,17 +495,13 @@ public class CascadeContext extends DefaultContext{
 		//tttttttttttttt   Babak test ttttttttttttttttttttt
 		RunState runState = RunState.getInstance();
 		GUIRegistry guiRegis = runState.getGUIRegistry();
-		List<IDisplay> listOfDisplays =  guiRegis.getDisplays();		
+		//List<IDisplay> listOfDisplays =  guiRegis.getDisplays();		
 		//System.out.println("list of displays size: "+listOfDisplays.size());
 		//tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
 
 		// ------------Custom global schedule action --------------------
 
-		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-		int interval = 20; // this should be set as a customized parameter later
-		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
-		ScheduleParameters params = ScheduleParameters.createRepeating(0, interval);
-		schedule.schedule(params, this, "takeSnapshot"); 
+		
 		// ----------------------------------------------------------------
 
 	}
