@@ -52,67 +52,57 @@ public class Initializer implements ModelInitializer{
 			Collection typeAndComp = guiRegis.getTypesAndComponents();
 			//Iterator <Pair<GUIRegistryType,Collection<JComponent>>> typeAndCompIter = typeAndComp.iterator();
 			Iterator<Pair> typeAndCompIter = typeAndComp.iterator();
-			
-			while ( typeAndCompIter.hasNext() ){
-			      Pair <GUIRegistryType,Collection<JComponent>> typeAndCompPair = typeAndCompIter.next();
-			      GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
-			      //System.out.println("guiRegisType: "+ guiRegisType);
-			      if (guiRegisType == GUIRegistryType.CHART) {
-			    	  Collection <JComponent> chartCollection = typeAndCompPair.getSecond();  
-			    	  cascadeContext.setChartCompCollection(chartCollection);
-			      }
-			      if (guiRegisType == GUIRegistryType.DISPLAY) {
-			    	 
-			      }
-			      Collection <JComponent> compCol = typeAndCompPair.getSecond();
-			      //System.out.println("compCol: "+ compCol);
-			      Iterator<JComponent> compIter= compCol.iterator();
-			      while ( compIter.hasNext() ){
-			    	  JComponent comp = compIter.next();
-			    	 // System.out.print("Comp Name: "+ comp.getName());
-			    	 // System.out.print(" Comp toolTipText: "+ comp.getToolTipText() );
-			    	  //System.out.print(" Comp Count: "+ comp.getComponentCount());
-			    	  if (comp.getComponentCount()>0) {
-			    		  //System.out.print(" SubComp: "+ comp.getComponent(0));
-			    	  }
-			    	  //System.out.println(" Comp class: "+ comp.getClass());
-			    		  			    	
-			      }
-			     
-			    } 
 
-		
+			while ( typeAndCompIter.hasNext() ){
+				Pair <GUIRegistryType,Collection<JComponent>> typeAndCompPair = typeAndCompIter.next();
+				GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
+				//System.out.println("guiRegisType: "+ guiRegisType);
+				if (guiRegisType == GUIRegistryType.CHART) {
+					Collection <JComponent> chartCollection = typeAndCompPair.getSecond();  
+					cascadeContext.setChartCompCollection(chartCollection);
+				}
+				if (guiRegisType == GUIRegistryType.DISPLAY) {
+
+				}
+				Collection <JComponent> compCol = typeAndCompPair.getSecond();
+				//System.out.println("compCol: "+ compCol);
+				Iterator<JComponent> compIter= compCol.iterator();
+				while ( compIter.hasNext() ){
+					JComponent comp = compIter.next();
+					// System.out.print("Comp Name: "+ comp.getName());
+					// System.out.print(" Comp toolTipText: "+ comp.getToolTipText() );
+					//System.out.print(" Comp Count: "+ comp.getComponentCount());
+					if (comp.getComponentCount()>0) {
+						//System.out.print(" SubComp: "+ comp.getComponent(0));
+					}
+					//System.out.println(" Comp class: "+ comp.getClass());
+
+				}
+
+			} 
+
+
 			List<IDisplay> listOfDisplays =  guiRegis.getDisplays();
 			for (IDisplay display : listOfDisplays) {
-				//System.out.println("Display.toString: "+display.toString());
-				//DisplayOGL2D displayOGL2D = (DisplayOGL2D) display.getClass();
-				//System.out.println("Display.class: "+display.getClass());
-				//System.out.println("Display.getPanel: "+display.getPanel());
-				//System.out.println("Display.getPanel getComp: "+display.getPanel().getComponents());
-				//Component[] compArr = display.getPanel().getComponents();
-				//for (int i=0; i<compArr.length;i++) {
-					//System.out.println("comp: "+compArr[i].getClass().getName());
-					//System.out.println("comp: "+compArr[i].);
-					
-				//}
-				
-				//System.out.println("Display.class: "+display.getClass().);
-				((DisplayOGL2D) display).addProbeListener(new ProsumerProbeListener(cascadeContext));
+
+				if (display instanceof DisplayOGL2D)
+				{
+					((DisplayOGL2D) display).addProbeListener(new ProsumerProbeListener(cascadeContext));
+				}
 			}
-			
-			
+
+
 			//++++++++++++++Add stuff to user panel
 			JPanel customPanel = new JPanel();
 			customPanel.add(new JLabel("TestLabel"));
 			customPanel.add(new JButton("Test Button"));		
 			RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
 			//+++++++++++++++++++++++++++++++++++++
-			 
-			
-					
-				}
-			}
+
+
+
 		}
+
 
 		public String toString() {
 			return "Custom Action Test";
