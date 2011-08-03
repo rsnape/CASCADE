@@ -1,9 +1,6 @@
 package uk.ac.dmu.iesd.cascade;
 
-import java.awt.Component;
 import java.util.List;
-
-import javax.swing.JComponent;
 
 import repast.simphony.context.Context;
 import repast.simphony.engine.controller.ControllerActionVisitor;
@@ -14,9 +11,11 @@ import repast.simphony.engine.environment.RunState;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.scenario.ModelInitializer;
 import repast.simphony.scenario.Scenario;
+import repast.simphony.ui.RSApplication;
 import repast.simphony.visualization.IDisplay;
 import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
+import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
 
 /**
  * @author Babak Mahdavi
@@ -35,43 +34,34 @@ public class Initializer implements ModelInitializer{
 			CascadeContext cascadeContext = (CascadeContext) context;
 			//System.out.println("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
 			GUIRegistry guiRegis = runState.getGUIRegistry();
+
+			RSApplication.getRSApplicationInstance().getCurrentScenario().getMasterControllerActions();
+
 			List<IDisplay> listOfDisplays =  guiRegis.getDisplays();
 			for (IDisplay display : listOfDisplays) {
-				//System.out.println("Display.toString: "+display.toString());
-				//DisplayOGL2D displayOGL2D = (DisplayOGL2D) display.getClass();
-				//System.out.println("Display.class: "+display.getClass());
-				//System.out.println("Display.getPanel: "+display.getPanel());
-				//System.out.println("Display.getPanel getComp: "+display.getPanel().getComponents());
-				Component[] compArr = display.getPanel().getComponents();
-				for (int i=0; i<compArr.length;i++) {
-					//System.out.println("comp: "+compArr[i].getClass().getName());
-					//System.out.println("comp: "+compArr[i].);
-					
+				if (display instanceof DisplayOGL2D)
+				{
+
+					((DisplayOGL2D) display).addProbeListener(new ProsumerProbeListener(cascadeContext));
+
 				}
-				
-				//System.out.println("Display.class: "+display.getClass().);
-				
 			}
-			 
-			
-
-
 		}
 
 		public String toString() {
 			return "Custom Action Test";
 		}
-		
+
 		public void accept(ControllerActionVisitor visitor) {
 			//System.out.println("Initializer:: accept test "+visitor.toString());
-	
+
 		}
 	}
-	
+
 	public void initialize(Scenario scen, RunEnvironmentBuilder builder) {
 
 		scen.addMasterControllerAction(new CascadeNullAbstractControllerAction()); 
-					
+
 	}
 
 }

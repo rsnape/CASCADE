@@ -341,9 +341,9 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		// Note, we can only moderate based on cost signal
 		// if we receive it (i.e. if we have smart meter)
 		// TODO: may have to refine this - do we differentiate smart meter and smart display - i.e. whether receive only or Tx/Rx
-		if(hasSmartMeter && predictedCostSignalLength > 0)
+		if(hasSmartMeter && getPredictedCostSignalLength() > 0)
 		{
-			float predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % predictedCostSignalLength];
+			float predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % getPredictedCostSignalLength()];
 			if ( predictedCostNow > costThreshold){
 				//Infinitely elastic version (i.e. takes no account of percenteageMoveableDemand
 				// TODO: Need a better logging system than this - send logs with a level and output to

@@ -186,6 +186,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 	//For ease of access to a debug type outputter
 	CSVWriter sampleOutput;
 	private float[] recordedHeatPumpDemand;
+	
+	//Arrays for the day's history (mainly for GUI - may use, write to file or something else in the future)
+	private float[] historicalBaseDemand;
+	private float[] historicalColdDemand;
+	private float[] historicalWetDemand;
+	private float[] historicalHeatDemand;
+	
 
 	/**
 	 * Accessor functions (NetBeans style)
@@ -262,6 +269,38 @@ public class HouseholdProsumer extends ProsumerAgent{
 	public int getDefraCategory()
 	{
 		return defraCategory;
+	}
+	
+	/**
+	 * @return
+	 */
+	public float[] getHistoricalBaseDemand() {
+		// TODO Auto-generated method stub
+		return this.historicalBaseDemand;
+	}
+
+	/**
+	 * @return
+	 */
+	public float[] getHistoricalColdDemand() {
+		// TODO Auto-generated method stub
+		return this.historicalColdDemand;
+	}
+
+	/**
+	 * @return
+	 */
+	public float[] getHistoricalWetDemand() {
+		// TODO Auto-generated method stub
+		return this.historicalWetDemand;
+	}
+
+	/**
+	 * @return
+	 */
+	public float[] getHistoricalHeatDemand() {
+		// TODO Auto-generated method stub
+		return this.historicalHeatDemand;
 	}
 
 	/**
@@ -641,9 +680,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// Note, we can only moderate based on cost signal
 		// if we receive it (i.e. if we have smart meter)
 		// TODO: may have to refine this - do we differentiate smart meter and smart display - i.e. whether receive only or Tx/Rx
-		if(hasSmartMeter && predictedCostSignalLength > 0)
+		if(hasSmartMeter && getPredictedCostSignalLength() > 0)
 		{
-			float predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % predictedCostSignalLength];
+			float predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % getPredictedCostSignalLength()];
 			myDemand = myDemand * (1 - predictedCostNow * dailyElasticity[time % ticksPerDay]);
 		}
 
@@ -664,7 +703,16 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		// Evaluate behaviour applies elasticity behaviour to the base
 		// (non-displaceable) load.
-		float returnAmount = evaluateElasticBehaviour(time) + coldApplianceDemand() + wetApplianceDemand() + heatingDemand();
+		float currentBase = evaluateElasticBehaviour(time);
+		float currentCold = coldApplianceDemand();
+		float currentWet = wetApplianceDemand();
+		float currentHeat = heatingDemand();
+		historicalBaseDemand[time % ticksPerDay] = currentBase;
+		historicalWetDemand[time % ticksPerDay] = currentWet;
+		historicalColdDemand[time % ticksPerDay] = currentCold;
+		historicalHeatDemand[time % ticksPerDay] = currentHeat;
+		
+		float returnAmount = currentBase + currentCold + currentWet + currentHeat;
 		if (Consts.DEBUG)
 		{
 			if (returnAmount != 0)
@@ -823,6 +871,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.setPredictedCostSignal(Consts.ZERO_COST_SIGNAL);
 		setUpColdApplianceOwnership();
 		this.dailyElasticity = new float[ticksPerDay];
+		this.historicalBaseDemand = new float[ticksPerDay];
+		this.historicalWetDemand = new float[ticksPerDay];
+		this.historicalColdDemand = new float[ticksPerDay];
+		this.historicalHeatDemand = new float[ticksPerDay];
 		//TODO - get more thoughtful elasticity model than this random formulation
 		for (int i = 0; i < dailyElasticity.length; i++)
 		{

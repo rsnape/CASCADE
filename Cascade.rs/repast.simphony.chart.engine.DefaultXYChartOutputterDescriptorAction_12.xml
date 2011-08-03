@@ -15,13 +15,13 @@
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
-  <autoRangeY>false</autoRangeY>
+  <autoRangeY>true</autoRangeY>
   <visibleXRange>672.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
-  <yMax>3500.0</yMax>
+  <yMax>0.0</yMax>
   <precisionValue>0</precisionValue>
   <maxHistory>1500</maxHistory>
   <seriesType>LINE</seriesType>

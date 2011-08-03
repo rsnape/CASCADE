@@ -45,7 +45,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * instantiated by concrete descendants of this class  
 	 **/	
 	private static long agentIDCounter = 0; 
-	
+
 	/**
 	 * An aggregator agent's base name  
 	 * it can be reassigned (renamed) properly by descendants of this class  
@@ -76,11 +76,11 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * @see #setName(String)
 	 */
 	protected boolean nameExplicitlySet = false;
-	
+
 	protected CascadeContext mainContext;
-	
+
 	protected ObservableComponent observableProxy;
-	
+
 	boolean autoControl;
 	//String contextName;
 	/*
@@ -89,17 +89,14 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 */
 	protected float netDemand;
 	float[] predictedCustomerDemand;
-	int predictedCustomerDemandLength;
 	float[] overallSystemDemand;
-	int overallSystemDemandLength;
 	// priceSignal units are £/MWh which translates to p/kWh if divided by 10
 	float[] priceSignal;
-	int priceSignalLength;
 	boolean priceSignalChanged = true;  //set true when we wish to send a new and different price signal.  
 	//True by default as it will always be new until the first broadcast
 	protected int ticksPerDay;
-	
-	
+
+
 	//-----------------------------
 
 
@@ -171,8 +168,8 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	public void setNetDemand(float nd) {
 		this.netDemand = nd;
 	}
-	
-	
+
+
 	/**
 	 * This method should define the step for the agents.
 	 * They should be scheduled appropriately by 
@@ -189,7 +186,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	public void addObserver(IObserver anIObserver){
 		observableProxy.addObserver(anIObserver);
 	}
-	
+
 
 	/**
 	 * Deletes an observer from the list of observer objects
@@ -198,14 +195,14 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	public void deleteObserver(IObserver anIObserver) {
 		observableProxy.deleteObserver(anIObserver);
 	}
-	
+
 	/**
 	 * Clears the list of observers
 	 */
 	public void deleteObservers(){
 		observableProxy.deleteObservers();
 	}
-	
+
 	/**
 	 * Returns the number of observers in the list
 	 * @return number (count) of observers (in the list) 
@@ -228,9 +225,9 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	protected void notifyObservers(Object obs, Object changeCodeArg) {
 		observableProxy.notifyObservers(obs, changeCodeArg);
 	}
-	
 
-	
+
+
 	// ------------------------------------------------------------------------------
 	/* TODO: 
 	 * the methods defined below will be checked later. 
@@ -241,37 +238,43 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * be the concrete agrregator responsibility) and which one stay here as common behavior for
 	 * all aggregator agent (like the ones defined above). / Babak  
 	 */
-	
+
 	public float getCurrentPriceSignal()
 	{
 		double time = RepastEssentials.GetTickCount();
-		return priceSignal[(int) time % priceSignalLength];
+		return priceSignal[(int) time % priceSignal.length];
 	} 
-	
+
 	void setPriceSignalFlatRate(float price)
 	{
 		float[] oldPrice = priceSignal;
 		Arrays.fill(priceSignal, price);
 		priceSignalChanged = Arrays.equals(priceSignal, oldPrice);
 	}
-	
+
 	void setPriceSignalEconomySeven(float highprice, float lowprice)
 	{
+		//Hack to change E7 tariff at 07:30
 		int morningChangeTimeIndex = (int) (ticksPerDay / (24 / 7.5));
+		//Hack to change E7 tariff at 23:30
 		int eveningChangeTimeIndex = (int) (ticksPerDay / (24 / 23.5));
-		float[] oldPrice = priceSignal;
-		Arrays.fill(priceSignal, 0, morningChangeTimeIndex, lowprice);
-		Arrays.fill(priceSignal, morningChangeTimeIndex + 1, eveningChangeTimeIndex, highprice);
-		Arrays.fill(priceSignal, eveningChangeTimeIndex + 1, priceSignal.length - 1, lowprice);
-		priceSignalChanged = Arrays.equals(priceSignal, oldPrice);
+		float[] oldPrice = Arrays.copyOf(priceSignal,priceSignal.length);
+
+		for(int offset = 0; offset < priceSignal.length; offset = offset + ticksPerDay)
+		{
+			Arrays.fill(priceSignal, offset, offset + morningChangeTimeIndex, lowprice);
+			Arrays.fill(priceSignal, offset + morningChangeTimeIndex, offset + eveningChangeTimeIndex, highprice);
+			Arrays.fill(priceSignal, offset + eveningChangeTimeIndex, offset + priceSignal.length, lowprice);
+			priceSignalChanged = Arrays.equals(priceSignal, oldPrice);
+		}
 	}
-	
+
 	void setPriceSignalRoscoeAndAult(float A, float B, float C)
 	{
 		float price;
 		float x;
-		
-		for (int i = 0; i < priceSignalLength; i++)
+
+		for (int i = 0; i < priceSignal.length; i++)
 		{	
 			//Note that the division by 10 is to convert the units of predicted customer demand
 			//to those compatible with capacities expressed in GW.
@@ -280,7 +283,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 			price = (float) (A * Math.exp(B * x) + C);
 			if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 			{
-			System.out.println("Price at tick" + i + " is " + price);
+				System.out.println("Price at tick" + i + " is " + price);
 			}
 			if (price > Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH) 
 			{
@@ -290,55 +293,55 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 		}
 		priceSignalChanged = true;
 	}
-	
+
 	void setPriceSignalExpIncreaseOnOverCapacity(int time)
 	{
 		//This is where we may alter the signal based on the demand
 		// In this simple implementation, we simply scale the signal based on deviation of 
 		// actual demand from projected demand for use next time round.
-		
+
 		//Define a variable to hold the aggregator's predicted demand at this instant.
 		float predictedInstantaneousDemand;
 		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
 		// demand, have a less dynamic but still non-zero predicted demand 
 		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
-		
-		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
+
+		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemand.length];
 		predictedInstantaneousDemand = 0;
-		
+
 		if (netDemand > predictedInstantaneousDemand) {
-			priceSignal[(int) time % priceSignalLength] = (float) (priceSignal[(int) time % priceSignalLength] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
+			priceSignal[(int) time % priceSignal.length] = (float) (priceSignal[(int) time % priceSignal.length] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
 			// Now introduce some prediction - it was high today, so moderate tomorrow...
-			if (priceSignalLength > ((int) time % priceSignalLength + ticksPerDay))
+			if (priceSignal.length > ((int) time % priceSignal.length + ticksPerDay))
 			{
-				priceSignal[(int) time % priceSignalLength + ticksPerDay] = (float) (priceSignal[(int) time % priceSignalLength + ticksPerDay] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
+				priceSignal[(int) time % priceSignal.length + ticksPerDay] = (float) (priceSignal[(int) time % priceSignal.length + ticksPerDay] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
 			}
 			priceSignalChanged = true; }
 	}
-	
+
 	void setPriceSignalScratchTest()
 	{
 		//This is where we may alter the signal based on the demand
 		// In this simple implementation, we simply scale the signal based on deviation of 
 		// actual demand from projected demand for use next time round.
-		
+
 		//Define a variable to hold the aggregator's predicted demand at this instant.
-		
+
 		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
 		// demand, have a less dynamic but still non-zero predicted demand 
 		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
-		
-		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemandLength];
-				
+
+		//predictedInstantaneousDemand = predictedCustomerDemand[(int) time % predictedCustomerDemand.length];
+
 		priceSignal = ArrayUtils.multiply(overallSystemDemand, 1 / ArrayUtils.max(overallSystemDemand));
 	}
-	
+
 	void setPriceSignalZero()
 	{
 		Arrays.fill(priceSignal,0f);
 		priceSignalChanged = true;
 	}
-	
+
 	/*
 	 * helper methods
 	 */
@@ -353,18 +356,18 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
 			//broadcast signal out.
 			float[] broadcastSignal= new float[broadcastLength];
-			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignalLength);
-			int startIndex = (int) time % priceSignalLength;
-			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignalLength - startIndex);
+			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
+			int startIndex = (int) time % priceSignal.length;
+			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignal.length - startIndex);
 			for (int i = 1; i <= numCopies; i++)
 			{
-				int addIndex = (priceSignalLength - startIndex) * i;
-				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignalLength);
+				int addIndex = (priceSignal.length - startIndex) * i;
+				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignal.length);
 			}
 
-			if (broadcastLength > (((numCopies + 1) * priceSignalLength) - startIndex))
+			if (broadcastLength > (((numCopies + 1) * priceSignal.length) - startIndex))
 			{
-				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignalLength) - startIndex, broadcastLength - (((numCopies + 1) * priceSignalLength) - startIndex));
+				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignal.length) - startIndex, broadcastLength - (((numCopies + 1) * priceSignal.length) - startIndex));
 			}
 
 			for (ProsumerAgent a : broadcastCusts){

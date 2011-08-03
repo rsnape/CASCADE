@@ -521,7 +521,6 @@ public class RECO extends AggregatorAgent{
 			//System.out.println(timeslot+Arrays.toString(arr_i_S));
 			//System.out.println(ArrayUtils.isSumEqualZero(arr_i_S));
 			this.priceSignal = arr_i_S;
-			this.priceSignalLength = arr_i_S.length;
 			isSignalSentSuccessfully = sendSignal(signalType, arr_i_S, broadcasteesList, timeslot);
 			break;
 
@@ -543,8 +542,8 @@ public class RECO extends AggregatorAgent{
 
 		boolean isSignalSentSuccessfully = false;
 		//Next line only needed for GUI output at this stage
+		this.priceSignal = new float[signalArr.length];
 		System.arraycopy(signalArr, 0, this.priceSignal, 0, signalArr.length);
-		this.priceSignalLength = signalArr.length;
 		//List  aList = broadcasteesList;
 		//List <ProsumerAgent> paList = aList;	
 
@@ -983,16 +982,19 @@ public class RECO extends AggregatorAgent{
 					//Richard's test version below - with normalisation etc.
 					
 					
-					/* float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
+					float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
 					System.out.println(Arrays.toString(normalizedCosts));
 					System.out.println(Arrays.toString(arr_i_S));
-					arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					//arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					// Test with Econ 7
+					setPriceSignalEconomySeven(15, 7);
+					arr_i_S = Arrays.copyOf(priceSignal, arr_i_S.length);
 					System.out.println(Arrays.toString(arr_i_S));
 					arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
 					System.out.println(Arrays.toString(arr_i_S));
 					
 					broadcastSignalToCustomers(arr_i_S, customers);
-					*/
+					
 				}
 
 			}
@@ -1050,19 +1052,19 @@ public class RECO extends AggregatorAgent{
 			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
 			//broadcast signal out.
 			float[] broadcastSignal= new float[broadcastLength];
-			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignalLength);
-			int startIndex = (int) time % priceSignalLength;
+			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
+			int startIndex = (int) time % priceSignal.length;
 
-			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignalLength - startIndex);
+			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignal.length - startIndex);
 			for (int i = 1; i <= numCopies; i++)
 			{
-				int addIndex = (priceSignalLength - startIndex) * i;
-				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignalLength);
+				int addIndex = (priceSignal.length - startIndex) * i;
+				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignal.length);
 			}
 
-			if (broadcastLength > (((numCopies + 1) * priceSignalLength) - startIndex))
+			if (broadcastLength > (((numCopies + 1) * priceSignal.length) - startIndex))
 			{
-				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignalLength) - startIndex, broadcastLength - (((numCopies + 1) * priceSignalLength) - startIndex));
+				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignal.length) - startIndex, broadcastLength - (((numCopies + 1) * priceSignal.length) - startIndex));
 			}
 
 			for (ProsumerAgent a : broadcastCusts){
@@ -1094,18 +1096,17 @@ public class RECO extends AggregatorAgent{
 		//System.out.println("RECO created ");
 		this.ticksPerDay = context.getTickPerDay();
 		//this.contextName = myContext;
-		this.overallSystemDemandLength = baseDemand.length;
-		this.priceSignalLength = baseDemand.length;
+
 		//System.out.println("RECO ticksPerDay "+ ticksPerDay);
 
-		if (overallSystemDemandLength % ticksPerDay != 0)
+		if (baseDemand.length % ticksPerDay != 0)
 		{
 			System.err.print("Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
 			System.err.println(" May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 		}
-		this.priceSignal = new float [priceSignalLength];
-		this.overallSystemDemand = new float [overallSystemDemandLength];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemandLength);
+		this.priceSignal = new float [baseDemand.length];
+		this.overallSystemDemand = new float [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemand.length);
 		//Start initially with a flat price signal of 12.5p per kWh
 		//Arrays.fill(priceSignal,125f);
 		Arrays.fill(priceSignal,0f);
@@ -1122,7 +1123,6 @@ public class RECO extends AggregatorAgent{
 		{
 			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
 		}
-		this.predictedCustomerDemandLength = ticksPerDay;
 
 		///+++++++++++++++++++++++++++++++++++++++
 		this.arr_i_B = new float [ticksPerDay];

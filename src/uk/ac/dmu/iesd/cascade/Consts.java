@@ -1,6 +1,7 @@
 package uk.ac.dmu.iesd.cascade;
 
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.ScheduleParameters;
 import simphony.util.messages.MessageCenter;
 
 /**
@@ -223,7 +224,10 @@ public final class Consts {
 		PROSUMER,AGGREGATOR
 	}
 
-
+/**
+ * Schedule constants - Probe display update priority.  Set to a large negative number, so it goes after most actions
+ */
+	public static final double PROBE_PRIORITY = -100;
 
 }
 

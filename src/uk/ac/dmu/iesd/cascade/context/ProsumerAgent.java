@@ -127,7 +127,6 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 */
 	protected float[] baseDemandProfile;
 	private float[] predictedCostSignal;
-	protected int predictedCostSignalLength;
 	protected int predictionValidTime;
 
 	/*
@@ -317,17 +316,14 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	}
 
 	public int getPredictedCostSignalLength() {
-		return predictedCostSignalLength;
+		return predictedCostSignal.length;
 	}
 
-	public void setPredictedCostSignalLength(int length) {
-		predictedCostSignalLength = length;
-	}
 
 	public float getCurrentPrediction() {
 		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
-		if (predictedCostSignalLength > 0) {
-			return getPredictedCostSignal()[timeSinceSigValid % predictedCostSignalLength];
+		if (predictedCostSignal.length > 0) {
+			return getPredictedCostSignal()[timeSinceSigValid % predictedCostSignal.length];
 		}
 		else  {
 			return 0;
@@ -390,13 +386,12 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 				newSignalLength = newSignalLength - signalOffset;
 			}
 
-			if ((getPredictedCostSignal() == null) || (newSignalLength != getPredictedCostSignalLength()))
+			if ((getPredictedCostSignal() == null) || (newSignalLength != predictedCostSignal.length))
 			{
 				if (Consts.DEBUG)
 				{
 					System.out.println("Re-defining length of signal in agent" + agentID);
 				}
-				setPredictedCostSignalLength(newSignalLength);
 				setPredictedCostSignal(new float[newSignalLength]);
 			}
 
@@ -488,6 +483,8 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	public float[] getPredictedCostSignal() {
 		return predictedCostSignal;
 	}
+
+
 
 
 
