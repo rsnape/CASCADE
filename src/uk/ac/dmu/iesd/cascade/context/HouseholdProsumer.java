@@ -536,8 +536,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		if (hasElectricalSpaceHeat)
 		{
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
-			recordedHeatPumpDemand[timeOfDay] = heatPumpDemand(timeOfDay);
-			return heatPumpDemand(timeOfDay);
+			//recordedHeatPumpDemand[timeOfDay] = heatPumpDemand(timeOfDay);
+			return heatPumpDemand(time);
 		}
 		else
 		{
@@ -595,14 +595,14 @@ public class HouseholdProsumer extends ProsumerAgent{
 		float power = 0;
 		float deltaT = this.setPointProfile[timeStep % ticksPerDay] - this.getContext().getAirTemperature(timeStep);
 
-		if (deltaT > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF  && spaceHeatPumpOn[timeStep])
+		if (deltaT > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF  && spaceHeatPumpOn[timeStep % ticksPerDay])
 		{
 			power = deltaT * (this.buildingHeatLossRate / Consts.DOMESTIC_HEAT_PUMP_COP);
 		}
 		
 		// Need to return in terms of kWh in this timestep
 		// **Watch out here - assumption that the timestep is half hour!!!
-		return (power * (((1 / ticksPerDay) * Consts.SECONDS_PER_DAY) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR));
+		return (power * (((1 / (float) ticksPerDay) * (float) Consts.SECONDS_PER_DAY) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR));
 	}
 
 	/**
