@@ -101,8 +101,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 	//int ticksPerDay;
 	int numDemandColumns;
-	Normal thermalMassGenerator = RandomHelper.createNormal(275,75);
-	Normal buildingLossRateGenerator = RandomHelper.createNormal(12.5, 2.5);
+	Normal buildingLossRateGenerator = RandomHelper.createNormal(275,75);
+	Normal thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
 	float[] monthlyMainsWaterTemp = new float[12];
 
 	/*

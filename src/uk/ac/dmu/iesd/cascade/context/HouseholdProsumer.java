@@ -601,8 +601,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		
 		// Need to return in terms of kWh in this timestep
-		// **Watch out here - assumption that the timestep is half hour!!!
-		return (power * (((1 / ticksPerDay) * Consts.SECONDS_PER_DAY) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR));
+		
+		return (power / Consts.KWH_TO_JOULE_CONVERSION_FACTOR )* ((float)(Consts.SECONDS_PER_DAY / ticksPerDay));
 	}
 
 	/**

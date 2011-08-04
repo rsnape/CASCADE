@@ -5,4 +5,5 @@ bin/
 Repast.settings
 *.orig
 *.csv
+*.png
 !dataFiles/*

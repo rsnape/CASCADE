@@ -10,6 +10,8 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.jfree.chart.ChartPanel;
+
 import java.io.File;
 
 import repast.simphony.context.*;
@@ -441,7 +443,8 @@ public class CascadeContext extends DefaultContext{
 		Iterator<JComponent> compIter= chartCompCollection.iterator();
 		snapshotTakerArrList = new ArrayList();
 		while ( compIter.hasNext() ){
-			JComponent chartComp = (JComponent) compIter.next();
+			ChartPanel chartComp = (ChartPanel) compIter.next();
+			//System.out.println(chartComp.getChart().getTitle().getText());
 			SnapshotTaker snapshotTaker = new SnapshotTaker(chartComp);
 			snapshotTakerArrList.add(snapshotTaker);
 		}
