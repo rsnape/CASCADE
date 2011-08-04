@@ -37,9 +37,12 @@ public class ProsumerFactory implements IProsumerFactory {
 
 	}
 
-	/*
+	/**
 	 * Creates a household prosumer with a basic consumption profile as supplied
 	 * with or without added noise
+	 * 
+	 * NOTE: The addNoise option is unsafe as implemented - under a certain combination of random factors, it can give negative
+	 * demands!! DO NOT USE
 	 * 
 	 * @param baseProfile - an array of the basic consumption profile for this prosumer (kWh per tick)
 	 * @param addNoise - boolean specifying whether or not to add noise to the profile
@@ -82,10 +85,14 @@ public class ProsumerFactory implements IProsumerFactory {
 	 * For amplitude multiplies each point on the base profile by a random float uniformly distributed between 0.7 and 1.3 (arbitrary)
 	 * then selects a uniformly distributed time based <code> jitterFactor </code> between -0.5 and + 0.5 and shifts the demand in time by <code> jitterFactor </code> timesteps
 	 * 
+	 * NOTE: This is unsafe as implemented - under a certain combination of random factors, it can give negative
+	 * demands!! DO NOT USE
+	 * 
 	 * TODO: It should be over-ridden in the future to use something better - for instance melody's model
 	 * or something which time-shifts demand somewhat, or select one of a number of typical profiles
 	 * based on occupancy.
 	 */
+	@Deprecated
 	private float[] createRandomHouseholdDemand(float[] baseProfileArray){
 		float[] newProfile = new float[baseProfileArray.length];
 

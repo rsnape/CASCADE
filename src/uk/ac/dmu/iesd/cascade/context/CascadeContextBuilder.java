@@ -245,8 +245,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				System.out.println("householdBaseDemandArray is initialised with profile " + demandName);
 			}
 			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
-
-			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(householdBaseDemandArray, true);
+			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(householdBaseDemandArray, false);
 			//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
 			hhProsAgent.hasSmartMeter = true;
 			hhProsAgent.hasSmartControl = true;

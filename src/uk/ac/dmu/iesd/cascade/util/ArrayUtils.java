@@ -401,7 +401,7 @@ public class ArrayUtils {
 	 * @param doubleArray whose  <tt>double</tt> element values will be converted to <tt>float</tt>  
 	 * @return array containing the passed array values (as argument) converted to <tt>float</tt>  
 	 */
-	public static float[] convertDoubleArrayToFlatArray(double[] array){ 
+	public static float[] convertDoubleArrayToFloatArray(double[] array){ 
 		if (array == null)  {
 			return null;   
 		}   

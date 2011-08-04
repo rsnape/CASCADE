@@ -91,7 +91,7 @@
 									
 		/>
 				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
-						defaultValue="true" 
+						defaultValue="false" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
