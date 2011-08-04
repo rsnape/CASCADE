@@ -86,8 +86,6 @@ public class CascadeContext extends DefaultContext{
 	SnapshotTaker snapshotTaker1;
 	Collection chartCompCollection;
 	ArrayList snapshotTakerArrList;
-	String fileChartFormatExt = ".png";
-
 
 	
 	/**
@@ -403,16 +401,16 @@ public class CascadeContext extends DefaultContext{
 		String chartName;
 
 		switch (chartNb) {
-		 case 0:  chartName = "chart1_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 case 1:  chartName = "chart2_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 case 2:  chartName = "chart3_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 case 3:  chartName = "chart4_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 case 4:  chartName = "chart5_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 case 5:  chartName = "chart6_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 case 6:  chartName = "chart7_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 case 7:  chartName = "chart8_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 case 8:  chartName = "chart9_r"+getCurrentTimeslotForDay()+fileChartFormatExt;   break;
-		 default: chartName = "chartDefaultName_"; break;
+		 case 0:  chartName = "chart1_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 1:  chartName = "chart2_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 2:  chartName = "chart3_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 3:  chartName = "chart4_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 4:  chartName = "chart5_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 5:  chartName = "chart6_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 6:  chartName = "chart7_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 7:  chartName = "chart8_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 8:  chartName = "chart9_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 default: chartName = "chartDefaultName_"+Consts.FILE_CHART_FORMAT_EXT;; break;
 		}
 
 		return chartName;	
@@ -438,22 +436,35 @@ public class CascadeContext extends DefaultContext{
 
 	public void setChartCompCollection(Collection c) {
 		chartCompCollection=c;
+		if (chartSnapshotOn) {
+			buildChartSnapshotTakers(c);
+			buildChartSnapshotSchedule();
+		}
+	}
+	
+	public Collection getChartCompCollection() {
+		return chartCompCollection;
+	}
+	
+	private void buildChartSnapshotTakers (Collection chartCompCollection) {
 		Iterator<JComponent> compIter= chartCompCollection.iterator();
 		snapshotTakerArrList = new ArrayList();
-		while ( compIter.hasNext() ){
+		while (compIter.hasNext()){
 			JComponent chartComp = (JComponent) compIter.next();
 			SnapshotTaker snapshotTaker = new SnapshotTaker(chartComp);
 			snapshotTakerArrList.add(snapshotTaker);
 		}
 	}
 	
-	public void buildCustomizedSchedules() {
-		
+	private void buildChartSnapshotSchedule() {
+
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
+		//System.out.println("chartCompCol: null?: "+getChartCompCollection());
+		//if ((chartSnapshotOn) && (getChartCompCollection() != null)){
 		ScheduleParameters params = ScheduleParameters.createRepeating(0, getChartSnapshotInterval());
 		schedule.schedule(params, this, "takeSnapshot"); 
-		
+
 	}
 	
 	

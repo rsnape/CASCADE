@@ -151,6 +151,8 @@ public final class Consts {
 
 	public static final float[] ZERO_COST_SIGNAL = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	
+	public static String FILE_CHART_FORMAT_EXT = ".png";
+	
 	/*
 	 * Generators
 	 */
