@@ -143,7 +143,7 @@ public class WattboxController implements ISmartController{
 		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
 		float tempLoss = 0;
 		// t is time since last heating in seconds
-		int t = 0;
+		float t = 0;
 
 		for (int i = 0; i < ticksPerDay; i++)
 		{

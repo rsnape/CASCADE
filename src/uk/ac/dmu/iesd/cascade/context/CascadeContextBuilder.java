@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -101,8 +102,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 	//int ticksPerDay;
 	int numDemandColumns;
-	Normal thermalMassGenerator = RandomHelper.createNormal(275,75);
-	Normal buildingLossRateGenerator = RandomHelper.createNormal(12.5, 2.5);
+	Normal buildingLossRateGenerator = RandomHelper.createNormal(275,75);
+	Normal thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
 	float[] monthlyMainsWaterTemp = new float[12];
 
 	/*
@@ -517,7 +518,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		//tempCont =context;
 		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
 		readParamsAndInitializeArrays();
-		cascadeMainContext.buildCustomizedSchedules();
+		//cascadeMainContext.buildChartSnapshotSchedule();
 		populateContext();
 	
 		//buildNetworks();
@@ -531,7 +532,6 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		if (cascadeMainContext.verbose)	
 			System.out.println("Cascade Main Context created: "+cascadeMainContext.toString());
-		
 		
 		return cascadeMainContext;
 	}

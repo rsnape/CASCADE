@@ -721,10 +721,13 @@ public class RECO extends AggregatorAgent{
 
 		// initial estimates
 		//double[] start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+
+		//If it's the first time through the optimisation - start from an arbitrary
+		//point in search space.  Otherwise, start from the last price signal
 		double[] start = new double[this.ticksPerDay];
 		if(firstTimeMinimisation )
 		{
-			Arrays.fill(start, 1);
+			Arrays.fill(start, 0.1);
 			firstTimeMinimisation = false;
 		}
 		else
@@ -733,23 +736,26 @@ public class RECO extends AggregatorAgent{
 		}
 
 		// initial step sizes
-		//double[] step = {};
+		//double[] step = new double[arr_S.length];
 
-		double ftol = 1e-15;   // convergence tolerance
+
+		double ftol = 1e-1; //1e-15;   // convergence tolerance
 
 		int[] pIndices = new int[this.ticksPerDay];
+		int[] plusOrMinus = new int[this.ticksPerDay];
 		for (int i=0; i<this.ticksPerDay; i++)
+		{
 			pIndices[i] = i;
-
-		int[] plusOrMinus = new int[this.ticksPerDay];;
-		for (int i=0; i<this.ticksPerDay; i++)
 			plusOrMinus[i] = 1;
+			//step[i] = 0.05;
+		}
 
 		int direction =0;
 		double boundary =0d;
 
-
+		min.setNmax(10000);
 		min.addConstraint(pIndices, plusOrMinus, direction, boundary);
+		min.setConstraintTolerance(1e-3);
 
 		min.nelderMead(minFunct, start, ftol);
 
@@ -758,6 +764,8 @@ public class RECO extends AggregatorAgent{
 
 		// get values of y and z at minimum
 		double[] param = min.getParamValues();
+
+		min.print("MinimCD_output.txt");
 
 		if (Consts.DEBUG)
 		{
@@ -773,8 +781,8 @@ public class RECO extends AggregatorAgent{
 			}
 		}
 
-		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFlatArray(param);
-
+		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(param);
+		System.out.println("Minimum achieved is " + min.getMinimum());
 		return newOpt_S;
 	}
 
@@ -922,36 +930,36 @@ public class RECO extends AggregatorAgent{
 					//System.out.println("k: ");
 					//System.out.println(ArrayUtils.toString(arr_ij_k));	
 
-					/*if (mainContext.getCountDay() == 54) {
+					if (mainContext.getCountDay() == 54) {
 
-			    			int [] ts_arr = new int[ticksPerDay];
+						int [] ts_arr = new int[ticksPerDay];
 
-			    			for (int i=0; i<ts_arr.length; i++){
-			    				ts_arr[i] = i;	
-			    			}
+						for (int i=0; i<ts_arr.length; i++){
+							ts_arr[i] = i;	
+						}
 
-			    			CSVWriter res = new CSVWriter("Res_EndOfDay54_EndOfTrainingDay48_rs1.csv", true);
-			    			//CSVWriter res = new CSVWriter("Res_EndOfDay18_EndOfTrainingDay11_rs1.csv", true);
+						CSVWriter res = new CSVWriter("Res_EndOfDay54_EndOfTrainingDay48_rs1.csv", true);
+						//CSVWriter res = new CSVWriter("Res_EndOfDay18_EndOfTrainingDay11_rs1.csv", true);
 
-			    			res.appendText("Timeslots:");
-			    			res.appendRow(ts_arr);
-			    			res.appendText("B:");
-			    			res.appendRow(arr_i_B);
-			    			res.appendText("D (for end of day "+mainContext.getCountDay()+"): ");
-			    			res.appendRow(last_arr_D);
-			    			res.appendText("S (for end of day "+mainContext.getCountDay()+"): ");
-			    			res.appendRow(arr_i_S);
-			    			res.appendText("e (for end of day "+mainContext.getCountDay()+"): ");
-			    			res.appendRow(arr_i_e);
-			    			res.appendText("k (for end of day "+mainContext.getCountDay()+"): ");
-			    			res.appendCols(arr_ij_k);
-			    			res.close(); 
+						res.appendText("Timeslots:");
+						res.appendRow(ts_arr);
+						res.appendText("B:");
+						res.appendRow(arr_i_B);
+						res.appendText("D (for end of day "+mainContext.getCountDay()+"): ");
+						res.appendRow(last_arr_D);
+						res.appendText("S (for end of day "+mainContext.getCountDay()+"): ");
+						res.appendRow(arr_i_S);
+						res.appendText("e (for end of day "+mainContext.getCountDay()+"): ");
+						res.appendRow(arr_i_e);
+						res.appendText("k (for end of day "+mainContext.getCountDay()+"): ");
+						res.appendCols(arr_ij_k);
+						res.close(); 
 
-			    		} 
+					} 
 
-		    	}
+				
 
-		    /*	if (mainContext.isBeginningOfDay(timeOfDay) && mainContext.isDayChangedSince(Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
+				/*	if (mainContext.isBeginningOfDay(timeOfDay) && mainContext.isDayChangedSince(Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
 
 		    		float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay()-1);
 
@@ -961,52 +969,54 @@ public class RECO extends AggregatorAgent{
 		    	} */
 
 
-				}
 			}
-			else 
-			{ //End of training period 
+		}
+		else 
+		{ //End of training period 
 
-				//System.out.println("---End of training reached ----");
-				//System.out.print("day: "+mainContext.getCountDay());
-				//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+			//System.out.println("---End of training reached ----");
+			//System.out.print("day: "+mainContext.getCountDay());
+			//System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
 
-				//Real/Usual business here  
-				//minimization process here
+			//Real/Usual business here  
+			//minimization process here
 
-				//Richard Test to stimulate prosumer behaviour
-				if (mainContext.isBeginningOfDay(timeOfDay)) 
-				{
-					//arr_i_S = ArrayUtils.normalizeValues(minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S));
-					//System.out.println(Arrays.toString(Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
-					
-					//Richard's test version below - with normalisation etc.
-					
-					
-					float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
-					System.out.println(Arrays.toString(normalizedCosts));
-					System.out.println(Arrays.toString(arr_i_S));
-					//arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-					// Test with Econ 7
+			//Richard Test to stimulate prosumer behaviour
+			if (mainContext.isBeginningOfDay(timeOfDay)) 
+			{
+				//arr_i_S = ArrayUtils.normalizeValues(minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S));
+				//System.out.println(Arrays.toString(Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
+
+				//Richard's test version below - with normalisation etc.
+
+
+				float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
+				//System.out.println(Arrays.toString(normalizedCosts));
+				//System.out.println(Arrays.toString(arr_i_S));
+
+				//TODO: If this minimisation is ever to change, we need to change e and k with the observed D
+				arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+				/*// Test with Econ 7
 					setPriceSignalEconomySeven(15, 7);
-					arr_i_S = Arrays.copyOf(priceSignal, arr_i_S.length);
-					System.out.println(Arrays.toString(arr_i_S));
-					arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
-					System.out.println(Arrays.toString(arr_i_S));
-					
-					broadcastSignalToCustomers(arr_i_S, customers);
-					
-				}
+					arr_i_S = Arrays.copyOf(priceSignal, arr_i_S.length);*/
+				//System.out.println(Arrays.toString(arr_i_S));
+				//arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
+				//System.out.println(Arrays.toString(arr_i_S));
+
+				broadcastSignalToCustomers(arr_i_S, customers);
 
 			}
 
 		}
 
+	}
 
-		//System.out.println("predictTimeslotDemand("+(timeOfDay+1)+ "): "+ calcualte_PredictedTimeslotDemand_Di(timeOfDay));
+
+	//System.out.println("predictTimeslotDemand("+(timeOfDay+1)+ "): "+ calcualte_PredictedTimeslotDemand_Di(timeOfDay));
 
 
-		//----- Babak Network test ----------------------------------------------
-		/*	Network costumerNetwork = FindNetwork("BabakTestNetwork");
+	//----- Babak Network test ----------------------------------------------
+	/*	Network costumerNetwork = FindNetwork("BabakTestNetwork");
 
 		costumerNetwork.getEdges(this);
 		//System.out.println("costumerNework: "+ costumerNetwork.getName());
@@ -1023,121 +1033,121 @@ public class RECO extends AggregatorAgent{
 
 		}
 		System.out.println("==================="); */
-		// -- End of test --------------------------------------------------------
-	}
+	// -- End of test --------------------------------------------------------
+}
 
-	/**
-	 * Returns a string representing the state of this agent. This 
-	 * method is intended to be used for debugging purposes, and the 
-	 * content and format of the returned string should include the states (variables/parameters)
-	 * which are important for debugging purpose.
-	 * The returned string may be empty but may not be <code>null</code>.
-	 * 
-	 * @return  a string representation of this agent's state parameters
-	 */
-	protected String paramStringReport(){
-		String str="";
-		return str;
+/**
+ * Returns a string representing the state of this agent. This 
+ * method is intended to be used for debugging purposes, and the 
+ * content and format of the returned string should include the states (variables/parameters)
+ * which are important for debugging purpose.
+ * The returned string may be empty but may not be <code>null</code>.
+ * 
+ * @return  a string representation of this agent's state parameters
+ */
+protected String paramStringReport(){
+	String str="";
+	return str;
 
-	}
+}
 
 
-	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
+private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
 
-		// To avoid computational load (and realistically model a reasonable broadcast strategy)
-		// only prepare and transmit the price signal if it has changed.
-		if(priceSignalChanged)
+	// To avoid computational load (and realistically model a reasonable broadcast strategy)
+	// only prepare and transmit the price signal if it has changed.
+	if(priceSignalChanged)
+	{
+		//populate the broadcast signal with the price signal starting from now and continuing for
+		//broadcastLength samples - repeating copies of the price signal if necessary to pad the
+		//broadcast signal out.
+		float[] broadcastSignal= new float[broadcastLength];
+		int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
+		int startIndex = (int) time % priceSignal.length;
+
+		System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignal.length - startIndex);
+		for (int i = 1; i <= numCopies; i++)
 		{
-			//populate the broadcast signal with the price signal starting from now and continuing for
-			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
-			//broadcast signal out.
-			float[] broadcastSignal= new float[broadcastLength];
-			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
-			int startIndex = (int) time % priceSignal.length;
+			int addIndex = (priceSignal.length - startIndex) * i;
+			System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignal.length);
+		}
 
-			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignal.length - startIndex);
-			for (int i = 1; i <= numCopies; i++)
+		if (broadcastLength > (((numCopies + 1) * priceSignal.length) - startIndex))
+		{
+			System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignal.length) - startIndex, broadcastLength - (((numCopies + 1) * priceSignal.length) - startIndex));
+		}
+
+		for (ProsumerAgent a : broadcastCusts){
+			// Broadcast signal to all customers - note we simply say that the signal is valid
+			// from now currently, in future implementations we may want to be able to insert
+			// signals valid at an offset from now.
+			if (Consts.DEBUG)
 			{
-				int addIndex = (priceSignal.length - startIndex) * i;
-				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignal.length);
+				//System.out.println("Broadcasting to " + a.sAgentID);
 			}
+			//System.out.println(" RECO is sending signal at ticktime "+ RepastEssentials.GetTickCount());
 
-			if (broadcastLength > (((numCopies + 1) * priceSignal.length) - startIndex))
-			{
-				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignal.length) - startIndex, broadcastLength - (((numCopies + 1) * priceSignal.length) - startIndex));
-			}
-
-			for (ProsumerAgent a : broadcastCusts){
-				// Broadcast signal to all customers - note we simply say that the signal is valid
-				// from now currently, in future implementations we may want to be able to insert
-				// signals valid at an offset from now.
-				if (Consts.DEBUG)
-				{
-					//System.out.println("Broadcasting to " + a.sAgentID);
-				}
-				//System.out.println(" RECO is sending signal at ticktime "+ RepastEssentials.GetTickCount());
-
-				a.receiveValueSignal(broadcastSignal, broadcastLength);
-			}
+			a.receiveValueSignal(broadcastSignal, broadcastLength);
 		}
-
-		priceSignalChanged = false;
 	}
 
-	/**
-	 * Constructs a RECO agent with the context in which is created and its
-	 * base demand.
-	 * @param context the context in which this agent is situated
-	 * @param baseDemand an array containing the base demand  
-	 */
-	public RECO(CascadeContext context, float[] baseDemand) {
+	priceSignalChanged = false;
+}
 
-		super(context);
-		//System.out.println("RECO created ");
-		this.ticksPerDay = context.getTickPerDay();
-		//this.contextName = myContext;
+/**
+ * Constructs a RECO agent with the context in which is created and its
+ * base demand.
+ * @param context the context in which this agent is situated
+ * @param baseDemand an array containing the base demand  
+ */
+public RECO(CascadeContext context, float[] baseDemand) {
 
-		//System.out.println("RECO ticksPerDay "+ ticksPerDay);
+	super(context);
+	//System.out.println("RECO created ");
+	this.ticksPerDay = context.getTickPerDay();
+	//this.contextName = myContext;
 
-		if (baseDemand.length % ticksPerDay != 0)
-		{
-			System.err.print("Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
-			System.err.println(" May cause unexpected behaviour - unless you intend to repeat the signal within a day");
-		}
-		this.priceSignal = new float [baseDemand.length];
-		this.overallSystemDemand = new float [baseDemand.length];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemand.length);
-		//Start initially with a flat price signal of 12.5p per kWh
-		//Arrays.fill(priceSignal,125f);
-		Arrays.fill(priceSignal,0f);
+	//System.out.println("RECO ticksPerDay "+ ticksPerDay);
 
-
-		//Very basic configuration of predicted customer demand as 
-		// a Conssant.  We could be more sophisticated than this or 
-		// possibly this gives us an aspirational target...
-		this.predictedCustomerDemand = new float[ticksPerDay];
-		//Put in a constant predicted demand
-		//Arrays.fill(this.predictedCustomerDemand, 5);
-		//Or - put in a variable one
-		for (int j = 0; j < ticksPerDay; j++)
-		{
-			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
-		}
-
-		///+++++++++++++++++++++++++++++++++++++++
-		this.arr_i_B = new float [ticksPerDay];
-		this.arr_i_e = new float [ticksPerDay];
-		this.arr_i_S = new float [ticksPerDay];
-		this.arr_i_C = new float [ticksPerDay];
-		this.arr_ij_k = new float [ticksPerDay][ticksPerDay];
-		this.hist_arr_ij_D = new float [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
-
-		arr_i_C = ArrayUtils.pow2(baseDemand);
-
-		//this.arr_i_B = baseDemand; 
-
-		//+++++++++++++++++++++++++++++++++++++++++++
+	if (baseDemand.length % ticksPerDay != 0)
+	{
+		System.err.print("Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
+		System.err.println(" May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 	}
+	this.priceSignal = new float [baseDemand.length];
+	this.overallSystemDemand = new float [baseDemand.length];
+	System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemand.length);
+	//Start initially with a flat price signal of 12.5p per kWh
+	//Arrays.fill(priceSignal,125f);
+	Arrays.fill(priceSignal,0f);
+
+
+	//Very basic configuration of predicted customer demand as 
+	// a Conssant.  We could be more sophisticated than this or 
+	// possibly this gives us an aspirational target...
+	this.predictedCustomerDemand = new float[ticksPerDay];
+	//Put in a constant predicted demand
+	//Arrays.fill(this.predictedCustomerDemand, 5);
+	//Or - put in a variable one
+	for (int j = 0; j < ticksPerDay; j++)
+	{
+		this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
+	}
+
+	///+++++++++++++++++++++++++++++++++++++++
+	this.arr_i_B = new float [ticksPerDay];
+	this.arr_i_e = new float [ticksPerDay];
+	this.arr_i_S = new float [ticksPerDay];
+	this.arr_i_C = new float [ticksPerDay];
+	this.arr_ij_k = new float [ticksPerDay][ticksPerDay];
+	this.hist_arr_ij_D = new float [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
+
+	arr_i_C = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand));
+
+	//this.arr_i_B = baseDemand; 
+
+	//+++++++++++++++++++++++++++++++++++++++++++
+}
 
 
 }
