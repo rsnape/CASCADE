@@ -10,6 +10,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.jfree.chart.ChartPanel;
+
 
 import repast.simphony.context.Context;
 import repast.simphony.engine.controller.ControllerActionVisitor;
@@ -39,9 +41,11 @@ public class Initializer implements ModelInitializer{
 
 
 	class CascadeNullAbstractControllerAction extends NullAbstractControllerAction {
+		
 
 		//@Override
 		public void runInitialize(RunState runState, Context context, Parameters runParams) {
+			//System.out.println("Begining of runInitialize");
 			//System.out.println("this is runInitialize method test");
 			// will be executed at initialization.
 			CascadeContext cascadeContext = (CascadeContext) context;
@@ -60,6 +64,8 @@ public class Initializer implements ModelInitializer{
 				if (guiRegisType == GUIRegistryType.CHART) {
 					Collection <JComponent> chartCollection = typeAndCompPair.getSecond();  
 					cascadeContext.setChartCompCollection(chartCollection);
+					
+					
 				}
 				if (guiRegisType == GUIRegistryType.DISPLAY) {
 
@@ -69,6 +75,9 @@ public class Initializer implements ModelInitializer{
 				Iterator<JComponent> compIter= compCol.iterator();
 				while ( compIter.hasNext() ){
 					JComponent comp = compIter.next();
+					if (guiRegisType == GUIRegistryType.CHART) {
+						//System.out.println("chartTitle: "+((ChartPanel) comp).getChart().getTitle().getText());
+					}
 					// System.out.print("Comp Name: "+ comp.getName());
 					// System.out.print(" Comp toolTipText: "+ comp.getToolTipText() );
 					//System.out.print(" Comp Count: "+ comp.getComponentCount());
@@ -97,6 +106,9 @@ public class Initializer implements ModelInitializer{
 			customPanel.add(new JLabel("TestLabel"));
 			customPanel.add(new JButton("Test Button"));		
 			RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
+			
+			//runParams.
+		   // System.out.println("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
 			//+++++++++++++++++++++++++++++++++++++
 
 
