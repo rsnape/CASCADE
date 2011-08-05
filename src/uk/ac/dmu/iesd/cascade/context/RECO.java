@@ -753,7 +753,7 @@ public class RECO extends AggregatorAgent{
 		int direction =0;
 		double boundary =0d;
 
-		min.setNmax(10000);
+		min.setNmax(100000);
 		min.addConstraint(pIndices, plusOrMinus, direction, boundary);
 		min.setConstraintTolerance(1e-3);
 

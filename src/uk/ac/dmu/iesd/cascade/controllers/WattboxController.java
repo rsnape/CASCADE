@@ -160,9 +160,8 @@ public class WattboxController implements ISmartController{
 			else
 			{	
 				power[i] = 0;
-				float tau = (owner.buildingThermalMass * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / owner.buildingHeatLossRate;
 				t = t + Consts.SECONDS_PER_HALF_HOUR;
-				float newTemp = priorDayExternalTempProfile[i] + (deltaT[i] * (float) Math.exp(-(t / tau)));
+				float newTemp = priorDayExternalTempProfile[i] + (deltaT[i] * (float) Math.exp(-(t / owner.tau)));
 				tempLoss = setPointProfile[i] - newTemp;
 				heatLossRecoveryPower = tempLoss * (owner.buildingThermalMass / Consts.DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY);
 				//System.out.print("Temp loss is " + tempLoss);

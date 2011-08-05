@@ -1,6 +1,8 @@
 package uk.ac.dmu.iesd.cascade.ui;
 
 
+import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +72,17 @@ public class ProsumerProbeListener implements ProbeListener {
 				JFrame agentProbeFrame = new JFrame("Prosumer probe frame for " + thisAgent.toString());
 				agentProbeFrame.setAlwaysOnTop(true);
 				agentProbeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				agentProbeFrame.getContentPane().setLayout(new GridLayout(2, 1));
 
+				DefaultCategoryDataset tempDataset = createTemperatureDataset(thisAgent);
+				// based on the dataset we create the chart
+				JFreeChart tempChart = createTemperatureChart(tempDataset, "Previous day temperatures - " + thisAgent.getAgentName());
+				charts.add(tempChart);
+				// we put the chart into a panel
+				ChartPanel tempChartPanel = new ChartPanel(tempChart);
+				// default size
+				tempChartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+				
 				DefaultCategoryDataset dataset = createDataset(thisAgent);
 				// based on the dataset we create the chart
 				JFreeChart chart = createChart(dataset, "Previous day demand by type - " + thisAgent.getAgentName());
@@ -80,7 +92,7 @@ public class ProsumerProbeListener implements ProbeListener {
 				// default size
 				chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 
-				
+				agentProbeFrame.getContentPane().add(tempChartPanel);
 				agentProbeFrame.getContentPane().add(chartPanel);
 
 				//Display the window.
@@ -114,6 +126,26 @@ public class ProsumerProbeListener implements ProbeListener {
 		return result;
 
 	}
+	
+	/**
+	 * Creates a sample dataset 
+	 */
+	private  DefaultCategoryDataset createTemperatureDataset(HouseholdProsumer thisAgent) {
+		DefaultCategoryDataset result = new DefaultCategoryDataset();
+
+		float[] arr1 = thisAgent.getSetPointProfile();
+		float[] arr2 = thisAgent.getHistoricalIntTemp();
+		float[] arr3 = thisAgent.getHistoricalExtTemp();
+
+		for (int i = 0; i < 48 ; i++)
+		{
+			result.addValue((Number)arr1[i], "Set Point", i);
+			result.addValue((Number)arr2[i], "Internal Temp", i);
+			result.addValue((Number)arr3[i], "External Temp", i);
+		}
+		
+		return result;
+	}
 
 
 	/**
@@ -137,6 +169,28 @@ public class ProsumerProbeListener implements ProbeListener {
 		return chart;
 
 	}
+	
+	/**
+	 * Creates a chart
+	 */
+	private JFreeChart createTemperatureChart(DefaultCategoryDataset dataset, String title) {
+
+		JFreeChart chart = ChartFactory.createLineChart(
+				title, //chart title 
+				"Half hour", // Domain label
+				"degrees C", //Range label
+				dataset,                // data
+				PlotOrientation.VERTICAL, 
+				true,                   // include legend
+				true,
+				false
+		);
+
+		//Alter appearance here
+
+		return chart;
+
+	}
 
 	@ScheduledMethod(start = 0, interval = 48, shuffle = true, priority = Consts.PROBE_PRIORITY)
 	public void scheduledUpdate()
@@ -147,8 +201,9 @@ public class ProsumerProbeListener implements ProbeListener {
 		int i = 0;
 		for (HouseholdProsumer testProbed : probedAgents)
 		{
-			charts.get(i).getCategoryPlot().setDataset(createDataset(testProbed));
-			i++;
+			charts.get(i).getCategoryPlot().setDataset(createTemperatureDataset(testProbed));
+			charts.get(i+1).getCategoryPlot().setDataset(createDataset(testProbed));
+			i += 2;
 		}
 
 	}

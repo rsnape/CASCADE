@@ -23,9 +23,14 @@ import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.*;
 import repast.simphony.space.graph.*;
+import repast.simphony.ui.RSApplication;
+import repast.simphony.ui.RSGui;
+import repast.simphony.visualization.ProbeEvent;
+import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.controllers.*;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
+import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
 import static java.lang.Math.*;
@@ -124,7 +129,14 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float minSetPoint;  // The minimum temperature for this Household's building in centigrade (where relevant)
 	float maxSetPoint;  // The maximum temperature for this Household's building in centigrade (where relevant)
 	float waterSetPoint;
-	float currentInternalTemp;
+	private float currentInternalTemp;
+	
+	public float getCurrentInternalTemp() {
+		return currentInternalTemp;
+	}
+
+
+	
 	float currentWaterTemp;
 
 	//Occupancy information
@@ -182,17 +194,25 @@ public class HouseholdProsumer extends ProsumerAgent{
 	WeakHashMap currentSmartProfiles;
 	public float[] coldApplianceProfile;
 	public float[] wetApplianceProfile;
-	
+
 	//For ease of access to a debug type outputter
 	CSVWriter sampleOutput;
 	private float[] recordedHeatPumpDemand;
-	
+
 	//Arrays for the day's history (mainly for GUI - may use, write to file or something else in the future)
 	private float[] historicalBaseDemand;
 	private float[] historicalColdDemand;
 	private float[] historicalWetDemand;
 	private float[] historicalHeatDemand;
 	
+	/**
+	 * Building heat flow time constant (thermal mass or specific heat capacity / heat loss rate)
+	 */
+	public float tau;
+	private float timeSinceHeating = 0	;
+	private float[] historicalIntTemp;
+	private float[] historicalExtTemp;
+
 
 	/**
 	 * Accessor functions (NetBeans style)
@@ -270,7 +290,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	{
 		return defraCategory;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -303,6 +323,20 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return this.historicalHeatDemand;
 	}
 
+	/**
+	 * @return
+	 */
+	public float[] getHistoricalIntTemp() {
+		return historicalIntTemp;
+	}
+
+	/**
+	 * @return
+	 */
+	public float[] getHistoricalExtTemp() {
+		return historicalExtTemp;
+	}
+	
 	/**
 	 * @param buildingThermalMass the buildingThermalMass to set
 	 */
@@ -347,6 +381,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		timeOfDay = (time % ticksPerDay);
 
 		checkWeather(time);
+		this.setPoint = this.setPointProfile[time % ticksPerDay];
 
 		//Do all the "once-per-day" things here
 		if (timeOfDay == 0)
@@ -361,9 +396,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 				//this.wetApplianceProfile = (float[]) currentSmartProfiles.get("WetApps");
 				this.spaceHeatPumpOn = (boolean[]) currentSmartProfiles.get("HeatPump");
 			}
-			
+
 			//***Richard output test for prosumer behaviour***
-			
+
 			if (sampleOutput != null)
 			{
 				sampleOutput.appendText("timeStep " + time);
@@ -376,12 +411,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 				outputBuilder[3] = ArrayUtils.convertFloatArrayToString(coldApplianceProfile);
 				sampleOutput.appendCols(outputBuilder);
 			}
-			
+
 		}
 
-		calculateInternalTemp(time);
 
 		//Every step we do these actions
+
+		
 		if (hasSmartControl){
 			setNetDemand(smartDemand(time));
 		}
@@ -397,13 +433,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 			learnSmartAdoptionDecision(time);
 		}
-		
+
+		//After the heat input has been calculated, re-calculate the internal temperature of the house
+		calculateInternalTemp(time);
 		
 		/*
 		//----- Babak Network test ----------------------------------------------
 		Network costumerNetwork = FindNetwork("BabakTestNetwork");
 		Iterable costumersIter = costumerNetwork.getInEdges(this);
-		
+
 		for (Object thisConn: costumersIter)
 		{
 			RepastEdge myConn = ((RepastEdge) thisConn);
@@ -419,7 +457,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 	}
 
-	
+
 
 
 	public float getUnadaptedDemand(){
@@ -428,7 +466,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return (baseDemandProfile[index]) - currentGeneration();
 	}
 
-	
+
 	/**
 	 * Method to return the realtime generation of this Household Prosumer (as distinct
 	 * from the net demand for the prosumer).
@@ -517,7 +555,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private float nonDispaceableDemand() {
 		//TODO: For expediency just used melody's model for this, however could use
 		// finer grained model of lighting, brown and cooking
-		
+
 		//return lightingDemand() + miscBrownDemand() + cookingDemand();
 		return baseDemandProfile[time % baseDemandProfile.length];
 	}
@@ -536,8 +574,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		if (hasElectricalSpaceHeat)
 		{
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
-			recordedHeatPumpDemand[timeOfDay] = heatPumpDemand(timeOfDay);
-			return heatPumpDemand(timeOfDay);
+			recordedHeatPumpDemand[timeOfDay] = heatPumpDemand(time);
+			return recordedHeatPumpDemand[timeOfDay];
 		}
 		else
 		{
@@ -549,7 +587,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	private float wetApplianceDemand() {
-		return this.wetApplianceProfile[timeOfDay];
+		return this.wetApplianceProfile[time % wetApplianceProfile.length];
 	}
 
 	/**
@@ -565,7 +603,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 */
 	private float coldApplianceDemand() 
 	{
-		return this.coldApplianceProfile[timeOfDay];
+		return this.coldApplianceProfile[time % wetApplianceProfile.length];
 	}
 
 	/**
@@ -593,19 +631,25 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 */
 	private float heatPumpDemand(int timeStep) {
 		float power = 0;
-		float deltaT = this.setPointProfile[timeStep % ticksPerDay] - this.getContext().getAirTemperature(timeStep);
+		float deltaT = this.setPoint - this.getContext().getAirTemperature(timeStep);
 
-		if (deltaT > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF  && spaceHeatPumpOn[timeStep])
+		if (deltaT > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF  && spaceHeatPumpOn[timeStep % ticksPerDay])
 		{
-			power = deltaT * (this.buildingHeatLossRate / Consts.DOMESTIC_HEAT_PUMP_COP);
+			//Power = power needed to maintain setpoint, plus power to regain setpoint if temp has fallen below it (due to previous switch off)
+			float maintPower = (deltaT * (this.buildingHeatLossRate));
+			float recoveryPower = Math.max(0, (this.setPoint - this.currentInternalTemp)* this.buildingThermalMass * (Consts.KWH_TO_JOULE_CONVERSION_FACTOR / ((float)(Consts.SECONDS_PER_DAY / ticksPerDay))));
+			power = (maintPower + recoveryPower) / Consts.DOMESTIC_HEAT_PUMP_COP;
 		}
-		
+
 		// Need to return in terms of kWh in this timestep
-		
+
 		return (power / Consts.KWH_TO_JOULE_CONVERSION_FACTOR )* ((float)(Consts.SECONDS_PER_DAY / ticksPerDay));
 	}
 
 	/**
+	 * Calculates the current internal temperature at the end of the current timestep
+	 * 
+	 * NOTE - makes an assumption that the setpoint temperature will be regained if the heatpump has been on.
 	 * 
 	 * @param timeStep
 	 * @return
@@ -613,17 +657,23 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private void calculateInternalTemp(int timeStep)
 	{
 		float extTemp = this.getContext().getAirTemperature(timeStep);
-		this.setPoint = this.setPointProfile[timeStep % ticksPerDay];
 		float deltaT =  this.setPoint - extTemp;
-		float tau = this.buildingThermalMass / this.buildingHeatLossRate;
-		if (spaceHeatPumpOn[timeOfDay])
+		timeSinceHeating  += (float)(Consts.SECONDS_PER_DAY / ticksPerDay);
+		
+
+		if (!spaceHeatPumpOn[timeOfDay])
 		{
-			this.currentInternalTemp = this.setPoint;
+			timeSinceHeating += (float)(Consts.SECONDS_PER_DAY / ticksPerDay);
+			this.currentInternalTemp = extTemp + (deltaT * (float) Math.exp(-(float)timeSinceHeating / tau));
 		}
 		else
 		{
-			this.currentInternalTemp = extTemp + deltaT * (float) Math.exp(-(timeStep / tau));
+			this.currentInternalTemp = this.setPoint;
+			timeSinceHeating = 0;
 		}
+		
+		historicalIntTemp[timeStep % historicalIntTemp.length] = this.currentInternalTemp;
+		historicalExtTemp[timeStep % historicalIntTemp.length] = extTemp;
 	}
 
 	/**
@@ -711,7 +761,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		historicalWetDemand[time % ticksPerDay] = currentWet;
 		historicalColdDemand[time % ticksPerDay] = currentCold;
 		historicalHeatDemand[time % ticksPerDay] = currentHeat;
-		
+
 		float returnAmount = currentBase + currentCold + currentWet + currentHeat;
 		if (Consts.DEBUG)
 		{
@@ -860,6 +910,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 */
 	public HouseholdProsumer(CascadeContext context, float[] baseDemand) {
 		super(context);
+		this.setAgentName("Household_" + agentID);
 		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
 		this.ticksPerDay = context.getTickPerDay();
 		//Assign hot water storage capacity - note from a uniform distribution - may not be realistic.  TODO: Add realistic pdf of this distribution
@@ -868,13 +919,19 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//TODO: Something more sophisticated than this very basic set point profile assignment and then add offset
 		this.setPointProfile = Arrays.copyOf(Consts.BASIC_AVERAGE_SET_POINT_PROFILE, Consts.BASIC_AVERAGE_SET_POINT_PROFILE.length);
 		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2));
+		this.setPoint = setPointProfile[0];
+		this.currentInternalTemp = this.setPoint;
 		this.setPredictedCostSignal(Consts.ZERO_COST_SIGNAL);
 		setUpColdApplianceOwnership();
 		this.dailyElasticity = new float[ticksPerDay];
+		
+		//Arrays to hold some history - mainly for gui purposes
 		this.historicalBaseDemand = new float[ticksPerDay];
 		this.historicalWetDemand = new float[ticksPerDay];
 		this.historicalColdDemand = new float[ticksPerDay];
 		this.historicalHeatDemand = new float[ticksPerDay];
+		this.historicalIntTemp = new float[ticksPerDay];
+		this.historicalExtTemp = new float[ticksPerDay];
 		//TODO - get more thoughtful elasticity model than this random formulation
 		for (int i = 0; i < dailyElasticity.length; i++)
 		{
@@ -893,7 +950,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		spaceHeatPumpOn = new boolean[ticksPerDay];
 		Arrays.fill(spaceHeatPumpOn, true);
 		recordedHeatPumpDemand = new float[ticksPerDay];
-		
+
 		/*
 		 *Set up "smart" stuff here
 		 */
@@ -905,11 +962,12 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//smart controller will alter this
 		this.smartOptimisedProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
-		
+
 		//Richard test - just to monitor evolution of one agent
 		if (this.agentID == 1)
 		{
 			sampleOutput = new CSVWriter("richardTestOutput.csv", false);
 		}
 	}
+
 }
