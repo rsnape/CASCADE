@@ -9,6 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.math.ConvergenceException;
+import org.apache.commons.math.FunctionEvaluationException;
+import org.apache.commons.math.analysis.MultivariateRealFunction;
+import org.apache.commons.math.optimization.GoalType;
+import org.apache.commons.math.optimization.OptimizationException;
+import org.apache.commons.math.optimization.RealConvergenceChecker;
+import org.apache.commons.math.optimization.SimpleScalarValueChecker;
+
+import org.apache.commons.math.optimization.RealPointValuePair;
+import org.apache.commons.math.optimization.direct.NelderMead;
+
 import bsh.This;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -83,6 +94,55 @@ public class RECO extends AggregatorAgent{
 		}
 
 	}
+	
+	
+	class  RecoMultivariateRealFunction implements MultivariateRealFunction /*,  RealConvergenceChecker */ {
+
+		private float[] arr_C;
+		private float[] arr_B;
+		private float[] arr_e;		
+		private float[][] arr_k;
+		
+		public double value (double[] arr_S) {
+			double m =0d;
+
+			for (int i=0; i<arr_S.length; i++){
+
+				double sumOf_SjkijBi =0;
+				for (int j=0; j<arr_S.length; j++){
+					if (i != j)
+						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
+				}
+
+				m+= arr_C[i] * (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
+			}
+
+			return m;
+		} 
+
+		public void set_C(float [] c) {
+			arr_C = c;
+		}
+
+		public void set_B(float [] b) {
+			arr_B = b;
+		}
+
+		public void set_e(float [] e) {
+			arr_e = e;
+		}
+
+		public void set_k(float [][] k ) {
+			arr_k = k;
+		}
+		
+		/*public boolean converged(int iteration, RealPointValuePair previous, RealPointValuePair current) {
+			
+			return true;
+		
+		} */
+
+	} 
 
 	/**
 	 * the aggregator agent's base name  
@@ -707,6 +767,79 @@ public class RECO extends AggregatorAgent{
 
 		return e;	
 	}
+	
+
+	private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
+	//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
+		System.out.println("---------------Apache minimisation ---------");
+
+		
+		NelderMead apacheNelderMead = new NelderMead();
+		//or:
+		//NelderMead(double rho, double khi, double gamma, double sigma);
+		//rho - reflection coefficient, khi - expansion coefficient
+        //gamma - contraction coefficient,  sigma - shrinkage coefficient
+	
+		RecoMultivariateRealFunction minFunct = new RecoMultivariateRealFunction();
+
+		minFunct.set_C(arr_C);
+		minFunct.set_B(arr_B);
+		minFunct.set_e(arr_e);
+		minFunct.set_k(arr_ij_k);
+		
+		// initial estimates
+		//double[] start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+
+		//If it's the first time through the optimisation - start from an arbitrary
+		//point in search space.  Otherwise, start from the last price signal
+		double[] start = new double[this.ticksPerDay];
+		if(firstTimeMinimisation )
+		{
+			Arrays.fill(start, 0.1);
+			firstTimeMinimisation = false;
+		}
+		else 
+		{
+			start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+		}
+		
+		//apacheNelderMead.setMaxIterations(10);
+		//apacheNelderMead.setConvergenceChecker(new SimpleScalarValueChecker(1.0e-10, 1.0e-30));
+		//apacheNelderMead.setConvergenceChecker(new SimpleScalarValueChecker(0, -1.0));
+		//apacheNelderMead.setMaxEvaluations(10);  //how many time function is evaluated
+		
+		
+		RealPointValuePair minValue=null;
+		
+		
+		try {
+			
+			 minValue = apacheNelderMead.optimize(minFunct, GoalType.MINIMIZE,  start); 
+
+		}
+		catch (@SuppressWarnings("deprecation") OptimizationException e) {
+			System.out.println( "Reco Apache Optim Exc (Optim exc): "+e.getCause() );
+		} 
+		catch ( FunctionEvaluationException e) {
+			System.out.println( "Reco Apache Optim Exc (Funct eval exc): "+e.getCause() );
+		}
+	
+		catch (IllegalArgumentException e) {
+			System.out.println( "Reco Apache Optim Exc (Illegal arg exc): "+e.getCause() );
+		}
+	
+
+		minValue.getValue();
+		minValue.getPoint();
+		minValue.getPointRef(); 
+
+		//float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(param);
+		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(minValue.getPoint());
+		System.out.println("Apache NelderMead:: Min value obtained " + minValue.getValue());
+
+		return newOpt_S;
+	}
+
 
 
 	private float[] minimise_CD(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
@@ -996,6 +1129,8 @@ public class RECO extends AggregatorAgent{
 
 				//TODO: If this minimisation is ever to change, we need to change e and k with the observed D
 				arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+				//minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+
 				/*// Test with Econ 7
 					setPriceSignalEconomySeven(15, 7);
 					arr_i_S = Arrays.copyOf(priceSignal, arr_i_S.length);*/
@@ -1003,7 +1138,7 @@ public class RECO extends AggregatorAgent{
 				//arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
 				//System.out.println(Arrays.toString(arr_i_S));
 
-				broadcastSignalToCustomers(arr_i_S, customers);
+				//broadcastSignalToCustomers(arr_i_S, customers);
 
 			}
 

@@ -3,5 +3,7 @@
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.ProsumerAgent"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.HouseholdProsumer"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.AggregatorAgent"/>
+<entry path="../../Cascade/ExternalLib/commons-math-2.2.jar"/>
+
 </classpath>
 </model>
