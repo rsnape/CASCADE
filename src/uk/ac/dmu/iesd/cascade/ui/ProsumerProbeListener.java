@@ -192,7 +192,7 @@ public class ProsumerProbeListener implements ProbeListener {
 
 	}
 
-	@ScheduledMethod(start = 0, interval = 48, shuffle = true, priority = Consts.PROBE_PRIORITY)
+	//@ScheduledMethod(start = 0, interval = 48, shuffle = true, priority = Consts.PROBE_PRIORITY)
 	public void scheduledUpdate()
 	{
 		//Bit of a hack based on the thought that the ArrayLists will both be in the same order
