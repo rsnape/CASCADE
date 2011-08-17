@@ -3,7 +3,10 @@
  */
 package uk.ac.dmu.iesd.cascade.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+
+import repast.simphony.util.collections.Pair;
 
 /**
  * A helper class with static methods to aid in the manipulation of arrays
@@ -317,7 +320,7 @@ public class ArrayUtils {
 
 		return array;
 	}
-	
+
 	/**
 	 * find the index of the member of the input array with the maximum value (note real value, not absolute magnitude)
 	 * 
@@ -646,15 +649,15 @@ public class ArrayUtils {
 	{
 		// TODO Auto-generated method stub
 		String[] returnArray = new String[boolArray.length];
-		
+
 		for (int i = 0; i < boolArray.length; i++)
 		{
 			returnArray[i] = Boolean.toString(boolArray[i]);
 		}
-		
+
 		return returnArray;
 	}
-	
+
 	/**
 	 * @param floatArray
 	 * @return
@@ -663,12 +666,72 @@ public class ArrayUtils {
 	{
 		// TODO Auto-generated method stub
 		String[] returnArray = new String[floatArray.length];
-		
+
 		for (int i = 0; i < floatArray.length; i++)
 		{
 			returnArray[i] = Float.toString(floatArray[i]);
 		}
-		
+
 		return returnArray;
+	}
+
+	/**
+	 * @param copyOfRange
+	 * @param n
+	 */
+	public static int[] findNSmallestIndices(float[] floatArray, int n) {
+		// TODO Poor algorithm - improve
+		ArrayList<Pair<Integer,Float>> returnArrayList = new ArrayList<Pair<Integer,Float>>();
+		int[] returnArray = new int[n];
+		int indicesToFill = n;
+		int indexOfCurrMaxOfMins = -1;
+		float currMaxOfMins = Float.NEGATIVE_INFINITY;
+
+		if (floatArray.length < n)
+		{
+			System.err.println("Trying to find the " + n + " smallest elements of an array with only " + floatArray.length + " elements!");
+		}
+
+		for (int i = 0; i < floatArray.length; i++)
+		{
+			if (indicesToFill > 0)
+			{
+				returnArrayList.add(new Pair(i,floatArray[i]));
+				if (floatArray[i] > currMaxOfMins)
+				{
+					currMaxOfMins = floatArray[i];
+					indexOfCurrMaxOfMins = n-indicesToFill;
+				}
+				indicesToFill--;
+			}
+			else
+			{
+				if (floatArray[i] < currMaxOfMins)
+				{
+					returnArrayList.remove(indexOfCurrMaxOfMins);
+					returnArrayList.add(new Pair(i,floatArray[i]));
+					indexOfCurrMaxOfMins = -1;
+					currMaxOfMins = Float.NEGATIVE_INFINITY;
+					
+					for(int l = 0; l < n; l++)
+					{
+						if (returnArrayList.get(l).getSecond() > currMaxOfMins)
+						{
+							currMaxOfMins = returnArrayList.get(l).getSecond();
+							indexOfCurrMaxOfMins = l;
+						}
+					}
+					
+				}
+			}
+		}
+
+		for (int k = 0; k < n; k++)
+		{
+			returnArray[k] = returnArrayList.get(k).getFirst();
+		}
+
+		return returnArray;
+
 	}
 }

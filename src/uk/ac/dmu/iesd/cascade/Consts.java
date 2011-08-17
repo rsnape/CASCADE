@@ -101,9 +101,19 @@ public final class Consts {
 	public static final int DOMESTIC_SAFE_WATER_TEMP = 50;
 	
 	/**
-	 * The typical heat pump coefficient of performance for a domestic dwelling
+	 * The typical heat pump coefficient of performance for space heating a domestic dwelling
 	 */
-	public static final float DOMESTIC_HEAT_PUMP_COP = 2.4f;
+	public static final float DOMESTIC_HEAT_PUMP_SPACE_COP = 2.4f;
+	
+	/**
+	 * The degradation of heat pump coefficient of performance when increasing rather than maintaining temperature.
+	 */
+	public static final float DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE = 0.9f;
+	
+	/**
+	 * The typical heat pump coefficient of performance for heating water in a domestic dwelling
+	 */
+	public static final float DOMESTIC_HEAT_PUMP_WATER_COP = 2.0f;
 
 	/**
 	 * System exit error codes for different types of error
@@ -230,6 +240,17 @@ public final class Consts {
  * Schedule constants - Probe display update priority.  Set to a large negative number, so it goes after most actions
  */
 	public static final double PROBE_PRIORITY = -100;
+
+
+public static final float WATER_TEMP_LOSS_PER_SECOND = 1f/1860f;
+
+/**
+ * (Approximate) Specific heat capacity of water in Joules per litre per Kelvin
+ */
+public static final float WATER_SPECIFIC_HEAT_CAPACITY = 4200;
+
+
+public static final float WATER_HEAT_PUMP_MAX_HEAT_POWER = 6.0f;
 
 }
 
