@@ -134,14 +134,16 @@ public class ProsumerProbeListener implements ProbeListener {
 		DefaultCategoryDataset result = new DefaultCategoryDataset();
 
 		float[] arr1 = thisAgent.getSetPointProfile();
-		float[] arr2 = thisAgent.getHistoricalIntTemp();
+		float[] arr2 = thisAgent.getOptimisedSetPointProfile();
 		float[] arr3 = thisAgent.getHistoricalExtTemp();
+		float[] arr4 = thisAgent.getHistoricalIntTemp();
 
 		for (int i = 0; i < 48 ; i++)
 		{
 			result.addValue((Number)arr1[i], "Set Point", i);
-			result.addValue((Number)arr2[i], "Internal Temp", i);
+			result.addValue((Number)arr2[i], "Optimised Set Point", i);
 			result.addValue((Number)arr3[i], "External Temp", i);
+			result.addValue((Number)arr4[i], "Internal Temp", i);
 		}
 		
 		return result;

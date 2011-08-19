@@ -33,6 +33,7 @@ import flanagan.*;
 import flanagan.math.*;
 import flanagan.analysis.*;
 import flanagan.math.Matrix;
+import org.jgap.*;
 
 /**
  * A <em>RECO</em> or a Retail Company is a concrete object that represents 
@@ -53,8 +54,13 @@ import flanagan.math.Matrix;
 public class RECO extends AggregatorAgent{
 
 
-	class RecoMinimisationFunction implements MinimisationFunction, MultivariateRealFunction {
+	class RecoMinimisationFunction extends FitnessFunction implements MinimisationFunction, MultivariateRealFunction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
 		private float[] arr_C;
 		private float[] arr_B;
 		private float[] arr_e;		
@@ -119,6 +125,15 @@ public class RECO extends AggregatorAgent{
 
 		public void set_k(float [][] k ) {
 			arr_k = k;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.jgap.FitnessFunction#evaluate(org.jgap.Chromosome)
+		 */
+		@Override
+		protected int evaluate(Chromosome arg0) {
+								
+			return (int) value(ArrayUtils.genesToDouble(arg0.getGenes()));
 		}
 
 	}
