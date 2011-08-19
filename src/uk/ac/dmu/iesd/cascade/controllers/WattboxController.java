@@ -323,7 +323,7 @@ System.out.println(Arrays.toString(this.setPointProfile));
 System.out.println(Arrays.toString(localSetPointArray));
 System.out.println(Arrays.toString(Consts.MAX_PERMITTED_TEMP_DROPS));
 
-					
+
 					if (ArrayUtils.max(ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > 0)
 					{
 						//if the temperature drop is too great, this profile is unfeasible and we return null
