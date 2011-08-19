@@ -153,6 +153,11 @@ public final class Consts {
 	public static final int SECONDS_PER_HALF_HOUR = 1800;
 
 
+	public static final int NIGHT_TO_DAY_TRANSITION_TICK = 16;
+
+
+	public static final float NIGHT_TEMP_LOSS_THRESHOLD = 1f;
+
 	public static final float DAYTIME_TEMP_LOSS_THRESHOLD = 0.5f;
 
 
@@ -251,6 +256,31 @@ public static final float WATER_SPECIFIC_HEAT_CAPACITY = 4200;
 
 
 public static final float WATER_HEAT_PUMP_MAX_HEAT_POWER = 6.0f;
+
+
+public static final int EST_INTERCEPT = 46;
+
+
+public static final int EST_SLOPE = 26;
+
+
+public static final double EST_STD_DEV = 7;
+
+
+public static final float[] EST_DRAWOFF = {2.25f, 2.25f, 1.4f,1.4f,1.15f,1.15f,0.95f,0.95f,1.6f,1.6f,2.15f,2.15f,5.3f,5.3f,10.8f,10.8f,9.1f,9.1f,7.25f,7.25f,6.85f,6.85f,6f,6f,5.25f,5.25f,4.35f,4.35f,3.6f,3.6f,3.65f,3.65f,4.45f,4.45f,6.5f,6.5f,9f,9f,8.7f,8.7f,7.2f,7.2f,6.1f,6.1f,5f,5f,3f,3f};
+
+
+public static final float IMMERSION_HEATER_COP = 0.9f;
+
+/**
+ * Typical domestic heat pump rating (electrical) in kW
+ */
+public static final float TYPICAL_HEAT_PUMP_ELEC_RATING = 4f;
+
+
+public static final float[] MAX_PERMITTED_TEMP_DROPS = {1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f};
+
+
 
 }
 

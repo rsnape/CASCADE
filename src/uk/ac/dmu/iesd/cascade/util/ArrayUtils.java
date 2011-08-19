@@ -6,6 +6,9 @@ package uk.ac.dmu.iesd.cascade.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.jgap.Gene;
+import org.jgap.impl.DoubleGene;
+
 import repast.simphony.util.collections.Pair;
 
 /**
@@ -733,5 +736,26 @@ public class ArrayUtils {
 
 		return returnArray;
 
+	}
+
+	/**
+	 * @param genes
+	 * @return
+	 */
+	public static double[] genesToDouble(Gene[] genes) {
+		// TODO Auto-generated method stub
+		double[] returnArray = new double[genes.length];
+		int i = 0;
+		for(Gene thisGene : genes)
+		{
+			if(!(thisGene instanceof DoubleGene))
+			{
+				System.err.println("Can't change a non-Double Gene to a Double type!!");
+			}
+			returnArray[i] = (Double) thisGene.getAllele();	
+			i++;
+		}
+		
+		return returnArray;
 	}
 }

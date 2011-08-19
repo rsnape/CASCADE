@@ -23,7 +23,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
  * 
  * @author jrsnape
  */
-public class WattboxController implements ISmartController{
+public class CopyOfWattboxController implements ISmartController{
 
 	static final float[] INITIALIZATION_TEMPS = {7,7,7,7,7,7,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,17,17,16,16,15,15,14,14,12,12,10,10,8,8,7,7};
 	HouseholdProsumer owner;
@@ -87,12 +87,12 @@ public class WattboxController implements ISmartController{
 		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
 		this.dayPredictedCostSignal = ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal, predictedCostToRealCostA),realCostOffsetb);
 		this.setPointProfile = owner.getSetPointProfile();
-		this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
-		this.currentTempProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
+		this.optimisedSetPointProfile = this.setPointProfile;
+		this.currentTempProfile = this.setPointProfile;
 		this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length) , (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
 		this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
 		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.baselineHotWaterVolumeProfile,(timeStep % owner.baselineHotWaterVolumeProfile.length), (timeStep % owner.baselineHotWaterVolumeProfile.length) + ticksPerDay);
-		this.heatPumpDemandProfile = ArrayUtils.multiply(calculateSpaceHeatPumpDemand(this.setPointProfile), (1/Consts.DOMESTIC_HEAT_PUMP_SPACE_COP));
+		this.heatPumpDemandProfile = calculatePredictedHeatPumpDemandAndTempProfile(this.heatPumpOnOffProfile);
 
 
 		//TODO: Think about whether / how water and space heating are coupled.
@@ -148,12 +148,189 @@ public class WattboxController implements ISmartController{
 	}
 
 	/**
+	 * turns a heat pump switching profile, in combination with the outside temperature
+	 * profile and building physics parameters into a predicted demand curve
+	 * for the heat pump.
+	 * 
+	 * Returns null if the pump switching profile passed in violates constraints on 
+	 * temperature deviation from the set point.
+	 * 
+	 * @return the predicted heat pump demand for a certain heat pump switching profile
+	 * given an estimate for the temperature profile for the day when it is used
+	 */
+	private float[] calculatePredictedHeatPumpDemandAndTempProfile(float[] heatPumpOnOffProfileToTest) 
+	{
+		float[] energyProfile = new float[ticksPerDay];
+		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
+		int availableHeatRecoveryTicks = ticksPerDay;
+		float maxRecoveryPerTick = 0.5f * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
+		float heatLoss = 0;
+		float internalTemp = this.setPointProfile[0];
+
+		for (int i = 0; i < ticksPerDay; i++)
+		{
+			--availableHeatRecoveryTicks;
+			currentTempProfile[i] = internalTemp;
+			float setPointMaintenancePower = deltaT[i] * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * (Consts.SECONDS_PER_DAY / ticksPerDay);
+
+
+			if (deltaT[i] > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF && (heatPumpOnOffProfileToTest[i] > 0))
+			{
+
+				if (heatLoss > 0)
+				{
+					//need to place recovery power somewhere
+					//estimate required recovery timeTicks
+					int n = (int) Math.ceil(heatLoss / (maxRecoveryPerTick * setPointMaintenancePower));
+
+					if (availableHeatRecoveryTicks < n)
+					{
+						//Recovery impossible - terminate processing
+						System.err.println("No available recovery ticks, profile is " + Arrays.toString(heatPumpOnOffProfileToTest));
+						return null;
+					}
+					else
+					{
+						availableHeatRecoveryTicks = availableHeatRecoveryTicks - n;
+						int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i,ticksPerDay),n);
+
+						for (int k : recoveryIndices)
+						{
+							//System.out.println("in here for index " + k);
+							heatPumpOnOffProfileToTest[k + i] = 1 + maxRecoveryPerTick;
+						}
+
+						//We have now allocated the recovery power required, so zero it.
+						heatLoss = 0;
+					}
+				}
+				energyProfile[i] = setPointMaintenancePower * heatPumpOnOffProfileToTest[i];
+				if (heatPumpOnOffProfileToTest[i] > 1)
+				{
+					internalTemp += (setPointMaintenancePower * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP * (heatPumpOnOffProfileToTest[i] - 1)) / owner.buildingThermalMass;
+				}
+
+			}
+			else
+			{	
+				energyProfile[i] = 0;
+
+				internalTemp -= setPointMaintenancePower / owner.buildingThermalMass;
+				float tempLoss = setPointProfile[i] - internalTemp;
+
+				heatLoss += setPointMaintenancePower * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP;
+				//System.out.print("Temp loss is " + tempLoss);
+				if( (i < Consts.NIGHT_TO_DAY_TRANSITION_TICK && tempLoss > Consts.NIGHT_TEMP_LOSS_THRESHOLD) || (i >= Consts.NIGHT_TO_DAY_TRANSITION_TICK && tempLoss > Consts.DAYTIME_TEMP_LOSS_THRESHOLD))
+				{
+					//if the temperature drop is too great, this profile is unfeasible and we return null
+					System.err.println("Temp drop too great with profile " + Arrays.toString(heatPumpOnOffProfileToTest));
+					return null;
+				}
+			}
+		}
+
+		return energyProfile;
+	}
+
+	/**
 	 * Optimise the Electric Vehicle charging profile for the household
 	 * which owns this Wattbox.
 	 * 
 	 * TODO: Not yet implemented.
 	 */
 	private void optimiseEVProfile() {
+	}
+
+	/**
+	 * finds an optimised heat pump switching profile for the day ahead 
+	 * based on the projected temperature
+	 * and therefore predicted heat pump demand.  This is combined with the 
+	 * signal (sent by the aggregator) as a proxy for predicted cost of 
+	 * electricity for the day ahead to produce the estimated cost of the 
+	 * switching profile.
+	 * 
+	 * Subject to constraints that 
+	 * <li> temperature drop in switch off periods must not exceed a certain amount.
+	 * <li> heat pump may be switched off for only one period per day
+	 * <li> the "switch off period" may be between half an hour and four hours
+	 * 
+	 * Currently uses a "brute force" algorithm to evaluate all profiles
+	 * It uses the profile which minimises the predicted cost of operation.
+	 */
+	private void optimiseSpaceHeatProfile() 
+	{
+		float bestCost;
+		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
+		float[] tempPumpOnOffProfile = new float[ticksPerDay];
+		Arrays.fill(tempPumpOnOffProfile,1);
+		float[] tempHeatPumpProfile = new float[ticksPerDay];
+
+		if(this.heatPumpDemandProfile == null)
+		{
+			// If the demand profile is null, this means the switiching profile
+			// is invalid or undefined, so set a very high cost to this
+			// so that all alternatives will be better.
+			bestCost = Float.MAX_VALUE;
+		}
+		else
+		{
+			float[] initialPredictedCosts = ArrayUtils.mtimes(this.dayPredictedCostSignal, this.heatPumpDemandProfile);
+			bestCost = ArrayUtils.sum(initialPredictedCosts);
+		}
+
+		tempHeatPumpProfile = calculatePredictedHeatPumpDemandAndTempProfile(tempPumpOnOffProfile);
+		this.heatPumpOnOffProfile = Arrays.copyOf(tempPumpOnOffProfile, tempPumpOnOffProfile.length);
+		this.heatPumpDemandProfile = Arrays.copyOf(tempHeatPumpProfile, tempHeatPumpProfile.length);
+
+		//Go through all timeslots switching the heat pump off for certain periods
+		//subject to constraints and find the least cost option.
+		//TODO: This is "brute force" optimisation - there will be a better way...
+
+		for (int i = 0; i < ticksPerDay; i++)
+		{
+			for ( int j = Consts.HEAT_PUMP_MIN_SWITCHOFF - 1; j < Consts.HEAT_PUMP_MAX_SWITCHOFF; j++)
+			{
+				//Don't try impossible combinations - can't recover heat beyond the day boundary
+				if (i+j < ticksPerDay - 1)
+				{
+					float thisCost = 0;
+
+					tempPumpOnOffProfile[i+j] = 0;
+					tempHeatPumpProfile = calculatePredictedHeatPumpDemandAndTempProfile(tempPumpOnOffProfile);
+					if (Consts.DEBUG && owner.getAgentID() == 1)
+					{
+						//Some debugging output for one agent only
+						System.out.println("On off profile for calculation " + Arrays.toString(tempPumpOnOffProfile));
+						System.out.println("HP demand profile " + Arrays.toString(tempHeatPumpProfile));
+					}
+
+					if (tempHeatPumpProfile != null)
+					{
+						thisCost = ArrayUtils.sum(ArrayUtils.mtimes(this.dayPredictedCostSignal, tempHeatPumpProfile));
+						if (thisCost < bestCost)
+						{
+
+							bestCost = thisCost;
+							this.heatPumpOnOffProfile = Arrays.copyOf(tempPumpOnOffProfile, tempPumpOnOffProfile.length);
+							this.heatPumpDemandProfile = Arrays.copyOf(tempHeatPumpProfile, tempHeatPumpProfile.length);
+							this.optimisedSetPointProfile = Arrays.copyOf(currentTempProfile, currentTempProfile.length);
+							if (Consts.DEBUG && owner.getAgentID() == 1)
+							{
+								//Some debugging output for one agent only
+								System.out.println("Replacing the current profile with a better one");
+								System.out.println("On off profile to use " + Arrays.toString(heatPumpOnOffProfile));
+								System.out.println("HP demand profile " + Arrays.toString(heatPumpDemandProfile));
+								System.out.println("This cost is " + thisCost + " against best " + bestCost);
+
+							}
+						}
+					}
+				}
+			}
+
+			//reset to always on and try the next timeslot;
+			Arrays.fill(tempPumpOnOffProfile,1);
+		}
 	}
 
 	/**
@@ -188,10 +365,11 @@ public class WattboxController implements ISmartController{
 					adaptedDemand = currDemand + (extraHeatRequired / Consts.DOMESTIC_HEAT_PUMP_WATER_COP);
 
 					//If demand exceeds Heat Pump capacity, top up with immersion (i.e. reduce COP)
-					float totalHeatDemand = adaptedDemand + this.heatPumpDemandProfile[i];
-					if (totalHeatDemand > this.maxHeatPumpElecDemandPerTick )
+					if ((adaptedDemand + this.heatPumpDemandProfile[i]) > this.maxHeatPumpElecDemandPerTick )
 					{
-						adaptedDemand = adaptedDemand + ((totalHeatDemand - this.maxHeatPumpElecDemandPerTick ) * Consts.DOMESTIC_HEAT_PUMP_WATER_COP / Consts.IMMERSION_HEATER_COP);
+						System.out.println("Topping up with immersion due to over capacity - before: " + adaptedDemand);
+						adaptedDemand = currDemand + (((currDemand + this.heatPumpDemandProfile[i]) - this.maxHeatPumpElecDemandPerTick ) * Consts.DOMESTIC_HEAT_PUMP_WATER_COP / Consts.IMMERSION_HEATER_COP);
+						System.out.println("And after: " + adaptedDemand);
 					}
 					if (adaptedDemand * this.dayPredictedCostSignal[j] < currCost)
 					{
@@ -252,6 +430,7 @@ public class WattboxController implements ISmartController{
 		}
 	}
 
+
 	/**
 	 * @param dayPredictedCostSignal the dayPredictedCostSignal to set
 	 */
@@ -261,22 +440,9 @@ public class WattboxController implements ISmartController{
 	}
 
 	/**
-	 * finds an optimised set point profile for the day ahead 
-	 * based on the projected temperature
-	 * and therefore predicted heat pump demand.  This is combined with the 
-	 * signal (sent by the aggregator) as a proxy for predicted cost of 
-	 * electricity for the day ahead to produce the estimated cost of the 
-	 * switching profile.
-	 * 
-	 * Subject to constraints that 
-	 * <li> temperature drop in switch off periods must not exceed a certain amount.
-	 * <li> heat pump may be switched off for only one contiguous period per day
-	 * <li> the "switch off period" may be between half an hour and four hours
-	 * 
-	 * Currently uses a "brute force" algorithm to evaluate all profiles
-	 * It uses the profile which minimises the predicted cost of operation.
 	 * Alter set point profile to use heat pump optimally
 	 * 
+	 * NOTE: currently unused - preferring a simpler model instead c.f. optimiseHeatPumpDemand
 	 */
 	void optimiseSetPointProfile()
 	{ 		
@@ -285,6 +451,7 @@ public class WattboxController implements ISmartController{
 		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
 		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
 		float[] localDemandProfile = calculateSpaceHeatPumpDemand(setPointProfile);
+		float[] returnProfile = Arrays.copyOf(localDemandProfile, localDemandProfile.length);
 		float leastCost = evaluateCost(localDemandProfile);
 		float newCost = leastCost;
 		float maxRecoveryPerTick = 0.5f * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * ArrayUtils.max(deltaT)) ; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
@@ -297,54 +464,53 @@ public class WattboxController implements ISmartController{
 			{
 
 				float tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * (localSetPointArray[i+j] - priorDayExternalTempProfile[i+j])) / owner.buildingThermalMass);
-				//System.out.println("Temp loss in tick " + (i + j) + " = " + tempLoss);
-				float availableHeatRecoveryTicks = 0;
-				for (int k = i+j+1; k < localSetPointArray.length; k++)
+
+
+				if( (i < Consts.NIGHT_TO_DAY_TRANSITION_TICK && tempLoss > Consts.NIGHT_TEMP_LOSS_THRESHOLD) || (i >= Consts.NIGHT_TO_DAY_TRANSITION_TICK && tempLoss > Consts.DAYTIME_TEMP_LOSS_THRESHOLD))
 				{
-					localSetPointArray[k] -= tempLoss;
-					availableHeatRecoveryTicks++;
+					//if the temperature drop is too great, this profile is unfeasible and we return null
+					System.err.println("Temp drop too great with this set point profile, discard");
 				}
-
-				//Sort out where to regain the temperature (if possible)
-
-				int n = (int) Math.ceil((tempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
-
-				if (n <= availableHeatRecoveryTicks)
+				else
 				{
-					//It's possible to recover the temperature
-					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+1,ticksPerDay),n);
-
-					for (int l : recoveryIndices)
+					float availableHeatRecoveryTicks = 0;
+					for (int k = i+j+1; k < localSetPointArray.length; k++)
 					{
-						localSetPointArray[i+j+l] += (tempLoss / n);
+						localSetPointArray[k] -= tempLoss;
+						availableHeatRecoveryTicks++;
 					}
 
-					if (ArrayUtils.max(ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > 0)
+					//Sort out where to regain the temperature (if possible)
+
+					int n = (int) Math.ceil((tempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
+
+					if (n <= availableHeatRecoveryTicks)
 					{
-						//if the temperature drop is too great, this profile is unfeasible and we return null
-						System.err.println("Temp drop too great with this set point profile, discard");
-					}
-					else
-					{
+						//It's possible to recover the temperature
+						int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+1,ticksPerDay),n);
+
+						for (int l : recoveryIndices)
+						{
+							localSetPointArray[i+j+l] += (tempLoss / n);
+						}
+
 						//calculate energy implications and cost for this candidate setPointProfile
 						localDemandProfile = calculateSpaceHeatPumpDemand(localSetPointArray);
 						if (localDemandProfile != null)
 						{
-							System.out.println("A profile that gives non null demand " + Arrays.toString(localSetPointArray));
 							//in here if the set point profile is achievable
 							newCost = evaluateCost(localDemandProfile);
 							if (newCost < leastCost)
 							{
-								System.out.println("In here for agent " + owner.getAgentName());
 								leastCost = newCost;
+								returnProfile = localDemandProfile;
 								this.optimisedSetPointProfile = localSetPointArray;
 							}
 						}
-						else
-						{
-							//Impossible to recover heat - discard this attempt.
-							System.err.println("Can't recover heat with " + availableHeatRecoveryTicks + " ticks, need " + n);
-						}
+					}
+					else
+					{
+						//Impossible to recover heat - discard this attempt.
 					}
 				}
 			}
@@ -386,10 +552,10 @@ public class WattboxController implements ISmartController{
 			//is greater than or equal to setPointMaintenance, the heat pump is off.
 			float tempChangeEnergy = (nextSlotTemp - localSetPointArray[i]) * owner.buildingThermalMass;
 
-			float heatPumpEnergyNeeded = Math.max(0, setPointMaintenanceEnergy + tempChangeEnergy);
+			float heatPumpEnergyNeeded = Math.max(0, setPointMaintenanceEnergy - tempChangeEnergy);
 
 			//zero the energy if heat pump would be off
-			if(deltaT[i] < Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF)
+			if(deltaT[i] > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF)
 			{
 				//heat pump control algorithm would switch off pump
 				heatPumpEnergyNeeded = 0;
@@ -397,7 +563,6 @@ public class WattboxController implements ISmartController{
 
 			if (heatPumpEnergyNeeded > (owner.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP))
 			{
-				System.out.println("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded );
 				//Can't satisfy this demand for this set point profile, return null
 				return null;
 			}
@@ -423,7 +588,7 @@ public class WattboxController implements ISmartController{
 	 * 
 	 * @param owner - the prosumer agent that owns this wattbox
 	 */
-	public WattboxController(HouseholdProsumer owner) 
+	public CopyOfWattboxController(HouseholdProsumer owner) 
 	{
 		this.owner = owner;
 		this.priorDayExternalTempProfile = Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
@@ -453,7 +618,7 @@ public class WattboxController implements ISmartController{
 	 * @param userProfile
 	 * @param userLifestyle
 	 */
-	public WattboxController(HouseholdProsumer owner,
+	public CopyOfWattboxController(HouseholdProsumer owner,
 			WattboxUserProfile userProfile, WattboxLifestyle userLifestyle) 
 	{
 		super();

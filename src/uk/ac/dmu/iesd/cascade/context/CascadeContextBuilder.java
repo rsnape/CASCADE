@@ -21,6 +21,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
+import cern.jet.random.Empirical;
 import cern.jet.random.Normal;
 
 import repast.simphony.context.Context;
@@ -265,7 +266,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		 * Note that this in effect is assuming that occupancy is independent of 
 		 * any of the other assigned variables.  This may not, of course, be true.
 		 */
-		AgentUtils.assignProbabilisticDiscreteParameter("numOccupants", Consts.NUM_OF_OCCUPANTS_ARRAY, Consts.OCCUPANCY_PROBABILITY_ARRAY, householdProsumers);
+		//AgentUtils.assignProbabilisticDiscreteParameter("numOccupants", Consts.NUM_OF_OCCUPANTS_ARRAY, Consts.OCCUPANCY_PROBABILITY_ARRAY, householdProsumers);
 
 		//assign wet appliance ownership.  Based on statistical representation of the BERR 2006 ownership stats
 		// with a bias based on occupancy which seems reasonable.
@@ -301,6 +302,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			thisAgent.setBuildingThermalMass((float) thermalMassGenerator.nextDouble());
 			thisAgent.tau = (thisAgent.buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / thisAgent.buildingHeatLossRate;
 
+			//populate the initial heating profile from the above baseline demand for hot water
 			thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
 
 
@@ -517,7 +519,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		// to clone any existing parameters
 		//tempCont =context;
 		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
+
 		readParamsAndInitializeArrays();
+		initializeProbabilityDistributions();
 		//cascadeMainContext.buildChartSnapshotSchedule();
 		populateContext();
 	
@@ -534,6 +538,18 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			System.out.println("Cascade Main Context created: "+cascadeMainContext.toString());
 		
 		return cascadeMainContext;
+	}
+
+
+	/**
+	 * 
+	 */
+	private void initializeProbabilityDistributions() {
+
+		double[] drawOffDist = ArrayUtils.convertFloatArrayToDoubleArray(ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF)));
+		cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
+		cascadeMainContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
+		cascadeMainContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
 	}
 
 

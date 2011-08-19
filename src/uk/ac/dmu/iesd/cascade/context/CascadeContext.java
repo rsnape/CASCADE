@@ -12,6 +12,10 @@ import javax.swing.JPanel;
 
 import org.jfree.chart.ChartPanel;
 
+import cern.jet.random.Empirical;
+import cern.jet.random.EmpiricalWalker;
+import cern.jet.random.Normal;
+
 import java.io.File;
 
 import repast.simphony.context.*;
@@ -88,6 +92,9 @@ public class CascadeContext extends DefaultContext{
 	SnapshotTaker snapshotTaker1;
 	Collection chartCompCollection;
 	ArrayList snapshotTakerArrList;
+	public EmpiricalWalker drawOffGenerator;
+	public EmpiricalWalker occupancyGenerator;
+	public Normal waterUsageGenerator;
 
 	
 	/**
