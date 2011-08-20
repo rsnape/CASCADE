@@ -6,4 +6,5 @@ Repast.settings
 *.orig
 *.csv
 *.png
+*.txt
 !dataFiles/*

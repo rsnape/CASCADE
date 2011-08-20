@@ -322,7 +322,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 
 	public float getCurrentPrediction() {
 		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
-		if (predictedCostSignal.length > 0) {
+		if (predictedCostSignal.length > 0 && timeSinceSigValid >= 0) {
 			return getPredictedCostSignal()[timeSinceSigValid % predictedCostSignal.length];
 		}
 		else  {
