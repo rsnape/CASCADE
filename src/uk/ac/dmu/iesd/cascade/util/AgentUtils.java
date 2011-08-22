@@ -38,6 +38,8 @@ public class AgentUtils {
 	 * have the  type required by the setter method.  Failure to do so will
 	 * result in an exception
 	 * 
+	 * TODO: I think an EmpiricalWalker would suit this better!!
+	 * 
 	 * @parameter paramName - the name of the parameter to set in each agent
 	 * @parameter values - an (ordered) array of values for the specified parameter
 	 * @parameter probs - an (ordered) array of the probability of agents being assigned corresponding value in the values array above
