@@ -25,7 +25,7 @@
 									
 		/>
 				<parameter name="defraProfiles" displayName="defraProfiles" type="java.lang.String" 
-						defaultValue="melodySampleWeek.csv" 
+						defaultValue="1200profiles.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -49,19 +49,19 @@
 									
 		/>
 				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
-						defaultValue="oneFlatDayWeather.csv" 
+						defaultValue="yearWeather.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
 				<parameter name="defaultProsumersPerFeeder" displayName="defaultProsumersPerFeeder" type="java.lang.Integer" 
-						defaultValue="11" 
+						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
 				<parameter name="householdBaseAttributeFile" displayName="householdBaseAttributeFile" type="java.lang.String" 
-						defaultValue="melodySampleWeek.csv" 
+						defaultValue="1200profiles.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									

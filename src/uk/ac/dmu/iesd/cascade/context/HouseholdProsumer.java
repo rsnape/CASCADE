@@ -628,7 +628,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		float maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((float)(Consts.SECONDS_PER_DAY / ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
 		float heatingEnergy = requiredTempChange * this.buildingThermalMass;
 		
-		if ((requiredTempChange < 0) || (deltaT < Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF))
+		if ((requiredTempChange < (0 - Consts.FLOATING_POINT_TOLERANCE)) || (deltaT < Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF))
 		{
 			//heat pump off, leave demand at zero and decrement internal temperature
 			this.currentInternalTemp -= maintenanceEnergy / this.buildingThermalMass;
