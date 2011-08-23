@@ -293,10 +293,12 @@ public class WattboxController implements ISmartController{
 		{
 			//Start each evaluation from the basepoint of the original (user specified) set point profile
 			localSetPointArray = Arrays.copyOf(setPointProfile, setPointProfile.length);
+			float totalTempLoss = 0;
+			
 			for ( int j = Consts.HEAT_PUMP_MIN_SWITCHOFF - 1; (j < Consts.HEAT_PUMP_MAX_SWITCHOFF && (i+j < ticksPerDay)); j++)
 			{
 
-				float tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * (localSetPointArray[i+j] - priorDayExternalTempProfile[i+j])) / owner.buildingThermalMass);
+				float tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * Math.max(0,(localSetPointArray[i+j] - priorDayExternalTempProfile[i+j]))) / owner.buildingThermalMass);
 				//System.out.println("Temp loss in tick " + (i + j) + " = " + tempLoss);
 				float availableHeatRecoveryTicks = 0;
 				for (int k = i+j+1; k < localSetPointArray.length; k++)
@@ -306,57 +308,64 @@ public class WattboxController implements ISmartController{
 				}
 
 				//Sort out where to regain the temperature (if possible)
-
-				int n = (int) Math.ceil((tempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
-				System.err.println("Trying to recover heat with " + availableHeatRecoveryTicks + " ticks, need " + n);
+				totalTempLoss += tempLoss;
+				
+				int n = (int) Math.ceil((totalTempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
 
 				if (n <= availableHeatRecoveryTicks)
 				{
+					float tempToRecover = (totalTempLoss / n);
 					//It's possible to recover the temperature
 					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+1,ticksPerDay),n);
 
 					for (int l : recoveryIndices)
 					{
-						localSetPointArray[i+j+l] += (tempLoss / n);
+						for (int m = i+j+l+2; m < ticksPerDay; m++)
+						{
+							localSetPointArray[m] += tempToRecover;
+						}
+						//System.out.println("In here, adding temp " + tempToRecover + " from index " + l);
+						//System.out.println("With result " + Arrays.toString(localSetPointArray));
 					}
-System.out.println(Arrays.toString(this.setPointProfile));
-System.out.println(Arrays.toString(localSetPointArray));
-System.out.println(Arrays.toString(Consts.MAX_PERMITTED_TEMP_DROPS));
 
-
-					if (ArrayUtils.max(ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > 0)
+					if (ArrayUtils.max(ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > Consts.FLOATING_POINT_TOLERANCE)
 					{
 						//if the temperature drop is too great, this profile is unfeasible and we return null
-						System.err.println("Temp drop too great with this set point profile, discard");
+						if (owner.getAgentID() == 1)
+						{System.err.println("Temp drop too great with this set point profile, discard");}
 					}
 					else
 					{
-						System.out.println("Calculate pump profile for this temp profile");
+						//System.out.println("Calculate pump profile for this temp profile");
 						//calculate energy implications and cost for this candidate setPointProfile
 						localDemandProfile = calculateSpaceHeatPumpDemand(localSetPointArray);
 						if (localDemandProfile != null)
 						{
-							System.out.println("A profile that gives non null demand " + Arrays.toString(localSetPointArray));
 							//in here if the set point profile is achievable
 							newCost = evaluateCost(localDemandProfile);
 							if (newCost < leastCost)
 							{
-								System.out.println("In here for agent " + owner.getAgentName());
+								if(ArrayUtils.max(localSetPointArray) - ArrayUtils.max(this.setPointProfile) > 0.005)
+								{
+									System.err.println("Somehow got profile with significantly higher temp than baseline" + Arrays.toString(localSetPointArray));
+								}
+								
 								leastCost = newCost;
-								this.optimisedSetPointProfile = localSetPointArray;
+								this.optimisedSetPointProfile = Arrays.copyOf(localSetPointArray, localSetPointArray.length);
+								this.heatPumpDemandProfile = ArrayUtils.multiply(localDemandProfile, (1/Consts.DOMESTIC_HEAT_PUMP_SPACE_COP));
 							}
 						}
 						else
 						{
 							//Impossible to recover heat within heat pump limits - discard this attempt.
-							System.err.println("Can't recover heat with " + availableHeatRecoveryTicks + " ticks, need " + n);
+							if (owner.getAgentID() == 1)
+							{System.err.println("Can't recover heat with " + availableHeatRecoveryTicks + " ticks, need " + n);}
 						}
 					}
 				}
 			}
 		}
 
-		this.heatPumpDemandProfile = ArrayUtils.multiply(localDemandProfile, (1/Consts.DOMESTIC_HEAT_PUMP_SPACE_COP));
 		this.expectedNextDaySpaceHeatCost = leastCost;
 	}
 
@@ -403,7 +412,7 @@ System.out.println(Arrays.toString(Consts.MAX_PERMITTED_TEMP_DROPS));
 
 			if (heatPumpEnergyNeeded > (owner.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP))
 			{
-				System.out.println("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded );
+				//System.out.println("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded );
 				//Can't satisfy this demand for this set point profile, return null
 				return null;
 			}
