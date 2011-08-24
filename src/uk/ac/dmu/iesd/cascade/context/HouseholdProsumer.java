@@ -210,6 +210,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private float[] historicalIntTemp;
 	private float[] historicalExtTemp;
 	private float[] historicalWaterHeatDemand;
+	public float freeRunningTemperatureLossPerTickMultiplier;
 
 
 
@@ -652,7 +653,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			}
 			else
 			{
-			this.currentInternalTemp = this.setPoint;
+				this.currentInternalTemp = this.setPoint;
 			}
 		}
 		
@@ -930,7 +931,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.setPointProfile = new float[ticksPerDay];
 		Arrays.fill(setPointProfile, 20); // This puts in a flat set point through the day set by the consumer
 		//this.setPointProfile = Arrays.copyOf(Consts.BASIC_AVERAGE_SET_POINT_PROFILE, Consts.BASIC_AVERAGE_SET_POINT_PROFILE.length);
-		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2));
+//		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2));
 		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
 		this.setPoint = optimisedSetPointProfile[0];
 		this.currentInternalTemp = this.setPoint;
