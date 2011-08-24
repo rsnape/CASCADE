@@ -314,7 +314,7 @@ public class WattboxController implements ISmartController{
 
 				if (n <= availableHeatRecoveryTicks)
 				{
-					float tempToRecover = (totalTempLoss / n);
+					float tempToRecover = (totalTempLoss / (float) n);
 					//It's possible to recover the temperature
 					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+1,ticksPerDay),n);
 
