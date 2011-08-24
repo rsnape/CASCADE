@@ -93,9 +93,7 @@ public class WattboxController implements ISmartController{
 		this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
 		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.baselineHotWaterVolumeProfile,(timeStep % owner.baselineHotWaterVolumeProfile.length), (timeStep % owner.baselineHotWaterVolumeProfile.length) + ticksPerDay);
 		this.heatPumpDemandProfile = ArrayUtils.multiply(calculateSpaceHeatPumpDemand(this.setPointProfile), (1/Consts.DOMESTIC_HEAT_PUMP_SPACE_COP));
-
-
-		//TODO: Think about whether / how water and space heating are coupled.
+		this.waterHeatDemandProfile = ArrayUtils.multiply(hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
 
 		if (coldAppliancesControlled)
 		{
@@ -174,12 +172,14 @@ public class WattboxController implements ISmartController{
 				currDemand = currDemand + (((currDemand + this.heatPumpDemandProfile[i]) - this.maxHeatPumpElecDemandPerTick ) * Consts.DOMESTIC_HEAT_PUMP_WATER_COP / Consts.IMMERSION_HEATER_COP);
 			}
 
-			float currCost = currDemand * this.dayPredictedCostSignal[i];
+			float currCost = (currDemand + heatPumpDemandProfile[i]) * this.dayPredictedCostSignal[i];
 			int moveTo = -1;
 			float newHeatDemand = 0;
 
 			if (currDemand > 0)
 			{
+				//If there's a demand in this slot, calculate whether it can be profitably
+				//swapped into another slot.
 				float extraHeatRequired = 0;
 				float adaptedDemand = 0;
 				for (int j = i-1; j >= 0; j--)
@@ -193,11 +193,11 @@ public class WattboxController implements ISmartController{
 					{
 						adaptedDemand = adaptedDemand + ((totalHeatDemand - this.maxHeatPumpElecDemandPerTick ) * Consts.DOMESTIC_HEAT_PUMP_WATER_COP / Consts.IMMERSION_HEATER_COP);
 					}
-					if (adaptedDemand * this.dayPredictedCostSignal[j] < currCost)
+					if ((adaptedDemand + heatPumpDemandProfile[j]) * this.dayPredictedCostSignal[j] < currCost)
 					{
 						moveTo = j;
 						newHeatDemand = adaptedDemand;
-						currCost = adaptedDemand * this.dayPredictedCostSignal[j];
+						currCost = (adaptedDemand + heatPumpDemandProfile[j]) * this.dayPredictedCostSignal[j];
 					}
 				}
 
@@ -300,15 +300,17 @@ public class WattboxController implements ISmartController{
 
 				float tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * Math.max(0,(localSetPointArray[i+j] - priorDayExternalTempProfile[i+j]))) / owner.buildingThermalMass);
 				//System.out.println("Temp loss in tick " + (i + j) + " = " + tempLoss);
+				totalTempLoss += tempLoss;
 				float availableHeatRecoveryTicks = 0;
 				for (int k = i+j+1; k < localSetPointArray.length; k++)
 				{
-					localSetPointArray[k] -= tempLoss;
+					localSetPointArray[k] = this.setPointProfile[k] - totalTempLoss;
 					availableHeatRecoveryTicks++;
 				}
 
+				availableHeatRecoveryTicks--;
+				
 				//Sort out where to regain the temperature (if possible)
-				totalTempLoss += tempLoss;
 				
 				int n = (int) Math.ceil((totalTempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
 
@@ -316,13 +318,14 @@ public class WattboxController implements ISmartController{
 				{
 					float tempToRecover = (totalTempLoss / (float) n);
 					//It's possible to recover the temperature
-					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+1,ticksPerDay),n);
+					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+2,ticksPerDay),n);
 
 					for (int l : recoveryIndices)
 					{
 						for (int m = i+j+l+2; m < ticksPerDay; m++)
 						{
 							localSetPointArray[m] += tempToRecover;
+							//System.out.println("Adding " + tempToRecover + " at index " + m + " to counter temp loss at tick " + (i+j+1));
 						}
 						//System.out.println("In here, adding temp " + tempToRecover + " from index " + l);
 						//System.out.println("With result " + Arrays.toString(localSetPointArray));
@@ -331,8 +334,6 @@ public class WattboxController implements ISmartController{
 					if (ArrayUtils.max(ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > Consts.FLOATING_POINT_TOLERANCE)
 					{
 						//if the temperature drop is too great, this profile is unfeasible and we return null
-						if (owner.getAgentID() == 1)
-						{System.err.println("Temp drop too great with this set point profile, discard");}
 					}
 					else
 					{
@@ -348,6 +349,7 @@ public class WattboxController implements ISmartController{
 								if(ArrayUtils.max(localSetPointArray) - ArrayUtils.max(this.setPointProfile) > 0.005)
 								{
 									System.err.println("Somehow got profile with significantly higher temp than baseline" + Arrays.toString(localSetPointArray));
+									System.err.println("Total temp loss is " + totalTempLoss + " to be recovered in " + n + "steps at " + tempToRecover + " per tick");
 								}
 								
 								leastCost = newCost;

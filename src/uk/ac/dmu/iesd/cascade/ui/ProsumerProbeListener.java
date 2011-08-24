@@ -112,7 +112,8 @@ public class ProsumerProbeListener implements ProbeListener {
 		float[] arr1 = thisAgent.getHistoricalBaseDemand();
 		float[] arr2 = thisAgent.getHistoricalColdDemand();
 		float[] arr3 = thisAgent.getHistoricalWetDemand();
-		float[] arr4 = thisAgent.getHistoricalHeatDemand();
+		float[] arr4 = thisAgent.getHistoricalSpaceHeatDemand();
+		float[] arr5 = thisAgent.getHistoricalWaterHeatDemand();
 
 
 		for (int i = 0; i < 48 ; i++)
@@ -120,7 +121,8 @@ public class ProsumerProbeListener implements ProbeListener {
 			result.addValue((Number)arr1[i], "Base", i);
 			result.addValue((Number)arr2[i], "Cold", i);
 			result.addValue((Number)arr3[i], "Wet", i);
-			result.addValue((Number)arr4[i], "Heat", i);
+			result.addValue((Number)arr4[i], "Space Heat", i);
+			result.addValue((Number)arr5[i], "Water Heat", i);
 		}
 		
 		return result;
