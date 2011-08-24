@@ -281,6 +281,9 @@ public static final float TYPICAL_HEAT_PUMP_ELEC_RATING = 4f;
 public static final float[] MAX_PERMITTED_TEMP_DROPS = {1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f};
 
 
+public static final float FLOATING_POINT_TOLERANCE = (float) 1e-29;
+
+
 
 }
 

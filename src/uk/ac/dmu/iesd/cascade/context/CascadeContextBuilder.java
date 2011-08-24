@@ -246,6 +246,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				System.out.println("householdBaseDemandArray is initialised with profile " + demandName);
 			}
 			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
+
 			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(householdBaseDemandArray, false);
 			//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
 			hhProsAgent.hasSmartMeter = true;
@@ -298,10 +299,11 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				thisAgent.hasDishWasher = true;
 			}
 
-			thisAgent.setBuildingHeatLossRate((float) buildingLossRateGenerator.nextDouble());
-			thisAgent.setBuildingThermalMass((float) thermalMassGenerator.nextDouble());
+			thisAgent.setBuildingHeatLossRate(225f);//For test ((float) buildingLossRateGenerator.nextDouble());
+			thisAgent.setBuildingThermalMass(10f);//For test((float) thermalMassGenerator.nextDouble());
 			thisAgent.tau = (thisAgent.buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / thisAgent.buildingHeatLossRate;
-
+			thisAgent.freeRunningTemperatureLossPerTickMultiplier = (thisAgent.buildingHeatLossRate / thisAgent.buildingThermalMass) / (Consts.KWH_TO_JOULE_CONVERSION_FACTOR / (Consts.SECONDS_PER_DAY / cascadeMainContext.ticksPerDay));
+			
 			//populate the initial heating profile from the above baseline demand for hot water
 			thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
 

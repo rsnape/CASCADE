@@ -685,7 +685,13 @@ public class ArrayUtils {
 	public static int[] findNSmallestIndices(float[] floatArray, int n) {
 		// TODO Poor algorithm - improve
 		ArrayList<Pair<Integer,Float>> returnArrayList = new ArrayList<Pair<Integer,Float>>();
+		if (n < 0)
+		{
+			System.err.println("Trying to find " + n + " smallest indices. Negative count makes no sense");
+		}
+
 		int[] returnArray = new int[n];
+
 		int indicesToFill = n;
 		int indexOfCurrMaxOfMins = -1;
 		float currMaxOfMins = Float.NEGATIVE_INFINITY;
@@ -715,7 +721,7 @@ public class ArrayUtils {
 					returnArrayList.add(new Pair(i,floatArray[i]));
 					indexOfCurrMaxOfMins = -1;
 					currMaxOfMins = Float.NEGATIVE_INFINITY;
-					
+
 					for(int l = 0; l < n; l++)
 					{
 						if (returnArrayList.get(l).getSecond() > currMaxOfMins)
@@ -724,7 +730,7 @@ public class ArrayUtils {
 							indexOfCurrMaxOfMins = l;
 						}
 					}
-					
+
 				}
 			}
 		}
@@ -755,7 +761,7 @@ public class ArrayUtils {
 			returnArray[i] = (Double) thisGene.getAllele();	
 			i++;
 		}
-		
+
 		return returnArray;
 	}
 }
