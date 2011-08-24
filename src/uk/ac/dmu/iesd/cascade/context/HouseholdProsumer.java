@@ -190,7 +190,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	public float[] coldApplianceProfile;
 	public float[] wetApplianceProfile;
 	public float[] baselineHotWaterVolumeProfile;
-	float[] waterHeatProfile;
+	private float[] waterHeatProfile;
 
 	//For ease of access to a debug type outputter
 	CSVWriter sampleOutput;
@@ -200,7 +200,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private float[] historicalBaseDemand;
 	private float[] historicalColdDemand;
 	private float[] historicalWetDemand;
-	private float[] historicalHeatDemand;
+	private float[] historicalSpaceHeatDemand;
 
 	/**
 	 * Building heat flow time constant (thermal mass or specific heat capacity / heat loss rate)
@@ -209,6 +209,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private float timeSinceHeating = 0	;
 	private float[] historicalIntTemp;
 	private float[] historicalExtTemp;
+	private float[] historicalWaterHeatDemand;
 
 
 
@@ -328,9 +329,17 @@ public class HouseholdProsumer extends ProsumerAgent{
 	/**
 	 * @return
 	 */
-	public float[] getHistoricalHeatDemand() {
+	public float[] getHistoricalSpaceHeatDemand() {
 		// TODO Auto-generated method stub
-		return this.historicalHeatDemand;
+		return this.historicalSpaceHeatDemand;
+	}
+
+	/**
+	 * @return
+	 */
+	public float[] getHistoricalWaterHeatDemand() {
+		// TODO Auto-generated method stub
+		return this.historicalWaterHeatDemand;
 	}
 
 	/**
@@ -405,7 +414,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 				ArrayUtils.replaceRange(this.coldApplianceProfile, (float[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
 				//this.wetApplianceProfile = (float[]) currentSmartProfiles.get("WetApps");
 				this.optimisedSetPointProfile = (float[]) currentSmartProfiles.get("HeatPump");
-				this.waterHeatProfile = (float[]) currentSmartProfiles.get("WaterHeat");
+				this.setWaterHeatProfile((float[]) currentSmartProfiles.get("WaterHeat"));
 			}
 
 			//***Richard output test for prosumer behaviour***
@@ -567,7 +576,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		if (hasElectricalWaterHeat)
 		{
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
-			recordedHeatPumpDemand[timeOfDay] += waterHeatProfile[timeOfDay];
+			recordedHeatPumpDemand[timeOfDay] += getWaterHeatProfile()[timeOfDay];
 
 		}
 
@@ -636,7 +645,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else
 		{
 			demand = maintenanceEnergy + heatingEnergy;
+			if (demand > ((this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * (float) 24 / ticksPerDay))
+			{
+				demand = (this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * ((float) 24 / ticksPerDay);
+				this.currentInternalTemp = this.currentInternalTemp + ((demand - maintenanceEnergy) / this.buildingThermalMass);
+			}
+			else
+			{
 			this.currentInternalTemp = this.setPoint;
+			}
 		}
 		
 		return demand;
@@ -738,7 +755,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		historicalBaseDemand[time % ticksPerDay] = currentBase;
 		historicalWetDemand[time % ticksPerDay] = currentWet;
 		historicalColdDemand[time % ticksPerDay] = currentCold;
-		historicalHeatDemand[time % ticksPerDay] = currentHeat;
+		historicalSpaceHeatDemand[time % ticksPerDay] = currentHeat - getWaterHeatProfile()[time % ticksPerDay];
+		historicalWaterHeatDemand[time % ticksPerDay] = getWaterHeatProfile()[time % ticksPerDay];
 
 		float returnAmount = currentBase + currentCold + currentWet + currentHeat;
 		if (Consts.DEBUG)
@@ -906,11 +924,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		
 		this.baselineHotWaterVolumeProfile = Arrays.copyOf(hotWaterNeededProfile, hotWaterNeededProfile.length);
-		this.waterHeatProfile = ArrayUtils.multiply(hotWaterNeededProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
+		this.setWaterHeatProfile(ArrayUtils.multiply(hotWaterNeededProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) ));
 		this.ratedPowerHeatPump = Consts.TYPICAL_HEAT_PUMP_ELEC_RATING;
 		
 		this.setPointProfile = new float[ticksPerDay];
-		Arrays.fill(setPointProfile, 20);
+		Arrays.fill(setPointProfile, 20); // This puts in a flat set point through the day set by the consumer
 		//this.setPointProfile = Arrays.copyOf(Consts.BASIC_AVERAGE_SET_POINT_PROFILE, Consts.BASIC_AVERAGE_SET_POINT_PROFILE.length);
 		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2));
 		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
@@ -924,7 +942,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.historicalBaseDemand = new float[ticksPerDay];
 		this.historicalWetDemand = new float[ticksPerDay];
 		this.historicalColdDemand = new float[ticksPerDay];
-		this.historicalHeatDemand = new float[ticksPerDay];
+		this.historicalSpaceHeatDemand = new float[ticksPerDay];
+		this.historicalWaterHeatDemand = new float[ticksPerDay];
 		this.historicalIntTemp = new float[ticksPerDay];
 		this.historicalExtTemp = new float[ticksPerDay];
 		//TODO - get more thoughtful elasticity model than this random formulation
@@ -962,6 +981,20 @@ public class HouseholdProsumer extends ProsumerAgent{
 		{
 			sampleOutput = new CSVWriter("richardTestOutput.csv", false);
 		}
+	}
+
+	/**
+	 * @param waterHeatProfile the waterHeatProfile to set
+	 */
+	public void setWaterHeatProfile(float[] waterHeatProfile) {
+		this.waterHeatProfile = waterHeatProfile;
+	}
+
+	/**
+	 * @return the waterHeatProfile
+	 */
+	public float[] getWaterHeatProfile() {
+		return waterHeatProfile;
 	}
 
 
