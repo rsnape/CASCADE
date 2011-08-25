@@ -903,15 +903,15 @@ public class RECO extends AggregatorAgent{
 		//If it's the first time through the optimisation - start from an arbitrary
 		//point in search space.  Otherwise, start from the last price signal
 		double[] start = new double[this.ticksPerDay];
-		if(firstTimeMinimisation )
+		//if(firstTimeMinimisation )
 		{
 			Arrays.fill(start, 0.1);
 			firstTimeMinimisation = false;
 		}
-		else
-		{
-			start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
-		}
+		//else
+		//{
+		//	start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+		//}
 
 		// initial step sizes
 		//double[] step = new double[arr_S.length];
@@ -1167,7 +1167,9 @@ public class RECO extends AggregatorAgent{
 					//System.out.println(Arrays.toString(Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
 
 					//Richard's test version below - with normalisation etc.
-
+					
+//One possible way to introduce feedback and allow the signal to change. 
+					arr_i_C = ArrayUtils.normalizeValues(ArrayUtils.pow2(this.predictedCustomerDemand));
 
 					float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
 					//System.out.println(Arrays.toString(normalizedCosts));

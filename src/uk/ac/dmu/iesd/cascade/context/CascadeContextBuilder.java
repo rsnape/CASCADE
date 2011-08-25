@@ -299,8 +299,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				thisAgent.hasDishWasher = true;
 			}
 
-			thisAgent.setBuildingHeatLossRate(225f);//For test ((float) buildingLossRateGenerator.nextDouble());
-			thisAgent.setBuildingThermalMass(10f);//For test((float) thermalMassGenerator.nextDouble());
+			thisAgent.setBuildingHeatLossRate/*(225f);//For test*/((float) buildingLossRateGenerator.nextDouble());
+			thisAgent.setBuildingThermalMass/*(10f);//For test*/((float) thermalMassGenerator.nextDouble());
 			thisAgent.tau = (thisAgent.buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / thisAgent.buildingHeatLossRate;
 			thisAgent.freeRunningTemperatureLossPerTickMultiplier = (thisAgent.buildingHeatLossRate / thisAgent.buildingThermalMass) / (Consts.KWH_TO_JOULE_CONVERSION_FACTOR / (Consts.SECONDS_PER_DAY / cascadeMainContext.ticksPerDay));
 			

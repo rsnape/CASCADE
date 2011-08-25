@@ -590,7 +590,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private float wetApplianceDemand() {
 		return this.wetApplianceProfile[time % wetApplianceProfile.length];
 	}
-
+	
+	/**
+	 * @return
+	 */
+	private float coldApplianceDemand() 
+	{
+		return this.coldApplianceProfile[time % wetApplianceProfile.length];
+	}
+	
 	/**
 	 * @return
 	 */
@@ -599,13 +607,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return 0;
 	}
 
-	/**
-	 * @return
-	 */
-	private float coldApplianceDemand() 
-	{
-		return this.coldApplianceProfile[time % wetApplianceProfile.length];
-	}
+
 
 	/**
 	 * @return
