@@ -284,6 +284,19 @@ public static final float[] MAX_PERMITTED_TEMP_DROPS = {1f,1f,1f,1f,1f,1f,1f,1f,
 public static final float FLOATING_POINT_TOLERANCE = (float) 1e-29;
 
 
+/**
+ * The threshold defining the minimum difference in costs that we consider different in the model
+ * 
+ * WARNING: Be very careful in using this - can mask some nasty algorithmic errors
+ */
+public static final float COST_DECISION_THRESHOLD = 1e-3f;
+
+/**
+ * Maximum domestic heat pump power (in kW)
+ */
+public static final float MAX_DOMESTIC_IMMERSION_POWER = 3;
+
+
 
 }
 

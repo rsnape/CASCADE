@@ -109,20 +109,20 @@ public class ProsumerProbeListener implements ProbeListener {
 	private  DefaultCategoryDataset createDataset(HouseholdProsumer thisAgent) {
 		DefaultCategoryDataset result = new DefaultCategoryDataset();
 
-		float[] arr1 = thisAgent.getHistoricalBaseDemand();
-		float[] arr2 = thisAgent.getHistoricalColdDemand();
-		float[] arr3 = thisAgent.getHistoricalWetDemand();
-		float[] arr4 = thisAgent.getHistoricalSpaceHeatDemand();
-		float[] arr5 = thisAgent.getHistoricalWaterHeatDemand();
-
+		float[] arr1 = thisAgent.getHistoricalSpaceHeatDemand();
+		float[] arr2 = thisAgent.getHistoricalWaterHeatDemand();
+		float[] arr3 = thisAgent.getHistoricalBaseDemand();
+		float[] arr4 = thisAgent.getHistoricalColdDemand();
+		float[] arr5 = thisAgent.getHistoricalWetDemand();
 
 		for (int i = 0; i < 48 ; i++)
 		{
-			result.addValue((Number)arr1[i], "Base", i);
-			result.addValue((Number)arr2[i], "Cold", i);
-			result.addValue((Number)arr3[i], "Wet", i);
-			result.addValue((Number)arr4[i], "Space Heat", i);
-			result.addValue((Number)arr5[i], "Water Heat", i);
+			result.addValue((Number)arr1[i], "Space Heat", i);
+			result.addValue((Number)arr2[i], "Water Heat", i);
+			result.addValue((Number)arr3[i], "Base", i);
+			result.addValue((Number)arr4[i], "Cold", i);
+			result.addValue((Number)arr5[i], "Wet", i);
+
 		}
 		
 		return result;
