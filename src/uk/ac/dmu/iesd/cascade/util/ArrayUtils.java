@@ -138,7 +138,7 @@ public class ArrayUtils {
 		{
 			if (nextArray.length != returnArray.length)
 			{
-				System.err.println("Tried to convolve arrays of different lengths  " + returnArray.length + " and " + nextArray.length + " result - undefined");
+				System.err.println("ArrayUtils: Tried to convolve arrays of different lengths  " + returnArray.length + " and " + nextArray.length + " result - undefined");
 				returnArray = null;
 			}
 			else
@@ -166,7 +166,7 @@ public class ArrayUtils {
 
 		if (array1.length != array2.length)
 		{
-			System.err.println("Tried to dot product arrays of different lengths " + array1.length + array2.length + " result - undefined");
+			System.err.println("ArryUtils: Tried to dot product arrays of different lengths " + array1.length + array2.length + " result - undefined");
 		}
 		else
 		{
@@ -705,7 +705,7 @@ public class ArrayUtils {
 		ArrayList<Pair<Integer,Float>> returnArrayList = new ArrayList<Pair<Integer,Float>>();
 		if (n < 0)
 		{
-			System.err.println("Trying to find " + n + " smallest indices. Negative count makes no sense");
+			System.err.println("ArrayUtils: Trying to find " + n + " smallest indices. Negative count makes no sense");
 		}
 
 		int[] returnArray = new int[n];
@@ -774,7 +774,7 @@ public class ArrayUtils {
 		{
 			if(!(thisGene instanceof DoubleGene))
 			{
-				System.err.println("Can't change a non-Double Gene to a Double type!!");
+				System.err.println("ArrayUtils: Can't change a non-Double Gene to a Double type!!");
 			}
 			returnArray[i] = (Double) thisGene.getAllele();	
 			i++;

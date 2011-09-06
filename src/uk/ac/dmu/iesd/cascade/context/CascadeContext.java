@@ -506,7 +506,7 @@ public class CascadeContext extends DefaultContext{
 			Projection proj = projIterator.next();
 			this.addProjection(proj);
 			if (verbose)
-				System.out.println("Added projection: "+ proj.getName());
+				System.out.println("CascadeContext: Added projection: "+ proj.getName());
 		}
 
 		this.setId(context.getId());

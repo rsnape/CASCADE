@@ -119,7 +119,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		returnAmount = returnAmount + windGeneration();
 		if (Consts.DEBUG) {
 			if (returnAmount != 0) {
-				System.out.println("Generating " + returnAmount);
+				System.out.println("WindGeneratorProsumer: Generating " + returnAmount);
 			}
 		}
 		return returnAmount;
@@ -173,7 +173,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		this.ticksPerDay = context.getTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0) {
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
-			System.err.println(" Will be truncated and may cause unexpected behaviour");
+			System.err.println("WindGeneratorProsumer: Will be truncated and may cause unexpected behaviour");
 		}
 		this.baseDemandProfile = new float[baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0,

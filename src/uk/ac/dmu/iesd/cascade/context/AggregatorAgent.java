@@ -302,7 +302,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 			price = (float) (A * Math.exp(B * x) + C);
 			if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 			{
-				System.out.println("Price at tick" + i + " is " + price);
+				System.out.println("AggregatorAgent: Price at tick" + i + " is " + price);
 			}
 			if (price > Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH) 
 			{

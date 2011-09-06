@@ -486,7 +486,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		{
 			if (returnAmount != 0)
 			{
-				System.out.println("Generating " + returnAmount);
+				System.out.println("HousholdProsumer: Generating " + returnAmount);
 			}
 		}
 		return returnAmount;
@@ -779,7 +779,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		{
 			if (returnAmount != 0)
 			{
-				System.out.println("Total demand (not net against generation) " + returnAmount);
+				System.out.println("HouseholdProsumer: Total demand (not net against generation) " + returnAmount);
 			}
 		}
 		return returnAmount;
@@ -800,7 +800,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		float [] daysOptimisedDemand = new float [ticksPerDay];
 		if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 		{
-			System.out.println("predictedCostSignal "+getPredictedCostSignal()+" time "+time+ " predictionValidTime "+predictionValidTime+" daysCostSignal "+ daysCostSignal +" ticksPerDay "+ticksPerDay);
+			System.out.println("HouseholdProsumer: predictedCostSignal "+getPredictedCostSignal()+" time "+time+ " predictionValidTime "+predictionValidTime+" daysCostSignal "+ daysCostSignal +" ticksPerDay "+ticksPerDay);
 		}
 		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
 
@@ -970,8 +970,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		if (baseDemand.length % ticksPerDay != 0)
 		{
-			System.err.println("baseDemand array not a whole number of days");
-			System.err.println("Will be truncated and may cause unexpected behaviour");
+			System.err.println("HouseholdProsumer: baseDemand array not a whole number of days");
+			System.err.println("HouseholdProsumer: Will be truncated and may cause unexpected behaviour");
 		}
 		this.baseDemandProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
