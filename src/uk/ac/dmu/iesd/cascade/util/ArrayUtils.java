@@ -417,6 +417,24 @@ public class ArrayUtils {
 		}   
 		return floatArray; 
 	}
+	
+	/**
+	 * This utility function accept a double array as an argument and returns 
+	 * a float array containing converted double values of the passed array (argument).
+	 * This is not a good/wise thing to do as information/precision could be lost, but it is
+	 * written if it would be necessary to use it! 
+	 *  
+	 * @param doubleArray whose  <tt>double</tt> element values will be converted to <tt>float</tt>  
+	 * @return array containing the passed array values (as argument) converted to <tt>float</tt>  
+	 */
+	public static float[][] convertDoubleArrayToFloatArray(double[][] array){ 
+		
+		float[][] floatArray = new float[array.length][array[0].length];    
+		for (int i = 0; i < array.length; i++)  {
+			floatArray[i] = convertDoubleArrayToFloatArray(array[i]);    
+		}   
+		return floatArray; 
+	}
 
 	/**
 	 * This utility function accept a float array as an argument and returns 

@@ -135,8 +135,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			startDate = new Date(2000,1,1);
 			e1.printStackTrace();
 		}
-		cascadeMainContext.currentDate = new GregorianCalendar();
-		cascadeMainContext.currentDate.setTime(startDate);
+		cascadeMainContext.simulationCalendar = new GregorianCalendar();
+		cascadeMainContext.simulationCalendar.setTime(startDate);
 
 		/*
 		 * Read in the necessary data files and store to the context

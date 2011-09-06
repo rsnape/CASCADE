@@ -67,6 +67,16 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * */
 	protected String agentName;
 
+	/**
+	 * This field (C) is the "marginal cost" per KWh in the ith timeslot 
+	 * (which aggregator can predict 24 hours ahead).
+	 * This is the cost for the part that cosumer's demand that cannot be predicted further
+	 * ahead and supplied via long term contracts because it is variable due to weather, TV schedules, or owns
+	 * generators not being able to meet part of the predicated demand. 
+	 * For the inital experiment, C would be proportional to national demand Ni with 
+	 * the option to make it Ni^2 or fractional power
+	 **/
+	float[] arr_i_C; 
 
 	/**
 	 * A boolen to determine whether the name has
@@ -169,6 +179,14 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 		this.netDemand = nd;
 	}
 
+	/**
+	 * This method returns the cost of buying wholesale electricity for this aggregator
+	 * at the current tick
+	 */
+	public float getCurrentCost()
+	{
+		return arr_i_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+	}
 
 	/**
 	 * This method should define the step for the agents.
@@ -243,7 +261,8 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	{
 		double time = RepastEssentials.GetTickCount();
 		return priceSignal[(int) time % priceSignal.length];
-	} 
+	}
+	
 
 	void setPriceSignalFlatRate(float price)
 	{

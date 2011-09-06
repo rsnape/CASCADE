@@ -25,7 +25,8 @@ public final class Consts {
 	/**
 	 * Model level constants
 	 */
-	public static boolean DEBUG = false;  //use for debugging, default is false
+	public static boolean DEBUG = true;  //use for debugging, default is false
+	public static final String DEBUG_OUTPUT_FILE = "DebugOutput.txt"; //Change this to a name to desired filename to divert System.out to a file when DEBUG is true
 
 
 	public static int SECONDS_PER_DAY = 86400;
@@ -295,6 +296,10 @@ public static final float COST_DECISION_THRESHOLD = 1e-3f;
  * Maximum domestic heat pump power (in kW)
  */
 public static final float MAX_DOMESTIC_IMMERSION_POWER = 3;
+public static final float TEMP_CHANGE_TOLERANCE = 1e-3f;
+
+
+
 
 
 

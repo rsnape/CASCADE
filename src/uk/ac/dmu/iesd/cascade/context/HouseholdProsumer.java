@@ -97,6 +97,14 @@ public class HouseholdProsumer extends ProsumerAgent{
 	float ratedCapacityElectricalStorage;   // Note kWh rather than kW
 	float ratedCapacityHotWaterStorage;   // Note kWh rather than kW
 	public float dailyHotWaterUsage;
+	public float getDailyHotWaterUsage() {
+		return dailyHotWaterUsage;
+	}
+
+	public void setDailyHotWaterUsage(float dailyHotWaterUsage) {
+		this.dailyHotWaterUsage = dailyHotWaterUsage;
+	}
+
 	float ratedCapacitySpaceHeatStorage; // Note - related to thermal mass
 
 	/*
@@ -640,7 +648,12 @@ public class HouseholdProsumer extends ProsumerAgent{
 		float maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((float)(Consts.SECONDS_PER_DAY / ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
 		float heatingEnergy = requiredTempChange * this.buildingThermalMass;
 		
-		if ((requiredTempChange < (0 - Consts.FLOATING_POINT_TOLERANCE)) || (deltaT < Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF))
+		if(Consts.DEBUG)
+		{
+			System.out.println("For agent " + this.getAgentName() + "at tick " + timeStep + " requiredTempChange = " + requiredTempChange + ", energy for temp maintenance = " + maintenanceEnergy + ", temp change energy = " + heatingEnergy);
+		}
+		
+		if ((requiredTempChange < (0 - Consts.TEMP_CHANGE_TOLERANCE)) || (deltaT < Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF))
 		{
 			//heat pump off, leave demand at zero and decrement internal temperature
 			this.currentInternalTemp -= maintenanceEnergy / this.buildingThermalMass;

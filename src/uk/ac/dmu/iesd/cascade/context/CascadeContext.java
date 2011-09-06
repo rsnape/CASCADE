@@ -87,7 +87,7 @@ public class CascadeContext extends DefaultContext{
 	private Network socialNetwork;
 	private Network economicNetwork;
 	
-	protected GregorianCalendar currentDate;
+	protected GregorianCalendar simulationCalendar;
 	
 	SnapshotTaker snapshotTaker1;
 	Collection chartCompCollection;
@@ -487,7 +487,7 @@ public class CascadeContext extends DefaultContext{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
-		currentDate.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
+		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
 	}
 
 	/**

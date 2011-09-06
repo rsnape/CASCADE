@@ -1,6 +1,10 @@
 package uk.ac.dmu.iesd.cascade;
 
 import java.awt.Component;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -85,6 +89,24 @@ public class Initializer implements ModelInitializer{
 						//System.out.print(" SubComp: "+ comp.getComponent(0));
 					}
 					//System.out.println(" Comp class: "+ comp.getClass());
+					
+					if(Consts.DEBUG)
+					{
+						if (Consts.DEBUG_OUTPUT_FILE != "")
+						{
+						    File file  = new File(Consts.DEBUG_OUTPUT_FILE);
+						    PrintStream printStream;
+							try {
+								printStream = new PrintStream(new FileOutputStream(file));
+								System.setOut(printStream);
+							    System.out.println("Redirected System.out to this file, namely " + Consts.DEBUG_OUTPUT_FILE);
+
+							} catch (FileNotFoundException e) {
+								System.err.println("Couldn't find file with name " + Consts.DEBUG_OUTPUT_FILE);
+								System.err.println("Therefore cannot re-direct System.out to this file ");
+							}						    
+						}
+					}
 
 				}
 

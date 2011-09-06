@@ -472,13 +472,13 @@ public class WattboxController implements ISmartController{
 				float tempChangeEnergy = tempChange * owner.buildingThermalMass;
 
 				// Although the temperature profiles supplied should be such that the heat
-				// can always be recovered within a reasonable cap - we put a double
+				// can always be recovered within a reasonable cap - we could put a double
 				// check in here.
-				if (tempChangeEnergy > maxRecoveryPerTick * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * ArrayUtils.max(deltaT)))
+/*				if (tempChangeEnergy > maxRecoveryPerTick * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * ArrayUtils.max(deltaT)))
 				{
 					System.err.println("Should never get here - asked to get demand for a profile that can't recover temp");
 					return null;
-				}
+				}*/
 
 				//Add in the energy to maintain the new temperature, otherwise it can be cheaper
 				//To let the temperature fall and re-heat under flat price and external temperature
