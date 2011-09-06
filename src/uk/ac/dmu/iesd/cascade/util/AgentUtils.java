@@ -64,7 +64,7 @@ public class AgentUtils {
 				}
 			} catch (IntrospectionException e) {
 				// TODO Auto-generated catch block
-				System.err.println("failed to get find Bean Info for agent " + thisAgent.toString());
+				System.err.println("AgentUtils: failed to get find Bean Info for agent " + thisAgent.toString());
 				e.printStackTrace();
 			}
 			
@@ -91,7 +91,7 @@ public class AgentUtils {
 				try {
 					modProp.getWriteMethod().invoke(thisAgent, values[selectedVal]);
 				} catch (Exception e) {
-					System.err.println("Caught an exception while invoking the bean setter method on propert " + modProp.toString() + " on agent " + thisAgent.toString());
+					System.err.println("AgentUtils: Caught an exception while invoking the bean setter method on propert " + modProp.toString() + " on agent " + thisAgent.toString());
 					System.err.println("Likely to cause unintended behaviour");
 					e.printStackTrace();
 				}
@@ -200,7 +200,7 @@ public class AgentUtils {
 				}
 			} catch (IntrospectionException e) {
 				// TODO Auto-generated catch block
-				System.err.println("failed to get find Bean Info for agent " + thisAgent.toString());
+				System.err.println("AgentUtils: failed to get find Bean Info for agent " + thisAgent.toString());
 				e.printStackTrace();
 			}
 		
@@ -209,14 +209,14 @@ public class AgentUtils {
 				try {
 					modProp.getWriteMethod().invoke(thisAgent, value);
 				} catch (Exception e) {
-					System.err.println("Caught an exception while invoking the bean setter method on propert " + modProp.toString() + " on agent " + thisAgent.toString());
+					System.err.println("AgentUtils: Caught an exception while invoking the bean setter method on propert " + modProp.toString() + " on agent " + thisAgent.toString());
 					System.err.println("Likely to cause unintended behaviour");
 					e.printStackTrace();
 				}
 			}
 			else
 			{
-				System.err.println("Agent " + thisAgent.toString() + " doesn't have property " + paramName);
+				System.err.println("AgentUtils: Agent " + thisAgent.toString() + " doesn't have property " + paramName);
 				System.err.println("Cannot complete the action");
 			}
 		}

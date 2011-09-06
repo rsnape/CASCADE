@@ -381,7 +381,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 			{
 				if (Consts.DEBUG)
 				{
-					System.out.println("Signal valid from time other than current time");
+					System.out.println("ProsumerAgent: Signal valid from time other than current time");
 				}
 				newSignalLength = newSignalLength - signalOffset;
 			}
@@ -390,7 +390,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 			{
 				if (Consts.DEBUG)
 				{
-					System.out.println("Re-defining length of signal in agent" + agentID);
+					System.out.println("ProsumerAgent: Re-defining length of signal in agent" + agentID);
 				}
 				setPredictedCostSignal(new float[newSignalLength]);
 			}

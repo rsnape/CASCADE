@@ -53,8 +53,8 @@ public class ProsumerFactory implements IProsumerFactory {
 		int ticksPerDay = cascadeMainContext.getTickPerDay();
 		if (baseProfileArray.length % ticksPerDay != 0)
 		{
-			System.err.println("Household base demand array not a whole number of days");
-			System.err.println("May cause unexpected behaviour");
+			System.err.println("ProsumerFactory: Household base demand array not a whole number of days");
+			System.err.println("ProsumerFactory: May cause unexpected behaviour");
 		}
 
 		if (addNoise) 
@@ -107,7 +107,7 @@ public class ProsumerFactory implements IProsumerFactory {
 
 		if (Consts.DEBUG)
 		{
-			System.out.println("Applying jitter" + jitterFactor);
+			System.out.println("ProsumerFactory: Applying jitter" + jitterFactor);
 		}
 
 		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
@@ -160,8 +160,8 @@ public class ProsumerFactory implements IProsumerFactory {
 		}
 		catch(FileNotFoundException e)
 		{
-			System.err.println("File containing DEFRA types not found at "+categoryFile);
-			System.err.println("Doesn't look like this will work, terminating");
+			System.err.println("ProsumerFactory: File containing DEFRA types not found at "+categoryFile);
+			System.err.println("ProsumerFactory: Doesn't look like this will work, terminating");
 			System.err.println(e.getMessage());
 			System.exit(Consts.BAD_FILE_ERR_CODE);
 		}
@@ -172,8 +172,8 @@ public class ProsumerFactory implements IProsumerFactory {
 		}
 		catch(FileNotFoundException e)
 		{
-			System.err.println("File containing average profiles for DEFRA types not found at "+profileFile);
-			System.err.println("Doesn't look like this will work, terminating");
+			System.err.println("ProsumerFactory: File containing average profiles for DEFRA types not found at "+profileFile);
+			System.err.println("ProsumerFactory: Doesn't look like this will work, terminating");
 			System.err.println(e.getMessage());
 			System.exit(Consts.BAD_FILE_ERR_CODE);
 		}

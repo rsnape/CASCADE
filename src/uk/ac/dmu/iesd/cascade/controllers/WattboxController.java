@@ -411,8 +411,8 @@ public class WattboxController implements ISmartController{
 								{
 									if(ArrayUtils.max(localSetPointArray) - ArrayUtils.max(this.setPointProfile) > 0.005)
 									{
-										System.err.println("Somehow got profile with significantly higher temp than baseline" + Arrays.toString(localSetPointArray));
-										System.err.println("Total temp loss is " + totalTempLoss + " to be recovered in " + n + "steps at " + tempToRecover + " per tick");
+										System.err.println("WattboxController: Somehow got profile with significantly higher temp than baseline" + Arrays.toString(localSetPointArray));
+										System.err.println("WattboxController: Total temp loss is " + totalTempLoss + " to be recovered in " + n + "steps at " + tempToRecover + " per tick");
 									}
 
 									//System.out.println("Changing due to a cost difference of " + (newCost - leastCost));
@@ -428,7 +428,7 @@ public class WattboxController implements ISmartController{
 							{
 								//Impossible to recover heat within heat pump limits - discard this attempt.
 								if (owner.getAgentID() == 1)
-								{System.err.println("Can't recover heat with " + availableHeatRecoveryTicks + " ticks, need " + n);}
+								{System.err.println("WattboxController: Can't recover heat with " + availableHeatRecoveryTicks + " ticks, need " + n);}
 							}
 						}
 					}
@@ -476,7 +476,7 @@ public class WattboxController implements ISmartController{
 				// check in here.
 				if (tempChangeEnergy > maxRecoveryPerTick * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * ArrayUtils.max(deltaT)))
 				{
-					System.err.println("Should never get here - asked to get demand for a profile that can't recover temp");
+					//System.err.println("WattboxController: Should never get here - asked to get demand for a profile that can't recover temp");
 					return null;
 				}
 

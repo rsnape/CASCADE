@@ -5,13 +5,16 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import static repast.simphony.essentials.RepastEssentials.FindNetwork;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.math.ConvergenceException;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.MultivariateRealFunction;
+import org.apache.commons.math.linear.ArrayRealVector;
 import org.apache.commons.math.optimization.GoalType;
 import org.apache.commons.math.optimization.OptimizationException;
 import org.apache.commons.math.optimization.RealConvergenceChecker;
@@ -19,7 +22,12 @@ import org.apache.commons.math.optimization.SimpleScalarValueChecker;
 
 import org.apache.commons.math.optimization.RealPointValuePair;
 import org.apache.commons.math.optimization.direct.NelderMead;
+import org.apache.commons.math.optimization.linear.LinearConstraint;
+import org.apache.commons.math.optimization.linear.LinearObjectiveFunction;
+import org.apache.commons.math.optimization.linear.Relationship;
+import org.apache.commons.math.optimization.linear.SimplexSolver;
 
+import cern.colt.list.DoubleArrayList;
 import bsh.This;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -811,10 +819,77 @@ public class RECO extends AggregatorAgent{
 		return e;	
 	}
 
+	/*
+	private float[] minimise_CD_ApacheSimplex(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
+		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
+		System.out.println("---------------RECO: Apache Simplex minimisation ---------");
+		
+		ArrayRealVector coefficientsArrRealVect = new ArrayRealVector();
+		double constantTerm =0d;
+		
+		DoubleArrayList coefficentOf_SjKijBi_ArrList = new DoubleArrayList();
+		
+		for (int i=0; i<arr_S.length; i++){
+			constantTerm = constantTerm +(arr_C[i]*arr_B[i]);
+			for (int j=0; j<arr_S.length; j++){
+				if (i != j) {
+					coefficentOf_SjKijBi_ArrList.add(arr_ij_k[i][j] * arr_B[i]);
+					//System.out.println("RECO: coeff SjKijBj: "+constantTerm);
+				}
+			}
+		}
+		
+		
+		
+		for (int i=0; i<arr_S.length; i++){
+			//double s_coeff = (arr_e[i]*arr_B[i])+(arr_ij_k[i][i]*arr_B[i]+ coefficentOf_SjKijBi_ArrList.get(i)) ;
+			double s_coeff_part1 = (arr_e[i]*arr_B[i])+(arr_ij_k[i][i]);
+			double s_coeff_part2 =0;
+			for (int j=0; j<arr_S.length; j++){
+				int offset=i;
+				s_coeff_part2 = s_coeff_part2+ coefficentOf_SjKijBi_ArrList.get(i+47);
+				offset += 47;
+			}
+
+			coefficientsArrRealVect.append(s_coeff_part1+s_coeff_part2);
+		}
+		
+		//System.out.println("RECO: coeff SjKijBi size: "+coefficentOf_SjKijBi_ArrList.size());
+		
+		//System.out.println("RECO: coeff all dimension: "+coefficientsArrRealVect.getDimension());
+		
+		//System.out.println("RECO: constant term: "+constantTerm);
+		
+		LinearObjectiveFunction minFunct = new LinearObjectiveFunction(coefficientsArrRealVect, constantTerm);
+		
+		double[] constraintCoeff = new double[this.ticksPerDay];
+		Arrays.fill(constraintCoeff, 1);
+		Collection constraints = new ArrayList();
+		constraints.add(new LinearConstraint(constraintCoeff, Relationship.EQ, 0));
+		RealPointValuePair solution =null;
+		try {
+			solution = new SimplexSolver().optimize(minFunct, constraints, GoalType.MINIMIZE, false);
+		} catch (OptimizationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		//double x = solution.getPoint()[0];
+		//double y = solution.getPoint()[1];
+		//double min = solution.getValue();
+
+		System.out.println("RECO: Apache Simplex Solver:: Min value obtained " + solution.getValue());
+      //if (solution != null)
+		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(solution.getPoint());
+
+		return newOpt_S;
+	}
+   */
 
 	private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
 		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
-		System.out.println("---------------Apache minimisation ---------");
+		System.out.println("---------------RECO: Apache minimisation ---------");
 
 
 		NelderMead apacheNelderMead = new NelderMead();
@@ -863,14 +938,14 @@ public class RECO extends AggregatorAgent{
 
 		}
 		catch (@SuppressWarnings("deprecation") OptimizationException e) {
-			System.out.println( "Reco Apache Optim Exc (Optim exc): "+e.getCause() );
+			System.out.println( "RECO: Apache Optim Exc (Optim exc): "+e.getCause() );
 		} 
 		catch ( FunctionEvaluationException e) {
-			System.out.println( "Reco Apache Optim Exc (Funct eval exc): "+e.getCause() );
+			System.out.println( "RECO: Apache Optim Exc (Funct eval exc): "+e.getCause() );
 		}
 
 		catch (IllegalArgumentException e) {
-			System.out.println( "Reco Apache Optim Exc (Illegal arg exc): "+e.getCause() );
+			System.out.println( "RECO: Apache Optim Exc (Illegal arg exc): "+e.getCause() );
 		}
 
 
@@ -880,7 +955,7 @@ public class RECO extends AggregatorAgent{
 
 		//float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(param);
 		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(minValue.getPoint());
-		System.out.println("Apache NelderMead:: Min value obtained " + minValue.getValue());
+		System.out.println("RECO: Apache NelderMead:: Min value obtained " + minValue.getValue());
 
 		return newOpt_S;
 	}
@@ -939,7 +1014,7 @@ public class RECO extends AggregatorAgent{
 
 		// get the minimum value
 		double minimum = min.getMinimum();
-		System.out.println("Minimum = " + minimum);
+		System.out.println("RECO: Minimum = " + minimum);
 
 		// get values of y and z at minimum
 		double[] param = min.getParamValues();
@@ -952,11 +1027,11 @@ public class RECO extends AggregatorAgent{
 			//min.print("MinimCD_output.txt");
 
 			// Output the results to screen
-			System.out.println("Minimum = " + min.getMinimum());
-			System.out.println("Min (S) sum = " + ArrayUtils.sum(param));
+			System.out.println("RECO: Minimum = " + min.getMinimum());
+			System.out.println("RECO: Min (S) sum = " + ArrayUtils.sum(param));
 
 			for (int i=0; i< param.length; i++) {
-				System.out.println("Value of s at the minimum for "+i +" ticktime is: " + param[i]);
+				System.out.println("RECO: Value of s at the minimum for "+i +" ticktime is: " + param[i]);
 			}
 		}
 
@@ -1094,9 +1169,9 @@ public class RECO extends AggregatorAgent{
 
 				if (mainContext.isEndOfDay(timeOfDay)) 
 				{
-					System.out.print("-----Training period--------------");
+					System.out.print("-----RECO: Training period--------------");
 					System.out.print("End of day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
-					System.out.println("  timetick: "+mainContext.getCurrentTimeslotForDay());
+					System.out.println(" timetick: "+mainContext.getCurrentTimeslotForDay());
 					float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay());
 					float e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
 					calculateDisplacementFactors_k(last_arr_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
@@ -1174,6 +1249,9 @@ public class RECO extends AggregatorAgent{
 					float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
 					//System.out.println(Arrays.toString(normalizedCosts));
 					//System.out.println(Arrays.toString(arr_i_S));
+					
+					minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+
 
 					//TODO: If this minimisation is ever to change, we need to change e and k with the observed D
 					arr_i_S = ArrayUtils.normalizeValues(minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S));
@@ -1294,8 +1372,8 @@ public class RECO extends AggregatorAgent{
 
 		if (baseDemand.length % ticksPerDay != 0)
 		{
-			System.err.print("Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
-			System.err.println(" May cause unexpected behaviour - unless you intend to repeat the signal within a day");
+			System.err.print("RECO: Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
+			System.err.println(" RECO:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 		}
 		this.priceSignal = new float [baseDemand.length];
 		this.overallSystemDemand = new float [baseDemand.length];

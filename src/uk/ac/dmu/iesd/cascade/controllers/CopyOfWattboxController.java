@@ -186,7 +186,7 @@ public class CopyOfWattboxController implements ISmartController{
 					if (availableHeatRecoveryTicks < n)
 					{
 						//Recovery impossible - terminate processing
-						System.err.println("No available recovery ticks, profile is " + Arrays.toString(heatPumpOnOffProfileToTest));
+						System.err.println("CopyOfWattBoxController: No available recovery ticks, profile is " + Arrays.toString(heatPumpOnOffProfileToTest));
 						return null;
 					}
 					else
@@ -300,8 +300,8 @@ public class CopyOfWattboxController implements ISmartController{
 					if (Consts.DEBUG && owner.getAgentID() == 1)
 					{
 						//Some debugging output for one agent only
-						System.out.println("On off profile for calculation " + Arrays.toString(tempPumpOnOffProfile));
-						System.out.println("HP demand profile " + Arrays.toString(tempHeatPumpProfile));
+						System.out.println("CopyOfWattBoxController: On off profile for calculation " + Arrays.toString(tempPumpOnOffProfile));
+						System.out.println("CopyOfWattBoxController: HP demand profile " + Arrays.toString(tempHeatPumpProfile));
 					}
 
 					if (tempHeatPumpProfile != null)
@@ -317,10 +317,10 @@ public class CopyOfWattboxController implements ISmartController{
 							if (Consts.DEBUG && owner.getAgentID() == 1)
 							{
 								//Some debugging output for one agent only
-								System.out.println("Replacing the current profile with a better one");
+								System.out.println("CopyOfWattBoxController: Replacing the current profile with a better one");
 								System.out.println("On off profile to use " + Arrays.toString(heatPumpOnOffProfile));
 								System.out.println("HP demand profile " + Arrays.toString(heatPumpDemandProfile));
-								System.out.println("This cost is " + thisCost + " against best " + bestCost);
+								System.out.println("CopyOfWattboxController: This cost is " + thisCost + " against best " + bestCost);
 
 							}
 						}
@@ -367,7 +367,7 @@ public class CopyOfWattboxController implements ISmartController{
 					//If demand exceeds Heat Pump capacity, top up with immersion (i.e. reduce COP)
 					if ((adaptedDemand + this.heatPumpDemandProfile[i]) > this.maxHeatPumpElecDemandPerTick )
 					{
-						System.out.println("Topping up with immersion due to over capacity - before: " + adaptedDemand);
+						System.out.println("CopyOfWattBoxController: Topping up with immersion due to over capacity - before: " + adaptedDemand);
 						adaptedDemand = currDemand + (((currDemand + this.heatPumpDemandProfile[i]) - this.maxHeatPumpElecDemandPerTick ) * Consts.DOMESTIC_HEAT_PUMP_WATER_COP / Consts.IMMERSION_HEATER_COP);
 						System.out.println("And after: " + adaptedDemand);
 					}
@@ -469,7 +469,7 @@ public class CopyOfWattboxController implements ISmartController{
 				if( (i < Consts.NIGHT_TO_DAY_TRANSITION_TICK && tempLoss > Consts.NIGHT_TEMP_LOSS_THRESHOLD) || (i >= Consts.NIGHT_TO_DAY_TRANSITION_TICK && tempLoss > Consts.DAYTIME_TEMP_LOSS_THRESHOLD))
 				{
 					//if the temperature drop is too great, this profile is unfeasible and we return null
-					System.err.println("Temp drop too great with this set point profile, discard");
+					System.err.println("CopyOfWattBoxController: Temp drop too great with this set point profile, discard");
 				}
 				else
 				{

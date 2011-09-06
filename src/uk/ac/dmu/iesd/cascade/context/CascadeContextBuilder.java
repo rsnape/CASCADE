@@ -130,8 +130,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			startDate = (new SimpleDateFormat("dd/MM/yyyy")).parse((String) params.getValue("startDate"));
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
-			System.err.println("The start date parameter is in a format which cannot be parsed by this program");
-			System.err.println("The data will be set to 01/01/2000 by default");
+			System.err.println("CascadeContextBuilder: The start date parameter is in a format which cannot be parsed by this program");
+			System.err.println("CascadeContextBuilder: The data will be set to 01/01/2000 by default");
 			startDate = new Date(2000,1,1);
 			e1.printStackTrace();
 		}
@@ -243,7 +243,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
 			if (cascadeMainContext.verbose)
 			{
-				System.out.println("householdBaseDemandArray is initialised with profile " + demandName);
+				System.out.println("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
 			}
 			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
 
@@ -386,7 +386,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 	if(Consts.DEBUG)
 	{
-		System.out.println(" There are " + IterableUtils.count(cat1Agents) + " category 1 agents");
+		System.out.println("CascadeContextBuilder: There are " + IterableUtils.count(cat1Agents) + " category 1 agents");
 	}
 
 	for (HouseholdProsumer prAgent : cat1Agents)
@@ -537,7 +537,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		//+++++++++++++++++++++++++++++++++++++
 		
 		if (cascadeMainContext.verbose)	
-			System.out.println("Cascade Main Context created: "+cascadeMainContext.toString());
+			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
 		
 		return cascadeMainContext;
 	}
