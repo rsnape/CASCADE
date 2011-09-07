@@ -30,6 +30,7 @@ import flanagan.math.Matrix;
 
 import org.apache.commons.mathforsimplex.FunctionEvaluationException;
 import org.apache.commons.mathforsimplex.analysis.MultivariateRealFunction;
+import org.apache.commons.mathforsimplex.linear.ArrayRealVector;
 import org.apache.commons.mathforsimplex.optimization.GoalType;
 import org.apache.commons.mathforsimplex.optimization.OptimizationException;
 import org.apache.commons.mathforsimplex.optimization.RealPointValuePair;
@@ -796,7 +797,7 @@ public class RECO extends AggregatorAgent{
 		return e;	
 	}
 
-	/*
+	
 	private float[] minimise_CD_ApacheSimplex(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
 		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
 		System.out.println("---------------RECO: Apache Simplex minimisation (Babak implementation) ---------");
@@ -841,7 +842,7 @@ public class RECO extends AggregatorAgent{
 		
 		double[] constraintCoeff = new double[this.ticksPerDay];
 		Arrays.fill(constraintCoeff, 1);
-		Collection constraints = new ArrayList();
+		Collection<LinearConstraint> constraints = new ArrayList<LinearConstraint>();
 		constraints.add(new LinearConstraint(constraintCoeff, Relationship.EQ, 0));
 		RealPointValuePair solution =null;
 		try {
@@ -862,7 +863,7 @@ public class RECO extends AggregatorAgent{
 
 		return newOpt_S;
 	}
-   */
+ 
 
 	/**
 	 * Minimises the Cost times demand function with respect to the signal S sent to 
@@ -877,7 +878,6 @@ public class RECO extends AggregatorAgent{
 	 */
 	private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
 		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
-<<<<<<< HEAD
 		//System.out.println("---------------RECO: Apache minimisation (SimplexSolver) ---------");
 
 		float[] newOpt_S = new float[arr_S.length];
@@ -997,7 +997,6 @@ public class RECO extends AggregatorAgent{
 
 		//float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(param);
 		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(minValue.getPoint());
-<<<<<<< HEAD
 
 		if (Consts.DEBUG)
 		{
@@ -1013,9 +1012,6 @@ public class RECO extends AggregatorAgent{
 			}
 			System.out.println("Apache optimisation evaluated function " + minFunct.getNumEvals() + " times");
 		}
-=======
-		System.out.println("RECO: Apache NelderMead:: Min value obtained " + minValue.getValue());
->>>>>>> origin/master
 
 		return newOpt_S;
 	}
@@ -1411,8 +1407,8 @@ public class RECO extends AggregatorAgent{
 					//System.out.println(Arrays.toString(normalizedCosts));
 					//System.out.println(Arrays.toString(arr_i_S));
 					
-					minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-
+					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					//System.out.println("RECO S by Babak's implementation" + Arrays.toString(arr_i_S));
 
 					//TODO: If this minimisation is ever to change, we need to change e and k with the observed D
 					arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
