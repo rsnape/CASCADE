@@ -297,6 +297,7 @@ public static final float COST_DECISION_THRESHOLD = 1e-3f;
  */
 public static final float MAX_DOMESTIC_IMMERSION_POWER = 3;
 public static final float TEMP_CHANGE_TOLERANCE = 1e-3f;
+public static final float NORMALIZING_MAX_COST = 1;
 
 
 

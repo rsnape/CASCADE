@@ -748,7 +748,7 @@ public class RECO extends AggregatorAgent{
 			e = arr_e[i];
 		}
 
-		arr_k[i][i] = 0;//(deltaB_i - (s*e*b)) / (s*b);
+		arr_k[i][i] = (deltaB_i - (s*e*b)) / (s*b);//0;  <- what does k[i][i] mean? Should it be zero?
 
 		for (int j = i+1; j < this.ticksPerDay; j++) {
 
@@ -880,9 +880,10 @@ public class RECO extends AggregatorAgent{
 		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
 		//System.out.println("---------------RECO: Apache minimisation (SimplexSolver) ---------");
 
-		float[] newOpt_S = new float[arr_S.length];
+		float[] newOpt_S = Arrays.copyOf(arr_S, arr_S.length);
 
 		SimplexSolver myOpt = new SimplexSolver(1e-3);
+		myOpt.setMaxIterations(10000);
 		double[] functionCoeffs = new double[ticksPerDay];
 		double[] displacementConstraintCoeffs = new double[ticksPerDay];
 		for (int kk = 0; kk < ticksPerDay; kk++)
@@ -904,18 +905,39 @@ public class RECO extends AggregatorAgent{
 		Arrays.fill(constraintCoeffs, 1);
 		ArrayList<LinearConstraint> constraints = new ArrayList<LinearConstraint>();
 		constraints.add(new LinearConstraint(constraintCoeffs, Relationship.EQ, 0));
-		//Bound the values of the signal - needed to stop anything shooting off to infinity
+		
+		/*
+		 * Bound the values of the signal to +/- 1 (or another maximal value stored in Consts)
+		 * - needed to stop anything shooting off to infinity
+		 */
 		for (int ll = 0; ll < ticksPerDay; ll++)
 		{
 			double[] coeffs = new double[ticksPerDay];
 			Arrays.fill(coeffs, 0);
 			coeffs[ll] = 1;
-			constraints.add(new LinearConstraint(coeffs, Relationship.GEQ, -100));
-			constraints.add(new LinearConstraint(coeffs, Relationship.LEQ, 100));
+			constraints.add(new LinearConstraint(coeffs, Relationship.GEQ, -Consts.NORMALIZING_MAX_COST));
+			constraints.add(new LinearConstraint(coeffs, Relationship.LEQ, Consts.NORMALIZING_MAX_COST));
 		}
 		
 		//An idea - ensure that all delta B due to displacement sums to zero
-		constraints.add(new LinearConstraint(displacementConstraintCoeffs, Relationship.EQ, 0));
+		//constraints.add(new LinearConstraint(displacementConstraintCoeffs, Relationship.EQ, 0));
+		
+		/*
+		 * Enforce that Di is greater than zero for all i
+		 * Note - this only works with no generation - would need to be be 
+		 * -(MAX_GENERATION) if our aggregator had generators)
+		 */
+		for (int i = 0; i < ticksPerDay; i++)
+		{
+			double[] coeffs = new double[ticksPerDay];
+			for (int j = 0; j < ticksPerDay; j++)
+			{
+				coeffs[j] = arr_ij_k[i][j] * arr_B[i];
+			}
+			coeffs[i] += arr_e[i] * arr_B[i];
+			constraints.add(new LinearConstraint(coeffs, Relationship.GEQ, 0 - arr_B[i]));
+		}
+	
 		
 		try {
 			RealPointValuePair optimum = myOpt.optimize(costFunc,constraints,GoalType.MINIMIZE,false);
@@ -1375,21 +1397,6 @@ public class RECO extends AggregatorAgent{
 
 					} 
 
-					/**** Test only ****/
-					if(mainContext.getCountDay() == 65)
-					{
-						Arrays.fill(arr_i_e, 0.1f);
-
-						Arrays.fill(arr_i_C, 1f);
-						for(int kt = 0; kt < arr_ij_k.length; kt++)
-						{
-							Arrays.fill(arr_ij_k[kt], 1f);
-						}
-						Arrays.fill(arr_i_B, 1f);
-					}
-					/**** Test finished ****/
-
-
 					//Replace the historical demand for the day of the week before this
 					//with the demand of yesterday
 					// TODO: Could be more sophisticated and have a rolling or weighted average
@@ -1410,10 +1417,9 @@ public class RECO extends AggregatorAgent{
 					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//System.out.println("RECO S by Babak's implementation" + Arrays.toString(arr_i_S));
 
-					//TODO: If this minimisation is ever to change, we need to change e and k with the observed D
-					arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-					System.out.println("Flanagan : " + Arrays.toString(arr_i_S));
-					System.out.println("Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
+					//arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					//System.out.println("Flanagan : " + Arrays.toString(arr_i_S));
+					//System.out.println("Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//System.out.println("Genetic : " + Arrays.toString(arr_i_S));

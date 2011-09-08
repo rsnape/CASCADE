@@ -238,7 +238,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	public float[] getSetPointProfile() {
 		return Arrays.copyOf(setPointProfile, setPointProfile.length);
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -598,7 +598,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private float wetApplianceDemand() {
 		return this.wetApplianceProfile[time % wetApplianceProfile.length];
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -606,7 +606,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	{
 		return this.coldApplianceProfile[time % wetApplianceProfile.length];
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -647,12 +647,12 @@ public class HouseholdProsumer extends ProsumerAgent{
 		float requiredTempChange = this.setPoint - currentInternalTemp;
 		float maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((float)(Consts.SECONDS_PER_DAY / ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
 		float heatingEnergy = requiredTempChange * this.buildingThermalMass;
-		
+
 		if(Consts.DEBUG)
 		{
 			System.out.println("For agent " + this.getAgentName() + "at tick " + timeStep + " requiredTempChange = " + requiredTempChange + ", energy for temp maintenance = " + maintenanceEnergy + ", temp change energy = " + heatingEnergy);
 		}
-		
+
 		if ((requiredTempChange < (0 - Consts.TEMP_CHANGE_TOLERANCE)) || (deltaT < Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF))
 		{
 			//heat pump off, leave demand at zero and decrement internal temperature
@@ -671,7 +671,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 				this.currentInternalTemp = this.setPoint;
 			}
 		}
-		
+
 		return demand;
 	}
 
@@ -744,7 +744,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 		if(hasSmartMeter && getPredictedCostSignalLength() > 0)
 		{
 			float predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % getPredictedCostSignalLength()];
-			myDemand = myDemand * (1 - predictedCostNow * dailyElasticity[time % ticksPerDay]);
+			myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay]));
+			if (Consts.DEBUG)
+			{
+				System.out.println("Based on predicted cost = " + predictedCostNow + " demand set to " + (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) + " of initial " );
+			}
 		}
 
 		return myDemand;
@@ -928,25 +932,37 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.setNumOccupants(context.occupancyGenerator.nextInt() + 1);
 		//Assign hot water storage capacity - note based on EST report, page 9
 		this.dailyHotWaterUsage = (float) context.waterUsageGenerator.nextDouble(Consts.EST_INTERCEPT + (this.numOccupants * Consts.EST_SLOPE), Consts.EST_STD_DEV);
-				
+
 		this.waterSetPoint = Consts.DOMESTIC_SAFE_WATER_TEMP;
 		//TODO: something more sophisticated to give the baseline water heat requirement
 		float[] hotWaterNeededProfile = new float[this.mainContext.ticksPerDay];
 		float drawOffPerOccupant = this.dailyHotWaterUsage / this.numOccupants;
-		
+
 		for (int i = 0; i < this.numOccupants; i++)
 		{
 			hotWaterNeededProfile[this.mainContext.drawOffGenerator.nextInt()] = drawOffPerOccupant;	
 		}
-		
+
 		this.baselineHotWaterVolumeProfile = Arrays.copyOf(hotWaterNeededProfile, hotWaterNeededProfile.length);
-		this.setWaterHeatProfile(ArrayUtils.multiply(hotWaterNeededProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) ));
+		if(hasElectricalWaterHeat)
+		{
+			this.setWaterHeatProfile(ArrayUtils.multiply(hotWaterNeededProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) ));
+		}
+		else
+		{
+			float[] noWaterHeating = new float[this.mainContext.ticksPerDay];
+			Arrays.fill(noWaterHeating,0);
+			this.setWaterHeatProfile(noWaterHeating);
+		}
+
+
 		this.ratedPowerHeatPump = Consts.TYPICAL_HEAT_PUMP_ELEC_RATING;
-		
+
+
 		this.setPointProfile = new float[ticksPerDay];
 		Arrays.fill(setPointProfile, 20); // This puts in a flat set point through the day set by the consumer
 		//this.setPointProfile = Arrays.copyOf(Consts.BASIC_AVERAGE_SET_POINT_PROFILE, Consts.BASIC_AVERAGE_SET_POINT_PROFILE.length);
-//		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2));
+		//		this.setPointProfile = ArrayUtils.offset(this.setPointProfile, (float) RandomHelper.nextDoubleFromTo(-2, 2));
 		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
 		this.setPoint = optimisedSetPointProfile[0];
 		this.currentInternalTemp = this.setPoint;
