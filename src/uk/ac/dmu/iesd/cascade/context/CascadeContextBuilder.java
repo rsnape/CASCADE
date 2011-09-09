@@ -340,7 +340,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		//Secondly add aggregator(s)
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
-		RECO firstAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
+		UtilityCo firstAggregator = aggregatorFactory.createUtilityCo(cascadeMainContext.systemPriceSignalDataArray);
 		//AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(firstAggregator);
 		
