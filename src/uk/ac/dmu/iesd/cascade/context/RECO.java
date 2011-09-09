@@ -74,7 +74,7 @@ public class RECO extends AggregatorAgent{
 		private boolean hasSimpleSumConstraint = false;
 		private boolean lessThanConstraint;
 		private double sumConstraintValue;
-		private double penaltyWeight  = 1.0e30;
+		private double penaltyWeight  = 1.0e10;
 		private double sumConstraintTolerance;
 		private boolean hasEqualsConstraint = false;
 		private int numEvaluations = 0;
@@ -93,8 +93,44 @@ public class RECO extends AggregatorAgent{
 				m += arr_C[i] * (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
 			}
 			numEvaluations++;
+			m += checkPosNegConstraint(arr_S);
 			return m;
 		} 
+
+		/**
+		 * Enforce the constraint that all positive values of S must sum to (maximum) of 1
+		 * and -ve values to (minimum) of -1
+		 * @param arr_S
+		 * @return
+		 */
+		private double checkPosNegConstraint(double[] arr_S) {
+			double penalty = 0;
+			double posValueSum = 0;
+			double negValueSum = 0;
+			for (int i = 0; i < arr_S.length; i++)
+			{
+				if (arr_S[i] > 0)
+				{
+					posValueSum += arr_S[i];
+				}
+				else
+				{
+					negValueSum += arr_S[i];
+				}
+			}
+
+			if (posValueSum > 1)
+			{
+				penalty += this.penaltyWeight * Math.pow((posValueSum - 1), 2);
+			}
+			
+			if (negValueSum < -1)
+			{
+				penalty += this.penaltyWeight * Math.pow((-1 - negValueSum), 2);
+			}
+			
+			return penalty;
+		}
 
 		public double value (double[] arr_S)
 		{
@@ -157,9 +193,9 @@ public class RECO extends AggregatorAgent{
 
 	}
 
-/**
- * Babak test implementation
- **/
+	/**
+	 * Babak test implementation
+	 **/
 
 
 	/*	class  RecoMultivariateRealFunction implements MultivariateRealFunction /*,  RealConvergenceChecker  {
@@ -797,16 +833,16 @@ public class RECO extends AggregatorAgent{
 		return e;	
 	}
 
-	
+
 	private float[] minimise_CD_ApacheSimplex(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
 		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
 		System.out.println("---------------RECO: Apache Simplex minimisation (Babak implementation) ---------");
-		
+
 		ArrayRealVector coefficientsArrRealVect = new ArrayRealVector();
 		double constantTerm =0d;
-		
+
 		DoubleArrayList coefficentOf_SjKijBi_ArrList = new DoubleArrayList();
-		
+
 		for (int i=0; i<arr_S.length; i++){
 			constantTerm = constantTerm +(arr_C[i]*arr_B[i]);
 			for (int j=0; j<arr_S.length; j++){
@@ -816,9 +852,9 @@ public class RECO extends AggregatorAgent{
 				}
 			}
 		}
-		
-		
-		
+
+
+
 		for (int i=0; i<arr_S.length; i++){
 			//double s_coeff = (arr_e[i]*arr_B[i])+(arr_ij_k[i][i]*arr_B[i]+ coefficentOf_SjKijBi_ArrList.get(i)) ;
 			double s_coeff_part1 = (arr_e[i]*arr_B[i])+(arr_ij_k[i][i]);
@@ -831,15 +867,15 @@ public class RECO extends AggregatorAgent{
 
 			coefficientsArrRealVect.append(s_coeff_part1+s_coeff_part2);
 		}
-		
+
 		//System.out.println("RECO: coeff SjKijBi size: "+coefficentOf_SjKijBi_ArrList.size());
-		
+
 		//System.out.println("RECO: coeff all dimension: "+coefficientsArrRealVect.getDimension());
-		
+
 		//System.out.println("RECO: constant term: "+constantTerm);
-		
+
 		LinearObjectiveFunction minFunct = new LinearObjectiveFunction(coefficientsArrRealVect, constantTerm);
-		
+
 		double[] constraintCoeff = new double[this.ticksPerDay];
 		Arrays.fill(constraintCoeff, 1);
 		Collection<LinearConstraint> constraints = new ArrayList<LinearConstraint>();
@@ -851,19 +887,19 @@ public class RECO extends AggregatorAgent{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
+
 		//double x = solution.getPoint()[0];
 		//double y = solution.getPoint()[1];
 		//double min = solution.getValue();
 
 		System.out.println("RECO: Apache Simplex Solver:: Min value obtained " + solution.getValue());
-      //if (solution != null)
+		//if (solution != null)
 		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(solution.getPoint());
 
 		return newOpt_S;
 	}
- 
+
 
 	/**
 	 * Minimises the Cost times demand function with respect to the signal S sent to 
@@ -888,14 +924,14 @@ public class RECO extends AggregatorAgent{
 		double[] displacementConstraintCoeffs = new double[ticksPerDay];
 		for (int kk = 0; kk < ticksPerDay; kk++)
 		{
-			
+
 			for (int jj = 0; jj < ticksPerDay; jj++)
 			{
 				functionCoeffs[kk] += arr_ij_k[jj][kk] * arr_B[jj];
 			}
-			
+
 			displacementConstraintCoeffs = Arrays.copyOf(functionCoeffs, functionCoeffs.length);
-			
+
 			functionCoeffs[kk] += arr_e[kk] * arr_B[kk];
 			functionCoeffs[kk] *= arr_C[kk];
 		}
@@ -905,7 +941,7 @@ public class RECO extends AggregatorAgent{
 		Arrays.fill(constraintCoeffs, 1);
 		ArrayList<LinearConstraint> constraints = new ArrayList<LinearConstraint>();
 		constraints.add(new LinearConstraint(constraintCoeffs, Relationship.EQ, 0));
-		
+
 		/*
 		 * Bound the values of the signal to +/- 1 (or another maximal value stored in Consts)
 		 * - needed to stop anything shooting off to infinity
@@ -918,10 +954,10 @@ public class RECO extends AggregatorAgent{
 			constraints.add(new LinearConstraint(coeffs, Relationship.GEQ, -Consts.NORMALIZING_MAX_COST));
 			constraints.add(new LinearConstraint(coeffs, Relationship.LEQ, Consts.NORMALIZING_MAX_COST));
 		}
-		
+
 		//An idea - ensure that all delta B due to displacement sums to zero
 		//constraints.add(new LinearConstraint(displacementConstraintCoeffs, Relationship.EQ, 0));
-		
+
 		/*
 		 * Enforce that Di is greater than zero for all i
 		 * Note - this only works with no generation - would need to be be 
@@ -937,8 +973,8 @@ public class RECO extends AggregatorAgent{
 			coeffs[i] += arr_e[i] * arr_B[i];
 			constraints.add(new LinearConstraint(coeffs, Relationship.GEQ, 0 - arr_B[i]));
 		}
-	
-		
+
+
 		try {
 			RealPointValuePair optimum = myOpt.optimize(costFunc,constraints,GoalType.MINIMIZE,false);
 			newOpt_S = ArrayUtils.convertDoubleArrayToFloatArray(optimum.getPoint());
@@ -981,7 +1017,10 @@ public class RECO extends AggregatorAgent{
 		double[] start = new double[this.ticksPerDay];
 		if(firstTimeMinimisation )
 		{
-			Arrays.fill(start, 0.1);
+			for (int k = 0; k < start.length; k++)
+			{
+				start[k] = - Math.cos(2 * Math.PI * k / start.length) / 16;
+			}
 			firstTimeMinimisation = false;
 		}
 		else 
@@ -989,10 +1028,10 @@ public class RECO extends AggregatorAgent{
 			start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
 		}
 
-		//apacheNelderMead.setMaxIterations(10);
-		//apacheNelderMead.setConvergenceChecker(new SimpleScalarValueChecker(1.0e-10, 1.0e-30));
-		apacheNelderMead.setConvergenceChecker(new SimpleScalarValueChecker(1.0e-2, -1.0));
-		//apacheNelderMead.setMaxEvaluations(10);  //how many time function is evaluated
+		//apacheNelderMead.setMaxIterations(10000);
+		apacheNelderMead.setConvergenceChecker(new SimpleScalarValueChecker(1.0e-10, 1.0e-30));
+		//apacheNelderMead.setConvergenceChecker(new SimpleScalarValueChecker(1.0e-2, -1.0));
+		//apacheNelderMead.setMaxEvaluations(10000);  //how many time function is evaluated
 
 		RealPointValuePair minValue=null;
 
@@ -1057,7 +1096,10 @@ public class RECO extends AggregatorAgent{
 		double[] start = new double[this.ticksPerDay];
 		//if(firstTimeMinimisation )
 		{
-			Arrays.fill(start, 0.1);
+			for (int k = 0; k < start.length; k++)
+			{
+				start[k] = - Math.cos(2 * Math.PI * k / start.length) / 16;
+			}
 			firstTimeMinimisation = false;
 		}
 		//else
@@ -1325,7 +1367,12 @@ public class RECO extends AggregatorAgent{
 				//Richard Test to stimulate prosumer behaviour
 				if (mainContext.isBeginningOfDay(timeOfDay)) 
 				{
-					//Implement Peter B's very simplistic "Routine error estimation and adjustment" learning
+					/*
+					 * The section below implements Peter B's very simplistic 
+					 * "Routine error estimation and adjustment" learning
+					 * 
+					 * TODO: Is this the learning / adaptation mechanism we want to run with?
+					 */
 
 					float[] actualShift = ArrayUtils.add(daysDemandHistory, ArrayUtils.negate(arr_i_B));
 					Matrix k = new Matrix(arr_ij_k);
@@ -1413,18 +1460,27 @@ public class RECO extends AggregatorAgent{
 					//float[] normalizedCosts = (Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay));
 					//System.out.println(Arrays.toString(normalizedCosts));
 					//System.out.println(Arrays.toString(arr_i_S));
-					
+
+					/*
+					 * Uncommment below to use Babak implementation using the SimplexSolver class
+					 */
 					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//System.out.println("RECO S by Babak's implementation" + Arrays.toString(arr_i_S));
 
-					//arr_i_S = minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-					//System.out.println("Flanagan : " + Arrays.toString(arr_i_S));
-					//System.out.println("Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
+					/*
+					 * Uncomment below to use the Nelder Mead implementations.
+					 */
+					arr_i_S = minimise_CD_Apache_Nelder_Mead(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					System.out.println("Flanagan : " + Arrays.toString(minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
+					System.out.println("Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 
+					/*
+					 * Uncomment below to use Genetic Algorithm to optimise signal
+					 */
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//System.out.println("Genetic : " + Arrays.toString(arr_i_S));
 
-					arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 
 
 
