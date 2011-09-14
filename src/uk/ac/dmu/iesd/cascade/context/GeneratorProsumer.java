@@ -57,14 +57,7 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	float percentageMoveableDemand;  // This can be set constant, or calculated from available appliances
 	int maxTimeShift; // The "furthest" a demand may be moved in time.  This can be constant or calculated dynamically.
 
-	
 
-	/**
-	 *  constructor
-	 */
-	public GeneratorProsumer(CascadeContext context) {
-		super(context);
-	}
 	/*
 	 * Accessor functions (NetBeans style)
 	 * TODO: May make some of these private to respect agent conventions of autonomy / realistic simulation of humans
@@ -126,6 +119,14 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	private float calculateFixedDayTotalDemand(int time) {
 		int baseProfileIndex = time % baseDemandProfile.length;
 		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
+	}
+	
+
+	/**
+	 *  constructor
+	 */
+	public GeneratorProsumer(CascadeContext context) {
+		super(context);
 	}
 
 }

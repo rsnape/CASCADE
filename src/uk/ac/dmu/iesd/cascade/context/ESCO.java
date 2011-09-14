@@ -23,16 +23,6 @@ package uk.ac.dmu.iesd.cascade.context;
 
 public class ESCO extends AggregatorAgent{
 
-	/**
-	 * Constructs a ESCO agent with the context in which is created and its
-	 * base demand.
-	 * @param context the context in which this agent is situated
-	 * @param baseDemand an array containing the base demand  
-	 */
-	public ESCO(CascadeContext context, float[] baseDemand) {
-
-		super(context);
-	}
 
 	/**
 	 * This method defines how this object behaves (what it does)
@@ -55,6 +45,17 @@ public class ESCO extends AggregatorAgent{
 		String str="";
 		return str;
 
+	}
+	
+	/**
+	 * Constructs a ESCO agent with the context in which is created and its
+	 * base demand.
+	 * @param context the context in which this agent is situated
+	 * @param baseDemand an array containing the base demand  
+	 */
+	public ESCO(CascadeContext context, float[] baseDemand) {
+
+		super(context);
 	}
 
 }
