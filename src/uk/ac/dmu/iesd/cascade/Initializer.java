@@ -22,9 +22,15 @@ import repast.simphony.engine.controller.ControllerActionVisitor;
 import repast.simphony.engine.controller.NullAbstractControllerAction;
 import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.GUIRegistryType;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunEnvironmentBuilder;
 import repast.simphony.engine.environment.RunState;
+import repast.simphony.engine.schedule.IAction;
+import repast.simphony.engine.schedule.ISchedule;
+import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.parameter.ParameterConstants;
 import repast.simphony.parameter.Parameters;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.scenario.ModelInitializer;
 import repast.simphony.scenario.Scenario;
 import repast.simphony.ui.RSApplication;
@@ -52,6 +58,19 @@ public class Initializer implements ModelInitializer{
 			//System.out.println("Begining of runInitialize");
 			//System.out.println("this is runInitialize method test");
 			// will be executed at initialization.
+			
+			/*ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+			schedule.schedule(ScheduleParameters.createOneTime(-0.1), new IAction() {
+				//0.001  Nick
+				public void execute() {
+					Parameters params = RunEnvironment.getInstance().getParameters();
+					Number seed =
+						(Number)params.getValue(ParameterConstants.DEFAULT_RANDOM_SEED_USAGE_NAME);
+					RandomHelper.setSeed(seed.intValue());
+
+				}
+			}); */
+			
 			CascadeContext cascadeContext = (CascadeContext) context;
 			//System.out.println("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
 			GUIRegistry guiRegis = runState.getGUIRegistry();
@@ -68,8 +87,8 @@ public class Initializer implements ModelInitializer{
 				if (guiRegisType == GUIRegistryType.CHART) {
 					Collection <JComponent> chartCollection = typeAndCompPair.getSecond();  
 					cascadeContext.setChartCompCollection(chartCollection);
-					
-					
+
+
 				}
 				if (guiRegisType == GUIRegistryType.DISPLAY) {
 
@@ -89,25 +108,6 @@ public class Initializer implements ModelInitializer{
 						//System.out.print(" SubComp: "+ comp.getComponent(0));
 					}
 					//System.out.println(" Comp class: "+ comp.getClass());
-					
-					if(Consts.DEBUG)
-					{
-						if (Consts.DEBUG_OUTPUT_FILE != "")
-						{
-						    File file  = new File(Consts.DEBUG_OUTPUT_FILE);
-						    PrintStream printStream;
-							try {
-								printStream = new PrintStream(new FileOutputStream(file));
-								System.setOut(printStream);
-							    System.out.println("Redirected System.out to this file, namely " + Consts.DEBUG_OUTPUT_FILE);
-
-							} catch (FileNotFoundException e) {
-								System.err.println("Couldn't find file with name " + Consts.DEBUG_OUTPUT_FILE);
-								System.err.println("Therefore cannot re-direct System.out to this file ");
-							}						    
-						}
-					}
-
 				}
 
 			} 
@@ -119,6 +119,25 @@ public class Initializer implements ModelInitializer{
 				if (display instanceof DisplayOGL2D)
 				{
 					((DisplayOGL2D) display).addProbeListener(new ProsumerProbeListener(cascadeContext));
+				}
+			}
+
+			
+			if(Consts.DEBUG)
+			{
+				if (Consts.DEBUG_OUTPUT_FILE != "")
+				{
+					File file  = new File(Consts.DEBUG_OUTPUT_FILE);
+					PrintStream printStream;
+					try {
+						printStream = new PrintStream(new FileOutputStream(file));
+						System.setOut(printStream);
+						System.out.println("Redirected System.out to this file, namely " + Consts.DEBUG_OUTPUT_FILE);
+
+					} catch (FileNotFoundException e) {
+						System.err.println("Couldn't find file with name " + Consts.DEBUG_OUTPUT_FILE);
+						System.err.println("Therefore cannot re-direct System.out to this file ");
+					}						    
 				}
 			}
 

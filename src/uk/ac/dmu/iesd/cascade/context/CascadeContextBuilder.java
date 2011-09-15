@@ -38,7 +38,11 @@ import repast.simphony.engine.environment.GUIRegistryType;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunEnvironmentBuilder;
 import repast.simphony.engine.environment.RunState;
+import repast.simphony.engine.schedule.IAction;
+import repast.simphony.engine.schedule.ISchedule;
+import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.parameter.ParameterConstants;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.*;
 import repast.simphony.random.RandomHelper;
@@ -103,8 +107,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 	//int ticksPerDay;
 	int numDemandColumns;
-	Normal buildingLossRateGenerator = RandomHelper.createNormal(275,75);
-	Normal thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
+	//Normal buildingLossRateGenerator = RandomHelper.createNormal(275,75);
+	//Normal thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
+	Normal buildingLossRateGenerator = null;
+	Normal thermalMassGenerator = null;
 	float[] monthlyMainsWaterTemp = new float[12];
 
 	/*
@@ -241,6 +247,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		for (int i = 0; i < numProsumers; i++) {
 
 			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
+			//System.out.println("numDemandCol: "+numDemandColumns);
+			//System.out.println("DemandName: "+demandName);
+			
 			if (cascadeMainContext.verbose)
 			{
 				System.out.println("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
@@ -276,6 +285,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		{
 			int occupancy = thisAgent.getNumOccupants();
 			double randomVar = RandomHelper.nextDouble();
+			//System.out.println("randomVar: "+randomVar);
 			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
 			{
 				thisAgent.hasWashingMachine = true;
@@ -299,6 +309,12 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				thisAgent.hasDishWasher = true;
 			}
 
+			//thisAgent.setBuildingHeatLossRate/*(225f);//For test*/((float) buildingLossRateGenerator.nextDouble());
+			
+			//double d = buildingLossRateGenerator.nextDouble();
+			//System.out.println("buildLossRateGen (d): "+ d);
+			//System.out.println("buildLossRateGen (float): "+ (float)d);
+			//System.out.printf("RH Seed: %d%n", RandomHelper.getSeed());
 			thisAgent.setBuildingHeatLossRate/*(225f);//For test*/((float) buildingLossRateGenerator.nextDouble());
 			thisAgent.setBuildingThermalMass/*(10f);//For test*/((float) thermalMassGenerator.nextDouble());
 			thisAgent.tau = (thisAgent.buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / thisAgent.buildingHeatLossRate;
@@ -314,10 +330,27 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		//This uses a different algorithm - first get all the agents we want and then assign the value
 		//NOTE - these are assumed independent - almost certainly NOT!!!
 		//TODO: Sort this out
-		Iterable waterHeated = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Float) params.getValue("elecWaterFraction")));
+		Iterable waterHeated = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Float) params.getValue("elecWaterFraction")));	
 		Iterable spaceHeated = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Float) params.getValue("elecSpaceFraction")));
+		
 		AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true, waterHeated);
 		AgentUtils.assignParameterSingleValue("hasElectricalSpaceHeat", true, spaceHeated);
+		
+		/*System.out.println("---out of iterable---");
+		for (Object thisAgent : waterHeated)
+		{
+			System.out.println("---Inside Waterheated---");
+			HouseholdProsumer hhp = (HouseholdProsumer)thisAgent;
+			System.out.println("WaterHeatedhhpID: "+hhp.agentID);
+		}
+		
+		for (Object thisAgent : spaceHeated)
+		{
+			System.out.println("---Inside spaceHeated---");
+
+			HouseholdProsumer hhp = (HouseholdProsumer)thisAgent;
+			System.out.println("spaceHeated: hhpID: "+hhp.agentID);
+		} */
 
 		if(cascadeMainContext.verbose)
 		{
@@ -510,6 +543,51 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	}
 	
 
+	/**
+	 * 
+	 */
+	private void initializeProbabilityDistributions() {
+
+		double[] drawOffDist = ArrayUtils.convertFloatArrayToDoubleArray(ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF)));
+		cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
+		cascadeMainContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
+		cascadeMainContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
+		
+		buildingLossRateGenerator = RandomHelper.createNormal(275,75);
+		thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
+	}
+	
+	/**
+	 * This method builds the schedules directly/manually.
+	 * The motivation behind its built was related to the reported bug 
+	 * in the random seed, and hence order of scheduling and reproducibility.  
+	 * It is not currently in used. 
+	 */
+	private void buildSchedulesDirectly(){
+		
+		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+		
+		/*schedule.schedule(ScheduleParameters.createOneTime(.001), new IAction() {
+			public void execute() {
+				Parameters modelParams = RunEnvironment.getInstance().getParameters();
+				Number seed =
+					(Number)modelParams.getValue(ParameterConstants.DEFAULT_RANDOM_SEED_USAGE_NAME);
+				RandomHelper.setSeed(seed.intValue());
+
+			}
+		});  */
+		
+	    IndexedIterable <ProsumerAgent> prosumerIndIter = cascadeMainContext.getObjects(ProsumerAgent.class);
+		ScheduleParameters prosumerScheduleParams = ScheduleParameters.createRepeating(0, 1);
+		schedule.scheduleIterable(prosumerScheduleParams, prosumerIndIter, "step", true);
+ 
+		IndexedIterable <AggregatorAgent> aggregatorIndIter= cascadeMainContext.getObjects(AggregatorAgent.class);
+		ScheduleParameters aggregatorScheduleParams = ScheduleParameters.createRepeating(0, 1, ScheduleParameters.LAST_PRIORITY);
+		schedule.scheduleIterable(aggregatorScheduleParams, aggregatorIndIter, "step", true);
+		
+	}
+
+
 	/*
 	 * Builds the <tt> Cascade Context </tt> (by calling other private sub-methods)
 	 * @see uk.ac.dmu.iesd.cascade.context.CascadeContext
@@ -520,12 +598,16 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		// Instantiate the Cascade context, passing in the context that was given to this builder
 		// to clone any existing parameters
 		//tempCont =context;
+		//System.out.println("CascadeContextBuilder");
+		
 		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
 
 		readParamsAndInitializeArrays();
 		initializeProbabilityDistributions();
 		//cascadeMainContext.buildChartSnapshotSchedule();
 		populateContext();
+		
+		//buildSchedulesDirectly();
 	
 		//buildNetworks();
 		
@@ -541,20 +623,6 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		return cascadeMainContext;
 	}
-
-
-	/**
-	 * 
-	 */
-	private void initializeProbabilityDistributions() {
-
-		double[] drawOffDist = ArrayUtils.convertFloatArrayToDoubleArray(ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF)));
-		cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
-		cascadeMainContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
-		cascadeMainContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
-	}
-
-
 
 }
 

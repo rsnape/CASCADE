@@ -156,15 +156,6 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected static final long serialVersionUID = 1L;  // TODO: to make sure this class will be serialized, if not remove this.
 
 
-	/**
-	 * Constructs a prosumer agent with the context in which is created
-	 * @param context the context in which this agent is situated 
-	 */
-	public ProsumerAgent(CascadeContext context) {
-		
-		this.agentID = agentIDCounter++;
-		this.mainContext = context;
-	}
 
 	/**
 	 * Returns a string representation of this agent and its key values 
@@ -486,6 +477,15 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 
 
 
+	/**
+	 * Constructs a prosumer agent with the context in which is created
+	 * @param context the context in which this agent is situated 
+	 */
+	public ProsumerAgent(CascadeContext context) {
+		
+		this.agentID = agentIDCounter++;
+		this.mainContext = context;
+	}
 
 
 }
