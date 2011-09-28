@@ -546,7 +546,7 @@ public class WattboxController implements ISmartController{
 	public WattboxController(HouseholdProsumer owner) 
 	{
 		this.owner = owner;
-		ticksPerDay = owner.getContext().getTickPerDay();
+		ticksPerDay = owner.getContext().getNbOfTickPerDay();
 		//this.priorDayExternalTempProfile = Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
 		//Initialise with a flat external temperature - thus no incentive to move demand on first day of use.
 		this.priorDayExternalTempProfile = new float[ticksPerDay];

@@ -77,6 +77,8 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * the option to make it Ni^2 or fractional power
 	 **/
 	float[] arr_i_C; 
+	
+	float[] arr_i_B; // (B) baseline at timeslot i
 
 	/**
 	 * A boolen to determine whether the name has
@@ -105,6 +107,13 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	boolean priceSignalChanged = true;  //set true when we wish to send a new and different price signal.  
 	//True by default as it will always be new until the first broadcast
 	protected int ticksPerDay;
+	
+	protected ArrayList<Float> dailyPredictedCost;
+	//private float[] dailyPredictedCostArr;
+
+	protected ArrayList<Float> dailyActualCost; 
+	
+	protected float cumulativeCostSaving =0;
 
 
 	//-----------------------------
@@ -164,12 +173,13 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 
 
 	/**
-	 * Returns the net demand <code>netDemand</code> for this agent 
-	 * @return  the <code>netDemand</code> 
+	 * Returns the net demand <code>netDemand</code> for this agent (D)
+	 * @return  the <code>netDemand (D)</code> 
 	 **/
 	public float getNetDemand() {
 		return this.netDemand;
 	}
+	
 	/**
 	 * Sets the <code>netDemand</code> of this agent  
 	 * @param nd the new net demand for the agent
@@ -178,15 +188,71 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	public void setNetDemand(float nd) {
 		this.netDemand = nd;
 	}
+	
+	
 
+	/**
+	 * Returns the price signal <code>priceSignal</code> for this agent (S)
+	 * @return  the <code>priceSignal (S)</code> 
+	 **/
+	public float getCurrentPriceSignal()
+	{
+		double time = RepastEssentials.GetTickCount();
+		return priceSignal[(int) time % priceSignal.length];
+	}
+
+
+	
+	/*public float getCurrentCostOfDemand() {
+		return getCurrentCost_C() * this.getNetDemand();
+	} */
 	/**
 	 * This method returns the cost of buying wholesale electricity for this aggregator
 	 * at the current tick
 	 */
-	public float getCurrentCost()
+	
+	public float getCurrentCost_C()
 	{
 		return arr_i_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
 	}
+	
+	public float getCurrentBaseline_B()
+	{
+		return arr_i_B[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+	}
+	
+	
+	public float getDayPredictedCost()
+	{
+		if (dailyPredictedCost.size() > 0)
+			return  dailyPredictedCost.get(mainContext.getDayCount()-1);
+		else return 0;
+	}
+	
+	public float getDayActualCost()
+	{
+		if (dailyActualCost.size() > 0)
+			return  dailyActualCost.get(mainContext.getDayCount()-1);
+		else return 0;
+	}
+	
+	
+	public float getCostDifference()
+	{
+		if (mainContext.getDayCount() <= Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) 
+			return 0;
+		else return getDayPredictedCost() - getDayActualCost();
+	}
+	
+	public float getCumulativeCostSaving()
+	{
+		 return this.cumulativeCostSaving;
+	}
+	
+	public int getDayCount() {
+		return mainContext.getDayCount();
+	}
+	
 
 	/**
 	 * This method should define the step for the agents.
@@ -257,11 +323,6 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * all aggregator agent (like the ones defined above). / Babak  
 	 */
 
-	public float getCurrentPriceSignal()
-	{
-		double time = RepastEssentials.GetTickCount();
-		return priceSignal[(int) time % priceSignal.length];
-	}
 	
 
 	void setPriceSignalFlatRate(float price)

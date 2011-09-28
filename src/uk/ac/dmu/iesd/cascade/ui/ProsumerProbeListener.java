@@ -215,7 +215,7 @@ public class ProsumerProbeListener implements ProbeListener {
 	public ProsumerProbeListener(CascadeContext context)
 	{
 		super();
-		RunEnvironment.getInstance().getCurrentSchedule().schedule(ScheduleParameters.createRepeating(RepastEssentials.GetTickCount()+1, context.getTickPerDay(),
+		RunEnvironment.getInstance().getCurrentSchedule().schedule(ScheduleParameters.createRepeating(RepastEssentials.GetTickCount()+1, context.getNbOfTickPerDay(),
                 ScheduleParameters.END), new ProbeUpdater(this));
 	}
 

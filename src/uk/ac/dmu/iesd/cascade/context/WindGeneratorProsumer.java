@@ -170,7 +170,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		this.numTurbines = turbines;
 		this.percentageMoveableDemand = 0;
 		this.maxTimeShift = 0;
-		this.ticksPerDay = context.getTickPerDay();
+		this.ticksPerDay = context.getNbOfTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0) {
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("WindGeneratorProsumer: Will be truncated and may cause unexpected behaviour");

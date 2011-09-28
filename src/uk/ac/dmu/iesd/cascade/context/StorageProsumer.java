@@ -105,7 +105,7 @@ public class StorageProsumer extends ProsumerAgent{
 		super(context);
 		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.5);
 		setElasticityFactor(percentageMoveableDemand);
-		this.ticksPerDay = context.getTickPerDay();
+		this.ticksPerDay = context.getNbOfTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0)
 		{
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");

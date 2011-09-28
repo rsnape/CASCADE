@@ -61,6 +61,7 @@ import uk.ac.dmu.iesd.cascade.Consts.GENERATOR_TYPE;
 import uk.ac.dmu.iesd.cascade.Consts.STORAGE_TYPE;
 import uk.ac.dmu.iesd.cascade.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
+import uk.ac.dmu.iesd.cascade.test.HHProsumer;
 import uk.ac.dmu.iesd.cascade.util.*;
 import repast.simphony.scenario.ModelInitializer;
 
@@ -125,7 +126,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		String householdAttrFileName = (String)params.getValue("householdBaseAttributeFile");
 		String elecLayoutFilename = (String)params.getValue("electricalNetworkLayoutFile");
 		numProsumers = (Integer) params.getValue("defaultProsumersPerFeeder");
-		cascadeMainContext.setTickPerDay((Integer) params.getValue("ticksPerDay"));
+		cascadeMainContext.setNbOfTickPerDay((Integer) params.getValue("ticksPerDay"));
 		cascadeMainContext.verbose = (Boolean) params.getValue("verboseOutput");
 		cascadeMainContext.chartSnapshotOn = (Boolean) params.getValue("chartSnapshot");
 		cascadeMainContext.setChartSnapshotInterval((Integer) params.getValue("chartSnapshotInterval"));
@@ -169,7 +170,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}
-		if (cascadeMainContext.weatherDataLength % cascadeMainContext.getTickPerDay() != 0)
+		if (cascadeMainContext.weatherDataLength % cascadeMainContext.getNbOfTickPerDay() != 0)
 		{
 			System.err.println("Weather data array not a whole number of days. This may cause unexpected behaviour ");
 		}
@@ -185,7 +186,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}		
-		if (cascadeMainContext.systemPriceSignalDataLength % cascadeMainContext.getTickPerDay()!= 0)
+		if (cascadeMainContext.systemPriceSignalDataLength % cascadeMainContext.getNbOfTickPerDay()!= 0)
 		{
 			System.err.println("Base System Demand array not a whole number of days. This may cause unexpected behaviour");
 		}
@@ -256,10 +257,13 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			}
 			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
 
+			//System.out.println("Prosumers are created by the following baseDmand: "+ Arrays.toString(householdBaseDemandArray));
 			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(householdBaseDemandArray, false);
 			//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
 			hhProsAgent.hasSmartMeter = true;
-			hhProsAgent.hasSmartControl = true;
+			//hhProsAgent.hasSmartMeter = false; //set prosumers unreponsive to price signals
+
+			hhProsAgent.hasSmartControl = true;  // Babak: this is also done in HHProsumer Constructor!
 			cascadeMainContext.add(hhProsAgent);			
 		} 
 
@@ -369,6 +373,174 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			System.out.println("Dish Washer : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
 		}
 		
+		buildSocialNetwork();
+
+		//Secondly add aggregator(s)
+		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
+		RECO firstAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
+		//AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(firstAggregator);
+		
+		buildNetworks(firstAggregator);
+	}
+	
+	private void createProsumersAndAddThemToContext() {
+		
+		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
+
+		float[] householdBaseDemandArray = null;
+		for (int i = 0; i < numProsumers; i++) {
+
+			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
+			//System.out.println("numDemandCol: "+numDemandColumns);
+			//System.out.println("DemandName: "+demandName);
+			
+			if (cascadeMainContext.verbose)
+			{
+				System.out.println("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
+			}
+			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
+
+			//HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer_Test(householdBaseDemandArray, false);
+			 HHProsumer hhProsAgent = prosumerFactory.createHHProsumer(householdBaseDemandArray, false);
+
+			//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
+			//hhProsAgent.hasSmartMeter = true;
+			//hhProsAgent.hasSmartControl = true;  // Babak: this is also done in HHProsumer Constructor!
+			cascadeMainContext.add(hhProsAgent);			
+		} 
+		
+	}
+	
+	private void initializeHHProsumersWetAppliancesParameters() {
+		
+		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
+
+		/*----------------
+		 * Richard's occupancy test code
+		 * 
+		 * Note that this in effect is assuming that occupancy is independent of 
+		 * any of the other assigned variables.  This may not, of course, be true.
+		 */
+		//AgentUtils.assignProbabilisticDiscreteParameter("numOccupants", Consts.NUM_OF_OCCUPANTS_ARRAY, Consts.OCCUPANCY_PROBABILITY_ARRAY, householdProsumers);
+
+		//assign wet appliance ownership.  Based on statistical representation of the BERR 2006 ownership stats
+		// with a bias based on occupancy which seems reasonable.
+		// TODO: break this out into a separate method.  Store constants somewhere?  Should they read from file?
+		for (HouseholdProsumer thisAgent : householdProsumers)
+		{
+			int occupancy = thisAgent.getNumOccupants();
+			double randomVar = RandomHelper.nextDouble();
+			//System.out.println("randomVar: "+randomVar);
+			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
+			{
+				thisAgent.hasWashingMachine = true;
+			}
+
+			randomVar = RandomHelper.nextDouble();
+			if (!(thisAgent.hasWashingMachine) && ((occupancy >= 2 && randomVar < 0.75) || (occupancy == 1 && randomVar < 0.55)))
+			{
+				thisAgent.hasWasherDryer = true;
+			}
+
+			randomVar = RandomHelper.nextDouble();
+			if (!(thisAgent.hasWasherDryer) && ((occupancy >= 3 && randomVar < 0.7) || (occupancy == 2 && randomVar < 0.45) || (occupancy == 1 && randomVar < 0.35)))
+			{
+				thisAgent.hasTumbleDryer = true;
+			}
+
+			randomVar = RandomHelper.nextDouble();
+			if (((occupancy >= 3 && randomVar < 0.55) || (occupancy == 2 && randomVar < 0.25) || (occupancy == 1 && randomVar < 0.2)))
+			{
+				thisAgent.hasDishWasher = true;
+			}
+
+			//thisAgent.setBuildingHeatLossRate/*(225f);//For test*/((float) buildingLossRateGenerator.nextDouble());
+			
+			//double d = buildingLossRateGenerator.nextDouble();
+			//System.out.println("buildLossRateGen (d): "+ d);
+			//System.out.println("buildLossRateGen (float): "+ (float)d);
+			//System.out.printf("RH Seed: %d%n", RandomHelper.getSeed());
+			thisAgent.setBuildingHeatLossRate/*(225f);//For test*/((float) buildingLossRateGenerator.nextDouble());
+			thisAgent.setBuildingThermalMass/*(10f);//For test*/((float) thermalMassGenerator.nextDouble());
+			thisAgent.tau = (thisAgent.buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / thisAgent.buildingHeatLossRate;
+			thisAgent.freeRunningTemperatureLossPerTickMultiplier = (thisAgent.buildingHeatLossRate / thisAgent.buildingThermalMass) / (Consts.KWH_TO_JOULE_CONVERSION_FACTOR / (Consts.SECONDS_PER_DAY / cascadeMainContext.ticksPerDay));
+			
+			//populate the initial heating profile from the above baseline demand for hot water
+			thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
+
+		}
+		
+		if(cascadeMainContext.verbose)
+		{
+			System.out.println("Percentages:");
+			System.out.println("households with occupancy 1 : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",1)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 2 : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",2)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 3 : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",3)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 4 : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",4)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 5 : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",5)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 6 : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",6)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 7 : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",7)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 8 : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",8)).query()) / householdProsumers.size());
+			System.out.println("Washing Mach : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWashingMachine",true)).query()) / householdProsumers.size());
+			System.out.println("Washer Dryer : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWasherDryer",true)).query()) / householdProsumers.size());
+			System.out.println("Tumble Dryer: " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasTumbleDryer",true)).query()) / householdProsumers.size());
+			System.out.println("Dish Washer : " + (float) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
+		}
+		
+		
+	}
+	private void initializeHHProsumersWaterHeatingParameters() {
+		Iterable waterHeated = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Float) params.getValue("elecWaterFraction")));
+		AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true, waterHeated);
+		
+	}
+	
+	private void initializeHHProsumersSpaceHeatingParameters() {
+		Iterable spaceHeated = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Float) params.getValue("elecSpaceFraction")));
+		AgentUtils.assignParameterSingleValue("hasElectricalSpaceHeat", true, spaceHeated);
+		
+	}
+	
+	private void initializeHHProsumersMiscParameters() {
+
+		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
+
+		for (HouseholdProsumer pAgent : householdProsumers)
+		{
+
+			pAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WILLING_TO_CHANGE_BEHAVIOUR));
+			//pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
+			pAgent.exercisesBehaviourChange = true;
+			pAgent.hasSmartMeter = true;
+			pAgent.costThreshold = Consts.HOUSEHOLD_COST_THRESHOLD;
+			pAgent.minSetPoint = Consts.HOUSEHOLD_MIN_SETPOINT;
+			pAgent.maxSetPoint = Consts.HOUSEHOLD_MAX_SETPOINT;
+
+			pAgent.transmitPropensitySmartControl = (float) RandomHelper.nextDouble();
+			
+			//--------------
+			pAgent.hasSmartControl = true;
+		}
+	
+
+	}
+	
+	private void createAggregatorAndAddThemToContext() {
+		
+	}
+	
+	
+	
+private void populateContext_Test() {
+	
+	    createProsumersAndAddThemToContext();
+	    
+	    initializeHHProsumersMiscParameters();
+	    initializeHHProsumersWetAppliancesParameters();
+	   initializeHHProsumersWaterHeatingParameters();
+	    initializeHHProsumersSpaceHeatingParameters();
+	
 		buildSocialNetwork();
 
 		//Secondly add aggregator(s)
@@ -606,6 +778,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		initializeProbabilityDistributions();
 		//cascadeMainContext.buildChartSnapshotSchedule();
 		populateContext();
+		
+		//populateContext_Test();
 		
 		//buildSchedulesDirectly();
 	

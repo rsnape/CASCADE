@@ -15,5 +15,7 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_12.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_13.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_14.xml" />
+<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_15.xml" />
+<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_16.xml" />
 <model.initializer class="uk.ac.dmu.iesd.cascade.Initializer" />
 </Scenario>

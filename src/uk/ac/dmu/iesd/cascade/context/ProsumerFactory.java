@@ -16,6 +16,7 @@ import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.Consts.*;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
+import uk.ac.dmu.iesd.cascade.test.HHProsumer;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 /**
@@ -50,7 +51,7 @@ public class ProsumerFactory implements IProsumerFactory {
 
 	public HouseholdProsumer createHouseholdProsumer(float[] baseProfileArray, boolean addNoise) {
 		HouseholdProsumer pAgent;
-		int ticksPerDay = cascadeMainContext.getTickPerDay();
+		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
 		if (baseProfileArray.length % ticksPerDay != 0)
 		{
 			System.err.println("ProsumerFactory: Household base demand array not a whole number of days");
@@ -69,7 +70,7 @@ public class ProsumerFactory implements IProsumerFactory {
 		pAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WILLING_TO_CHANGE_BEHAVIOUR));
 		//pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
 		pAgent.exercisesBehaviourChange = true;
-		pAgent.hasSmartMeter = true;
+		//pAgent.hasSmartMeter = true; //Babak: this has been repeated in two places
 		pAgent.costThreshold = Consts.HOUSEHOLD_COST_THRESHOLD;
 		pAgent.minSetPoint = Consts.HOUSEHOLD_MIN_SETPOINT;
 		pAgent.maxSetPoint = Consts.HOUSEHOLD_MAX_SETPOINT;
@@ -78,6 +79,51 @@ public class ProsumerFactory implements IProsumerFactory {
 
 		return pAgent;
 	}
+	
+	public HouseholdProsumer createHouseholdProsumer_Test(float[] baseProfileArray, boolean addNoise) {
+		HouseholdProsumer pAgent;
+		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
+		if (baseProfileArray.length % ticksPerDay != 0)
+		{
+			System.err.println("ProsumerFactory: Household base demand array not a whole number of days");
+			System.err.println("ProsumerFactory: May cause unexpected behaviour");
+		}
+
+		if (addNoise) 
+		{
+			pAgent = new HouseholdProsumer(cascadeMainContext, createRandomHouseholdDemand(baseProfileArray));
+		}
+		else
+		{
+			pAgent = new HouseholdProsumer(cascadeMainContext, baseProfileArray);
+		}
+
+		
+		return pAgent;
+	}
+	
+	public HHProsumer createHHProsumer(float[] baseProfileArray, boolean addNoise) {
+		HHProsumer pAgent;
+		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
+		if (baseProfileArray.length % ticksPerDay != 0)
+		{
+			System.err.println("ProsumerFactory: Household base demand array not a whole number of days");
+			System.err.println("ProsumerFactory: May cause unexpected behaviour");
+		}
+
+		if (addNoise) 
+		{
+			pAgent = new HHProsumer(cascadeMainContext, createRandomHouseholdDemand(baseProfileArray));
+		}
+		else
+		{
+			pAgent = new HHProsumer(cascadeMainContext, baseProfileArray);
+		}
+
+		
+		return pAgent;
+	}
+
 
 
 	/**

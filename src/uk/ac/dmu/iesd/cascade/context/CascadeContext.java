@@ -134,16 +134,31 @@ public class CascadeContext extends DefaultContext{
 		this.economicNetwork = n;
 	}
 
+
+	
+	/**
+	 * This method returns the tick time. 
+	 * It is a wrapper around RepastEssential.GgetTickCount method, which returns the tick count as integer.
+	 * @return current tick count of the model 
+	 */
+	public int getTickCount() {
+		return (int) RepastEssentials.GetTickCount();
+	}
+	
+	public int getTimeslotOfDay() {
+		return (int) RepastEssentials.GetTickCount() % ticksPerDay;
+	}
 	
 	/**
 	 * This method return the number of <tt> tickPerDay </tt>
 	 * @return <code>tickPerDay</code>
 	 */
-	public int getTickPerDay() {
+	public int getNbOfTickPerDay() {
 		return this.ticksPerDay;
 	}
 	
-	public void setTickPerDay(int tick) {
+	
+	public void setNbOfTickPerDay(int tick) {
 		this.ticksPerDay = tick;
 	}
 	
@@ -155,15 +170,7 @@ public class CascadeContext extends DefaultContext{
 		return this.chartSnapshotInterval;
 	}
 	
-	
-	/**
-	 * This method returns the current timeslot during a day (usually divided to 48 timeslot).
-	 * @return urrent timeslot during a day 
-	 */
-	public int getCurrentTimeslotForDay() {
-		return (int) RepastEssentials.GetTickCount();
-	}
-	
+
 	
 	/**
 	 * This method returns the elapse of time in number of days.
@@ -172,8 +179,8 @@ public class CascadeContext extends DefaultContext{
 	 * However, in order to have it usefully workable with arrays, the first day is returned as 0, second day as 1 and so forth.
 	 * @return the elapsed time in terms of number of day, starting from 0
 	 */
-	public int getCountDay() {
-		return (int) RepastEssentials.GetTickCount()/this.getTickPerDay();
+	public int getDayCount() {
+		return (int) RepastEssentials.GetTickCount()/this.getNbOfTickPerDay();
 	}
 	
 	/**
@@ -181,11 +188,11 @@ public class CascadeContext extends DefaultContext{
 	 * @param sinceDay a day reference from which the elapse of day is tested.
 	 *  @return <code>true</code> if the day has changed since <tt>sinceDay</tt>
      *          <code>false</code> otherwise
-	 * see {@link #getCountDay()}
+	 * see {@link #getDayCount()}
 	 */
 	public boolean isDayChangedSince(int sinceDay) {
 		boolean dayChanged = false;
-		int daysSoFar = getCountDay();
+		int daysSoFar = getDayCount();
 		int daysSinceStart = daysSoFar - sinceDay;
 		if (daysSinceStart >= 1)
 			dayChanged = true;
@@ -223,7 +230,7 @@ public class CascadeContext extends DefaultContext{
 	 */
 	public boolean isBeginningOfDay() {
 		double time = RepastEssentials.GetTickCount();
-		int timeOfDay = (int) (time % getTickPerDay());
+		int timeOfDay = (int) (time % getNbOfTickPerDay());
 		if (timeOfDay == 0)
 			return true;
 		else return false;	
@@ -279,6 +286,7 @@ public class CascadeContext extends DefaultContext{
 		return Arrays.copyOfRange(windSpeedArray, start, start + length);
 	
 	}
+	
 	/**
 	 * @param time - the time in ticks for which to get the air temperature
 	 * @return the air temperature at the time (in ticks) passed in
@@ -407,18 +415,20 @@ public class CascadeContext extends DefaultContext{
 	}
 	
 	private String getFileNameForChart(int chartNb) {
-		String chartName;
+		String chartName; 
 
 		switch (chartNb) {
-		 case 0:  chartName = "chart1_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 1:  chartName = "chart2_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 2:  chartName = "chart3_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 3:  chartName = "chart4_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 4:  chartName = "chart5_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 5:  chartName = "chart6_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 6:  chartName = "chart7_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 7:  chartName = "chart8_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 8:  chartName = "chart9_r"+getCurrentTimeslotForDay()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 0:  chartName = "chart0_Insol_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 1:  chartName = "chart1_AirTemp_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 2:  chartName = "chart2_WindSpeed_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 3:  chartName = "chart3_Agg_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 4:  chartName = "chart4_PriceSig_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 5:  chartName = "chart5_SmartAdapt_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 6:  chartName = "chart6_AggCost_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 7:  chartName = "chart7_BvsD_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 8:  chartName = "chart8_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 9:  chartName = "chart9_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+
 		 default: chartName = "chartDefaultName_"+Consts.FILE_CHART_FORMAT_EXT;; break;
 		}
 

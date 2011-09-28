@@ -596,7 +596,7 @@ public class CopyOfWattboxController implements ISmartController{
 		//this.heatPumpDemandProfile = new float[ticksPerDay];
 		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.baselineHotWaterVolumeProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.baselineHotWaterVolumeProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.baselineHotWaterVolumeProfile.length) + ticksPerDay);
 
-		ticksPerDay = owner.getContext().getTickPerDay();
+		ticksPerDay = owner.getContext().getNbOfTickPerDay();
 		if(owner.coldApplianceProfile != null)
 		{
 			this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.coldApplianceProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.coldApplianceProfile.length) + ticksPerDay);

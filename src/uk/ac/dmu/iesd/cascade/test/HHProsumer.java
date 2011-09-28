@@ -1,4 +1,4 @@
-package uk.ac.dmu.iesd.cascade.context;
+package uk.ac.dmu.iesd.cascade.test;
 
 import java.io.*;
 import java.math.*;
@@ -29,6 +29,8 @@ import repast.simphony.ui.RSGui;
 import repast.simphony.visualization.ProbeEvent;
 import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.context.CascadeContext;
+import uk.ac.dmu.iesd.cascade.context.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.controllers.*;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
@@ -37,20 +39,7 @@ import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
 import static java.lang.Math.*;
 import static repast.simphony.essentials.RepastEssentials.*;
 
-/**
- * @author J. Richard Snape
- * @author Babak Mahdavi
- * @version $Revision: 1.3 $ $Date: 2011/08/15 15:29:00 $
- * 
- * Version history (for intermediate steps see Git repository history
- * 
- * 1.0 - Initial split of categories of prosumer from the abstract class representing all prosumers
- * 1.1 - 
- * 1.2 - add in more sophisticated model incorporating displaceable and non-displaceable demand, appliance
- * 		 ownership etc.  Richard
- * 1.3 - added heat pump model and temperature calculation model (Richard)
- */
-public class HouseholdProsumer extends ProsumerAgent{
+public class HHProsumer extends ProsumerAgent{
 
 	/*
 	 * Configuration options
@@ -402,14 +391,12 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true)
 	public void step() {
-		// Note the simulation time if needed.
-		// Note - Repast can cope with fractions of a tick (a double is returned)
-		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
-		//System.out.println(" ---HH Prosumer----: "+this.getAgentID());
-		//System.out.println(" P ND (start): "+this.getNetDemand());
+		
 		time = (int) RepastEssentials.GetTickCount();
 		timeOfDay = (time % ticksPerDay);
+		setNetDemand(baseDemandProfile[time % baseDemandProfile.length]);
 
+	/*
 		checkWeather(time);
 		this.setPoint = this.optimisedSetPointProfile[time % ticksPerDay];
 
@@ -431,7 +418,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 			}
 
-			//***Richard output test for prosumer behaviour***
 
 			if (sampleOutput != null)
 			{
@@ -473,8 +459,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		//After the heat input has been calculated, re-calculate the internal temperature of the house
 		recordInternalAndExternalTemp(time);
-		
-		//System.out.println(" P ND (end): "+this.getNetDemand());
+		*/
 
 	}
 
@@ -917,10 +902,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 			for (Object thisConn: socialConnections)
 			{
 				RepastEdge myConn = ((RepastEdge) thisConn);
-				if (((HouseholdProsumer) myConn.getSource()).hasSmartControl)
+				if (((HHProsumer) myConn.getSource()).hasSmartControl)
 				{
 
-					inwardInfluence = inwardInfluence + (float) myConn.getWeight() * ((HouseholdProsumer) myConn.getSource()).transmitPropensitySmartControl;
+					inwardInfluence = inwardInfluence + (float) myConn.getWeight() * ((HHProsumer) myConn.getSource()).transmitPropensitySmartControl;
 				}
 			}
 		}
@@ -993,9 +978,21 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @param context - the context within which this agent exists
 	 * @param baseDemand - a floating point array containing the base demand for this prosumer.  Can be arbitrary length.
 	 */
-	public HouseholdProsumer(CascadeContext context, float[] baseDemand) {
+	public HHProsumer(CascadeContext context, float[] baseDemand) {
 		super(context);
 		this.setAgentName("Household_" + agentID);
+		this.ticksPerDay = context.getNbOfTickPerDay();
+		
+		if (baseDemand.length % ticksPerDay != 0)
+		{
+			System.err.println("HHProsumer: baseDemand array not a whole number of days");
+			System.err.println("HHProsumer: Will be truncated and may cause unexpected behaviour");
+		}
+		this.baseDemandProfile = new float [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
+		
+		/*
+		
 		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
 		this.ticksPerDay = context.getNbOfTickPerDay();
 		this.setNumOccupants(context.occupancyGenerator.nextInt() + 1);
@@ -1004,7 +1001,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		this.waterSetPoint = Consts.DOMESTIC_SAFE_WATER_TEMP;
 		//TODO: something more sophisticated to give the baseline water heat requirement
-		float[] hotWaterNeededProfile = new float[this.mainContext.ticksPerDay];
+		float[] hotWaterNeededProfile = new float[this.mainContext.getNbOfTickPerDay()];
 		float drawOffPerOccupant = this.dailyHotWaterUsage / this.numOccupants;
 
 		for (int i = 0; i < this.numOccupants; i++)
@@ -1020,7 +1017,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		else
 		{
-			float[] noWaterHeating = new float[this.mainContext.ticksPerDay];
+			float[] noWaterHeating = new float[this.mainContext.getNbOfTickPerDay()];
 			Arrays.fill(noWaterHeating,0);
 			this.setWaterHeatProfile(noWaterHeating);
 		}
@@ -1067,10 +1064,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		Arrays.fill(spaceHeatPumpOn, 1);
 		recordedHeatPumpDemand = new float[ticksPerDay];
 
-		/*
-		 *Set up "smart" stuff here
-		 */
-		this.mySmartController = new WattboxController(this);
+		
+		//this.mySmartController = new WattboxController(this); //accept only HousheoldProsumer and not HHProsumer
 		this.hasSmartControl = true; // Babak: this is also done in the populateContext() method of CascadeContextBuilder!
 
 		//Initialise the smart optimised profile to be the same as base demand
@@ -1082,7 +1077,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		if (this.agentID == 1)
 		{
 			sampleOutput = new CSVWriter("richardTestOutput.csv", false);
-		}
+		}  */
 	}
 
 

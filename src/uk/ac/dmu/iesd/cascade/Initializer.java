@@ -20,6 +20,7 @@ import org.jfree.chart.ChartPanel;
 import repast.simphony.context.Context;
 import repast.simphony.engine.controller.ControllerActionVisitor;
 import repast.simphony.engine.controller.NullAbstractControllerAction;
+import repast.simphony.engine.controller.TickListener;
 import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.GUIRegistryType;
 import repast.simphony.engine.environment.RunEnvironment;
@@ -48,6 +49,8 @@ import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
  *
  */
 public class Initializer implements ModelInitializer{
+	
+	//private TickListener tickListener = null;
 
 
 	class CascadeNullAbstractControllerAction extends NullAbstractControllerAction {
@@ -146,7 +149,15 @@ public class Initializer implements ModelInitializer{
 			JPanel customPanel = new JPanel();
 			customPanel.add(new JLabel("TestLabel"));
 			customPanel.add(new JButton("Test Button"));		
+			JLabel dayCountLabel = new JLabel();
+			dayCountLabel.setText("");
+			
+			/*if (tickListener != null) {
+				tickListener.tickCountUpdated(mainContext.getTickCount());
+			} */
+			
 			RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
+			
 			
 			//runParams.
 		   // System.out.println("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
