@@ -407,6 +407,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
 		//System.out.println(" ---HH Prosumer----: "+this.getAgentID());
 		//System.out.println(" P ND (start): "+this.getNetDemand());
+		//System.out.println(" HouseholdProsumers step()");
 		time = (int) RepastEssentials.GetTickCount();
 		timeOfDay = (time % ticksPerDay);
 

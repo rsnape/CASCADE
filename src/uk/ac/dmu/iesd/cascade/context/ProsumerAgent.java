@@ -238,6 +238,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @see #getNetDemand
 	 */
 	public void setNetDemand(float nd) {
+		//System.out.println("HHP: setND: "+nd);
 		this.netDemand = nd;
 	}
 	

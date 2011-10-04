@@ -382,6 +382,32 @@ public class HHProsumer extends ProsumerAgent{
 		return str;
 
 	}
+	
+	private float calcualteElasticDemand(int time)
+	{
+		float myDemand;
+		//int timeSinceSigValid = time - predictionValidTime;
+		
+		//As a basic strategy only the base (non-displaceable) demand is
+		//elastic
+		
+		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		myDemand = myDemand * (1 - dailyElasticity[time % ticksPerDay]);
+
+       /*
+		if(hasSmartMeter && getPredictedCostSignalLength() > 0)
+		{
+			float predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % getPredictedCostSignalLength()];
+			myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay]));
+			if (Consts.DEBUG)
+			{
+				System.out.println("HHProsumer:: Based on predicted cost = " + predictedCostNow + " demand set to " + (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) + " of initial " );
+			}
+		} */
+
+		return myDemand;
+	}
+
 
 	/******************
 	 * This method defines the step behaviour of a prosumer agent
@@ -392,9 +418,16 @@ public class HHProsumer extends ProsumerAgent{
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true)
 	public void step() {
 		
+		//System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");
 		time = (int) RepastEssentials.GetTickCount();
 		timeOfDay = (time % ticksPerDay);
 		setNetDemand(baseDemandProfile[time % baseDemandProfile.length]);
+		
+		/* ------------------
+		 * have price elasticity behavior 
+		 */
+		
+		//setNetDemand(calcualteElasticDemand(time));
 
 	/*
 		checkWeather(time);
@@ -988,8 +1021,22 @@ public class HHProsumer extends ProsumerAgent{
 			System.err.println("HHProsumer: baseDemand array not a whole number of days");
 			System.err.println("HHProsumer: Will be truncated and may cause unexpected behaviour");
 		}
+		
 		this.baseDemandProfile = new float [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
+		
+		//+++++++++++++++++++++
+		this.dailyElasticity = new float[ticksPerDay];
+		
+		for (int i = 0; i < dailyElasticity.length; i++)
+		{
+			//dailyElasticity[i] = (float) RandomHelper.nextDoubleFromTo(0, 0.1);
+			dailyElasticity[i] =  0.1f;
+		}
+		
+		
+		
+		//System.out.println("HHProsumer BD file:"+ Arrays.toString(baseDemandProfile));
 		
 		/*
 		

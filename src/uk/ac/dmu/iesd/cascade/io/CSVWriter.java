@@ -83,6 +83,7 @@ public class CSVWriter {
 		try {
 			for (int i=0; i<values.length; i++){
 				writer.append(""+values[i]);
+				//System.out.println("CSWriter:: value: "+values[i]);
 				writer.append(',');
 				
 			}

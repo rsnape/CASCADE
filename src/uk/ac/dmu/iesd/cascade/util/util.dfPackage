@@ -26,6 +26,26 @@ class reference21 {
 @__modelType reference 
 */
 class reference22 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.util.AgentUtils:oiref><oihard>
+@__modelType reference 
+*/
+class reference26 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.util.IterableUtils:oiref><oihard>
+@__modelType reference 
+*/
+class reference27 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.util.GASetupUtilities:oiref><oihard>
+@__modelType reference 
+*/
+class reference28 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils:oiref><oihard>
+@__modelType reference 
+*/
+class reference29 {
 }}/**
 @__tags
 @shapeType ClassDiagram 

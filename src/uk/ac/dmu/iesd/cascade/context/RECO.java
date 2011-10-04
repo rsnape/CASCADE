@@ -589,7 +589,7 @@ public class RECO extends AggregatorAgent{
 	 * @param hist_arr_B a 2D array for keeping baseline aggregate demand values for each timeslot of the day(column) and for different days (row)  
 	 */
 	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList,int timeOfDay, float[][] hist_arr_B) {
-		float sumDemand = 0;
+		float sumDemand = 0f;
 		if(Consts.DEBUG)
 		{
 			System.out.println("RECO:: Updating the aggregator demand history array at day: "+mainContext.getDayCount()+ " tick time " + RepastEssentials.GetTickCount() + " customersList size "+customersList.size());
@@ -632,6 +632,7 @@ public class RECO extends AggregatorAgent{
 	 * @return float array of average baseline aggregate demands 
 	 */
 	private float[] calculateBADfromHistoryArray(float[][] hist_arr_2D) {	
+		//System.out.println("RECO: calcualteBADfromHistoy: hist_arrr_2D "+ ArrayUtils.toString(hist_arr_2D));
 		return ArrayUtils.avgCols2DFloatArray(hist_arr_2D);	
 	}
 	
@@ -682,11 +683,13 @@ public class RECO extends AggregatorAgent{
 			if (indexFor1 > 0) {
 				for (int i = 0; i < indexFor1; i++) {
 					sArr[i] = (-1f/(this.ticksPerDay-1));
+					//sArr[i] = 0;
 				}
 			}
 			if (indexFor1 < this.ticksPerDay) {
 				for (int i = indexFor1+1; i < sArr.length; i++) {
 					sArr[i] = (-1f/(this.ticksPerDay-1));
+					//sArr[i] = 0;
 				}
 			}
 			break;
@@ -801,6 +804,7 @@ public class RECO extends AggregatorAgent{
 	 * the (last) array containing signal (S) sent during training period,
 	 * the elasticity factors (e) array  and the reference to the array of k (deplacement factors)
 	 * where the calculated values for kii and kji will be placed into it.   
+	 * See Peter Boait formula #7 and #8
 	 * @param arr_D array containing aggregate demand (D) values at the end of the day  (usually 48 days)
 	 * @param arr_B array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
 	 * @param arr_S array containing signal values sent to customers at the begining of the day
@@ -820,8 +824,18 @@ public class RECO extends AggregatorAgent{
 			deltaB_i = arr_D[i] - b;
 			e = arr_e[i];
 		}
+		
+		System.out.println("i: "+ i);
+		System.out.println("arr_D[i]: "+ arr_D[i]);
+		System.out.println("b: "+ b);
+		System.out.println("deltaB_i: "+ deltaB_i);
+		System.out.println("s*e*b: "+ (s*e*b));
+
+		System.out.println("deltaB_i - (s*e*b): "+ (deltaB_i - (s*e*b)));
+		System.out.println("s*b: "+ (s*b));
 
 		arr_k[i][i] = (deltaB_i - (s*e*b)) / (s*b);//0;  <- what does k[i][i] mean? Should it be zero?
+		System.out.println("arr_k[i][i]: "+ arr_k[i][i]);
 
 		for (int j = i+1; j < this.ticksPerDay; j++) {
 
@@ -843,6 +857,7 @@ public class RECO extends AggregatorAgent{
 	 * an average baseline aggregate demand array built during profile building period, 
 	 * the (last) array signal sent during training period and the reference to the array of e (elasticity factors)
 	 * where the calculated value for the timeslot when S=1 will be placed into it.   
+	 * It implements Peter Boait formula #6 
 	 * @param arr_D array containing aggregate demand (D) values at the end of the day  (usually 48 days)
 	 * @param arr_B array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
 	 * @param arr_S array containing signal values sent to customers at the begining of the day
@@ -854,6 +869,7 @@ public class RECO extends AggregatorAgent{
 		float e=0;
 		float b =1;
 		float s=1;
+		//System.out.println("RECO: Calculate e ££££££££££££");
 
 		float sum_D = ArrayUtils.sum(arr_D);
 		float sum_B = ArrayUtils.sum(arr_B);
@@ -863,8 +879,8 @@ public class RECO extends AggregatorAgent{
 			b = arr_B[timeslotWhenSwas1];
 		}
 
-		e = (sum_D - sum_B) / (s*b);
-
+        e = (sum_D - sum_B) / (s*b);
+        
 		arr_e[timeslotWhenSwas1] = e;
 
 		return e;	
@@ -1355,7 +1371,12 @@ public class RECO extends AggregatorAgent{
 					System.out.println(" timetick: "+mainContext.getTickCount());
 					float[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
 					float e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
+			        System.out.println("RECO: e: "+e);
+			        System.out.println("RECO: e_arr: "+ Arrays.toString(arr_i_e));
+			        System.out.println("RECO: arr_last_training_D: "+ Arrays.toString(arr_last_training_D));
+
 					calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
+					 System.out.println("RECO: k_arr: "+ ArrayUtils.toString(arr_ij_k));
 
 					//System.out.println("e: "+e);
 					//System.out.println("B: "+ Arrays.toString(arr_i_B));
@@ -1365,15 +1386,19 @@ public class RECO extends AggregatorAgent{
 					//System.out.println("k: ");
 					//System.out.println(ArrayUtils.toString(arr_ij_k));	
 
-					if (mainContext.getDayCount() == 54) {
+					//if (mainContext.getDayCount() > 7) {
 
 						int [] ts_arr = new int[ticksPerDay];
 
 						for (int i=0; i<ts_arr.length; i++){
 							ts_arr[i] = i;	
 						}
+						
+						String resFileName = "output1_beforeEE_day_"+(mainContext.getDayCount()-1)+".csv";
 
-						CSVWriter res = new CSVWriter("Res_EndOfDay54_EndOfTrainingDay48_rs1.csv", true);
+						//CSVWriter res = new CSVWriter("Res_EndOfDay54_EndOfTrainingDay48_rs1.csv", false);
+						CSVWriter res = new CSVWriter(resFileName, false);
+
 						//CSVWriter res = new CSVWriter("Res_EndOfDay18_EndOfTrainingDay11_rs1.csv", true);
 
 						res.appendText("Timeslots:");
@@ -1385,12 +1410,14 @@ public class RECO extends AggregatorAgent{
 						res.appendText("S (for end of day "+mainContext.getDayCount()+"): ");
 						res.appendRow(arr_i_S);
 						res.appendText("e (for end of day "+mainContext.getDayCount()+"): ");
+						 System.out.println("RECO: writeToFile: e_arr: "+ Arrays.toString(arr_i_e));
+
 						res.appendRow(arr_i_e);
 						res.appendText("k (for end of day "+mainContext.getDayCount()+"): ");
 						res.appendCols(arr_ij_k);
 						res.close(); 
 
-					} 
+					//} 
 
 					/*	if (mainContext.isBeginningOfDay(timeOfDay) && mainContext.isDayChangedSince(Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
 
@@ -1434,12 +1461,15 @@ public class RECO extends AggregatorAgent{
 
 
 					float[] actualShift = ArrayUtils.add(hist_day_arr_D, ArrayUtils.negate(arr_i_B));
+					System.out.println("RECO:: actualShift " + Arrays.toString(actualShift));
 					Matrix k = new Matrix(arr_ij_k);
 					double[][] b = new double[1][arr_i_B.length];
 					b[0] = ArrayUtils.convertFloatArrayToDoubleArray(ArrayUtils.mtimes(arr_i_B,arr_i_S));
 					Matrix Bm = new Matrix(b);
 					Bm.transpose();			
 					float[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), ArrayUtils.convertDoubleArrayToFloatArray((Matrix.times(Bm, k).getRowCopy(0))));
+					
+					System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
 
 					float[] errorVector = ArrayUtils.mtimes(actualShift, ArrayUtils.convertDoubleArrayToFloatArray(ArrayUtils.pow(predictedShift,-1)));
 
@@ -1453,11 +1483,12 @@ public class RECO extends AggregatorAgent{
 					if(Consts.DEBUG)
 					{
 						System.out.println("RECO:: e before " + Arrays.toString(arr_i_e));
+						System.out.println("RECO:: multiplier " + Arrays.toString(multiplier));
 					}
 					arr_i_e = ArrayUtils.mtimes(arr_i_e, multiplier);
 					if(Consts.DEBUG)
 					{
-						System.out.println("RECO:: e after " + Arrays.toString(arr_i_e));
+						System.out.println("RECO:: e after times multiplier" + Arrays.toString(arr_i_e));
 					}
 					/*System.out.println("Rows " + arr_ij_k.length + " Columns " + arr_ij_k[1].length);
 					Matrix k = new Matrix(arr_ij_k);
@@ -1504,7 +1535,7 @@ public class RECO extends AggregatorAgent{
 					if (Consts.DEBUG) 
 					{
 
-						String fileName = new String("output for day "+(mainContext.getDayCount()-1)+".csv");
+						String fileName = new String("output2_afterEE_day_"+(mainContext.getDayCount()-1)+".csv");
 
 						int [] ts_arr = new int[ticksPerDay];
 
@@ -1537,11 +1568,11 @@ public class RECO extends AggregatorAgent{
 
 					} 
 
-					String fileName2 = new String("output_C.csv");
+					/*String fileName2 = new String("output_C.csv");
 					CSVWriter res2 = new CSVWriter(fileName2, true);
 					//res2.appendText("C (normalized):");
 					res2.appendRow(normalizedCosts);
-					res2.close(); 
+					res2.close();  */
 
 
 
@@ -1655,7 +1686,6 @@ public class RECO extends AggregatorAgent{
 		return str;
 
 	}
-
 
 	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
 

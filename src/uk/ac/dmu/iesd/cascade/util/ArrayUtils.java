@@ -379,6 +379,8 @@ public class ArrayUtils {
 	 * This utility function returns an array of double values after 
 	 * raising the values of first argument (passed float array) to the power of second
 	 * argument (exp).
+	 * If the return value by Math.pow would be a NaN or Infinity, the value is 
+	 * set to 0. 
 	 *  
 	 * @param floatArrayBase whose base element values will be raised by <tt>exp</tt> value  
 	 * @param exp the exponent    	 	 
@@ -392,7 +394,17 @@ public class ArrayUtils {
 		double[] powArray = new double[floatArrayBase.length];
 
 		for(int i = 0; i<floatArrayBase.length; i++) {
-			powArray[i]=Math.pow(floatArrayBase[i], exp);
+			double val = Math.pow(floatArrayBase[i], exp);
+			/*if (Double.isNaN(val)) {
+				val =0;
+				System.out.println("ArrayUtils:: pow(), calculated val was NaN and set to 0");
+			}
+			
+			if (Double.isInfinite(val)) {
+				System.out.println("ArrayUtils:: pow(), calculated val was Infinity and set to 0");
+				val =0;
+			} */
+			powArray[i]=val;
 		}
 
 		return powArray;	
@@ -565,11 +577,15 @@ public class ArrayUtils {
 	 * @return average of array's elements/values 
 	 */
 	public static float avg(float[] floatArray) {
-		float avg=0;
+		System.out.println("ArrayUtils: avg: floatArray: "+Arrays.toString(floatArray));
+		float avg=0f;
 		if (floatArray.length !=0) {
 			float sum = sum(floatArray);
-			avg = sum/floatArray.length;
+			System.out.println("ArrayUtils: avg: sum: "+sum);
+			System.out.println("ArrayUtils: avg: arrayLenth "+floatArray.length);
+			avg = sum/(float)floatArray.length;
 		}
+		System.out.println("ArrayUtils: avg: "+avg);
 		return avg;
 	}
 

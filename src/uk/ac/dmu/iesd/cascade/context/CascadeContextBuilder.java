@@ -384,7 +384,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		buildNetworks(firstAggregator);
 	}
 	
-	private void createProsumersAndAddThemToContext() {
+	private void createHHProsumersAndAddThemToContext() {
 		
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 
@@ -403,6 +403,34 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 			//HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer_Test(householdBaseDemandArray, false);
 			 HHProsumer hhProsAgent = prosumerFactory.createHHProsumer(householdBaseDemandArray, false);
+
+			//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
+			//hhProsAgent.hasSmartMeter = true;
+			//hhProsAgent.hasSmartControl = true;  // Babak: this is also done in HHProsumer Constructor!
+			cascadeMainContext.add(hhProsAgent);			
+		} 
+		
+	}
+	
+private void createHouseholdProsumersAndAddThemToContext() {
+		
+		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
+
+		float[] householdBaseDemandArray = null;
+		for (int i = 0; i < numProsumers; i++) {
+
+			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
+			//System.out.println("numDemandCol: "+numDemandColumns);
+			//System.out.println("DemandName: "+demandName);
+			
+			if (cascadeMainContext.verbose)
+			{
+				System.out.println("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
+			}
+			householdBaseDemandArray = ArrayUtils.convertStringArrayToFloatArray(baseDemandReader.getColumn(demandName));
+
+			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer_Test(householdBaseDemandArray, false);
+			// HHProsumer hhProsAgent = prosumerFactory.createHHProsumer(householdBaseDemandArray, false);
 
 			//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
 			//hhProsAgent.hasSmartMeter = true;
@@ -523,23 +551,33 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			pAgent.hasSmartControl = true;
 		}
 	
+	}
 
+	private void setHHProsumersResponsivenessToPriceSignal(boolean isResponsiveToSignal) {
+		// this can be done by setting hasSmartControl to false
+		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
+		for (HouseholdProsumer pAgent : householdProsumers)
+		{
+
+			pAgent.hasSmartMeter = isResponsiveToSignal;
+		}
 	}
-	
-	private void createAggregatorAndAddThemToContext() {
 		
-	}
-	
-	
 	
 private void populateContext_Test() {
 	
-	    createProsumersAndAddThemToContext();
+	   createHHProsumersAndAddThemToContext();
 	    
-	    initializeHHProsumersMiscParameters();
-	    initializeHHProsumersWetAppliancesParameters();
-	   initializeHHProsumersWaterHeatingParameters();
-	    initializeHHProsumersSpaceHeatingParameters();
+	    //createHouseholdProsumersAndAddThemToContext();
+	    
+	    
+	    //initializeHHProsumersMiscParameters();
+	    //initializeHHProsumersWetAppliancesParameters();
+	    
+	    //setHHProsumersResponsivenessToPriceSignal(false);
+	    
+	    //initializeHHProsumersWaterHeatingParameters();
+	    //initializeHHProsumersSpaceHeatingParameters();
 	
 		buildSocialNetwork();
 
@@ -777,9 +815,9 @@ private void populateContext_Test() {
 		readParamsAndInitializeArrays();
 		initializeProbabilityDistributions();
 		//cascadeMainContext.buildChartSnapshotSchedule();
-		populateContext();
+		//populateContext();
 		
-		//populateContext_Test();
+		populateContext_Test();
 		
 		//buildSchedulesDirectly();
 	
