@@ -25,30 +25,30 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
  */
 public class CopyOfWattboxController implements ISmartController{
 
-	static final float[] INITIALIZATION_TEMPS = {7,7,7,7,7,7,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,17,17,16,16,15,15,14,14,12,12,10,10,8,8,7,7};
+	static final double[] INITIALIZATION_TEMPS = {7,7,7,7,7,7,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,17,17,18,18,17,17,16,16,15,15,14,14,12,12,10,10,8,8,7,7};
 	HouseholdProsumer owner;
 	WattboxUserProfile userProfile;
 	WattboxLifestyle userLifestyle;
 	int ticksPerDay;
 
-	float[] dayPredictedCostSignal;
-	float predictedCostToRealCostA = 1;
-	float realCostOffsetb = 10;
-	float[] setPointProfile;
-	float[] optimisedSetPointProfile;
-	float[] currentTempProfile;
+	double[] dayPredictedCostSignal;
+	double predictedCostToRealCostA = 1;
+	double realCostOffsetb = 10;
+	double[] setPointProfile;
+	double[] optimisedSetPointProfile;
+	double[] currentTempProfile;
 
 	//Prior day's temperature profile.  Works on the principle that
 	// in terms of temperature, today is likely to be similar to yesterday
-	float[] priorDayExternalTempProfile;
-	float[] coldApplianceProfile;
-	float[] wetApplianceProfile;
-	float[] heatPumpDemandProfile;
-	float[] hotWaterVolumeDemandProfile;
+	double[] priorDayExternalTempProfile;
+	double[] coldApplianceProfile;
+	double[] wetApplianceProfile;
+	double[] heatPumpDemandProfile;
+	double[] hotWaterVolumeDemandProfile;
 
-	float[] EVChargingProfile;
+	double[] EVChargingProfile;
 
-	float[] heatPumpOnOffProfile;
+	double[] heatPumpOnOffProfile;
 
 	/**
 	 * Boolean configuration options for what elements of the owner's
@@ -63,9 +63,9 @@ public class CopyOfWattboxController implements ISmartController{
 	private boolean waterHeatingControlled = true;
 	private boolean spaceHeatingControlled = true;
 	private boolean eVehicleControlled = true;
-	private float[] waterHeatDemandProfile;
-	private float maxHeatPumpElecDemandPerTick;
-	private float expectedNextDaySpaceHeatCost;
+	private double[] waterHeatDemandProfile;
+	private double maxHeatPumpElecDemandPerTick;
+	private double expectedNextDaySpaceHeatCost;
 
 
 	/**
@@ -83,7 +83,7 @@ public class CopyOfWattboxController implements ISmartController{
 	 */
 	public void update(int timeStep)
 	{
-		float[] ownersCostSignal = owner.getPredictedCostSignal();
+		double[] ownersCostSignal = owner.getPredictedCostSignal();
 		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
 		this.dayPredictedCostSignal = ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal, predictedCostToRealCostA),realCostOffsetb);
 		this.setPointProfile = owner.getSetPointProfile();
@@ -158,20 +158,20 @@ public class CopyOfWattboxController implements ISmartController{
 	 * @return the predicted heat pump demand for a certain heat pump switching profile
 	 * given an estimate for the temperature profile for the day when it is used
 	 */
-	private float[] calculatePredictedHeatPumpDemandAndTempProfile(float[] heatPumpOnOffProfileToTest) 
+	private double[] calculatePredictedHeatPumpDemandAndTempProfile(double[] heatPumpOnOffProfileToTest) 
 	{
-		float[] energyProfile = new float[ticksPerDay];
-		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
+		double[] energyProfile = new double[ticksPerDay];
+		double[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
 		int availableHeatRecoveryTicks = ticksPerDay;
-		float maxRecoveryPerTick = 0.5f * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
-		float heatLoss = 0;
-		float internalTemp = this.setPointProfile[0];
+		double maxRecoveryPerTick = 0.5d * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
+		double heatLoss = 0;
+		double internalTemp = this.setPointProfile[0];
 
 		for (int i = 0; i < ticksPerDay; i++)
 		{
 			--availableHeatRecoveryTicks;
 			currentTempProfile[i] = internalTemp;
-			float setPointMaintenancePower = deltaT[i] * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * (Consts.SECONDS_PER_DAY / ticksPerDay);
+			double setPointMaintenancePower = deltaT[i] * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * (Consts.SECONDS_PER_DAY / ticksPerDay);
 
 
 			if (deltaT[i] > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF && (heatPumpOnOffProfileToTest[i] > 0))
@@ -216,7 +216,7 @@ public class CopyOfWattboxController implements ISmartController{
 				energyProfile[i] = 0;
 
 				internalTemp -= setPointMaintenancePower / owner.buildingThermalMass;
-				float tempLoss = setPointProfile[i] - internalTemp;
+				double tempLoss = setPointProfile[i] - internalTemp;
 
 				heatLoss += setPointMaintenancePower * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP;
 				//System.out.print("Temp loss is " + tempLoss);
@@ -259,22 +259,22 @@ public class CopyOfWattboxController implements ISmartController{
 	 */
 	private void optimiseSpaceHeatProfile() 
 	{
-		float bestCost;
+		double bestCost;
 		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
-		float[] tempPumpOnOffProfile = new float[ticksPerDay];
+		double[] tempPumpOnOffProfile = new double[ticksPerDay];
 		Arrays.fill(tempPumpOnOffProfile,1);
-		float[] tempHeatPumpProfile = new float[ticksPerDay];
+		double[] tempHeatPumpProfile = new double[ticksPerDay];
 
 		if(this.heatPumpDemandProfile == null)
 		{
 			// If the demand profile is null, this means the switiching profile
 			// is invalid or undefined, so set a very high cost to this
 			// so that all alternatives will be better.
-			bestCost = Float.MAX_VALUE;
+			bestCost = Double.MAX_VALUE;
 		}
 		else
 		{
-			float[] initialPredictedCosts = ArrayUtils.mtimes(this.dayPredictedCostSignal, this.heatPumpDemandProfile);
+			double[] initialPredictedCosts = ArrayUtils.mtimes(this.dayPredictedCostSignal, this.heatPumpDemandProfile);
 			bestCost = ArrayUtils.sum(initialPredictedCosts);
 		}
 
@@ -293,7 +293,7 @@ public class CopyOfWattboxController implements ISmartController{
 				//Don't try impossible combinations - can't recover heat beyond the day boundary
 				if (i+j < ticksPerDay - 1)
 				{
-					float thisCost = 0;
+					double thisCost = 0;
 
 					tempPumpOnOffProfile[i+j] = 0;
 					tempHeatPumpProfile = calculatePredictedHeatPumpDemandAndTempProfile(tempPumpOnOffProfile);
@@ -339,11 +339,11 @@ public class CopyOfWattboxController implements ISmartController{
 	 */
 	private void optimiseWaterHeatProfile() 
 	{		
-		float[] returnArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
+		double[] returnArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
 
 		for (int i = 0; i < returnArray.length; i++)
 		{
-			float currDemand = returnArray[i];
+			double currDemand = returnArray[i];
 
 			//If demand exceeds Heat Pump capacity, top up with immersion (i.e. reduce COP)
 			if ((currDemand + this.heatPumpDemandProfile[i]) > this.maxHeatPumpElecDemandPerTick )
@@ -351,17 +351,17 @@ public class CopyOfWattboxController implements ISmartController{
 				currDemand = currDemand + (((currDemand + this.heatPumpDemandProfile[i]) - this.maxHeatPumpElecDemandPerTick ) * Consts.DOMESTIC_HEAT_PUMP_WATER_COP / Consts.IMMERSION_HEATER_COP);
 			}
 
-			float currCost = currDemand * this.dayPredictedCostSignal[i];
+			double currCost = currDemand * this.dayPredictedCostSignal[i];
 			int moveTo = -1;
-			float newHeatDemand = 0;
+			double newHeatDemand = 0;
 
 			if (currDemand > 0)
 			{
-				float extraHeatRequired = 0;
-				float adaptedDemand = 0;
+				double extraHeatRequired = 0;
+				double adaptedDemand = 0;
 				for (int j = i-1; j >= 0; j--)
 				{
-					extraHeatRequired += (Consts.WATER_TEMP_LOSS_PER_SECOND * ((float)Consts.SECONDS_PER_DAY / ticksPerDay)) * this.hotWaterVolumeDemandProfile[i] * (Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR);
+					extraHeatRequired += (Consts.WATER_TEMP_LOSS_PER_SECOND * ((double)Consts.SECONDS_PER_DAY / ticksPerDay)) * this.hotWaterVolumeDemandProfile[i] * (Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR);
 					adaptedDemand = currDemand + (extraHeatRequired / Consts.DOMESTIC_HEAT_PUMP_WATER_COP);
 
 					//If demand exceeds Heat Pump capacity, top up with immersion (i.e. reduce COP)
@@ -397,14 +397,14 @@ public class CopyOfWattboxController implements ISmartController{
 	 */
 	private void optimiseWetProfile() 
 	{
-		float[] currentCost = ArrayUtils.mtimes(wetApplianceProfile, dayPredictedCostSignal);
+		double[] currentCost = ArrayUtils.mtimes(wetApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
 		int minIndex = ArrayUtils.indexOfMin(currentCost);
 		// First pass - simply swap the load in the max cost slot with that in the min cost slot
 		//TODO: very crude and will give nasty positive feedback in all likelihood
 		if (maxIndex < (wetApplianceProfile.length -1 ))
 		{
-			float temp = wetApplianceProfile[minIndex];
+			double temp = wetApplianceProfile[minIndex];
 			wetApplianceProfile[minIndex] = wetApplianceProfile[maxIndex];
 			wetApplianceProfile[maxIndex] = temp;
 		}
@@ -417,14 +417,14 @@ public class CopyOfWattboxController implements ISmartController{
 	 */
 	private void optimiseColdProfile() 
 	{
-		float[] currentCost = ArrayUtils.mtimes(coldApplianceProfile, dayPredictedCostSignal);
+		double[] currentCost = ArrayUtils.mtimes(coldApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
 		int minIndex = ArrayUtils.indexOfMin(currentCost);
 		// First pass - simply swap the load in the max cost slot with that in the min cost slot
 		//TODO: very crude and will give nasty positive feedback in all likelihood
 		if (maxIndex < (coldApplianceProfile.length -1 ))
 		{
-			float temp = coldApplianceProfile[minIndex];
+			double temp = coldApplianceProfile[minIndex];
 			coldApplianceProfile[minIndex] = coldApplianceProfile[maxIndex];
 			coldApplianceProfile[maxIndex] = temp;
 		}
@@ -434,7 +434,7 @@ public class CopyOfWattboxController implements ISmartController{
 	/**
 	 * @param dayPredictedCostSignal the dayPredictedCostSignal to set
 	 */
-	public void setDayPredictedCostSignal(float[] dayPredictedCostSignal) 
+	public void setDayPredictedCostSignal(double[] dayPredictedCostSignal) 
 	{
 		this.dayPredictedCostSignal = dayPredictedCostSignal;
 	}
@@ -447,14 +447,14 @@ public class CopyOfWattboxController implements ISmartController{
 	void optimiseSetPointProfile()
 	{ 		
 		//Initialise optimisation
-		float[] localSetPointArray = Arrays.copyOf(setPointProfile, setPointProfile.length);
+		double[] localSetPointArray = Arrays.copyOf(setPointProfile, setPointProfile.length);
 		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
-		float[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
-		float[] localDemandProfile = calculateSpaceHeatPumpDemand(setPointProfile);
-		float[] returnProfile = Arrays.copyOf(localDemandProfile, localDemandProfile.length);
-		float leastCost = evaluateCost(localDemandProfile);
-		float newCost = leastCost;
-		float maxRecoveryPerTick = 0.5f * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * ArrayUtils.max(deltaT)) ; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
+		double[] deltaT = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(priorDayExternalTempProfile));
+		double[] localDemandProfile = calculateSpaceHeatPumpDemand(setPointProfile);
+		double[] returnProfile = Arrays.copyOf(localDemandProfile, localDemandProfile.length);
+		double leastCost = evaluateCost(localDemandProfile);
+		double newCost = leastCost;
+		double maxRecoveryPerTick = 0.5d * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * ArrayUtils.max(deltaT)) ; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
 
 		for (int i = 0; i < localSetPointArray.length; i++)
 		{
@@ -463,7 +463,7 @@ public class CopyOfWattboxController implements ISmartController{
 			for ( int j = Consts.HEAT_PUMP_MIN_SWITCHOFF - 1; (j < Consts.HEAT_PUMP_MAX_SWITCHOFF && (i+j < ticksPerDay)); j++)
 			{
 
-				float tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * (localSetPointArray[i+j] - priorDayExternalTempProfile[i+j])) / owner.buildingThermalMass);
+				double tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * (localSetPointArray[i+j] - priorDayExternalTempProfile[i+j])) / owner.buildingThermalMass);
 
 
 				if( (i < Consts.NIGHT_TO_DAY_TRANSITION_TICK && tempLoss > Consts.NIGHT_TEMP_LOSS_THRESHOLD) || (i >= Consts.NIGHT_TO_DAY_TRANSITION_TICK && tempLoss > Consts.DAYTIME_TEMP_LOSS_THRESHOLD))
@@ -473,7 +473,7 @@ public class CopyOfWattboxController implements ISmartController{
 				}
 				else
 				{
-					float availableHeatRecoveryTicks = 0;
+					double availableHeatRecoveryTicks = 0;
 					for (int k = i+j+1; k < localSetPointArray.length; k++)
 					{
 						localSetPointArray[k] -= tempLoss;
@@ -524,19 +524,19 @@ public class CopyOfWattboxController implements ISmartController{
 	 * @param localSetPointArray
 	 * @return
 	 */
-	private float[] calculateSpaceHeatPumpDemand(float[] localSetPointArray) {
-		float[] energyProfile = new float[ticksPerDay];
-		float[] deltaT = ArrayUtils.add(localSetPointArray, ArrayUtils.negate(priorDayExternalTempProfile));
+	private double[] calculateSpaceHeatPumpDemand(double[] localSetPointArray) {
+		double[] energyProfile = new double[ticksPerDay];
+		double[] deltaT = ArrayUtils.add(localSetPointArray, ArrayUtils.negate(priorDayExternalTempProfile));
 		//int availableHeatRecoveryTicks = ticksPerDay;
-		float maxRecoveryPerTick = 0.5f * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
-		float heatLoss = 0;
-		float internalTemp = this.setPointProfile[0];
+		double maxRecoveryPerTick = 0.5d * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
+		double heatLoss = 0;
+		double internalTemp = this.setPointProfile[0];
 
 		for (int i = 0; i < ticksPerDay; i++)
 		{
 			//--availableHeatRecoveryTicks;
 			currentTempProfile[i] = internalTemp;
-			float nextSlotTemp;
+			double nextSlotTemp;
 
 			if (i < ticksPerDay - 1)
 			{
@@ -547,12 +547,12 @@ public class CopyOfWattboxController implements ISmartController{
 				nextSlotTemp = localSetPointArray[0];
 			}
 
-			float setPointMaintenanceEnergy = deltaT[i] * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
+			double setPointMaintenanceEnergy = deltaT[i] * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
 			//tempChangePower can be -ve i the temperature is falling.  If tempChangePower magnitude
 			//is greater than or equal to setPointMaintenance, the heat pump is off.
-			float tempChangeEnergy = (nextSlotTemp - localSetPointArray[i]) * owner.buildingThermalMass;
+			double tempChangeEnergy = (nextSlotTemp - localSetPointArray[i]) * owner.buildingThermalMass;
 
-			float heatPumpEnergyNeeded = Math.max(0, setPointMaintenanceEnergy - tempChangeEnergy);
+			double heatPumpEnergyNeeded = Math.max(0, setPointMaintenanceEnergy - tempChangeEnergy);
 
 			//zero the energy if heat pump would be off
 			if(deltaT[i] > Consts.HEAT_PUMP_THRESHOLD_TEMP_DIFF)
@@ -578,7 +578,7 @@ public class CopyOfWattboxController implements ISmartController{
 	 * @param localDemandProfile
 	 * @return
 	 */
-	private float evaluateCost(float[] localDemandProfile) {
+	private double evaluateCost(double[] localDemandProfile) {
 		return ArrayUtils.sum(ArrayUtils.mtimes(localDemandProfile, this.dayPredictedCostSignal));
 	}
 
@@ -593,7 +593,7 @@ public class CopyOfWattboxController implements ISmartController{
 		this.owner = owner;
 		this.priorDayExternalTempProfile = Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
 		this.heatPumpOnOffProfile = Arrays.copyOf(owner.spaceHeatPumpOn,owner.spaceHeatPumpOn.length);
-		//this.heatPumpDemandProfile = new float[ticksPerDay];
+		//this.heatPumpDemandProfile = new double[ticksPerDay];
 		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.baselineHotWaterVolumeProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.baselineHotWaterVolumeProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.baselineHotWaterVolumeProfile.length) + ticksPerDay);
 
 		ticksPerDay = owner.getContext().getNbOfTickPerDay();
@@ -606,7 +606,7 @@ public class CopyOfWattboxController implements ISmartController{
 			this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.wetApplianceProfile.length), ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.wetApplianceProfile.length) + ticksPerDay);
 		}
 
-		this.maxHeatPumpElecDemandPerTick = (owner.ratedPowerHeatPump * (float) 24 / ticksPerDay);
+		this.maxHeatPumpElecDemandPerTick = (owner.ratedPowerHeatPump * (double) 24 / ticksPerDay);
 	}
 
 	/**

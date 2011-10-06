@@ -56,12 +56,23 @@ public class ArrayUtils {
 		}
 		return null;
 	}
+	
+	public static double[] convertStringArrayToDoubleArray(String[] sarray) {
+		if (sarray != null) {
+			double doubleArray[] = new double[sarray.length];
+			for (int i = 0; i < sarray.length; i++) {
+				doubleArray[i] = Double.parseDouble(sarray[i]);
+			}
+			return doubleArray;
+		}
+		return null;
+	}
 
 
 	/*
 	 * Tried a different implementation here - could test which is quicker...
 	 */
-	public static double[] convertStringArrayToDoubleArray(String[] array)
+	public static double[] convertStringArrayToDoubleArray2(String[] array)
 	{
 		int i = 0;
 		double[] returnArray = new double[array.length];
@@ -152,6 +163,37 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
+	
+	/**
+	 * function to multiply the values of an arbitrary number of arrays
+	 * together element by element
+	 * 
+	 * @param arrays arbitrary number of floating point arrays
+	 * @return array of <code>double</code>s containing multiplied values i.e. <code>returnArray[i] = a1[i] * a2[i] * ... * an[i]</code>
+	 */
+	public static double[] mtimes(double[]... arrays)
+	{
+		double [] returnArray = new double[arrays[1].length];
+		Arrays.fill(returnArray, 1f);
+
+		for (double[] nextArray : arrays)
+		{
+			if (nextArray.length != returnArray.length)
+			{
+				System.err.println("ArrayUtils: Tried to convolve arrays of different lengths  " + returnArray.length + " and " + nextArray.length + " result - undefined");
+				returnArray = null;
+			}
+			else
+			{
+				for(int i = 0; i < returnArray.length; i++)
+				{
+					returnArray[i] = returnArray[i] * nextArray[i];
+				}
+			}
+		}
+
+		return returnArray;
+	}
 
 	/**
 	 * calculates the dot (or inner) product of two input arrays
@@ -190,6 +232,18 @@ public class ArrayUtils {
 	{
 		return normalizeValues(array, 1f);
 	}
+	
+	/**
+	 * normalize array values to lie in the range -1 <= memberValue <= +1
+	 * the relative value of the array values is preserved
+	 * 
+	 * @param array1
+	 * @return normalized array of <code>double</code>s
+	 */
+	public static double[] normalizeValues(double[] array)
+	{
+		return normalizeValues(array, 1d);
+	}
 
 	/**
 	 * normalize array values to lie in the range -maxMagnitude <= memberValue <= +maxMagnitude
@@ -200,6 +254,20 @@ public class ArrayUtils {
 	 * @return normalized array of <code>float</code>s
 	 */
 	public static float[] normalizeValues(float[] array, float maxMagnitude)
+	{
+		return normalizeValues(array, maxMagnitude, true);
+
+	}
+	
+	/**
+	 * normalize array values to lie in the range -maxMagnitude <= memberValue <= +maxMagnitude
+	 * the relative value of the array values is preserved
+	 * 
+	 * @param array1
+	 * @param maxMagnitude
+	 * @return normalized array of <code>double</code>s
+	 */
+	public static double[] normalizeValues(double[] array, double maxMagnitude)
 	{
 		return normalizeValues(array, maxMagnitude, true);
 
@@ -233,6 +301,35 @@ public class ArrayUtils {
 		}
 		return returnArray;
 	}
+	
+	/**
+	 * normalize array values to lie in the range 
+	 * <li>-maxMagnitude <= memberValue <= +maxMagnitude if allowNegatives is true
+	 * <li>0 <= memberValue <= + maxMagnitude if allowNegatives is false
+	 * the relative value of the array values is preserved
+	 * 
+	 * @param array1
+	 * @param maxMagnitude
+	 * @param allowNegatives
+	 * @return normalized array of <code>float</code>s
+	 */
+	public static double[] normalizeValues(double[] array, double maxMagnitude, boolean allowNegative)
+	{
+		double [] returnArray = null;
+
+		double normalisationConstant = (1 / max(absoluteValues(array)));
+
+		returnArray = multiply(array, (normalisationConstant * maxMagnitude));
+
+		if(!allowNegative) 
+		{
+			double minVal = 0;
+			minVal = Math.min(minVal, min(array));
+			returnArray = multiply(offset(returnArray, minVal), ((1/max(returnArray)) * maxMagnitude));
+
+		}
+		return returnArray;
+	}
 
 	/**
 	 * returns an array containing the absolute values of the members of the input array
@@ -243,6 +340,24 @@ public class ArrayUtils {
 	public static float[] absoluteValues(float[] array)
 	{
 		float[] returnArray = new float [array.length];
+
+		for(int i = array.length - 1; i >= 0; --i)
+		{
+			returnArray[i] = Math.abs(array[i]);			
+		}		
+
+		return returnArray;
+	}
+	
+	/**
+	 * returns an array containing the absolute values of the members of the input array
+	 * 
+	 * @param array
+	 * @return 
+	 */
+	public static double[] absoluteValues(double[] array)
+	{
+		double[] returnArray = new double [array.length];
 
 		for(int i = array.length - 1; i >= 0; --i)
 		{
@@ -270,6 +385,18 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
+	
+	public static double[] multiply(double[] array, double multiplier)
+	{
+		double[] returnArray = new double [array.length];
+
+		for (int i = 0; i < array.length; i++)
+		{
+			returnArray[i] = multiplier * array[i];
+		}
+
+		return returnArray;
+	}
 
 	/**
 	 * returns the maximum value of the input array
@@ -280,6 +407,24 @@ public class ArrayUtils {
 	public static float max( float[] array)
 	{
 		float maxVal = Float.MIN_VALUE;
+
+		for(int i = array.length - 1; i >= 0; --i)
+		{
+			if (array[i] > maxVal) {maxVal = array[i];}			
+		}
+
+		return maxVal;
+	}
+	
+	/**
+	 * returns the maximum value of the input array
+	 * 
+	 * @param array
+	 * @return <code>double</code> which is the maximum value of the input array
+	 */
+	public static double max( double[] array)
+	{
+		double maxVal = Double.MIN_VALUE;
 
 		for(int i = array.length - 1; i >= 0; --i)
 		{
@@ -306,7 +451,42 @@ public class ArrayUtils {
 
 		return minVal;
 	}
+	
+	/**
+	 * returns the minimum value of the input array
+	 * 
+	 * @param array
+	 * @return <code>float</code> which is the minimum value of the input array
+	 */
+	public static double min( double[] array)
+	{
+		double minVal = Double.MAX_VALUE;
 
+		for(int i = array.length - 1; i >= 0; --i)
+		{
+			if (array[i] < minVal) {minVal = array[i];}			
+		}
+
+		return minVal;
+	}
+
+	/**
+	 * offsets each member of the input array by the specified offset
+	 * 
+	 * @param array
+	 * @param offset
+	 * @return 
+	 */
+	public static double[] offset (double[] array, double offset)
+	{
+		for(int i = array.length - 1; i >= 0; --i)
+		{
+			array[i] = array[i] + offset;			
+		}
+
+		return array;
+	}
+	
 	/**
 	 * offsets each member of the input array by the specified offset
 	 * 
@@ -342,6 +522,26 @@ public class ArrayUtils {
 
 		return index;
 	}
+	
+	/**
+	 * find the index of the member of the input array with the maximum value (note real value, not absolute magnitude)
+	 * 
+	 * @param array
+	 * @return the index of the maximum value in the input array
+	 */
+	public static int indexOfMax(double[] array)
+	{
+		int index = 0;
+		double maxVal = Double.MIN_VALUE;
+
+		for(int i = array.length - 1; i >= 0; --i)
+		{
+			if (array[i] > maxVal) {maxVal = array[i]; index = i;}			
+		}
+
+		return index;
+	}
+
 
 	/**
 	 * find the index of the member of the input array with the minimum value (note real value, not absolute magnitude)
@@ -361,18 +561,37 @@ public class ArrayUtils {
 
 		return index;
 	}
+	
+	/**
+	 * find the index of the member of the input array with the minimum value (note real value, not absolute magnitude)
+	 * 
+	 * @param array
+	 * @return the index of the minimum value in the input array
+	 */
+	public static int indexOfMin(double[] array)
+	{
+		int index = 0;
+		double minVal = Double.MAX_VALUE;
+
+		for(int i = array.length - 1; i >= 0; --i)
+		{
+			if (array[i] < minVal) {minVal = array[i]; index = i;}			
+		}
+
+		return index;
+	}
 
 	/**
 	 * raise each member of the input array to the power two (or square each member)
 	 * 
-	 * @param floatArrayBase
+	 * @param doubleArrayBase
 	 * @return an array containing the squared values i.e. <code>return[i] = inputArray[i] ^ 2</code>
 	 */
-	public static float[] pow2(float[] floatArrayBase) {	
+	public static double[] pow2(double[] doubleArrayBase) {	
 		/*float[] powArray = new float[floatArrayBase.length];
 		for(int i = 0; i<floatArrayBase.length; i++) {
 			powArray[i]= (float)Math.pow(floatArrayBase[i], 2);	 */
-		return mtimes(floatArrayBase,floatArrayBase);
+		return mtimes(doubleArrayBase,doubleArrayBase);
 	}
 
 	/**
@@ -384,8 +603,9 @@ public class ArrayUtils {
 	 *  
 	 * @param floatArrayBase whose base element values will be raised by <tt>exp</tt> value  
 	 * @param exp the exponent    	 	 
-	 * @return double array containing the initial array values raised by <tt>exp</tt> value  
+	 * @return float array containing the initial array values raised by <tt>exp</tt> value  
 	 */
+	/*
 	public static double[] pow(float[] floatArrayBase, float exp ) {	
 
 		if (floatArrayBase == null)  {
@@ -395,6 +615,33 @@ public class ArrayUtils {
 
 		for(int i = 0; i<floatArrayBase.length; i++) {
 			double val = Math.pow(floatArrayBase[i], exp);
+		
+			powArray[i]=val;
+		}
+
+		return powArray;	
+	} */
+	
+	/**
+	 * This utility function returns an array of double values after 
+	 * raising the values of first argument (passed float array) to the power of second
+	 * argument (exp).
+	 * If the return value by Math.pow would be a NaN or Infinity, the value is 
+	 * set to 0. 
+	 *  
+	 * @param doubleArrayBase whose base element values will be raised by <tt>exp</tt> value  
+	 * @param exp the exponent    	 	 
+	 * @return double array containing the initial array values raised by <tt>exp</tt> value  
+	 */
+	public static double[] pow(double[] doubleArrayBase, double exp ) {	
+
+		if (doubleArrayBase == null)  {
+			return null;   
+		}   
+		double[] powArray = new double[doubleArrayBase.length];
+
+		for(int i = 0; i<doubleArrayBase.length; i++) {
+			double val = Math.pow(doubleArrayBase[i], exp);
 			/*if (Double.isNaN(val)) {
 				val =0;
 				System.out.println("ArrayUtils:: pow(), calculated val was NaN and set to 0");
@@ -484,6 +731,25 @@ public class ArrayUtils {
 		}
 		return index;
 	}
+	
+	/**
+	 * This utility function returns the index where the passed value is found.
+	 * If there is no such a value, it returns -1 as index.
+	 * If there are more than one occurrence, the index of the last one found is returned.
+	 * 
+	 * @param doubleArray whose index for occurrence of <tt>val</tt> will be searched  
+	 * @param val the value whose index is sought   	 	 
+	 * @return index of the array where <tt>val</tt> has been found  
+	 */
+	public static int indexOf( double[] doubleArray, double val)
+	{
+		int index = -1;
+
+		for(int i = doubleArray.length - 1; i >= 0; --i)	{
+			if (doubleArray[i] == val) {index = i;}			
+		}
+		return index;
+	}
 
 
 	/**
@@ -532,6 +798,22 @@ public class ArrayUtils {
 		}
 		return aCol;
 	}
+	
+	/**
+	 * This utility function returns a copy of the specific column of a passed 2D double array
+	 * as a one dimensional double array.
+	 *  
+	 * @param  twoDfloatArray a 2D double array whose column is supposed to be fetched and return
+	 * @param  colNb the number of column whose values are supposed to be returned as array  	 
+	 * @return an array (double) containing a copy of the passed column number and 2D array 
+	 */
+	public static double[] colCopy(double[][] twoDdoubleArray, int colNb) {
+		double[] aCol = new double[twoDdoubleArray.length];
+		for (int i = 0; i < twoDdoubleArray.length; i++) {
+			aCol[i]=twoDdoubleArray[i][colNb];
+		}
+		return aCol;
+	}
 
 	/**
 	 * This utility function returns a sub-array copy of a given 2D array (with the same columns' size)
@@ -554,6 +836,28 @@ public class ArrayUtils {
 		}
 		return subArr;
 	}
+	
+	/**
+	 * This utility function returns a sub-array copy of a given 2D array (with the same columns' size)
+	 * by passing/specifying a startRow and endRow indices.
+	 * 
+	 * @param twoDdoubleArray the original 2D double array from which a sub-array is built
+	 * @param startRow a starting row index which indicates the beginning row of the sub-array 
+	 * @param endRow an ending row index which indicates the last row of original array included in the sub-array 
+	 * @return an 2D sub-array (double) containing a copy of the passed 2D-array up from startRow to endRow
+	 */
+	public static double[][] subArrayCopy(double[][] twoDdoubleArray, int startRow, int endRow) {
+		if(startRow>endRow)throw new IllegalArgumentException("endRow is bigger than startRow");
+		int subArrRowLength = endRow-startRow;
+		double[][] subArr = new double[subArrRowLength][twoDdoubleArray[0].length];
+
+		for (int i = 0; i < subArrRowLength; i++) {
+			for (int col = 0; col < twoDdoubleArray[0].length; col++) {
+				subArr[i][col]=twoDdoubleArray[i+startRow][col];
+			}
+		}
+		return subArr;
+	}
 
 	/**
 	 * This utility function returns an array copy containing of passed row index of a given 2D array
@@ -569,6 +873,21 @@ public class ArrayUtils {
 		}
 		return rowCopyArr;
 	}
+	
+	/**
+	 * This utility function returns an array copy containing of passed row index of a given 2D array
+	 *  
+	 * @param twoDdoubleArray the original 2D double array from which a row will be copied and return as an array
+	 * @param row a row index indicating the row which needs to be taken out (copied and returned)
+	 * @return an array (double) containing a copy of its needed row (index passed as argument)
+	 */
+	public static double[] rowCopy(double[][] twoDdoubleArray, int row) {
+		double[] rowCopyArr = new double[twoDdoubleArray[0].length];
+		for (int col = 0; col < twoDdoubleArray[0].length; col++) {
+			rowCopyArr[col]=twoDdoubleArray[row][col];
+		}
+		return rowCopyArr;
+	}
 
 	/**
 	 * This utility function calculates the average of an float array values and returns it.
@@ -577,17 +896,29 @@ public class ArrayUtils {
 	 * @return average of array's elements/values 
 	 */
 	public static float avg(float[] floatArray) {
-		System.out.println("ArrayUtils: avg: floatArray: "+Arrays.toString(floatArray));
 		float avg=0f;
 		if (floatArray.length !=0) {
 			float sum = sum(floatArray);
-			System.out.println("ArrayUtils: avg: sum: "+sum);
-			System.out.println("ArrayUtils: avg: arrayLenth "+floatArray.length);
 			avg = sum/(float)floatArray.length;
 		}
-		System.out.println("ArrayUtils: avg: "+avg);
 		return avg;
 	}
+	
+	/**
+	 * This utility function calculates the average of a double array values and returns it.
+	 * 
+	 * @param   a doubleArray  	 
+	 * @return average of array's elements/values 
+	 */
+	public static double avg(double[] doubleArray) {
+		double avg=0d;
+		if (doubleArray.length !=0) {
+			double sum = sum(doubleArray);
+			avg = sum/(double)doubleArray.length;
+		}
+		return avg;
+	}
+
 
 
 	/**
@@ -604,6 +935,21 @@ public class ArrayUtils {
 		}
 		return avgArr;
 	}
+	
+	/**
+	 * This utility function builds an printable string of the elements (values) of a given 2D integer array
+	 * and returns it. The string could be used in any standard print/output function (such as println)
+	 * 
+	 * @param   a 2D intArray to be printed 	 
+	 * @return a ready-to-be-printed string of array elements/values 
+	 */
+	public static double[] avgCols2DDoubleArray(double[][] twoDDoubleArray) {	
+		double[] avgArr = new double[twoDDoubleArray[0].length];
+		for (int col = 0; col < twoDDoubleArray[0].length; col++) {
+			avgArr[col] = avg(colCopy(twoDDoubleArray, col));
+		}
+		return avgArr;
+	}
 
 	/**
 	 * This utility function builds an printable string of the elements (values) of a given 2D float array
@@ -616,6 +962,23 @@ public class ArrayUtils {
 		String output = ""; 
 		for (int row = 0; row < twoDfloatArray.length; row++) {
 			float [] aRowArray = rowCopy(twoDfloatArray, row);
+			output += "r"+row+Arrays.toString(aRowArray);
+			output +="\n";
+		}
+		return output;
+	}
+	
+	/**
+	 * This utility function builds an printable string of the elements (values) of a given 2D double array
+	 * and returns it. The string could be used in any standard print/output function (such as println)
+	 * 
+	 * @param   a 2D doubleArray to be printed 	 
+	 * @return a ready-to-be-printed string of array elements/values 
+	 */
+	public static String toString(double[][] twoDdoubleArray) {	
+		String output = ""; 
+		for (int row = 0; row < twoDdoubleArray.length; row++) {
+			double [] aRowArray = rowCopy(twoDdoubleArray, row);
 			output += "r"+row+Arrays.toString(aRowArray);
 			output +="\n";
 		}
@@ -642,6 +1005,27 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
+	
+	/**
+	 * Add together an arbitrary number of arrays by index i.e. <code>return[i] = a1[i] + a2[i] + ... + an[i]</code>
+	 * 
+	 * @param arrays arbitrary number of floating point arrays
+	 * @return an array which is the sum of the input arrays
+	 */
+	public static double[] add(double[]... arrays)
+	{
+		int arrayLength = arrays[0].length;
+		double[] returnArray = new double[arrayLength];
+		for ( double[] array : arrays)
+		{
+			for (int i = 0; i < arrayLength; i++)
+			{
+				returnArray[i] = returnArray[i] + array[i];
+			}
+		}
+
+		return returnArray;
+	}
 
 	/**
 	 * negate the member values of an array 
@@ -652,6 +1036,22 @@ public class ArrayUtils {
 	public static float[] negate(float[] array)
 	{
 		float[] returnArray = new float[array.length];
+		for (int i = 0; i < array.length; i++)
+		{
+			returnArray[i] = -array[i];
+		}
+		return returnArray;
+	}
+	
+	/**
+	 * negate the member values of an array 
+	 * 
+	 * @param array
+	 * @return an array where <code>return[i] = - array[i]</code>
+	 */
+	public static double[] negate(double[] array)
+	{
+		double[] returnArray = new double[array.length];
 		for (int i = 0; i < array.length; i++)
 		{
 			returnArray[i] = -array[i];
@@ -677,6 +1077,26 @@ public class ArrayUtils {
 			destArray[startIndex + counter] = replacementArray[counter];
 		}
 	}
+	
+	/**
+	 * Replaces the portion of the array passed in as the first argument with the content
+	 * of the second.
+	 * 
+	 * NOTE: acts directly on the array passed in.
+	 * 
+	 * @param destArray
+	 * @param replacementArray
+	 * @param startIndex
+	 */
+	public static void replaceRange(double[] destArray, double[] replacementArray,int startIndex)
+	{
+		// TODO Auto-generated method stub
+		for (int counter = 0; counter < replacementArray.length; counter++)
+		{
+			destArray[startIndex + counter] = replacementArray[counter];
+		}
+	}
+
 
 	/**
 	 * @param boolArray
@@ -711,14 +1131,31 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
+	
+	/**
+	 * @param doubleArray
+	 * @return
+	 */
+	public static String[] convertDoubleArrayToString(double[] doubleArray) 
+	{
+		// TODO Auto-generated method stub
+		String[] returnArray = new String[doubleArray.length];
+
+		for (int i = 0; i < doubleArray.length; i++)
+		{
+			returnArray[i] = Double.toString(doubleArray[i]);
+		}
+
+		return returnArray;
+	}
 
 	/**
 	 * @param copyOfRange
 	 * @param n
 	 */
-	public static int[] findNSmallestIndices(float[] floatArray, int n) {
+	public static int[] findNSmallestIndices(double[] doubleArray, int n) {
 		// TODO Poor algorithm - improve
-		ArrayList<Pair<Integer,Float>> returnArrayList = new ArrayList<Pair<Integer,Float>>();
+		ArrayList<Pair<Integer,Double>> returnArrayList = new ArrayList<Pair<Integer,Double>>();
 		if (n < 0)
 		{
 			System.err.println("ArrayUtils: Trying to find " + n + " smallest indices. Negative count makes no sense");
@@ -728,33 +1165,33 @@ public class ArrayUtils {
 
 		int indicesToFill = n;
 		int indexOfCurrMaxOfMins = -1;
-		float currMaxOfMins = Float.NEGATIVE_INFINITY;
+		double currMaxOfMins = Double.NEGATIVE_INFINITY;
 
-		if (floatArray.length < n)
+		if (doubleArray.length < n)
 		{
-			System.err.println("Trying to find the " + n + " smallest elements of an array with only " + floatArray.length + " elements!");
+			System.err.println("Trying to find the " + n + " smallest elements of an array with only " + doubleArray.length + " elements!");
 		}
 
-		for (int i = 0; i < floatArray.length; i++)
+		for (int i = 0; i < doubleArray.length; i++)
 		{
 			if (indicesToFill > 0)
 			{
-				returnArrayList.add(new Pair(i,floatArray[i]));
-				if (floatArray[i] > currMaxOfMins)
+				returnArrayList.add(new Pair(i,doubleArray[i]));
+				if (doubleArray[i] > currMaxOfMins)
 				{
-					currMaxOfMins = floatArray[i];
+					currMaxOfMins = doubleArray[i];
 					indexOfCurrMaxOfMins = n-indicesToFill;
 				}
 				indicesToFill--;
 			}
 			else
 			{
-				if (floatArray[i] < currMaxOfMins)
+				if (doubleArray[i] < currMaxOfMins)
 				{
 					returnArrayList.remove(indexOfCurrMaxOfMins);
-					returnArrayList.add(new Pair(i,floatArray[i]));
+					returnArrayList.add(new Pair(i,doubleArray[i]));
 					indexOfCurrMaxOfMins = -1;
-					currMaxOfMins = Float.NEGATIVE_INFINITY;
+					currMaxOfMins = Double.NEGATIVE_INFINITY;
 
 					for(int l = 0; l < n; l++)
 					{

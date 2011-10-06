@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public interface IProsumerFactory {
 	//public ProsumerAgent creatProsumer();
-	public HouseholdProsumer createHouseholdProsumer(float[] baseProfile, boolean addNoise);
+	public HouseholdProsumer createHouseholdProsumer(double[] baseProfile, boolean addNoise);
 
 	public ArrayList<ProsumerAgent> createDEFRAHouseholds(int number, String categoryFile, String profileFile);
 }

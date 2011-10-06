@@ -9,14 +9,14 @@ package uk.ac.dmu.iesd.cascade.behaviour.psychological;
  */
 public class SimpleConstruct implements Construct {
 	
-	private float weight;
+	private double weight;
 	private String name;
 	
 	/* (non-Javadoc)
 	 * @see behaviour.psychological.Construct#evaluate()
 	 */
 	@Override
-	public float evaluate() {
+	public double evaluate() {
 		// TODO Auto-generated method stub
 		
 		return weight;
@@ -26,7 +26,7 @@ public class SimpleConstruct implements Construct {
 	 * @see behaviour.psychological.Construct#getCurrentValue()
 	 */
 	@Override
-	public float getCurrentValue() {
+	public double getCurrentValue() {
 		// TODO Auto-generated method stub
 		return weight;
 	}
@@ -51,7 +51,7 @@ public class SimpleConstruct implements Construct {
 		this.weight = 0;
 	}
 	
-	public SimpleConstruct(String name, float initialWeight)
+	public SimpleConstruct(String name, double initialWeight)
 	{
 		this.name = name;
 		this.weight = initialWeight;

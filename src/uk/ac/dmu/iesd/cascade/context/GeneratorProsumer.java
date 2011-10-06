@@ -43,18 +43,18 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	 * instantiated agent is given the boolean attribute which means that they
 	 * have access to one of these technologies.
 	 */
-	float ratedPowerCHP;
-	float ratedPowerWind;
-	float ratedPowerHydro;
-	float ratedPowerThermalGeneration;
-	float ratedPowerPV;
+	double ratedPowerCHP;
+	double ratedPowerWind;
+	double ratedPowerHydro;
+	double ratedPowerThermalGeneration;
+	double ratedPowerPV;
 
 /*
  * TODO - need some operating characteristic parameters here - e.g. time to start
  * ramp up generation etc. etc.
  */
 	
-	float percentageMoveableDemand;  // This can be set constant, or calculated from available appliances
+	double percentageMoveableDemand;  // This can be set constant, or calculated from available appliances
 	int maxTimeShift; // The "furthest" a demand may be moved in time.  This can be constant or calculated dynamically.
 
 
@@ -65,7 +65,7 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 
 
 
-	public float getUnadaptedDemand(){
+	public double getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
 		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
 		return (baseDemandProfile[index]) - currentGeneration();
@@ -78,12 +78,12 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	 * 
 	 * @return a floating point number of the real time generation of this prosumer
 	 */
-	protected abstract float currentGeneration();
+	protected abstract double currentGeneration();
 
 	/**
 	 * @return
 	 */
-	private float PVGeneration() {
+	private double PVGeneration() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -91,7 +91,7 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	/**
 	 * @return
 	 */
-	private float thermalGeneration() {
+	private double thermalGeneration() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -99,7 +99,7 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	/**
 	 * @return
 	 */
-	private float hydroGeneration() {
+	private double hydroGeneration() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -107,16 +107,16 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	/**
 	 * @return
 	 */
-	private float CHPGeneration() {
+	private double CHPGeneration() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	/**
 	 * @param time
-	 * @return float giving sum of baseDemand for the day.
+	 * @return double giving sum of baseDemand for the day.
 	 */
-	private float calculateFixedDayTotalDemand(int time) {
+	private double calculateFixedDayTotalDemand(int time) {
 		int baseProfileIndex = time % baseDemandProfile.length;
 		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
 	}

@@ -109,11 +109,11 @@ public class ProsumerProbeListener implements ProbeListener {
 	private  DefaultCategoryDataset createDataset(HouseholdProsumer thisAgent) {
 		DefaultCategoryDataset result = new DefaultCategoryDataset();
 
-		float[] arr1 = thisAgent.getHistoricalSpaceHeatDemand();
-		float[] arr2 = thisAgent.getHistoricalWaterHeatDemand();
-		float[] arr3 = thisAgent.getHistoricalBaseDemand();
-		float[] arr4 = thisAgent.getHistoricalColdDemand();
-		float[] arr5 = thisAgent.getHistoricalWetDemand();
+		double[] arr1 = thisAgent.getHistoricalSpaceHeatDemand();
+		double[] arr2 = thisAgent.getHistoricalWaterHeatDemand();
+		double[] arr3 = thisAgent.getHistoricalBaseDemand();
+		double[] arr4 = thisAgent.getHistoricalColdDemand();
+		double[] arr5 = thisAgent.getHistoricalWetDemand();
 
 		for (int i = 0; i < 48 ; i++)
 		{
@@ -135,10 +135,10 @@ public class ProsumerProbeListener implements ProbeListener {
 	private  DefaultCategoryDataset createTemperatureDataset(HouseholdProsumer thisAgent) {
 		DefaultCategoryDataset result = new DefaultCategoryDataset();
 
-		float[] arr1 = thisAgent.getSetPointProfile();
-		float[] arr2 = thisAgent.getOptimisedSetPointProfile();
-		float[] arr3 = thisAgent.getHistoricalExtTemp();
-		float[] arr4 = thisAgent.getHistoricalIntTemp();
+		double[] arr1 = thisAgent.getSetPointProfile();
+		double[] arr2 = thisAgent.getOptimisedSetPointProfile();
+		double[] arr3 = thisAgent.getHistoricalExtTemp();
+		double[] arr4 = thisAgent.getHistoricalIntTemp();
 
 		for (int i = 0; i < 48 ; i++)
 		{

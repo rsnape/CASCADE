@@ -16,7 +16,7 @@ public class BasicSmartController implements ISmartController {
 
 	ProsumerAgent owner;
 
-	float[] dayPredictedCostSignal;
+	double[] dayPredictedCostSignal;
 
 	/**
 	 * Method to tell the smart controller to gather the data that it needs and
@@ -44,7 +44,7 @@ public class BasicSmartController implements ISmartController {
 	/**
 	 * @param dayPredictedCostSignal the dayPredictedCostSignal to set
 	 */
-	public void setDayPredictedCostSignal(float[] dayPredictedCostSignal) {
+	public void setDayPredictedCostSignal(double[] dayPredictedCostSignal) {
 		this.dayPredictedCostSignal = dayPredictedCostSignal;
 	}
 

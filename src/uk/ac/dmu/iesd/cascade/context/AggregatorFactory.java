@@ -17,7 +17,7 @@ CascadeContext cascadeMainContext;
 		this.cascadeMainContext= context;
 	}
 	
-	public RECO createRECO(float[] baseProfile){
+	public RECO createRECO(double[] baseProfile){
 		RECO aCO = new RECO(cascadeMainContext,baseProfile);
 		return aCO;
 	}

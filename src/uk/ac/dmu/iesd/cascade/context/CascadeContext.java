@@ -53,6 +53,9 @@ import repast.simphony.engine.environment.RunState;
  *       Boolean verbose variable has been added
  *       Name of some variables changed
  *       Babak 
+ * 1.3 - float values changed to double    
+ *       
+ *       
  */
 public class CascadeContext extends DefaultContext{
 	
@@ -73,11 +76,11 @@ public class CascadeContext extends DefaultContext{
 	int weatherDataLength; // length of arrays - note that it is a condition that each row of the input file
 	// represents one time step, but the model is agnostic to what time period each
 	// tick represents.
-	float[] insolationArray; //Note this is an integrated value in Wh per metre squared
-	float[] windSpeedArray;// instantaneous value
-	float[] windDirectionArray; // Direction in degrees from North.  May not be needed as yet, but useful to have potentially
-	float[] airTemperatureArray; // instantaneous value
-	float[] systemPriceSignalDataArray;
+	double[] insolationArray; //Note this is an integrated value in Wh per metre squared
+	double[] windSpeedArray;// instantaneous value
+	double[] windDirectionArray; // Direction in degrees from North.  May not be needed as yet, but useful to have potentially
+	double[] airTemperatureArray; // instantaneous value
+	double[] systemPriceSignalDataArray;
 	int systemPriceSignalDataLength;
 	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
 	protected static boolean chartSnapshotOn = false;  // use
@@ -243,7 +246,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the insolation
 	 * @return the insolation at the time (in ticks) passed in
 	 */
-	public float getInsolation(int time)
+	public double getInsolation(int time)
 	{
 		return insolationArray[time % weatherDataLength];
 	}
@@ -252,7 +255,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the wind speed
 	 * @return the wind speed at the time (in ticks) passed in
 	 */
-	public float getWindSpeed(int time)
+	public double getWindSpeed(int time)
 	{
 		return windSpeedArray[time % weatherDataLength];
 	}
@@ -261,7 +264,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the air temperature
 	 * @return the air temperature at the time (in ticks) passed in
 	 */
-	public float getAirTemperature(int time)
+	public double getAirTemperature(int time)
 	{
 		return airTemperatureArray[time % weatherDataLength];
 	}
@@ -269,7 +272,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the insolation
 	 * @return the insolation at the time (in ticks) passed in
 	 */
-	public float[] getInsolation(int time, int length)
+	public double[] getInsolation(int time, int length)
 	{
 		int start = time % weatherDataLength;
 		return Arrays.copyOfRange(insolationArray, start, start + length);
@@ -280,7 +283,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the wind speed
 	 * @return the wind speed at the time (in ticks) passed in
 	 */
-	public float[] getWindSpeed(int time, int length)
+	public double[] getWindSpeed(int time, int length)
 	{
 		int start = time % weatherDataLength;
 		return Arrays.copyOfRange(windSpeedArray, start, start + length);
@@ -291,7 +294,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param time - the time in ticks for which to get the air temperature
 	 * @return the air temperature at the time (in ticks) passed in
 	 */
-	public float[] getAirTemperature(int time, int length)
+	public double[] getAirTemperature(int time, int length)
 	{
 		int start = time % weatherDataLength;
 		return Arrays.copyOfRange(airTemperatureArray, start, start + length);
@@ -315,56 +318,56 @@ public class CascadeContext extends DefaultContext{
 	/**
 	 * @return the insolation
 	 */
-	public float[] getInsolation() {
+	public double[] getInsolation() {
 		return insolationArray;
 	}
 
 	/**
 	 * @param insolation the insolation to set
 	 */
-	public void setInsolation(float[] insolation) {
+	public void setInsolation(double[] insolation) {
 		this.insolationArray = insolation;
 	}
 
 	/**
 	 * @return the windSpeed
 	 */
-	public float[] getWindSpeed() {
+	public double[] getWindSpeed() {
 		return windSpeedArray;
 	}
 
 	/**
 	 * @param windSpeed the windSpeed to set
 	 */
-	public void setWindSpeed(float[] windSpeed) {
+	public void setWindSpeed(double[] windSpeed) {
 		this.windSpeedArray = windSpeed;
 	}
 
 	/**
 	 * @return the windDirection
 	 */
-	public float[] getWindDirection() {
+	public double[] getWindDirection() {
 		return windDirectionArray;
 	}
 
 	/**
 	 * @param windDirection the windDirection to set
 	 */
-	public void setWindDirection(float[] windDirection) {
+	public void setWindDirection(double[] windDirection) {
 		this.windDirectionArray = windDirection;
 	}
 
 	/**
 	 * @return the airTemperature
 	 */
-	public float[] getAirTemperature() {
+	public double[] getAirTemperature() {
 		return airTemperatureArray;
 	}
 
 	/**
 	 * @param airTemperature the airTemperature to set
 	 */
-	public void setAirTemperature(float[] airTemperature) {
+	public void setAirTemperature(double[] airTemperature) {
 		this.airTemperatureArray = airTemperature;
 	}
 
@@ -385,14 +388,14 @@ public class CascadeContext extends DefaultContext{
 	/**
 	 * @return the systemPriceSignalData
 	 */
-	public float[] getSystemPriceSignalData() {
+	public double[] getSystemPriceSignalData() {
 		return systemPriceSignalDataArray;
 	}
 
 	/**
 	 * @param systemPriceSignalData the systemPriceSignalData to set
 	 */
-	public void setSystemPriceSignalData(float[] systemPriceSignalData) {
+	public void setSystemPriceSignalData(double[] systemPriceSignalData) {
 		this.systemPriceSignalDataArray = systemPriceSignalData;
 	}
 

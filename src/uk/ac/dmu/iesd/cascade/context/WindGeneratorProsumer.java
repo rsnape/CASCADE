@@ -50,7 +50,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 
 	}
 
-	public float getUnadaptedDemand() {
+	public double getUnadaptedDemand() {
 		// Cope with tick count being null between project initialisation and
 		// start.
 		int index = Math
@@ -113,8 +113,8 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	/**
 	 * @return
 	 */
-	protected float currentGeneration() {
-		float returnAmount = 0;
+	protected double currentGeneration() {
+		double returnAmount = 0;
 
 		returnAmount = returnAmount + windGeneration();
 		if (Consts.DEBUG) {
@@ -126,9 +126,9 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	}
 
 	/**
-	 * @return - float containing the current generation for this wind generator
+	 * @return - double containing the current generation for this wind generator
 	 */
-	private float windGeneration() {
+	private double windGeneration() {
 		if (hasWind) {
 			// TODO: get a realistic model of wind production - this just linear
 			// between
@@ -143,9 +143,9 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 
 	/**
 	 * @param time
-	 * @return float giving sum of baseDemand for the day.
+	 * @return double giving sum of baseDemand for the day.
 	 */
-	private float calculateFixedDayTotalDemand(int time) {
+	private double calculateFixedDayTotalDemand(int time) {
 		int baseProfileIndex = time % baseDemandProfile.length;
 		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,
 				baseProfileIndex, baseProfileIndex + ticksPerDay - 1));
@@ -154,16 +154,16 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	/*
 	 * Constructor function(s)
 	 */
-	public WindGeneratorProsumer(CascadeContext context, float[] baseDemand,
-			float capacity) {
+	public WindGeneratorProsumer(CascadeContext context, double[] baseDemand,
+			double capacity) {
 		/*
 		 * If number of wind turbines not specified, assume 1
 		 */
 		this(context, baseDemand, capacity, 1);
 	}
 
-	public WindGeneratorProsumer(CascadeContext context, float[] baseDemand,
-			float capacity, int turbines) {
+	public WindGeneratorProsumer(CascadeContext context, double[] baseDemand,
+			double capacity, int turbines) {
 		super(context);
 		this.hasWind = true;
 		this.ratedPowerWind = capacity;
@@ -175,12 +175,12 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("WindGeneratorProsumer: Will be truncated and may cause unexpected behaviour");
 		}
-		this.baseDemandProfile = new float[baseDemand.length];
+		this.baseDemandProfile = new double[baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0,
 				baseDemand.length);
 		// Initialise the smart optimised profile to be the same as base demand
 		// smart controller will alter this
-		this.smartOptimisedProfile = new float[baseDemand.length];
+		this.smartOptimisedProfile = new double[baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0,
 				smartOptimisedProfile.length);
 	}

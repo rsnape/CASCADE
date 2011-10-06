@@ -49,7 +49,7 @@ public class ProsumerFactory implements IProsumerFactory {
 	 * @param addNoise - boolean specifying whether or not to add noise to the profile
 	 */
 
-	public HouseholdProsumer createHouseholdProsumer(float[] baseProfileArray, boolean addNoise) {
+	public HouseholdProsumer createHouseholdProsumer(double[] baseProfileArray, boolean addNoise) {
 		HouseholdProsumer pAgent;
 		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
 		if (baseProfileArray.length % ticksPerDay != 0)
@@ -75,12 +75,12 @@ public class ProsumerFactory implements IProsumerFactory {
 		pAgent.minSetPoint = Consts.HOUSEHOLD_MIN_SETPOINT;
 		pAgent.maxSetPoint = Consts.HOUSEHOLD_MAX_SETPOINT;
 
-		pAgent.transmitPropensitySmartControl = (float) RandomHelper.nextDouble();
+		pAgent.transmitPropensitySmartControl = (double) RandomHelper.nextDouble();
 
 		return pAgent;
 	}
 	
-	public HouseholdProsumer createHouseholdProsumer_Test(float[] baseProfileArray, boolean addNoise) {
+	public HouseholdProsumer createHouseholdProsumer_Test(double[] baseProfileArray, boolean addNoise) {
 		HouseholdProsumer pAgent;
 		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
 		if (baseProfileArray.length % ticksPerDay != 0)
@@ -102,7 +102,7 @@ public class ProsumerFactory implements IProsumerFactory {
 		return pAgent;
 	}
 	
-	public HHProsumer createHHProsumer(float[] baseProfileArray, boolean addNoise) {
+	public HHProsumer createHHProsumer(double[] baseProfileArray, boolean addNoise) {
 		HHProsumer pAgent;
 		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
 		if (baseProfileArray.length % ticksPerDay != 0)
@@ -128,7 +128,7 @@ public class ProsumerFactory implements IProsumerFactory {
 
 	/**
 	 * Adds a random noise to the base profile to create a household demand.
-	 * For amplitude multiplies each point on the base profile by a random float uniformly distributed between 0.7 and 1.3 (arbitrary)
+	 * For amplitude multiplies each point on the base profile by a random double uniformly distributed between 0.7 and 1.3 (arbitrary)
 	 * then selects a uniformly distributed time based <code> jitterFactor </code> between -0.5 and + 0.5 and shifts the demand in time by <code> jitterFactor </code> timesteps
 	 * 
 	 * NOTE: This is unsafe as implemented - under a certain combination of random factors, it can give negative
@@ -139,17 +139,17 @@ public class ProsumerFactory implements IProsumerFactory {
 	 * based on occupancy.
 	 */
 	@Deprecated
-	private float[] createRandomHouseholdDemand(float[] baseProfileArray){
-		float[] newProfile = new float[baseProfileArray.length];
+	private double[] createRandomHouseholdDemand(double[] baseProfileArray){
+		double[] newProfile = new double[baseProfileArray.length];
 
 		//add amplitude randomisation
 		for (int i = 0; i < newProfile.length; i++)
 		{
-			newProfile[i] = baseProfileArray[i] * (float)(1 + 0.3*(RandomHelper.nextDouble() - 0.5));
+			newProfile[i] = baseProfileArray[i] * (double)(1 + 0.3*(RandomHelper.nextDouble() - 0.5));
 		}
 
 		//add time jitter
-		float jitterFactor = (float) RandomHelper.nextDouble() - 0.5f;
+		double jitterFactor =  RandomHelper.nextDouble() - 0.5d;
 
 		if (Consts.DEBUG)
 		{
@@ -177,12 +177,12 @@ public class ProsumerFactory implements IProsumerFactory {
 	 * @param type - the type of this generator (from an enumerator of all types)
 	 */
 
-	public ProsumerAgent createPureGenerator(float capacity, Consts.GENERATOR_TYPE genType) {
+	public ProsumerAgent createPureGenerator(double capacity, Consts.GENERATOR_TYPE genType) {
 		GeneratorProsumer thisAgent = null;
 
 		// Create a prosumer with zero base demand
 		// TODO: Should this be null?  or zero as implemented?
-		float[] nilDemand = new float[1];
+		double[] nilDemand = new double[1];
 		nilDemand[0] = 0;
 		switch (genType){
 		case WIND:
@@ -252,14 +252,14 @@ public class ProsumerFactory implements IProsumerFactory {
 				System.out.println("DEFRA Customer segment is"  + custSegment);
 			}
 
-			HouseholdProsumer prAgent = this.createHouseholdProsumer(ArrayUtils.convertStringArrayToFloatArray(defraProfiles.getColumn("demand" + (custSegment - 1))), true);
+			HouseholdProsumer prAgent = this.createHouseholdProsumer(ArrayUtils.convertStringArrayToDoubleArray(defraProfiles.getColumn("demand" + (custSegment - 1))), true);
 
 			prAgent.defraCategory = Integer.parseInt(defraCategories.getColumn("DEFRA_category")[custSegment - 1]);
-			prAgent.microgenPropensity = Float.parseFloat(defraCategories.getColumn("Microgen_propensity")[custSegment - 1]);
-			prAgent.insulationPropensity = Float.parseFloat(defraCategories.getColumn("Insulation_propensity")[custSegment - 1]);
-			prAgent.HEMSPropensity = Float.parseFloat(defraCategories.getColumn("HEMS_propensity")[custSegment - 1]);
-			prAgent.EVPropensity = Float.parseFloat(defraCategories.getColumn("EV_propensity")[custSegment - 1]);
-			prAgent.habit = Float.parseFloat(defraCategories.getColumn("Habit_factor")[custSegment - 1]);
+			prAgent.microgenPropensity = Double.parseDouble(defraCategories.getColumn("Microgen_propensity")[custSegment - 1]);
+			prAgent.insulationPropensity = Double.parseDouble(defraCategories.getColumn("Insulation_propensity")[custSegment - 1]);
+			prAgent.HEMSPropensity = Double.parseDouble(defraCategories.getColumn("HEMS_propensity")[custSegment - 1]);
+			prAgent.EVPropensity = Double.parseDouble(defraCategories.getColumn("EV_propensity")[custSegment - 1]);
+			prAgent.habit = Double.parseDouble(defraCategories.getColumn("Habit_factor")[custSegment - 1]);
 
 			prAgent.hasSmartControl = true; //(RandomHelper.nextDouble() < prAgent.HEMSPropensity);
 			prAgent.hasElectricVehicle =  (RandomHelper.nextDouble() < prAgent.EVPropensity);

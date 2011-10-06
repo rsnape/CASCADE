@@ -75,7 +75,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * a prosumer agent's (price) elasticity factor 
 	 * e in Peter Boait formula
 	 * */
-	protected float e_factor; 
+	protected double e_factor; 
 
 	protected int ticksPerDay; //TODO: This needs to be removed 
 
@@ -101,9 +101,9 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * TODO: (from RS) These can (and should?) be simply read from the context whenever needed
 	 * 
 	 */
-	protected float insolation; //current insolation at the given half hour tick
-	protected float windSpeed; //current wind speed at the given half hour tick
-	protected float airTemperature; // outside air temperature
+	protected double insolation; //current insolation at the given half hour tick
+	protected double windSpeed; //current wind speed at the given half hour tick
+	protected double airTemperature; // outside air temperature
 
 
 	/*
@@ -125,29 +125,29 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	/*
 	 * Imported signals and profiles.
 	 */
-	protected float[] baseDemandProfile;
-	private float[] predictedCostSignal;
+	protected double[] baseDemandProfile;
+	private double[] predictedCostSignal;
 	protected int predictionValidTime;
 
 	/*
 	 * Exported signals and profiles.
 	 */
-	//protected float[] currentDemandProfile;
-	//protected float[] predictedPriceSignal;
+	//protected double[] currentDemandProfile;
+	//protected double[] predictedPriceSignal;
 	//protected int predictedPriceSignalLength;
 
 	/*
 	 * This is net demand, may be +ve (consumption), 0, or -ve (generation)
 	 */
-	protected float netDemand; // (note in kW)
-	//protected float availableGeneration; // Generation Capability at this instant (note in kW)
+	protected double netDemand; // (note in kW)
+	//protected double availableGeneration; // Generation Capability at this instant (note in kW)
 
 	/*
 	 * Economic variables which all prosumers will wish to calculate.
 	 */
-	//protected float actualCost; // The demand multiplied by the cost signal.  Note that this may be in "real" currency, or not
-	protected float inelasticTotalDayDemand;
-	protected float[] smartOptimisedProfile;
+	//protected double actualCost; // The demand multiplied by the cost signal.  Note that this may be in "real" currency, or not
+	protected double inelasticTotalDayDemand;
+	protected double[] smartOptimisedProfile;
 
 
 	/**
@@ -229,7 +229,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * Returns the net demand <code>netDemand</code> for this agent 
 	 * @return  the <code>netDemand</code> 
 	 **/
-	public float getNetDemand() {
+	public double getNetDemand() {
 		return this.netDemand;
 	}
 	/**
@@ -237,7 +237,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param nd the new net demand for the agent
 	 * @see #getNetDemand
 	 */
-	public void setNetDemand(float nd) {
+	public void setNetDemand(double nd) {
 		//System.out.println("HHP: setND: "+nd);
 		this.netDemand = nd;
 	}
@@ -258,7 +258,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param e (price) elasticity factor
 	 * @see #getElasticityFactor
 	 */
-	public void setElasticityFactor(float e) {
+	public void setElasticityFactor(double e) {
 		this.e_factor = e;
 	}
 	
@@ -267,7 +267,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @return e (price) elasticity factor
 	 * @see #getElasticityFactor
 	 */
-	public float getElasticityFactor() {
+	public double getElasticityFactor() {
 		return this.e_factor;
 	}
 	
@@ -295,15 +295,15 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * 
 	 * TODO:  Something better than this needed...
 	 */
-	public float getHasSmartControlAsFloat()
+	public double getHasSmartControlAsDouble()
 	{
 		if (hasSmartControl)
 		{
-			return 1f;
+			return 1d;
 		}
 		else
 		{
-			return 0f;
+			return 0d;
 		}
 	}
 
@@ -312,7 +312,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	}
 
 
-	public float getCurrentPrediction() {
+	public double getCurrentPrediction() {
 		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - getPredictionValidTime();
 		if (predictedCostSignal.length > 0 && timeSinceSigValid >= 0) {
 			return getPredictedCostSignal()[timeSinceSigValid % predictedCostSignal.length];
@@ -350,7 +350,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param length - the length of the signal
 	 * @param validTime - the time (in ticks) from which the signal is valid
 	 */
-	public boolean receiveValueSignal(float[] signal, int length) {
+	public boolean receiveValueSignal(double[] signal, int length) {
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();
@@ -365,7 +365,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 			int time = (int) RepastEssentials.GetTickCount();
 			int newSignalLength = length;
 			setPredictionValidTime(validTime);
-			float[] tempArray;
+			double[] tempArray;
 
 			int signalOffset = time - validTime;
 			//System.out.println("time: "+time+ " validTime"+validTime);
@@ -384,7 +384,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 				{
 					System.out.println("ProsumerAgent: Re-defining length of signal in agent" + agentID);
 				}
-				setPredictedCostSignal(new float[newSignalLength]);
+				setPredictedCostSignal(new double[newSignalLength]);
 			}
 
 			if (signalOffset < 0)
@@ -404,7 +404,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		return success;
 	}
 	
-	private void setSignalType_S(float[] signal){
+	private void setSignalType_S(double[] signal){
 		
 	}
 	
@@ -422,7 +422,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param signalType the type of the signal 
 	 * @return true if signal received successfully, false otherwise 
 	 */
-	public boolean receiveSignal(float[] signal, int length, Consts.SIGNAL_TYPE signalType) {
+	public boolean receiveSignal(double[] signal, int length, Consts.SIGNAL_TYPE signalType) {
 		boolean signalRecievedSuccessfully = false;
 
 		switch (signalType) { 
@@ -436,15 +436,15 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	}
 
 
-	public float getInsolation() {
+	public double getInsolation() {
 		return insolation;
 	}
 
-	public float getWindSpeed() {
+	public double getWindSpeed() {
 		return windSpeed;
 	}
 
-	public float getAirTemperature() {
+	public double getAirTemperature() {
 		return airTemperature;
 	}
 	
@@ -465,14 +465,14 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	/**
 	 * @param predictedCostSignal the predictedCostSignal to set
 	 */
-	public void setPredictedCostSignal(float[] predictedCostSignal) {
+	public void setPredictedCostSignal(double[] predictedCostSignal) {
 		this.predictedCostSignal = Arrays.copyOf(predictedCostSignal, predictedCostSignal.length);
 	}
 
 	/**
 	 * @return the predictedCostSignal
 	 */
-	public float[] getPredictedCostSignal() {
+	public double[] getPredictedCostSignal() {
 		return predictedCostSignal;
 	}
 

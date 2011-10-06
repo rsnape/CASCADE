@@ -36,15 +36,15 @@ public final class Consts {
 	 * System level constants
 	 */
 	public static final int TOTAL_SYSTEM_CUSTOMERS = 23000000;
-	public static final float MAX_GENERATOR_CAPACITY_GWATTS = 5f;	
-	public static final float MAX_SUPPLY_CAPACITY_GWATTS = 45f;
+	public static final double MAX_GENERATOR_CAPACITY_GWATTS = 5d;	
+	public static final double MAX_SUPPLY_CAPACITY_GWATTS = 45d;
 	
 	
 	/**
 	 * Aggregator constants
 	 * 
 	 */
-	public static final float MAX_SYSTEM_BUY_PRICE_PNDSPERMWH = 1000f;
+	public static final double MAX_SYSTEM_BUY_PRICE_PNDSPERMWH = 1000d;
 	
 	
 	/**
@@ -63,17 +63,17 @@ public final class Consts {
 	 * Threshold in price signal at which behaviour change is prompted (if agent is willing)
 	 * TODO: Define units and get price units consistent throughout model.
 	 */
-	public static final float HOUSEHOLD_COST_THRESHOLD = 125;
+	public static final double HOUSEHOLD_COST_THRESHOLD = 125;
 
 	/**
 	 * Minimum allowable temperature that may be set for a household in degrees centigrade.
 	 */
-	public static final float HOUSEHOLD_MIN_SETPOINT = 15;  
+	public static final double HOUSEHOLD_MIN_SETPOINT = 15;  
 	
 	/**
 	 * Maximum allowable temperature that may be set for a household in degrees centigrade.
 	 */
-	public static final float HOUSEHOLD_MAX_SETPOINT = 28;
+	public static final double HOUSEHOLD_MAX_SETPOINT = 28;
 
 	/**
 	 * Fraction of households who are willing to exercise behaviour change.
@@ -104,17 +104,17 @@ public final class Consts {
 	/**
 	 * The typical heat pump coefficient of performance for space heating a domestic dwelling
 	 */
-	public static final float DOMESTIC_HEAT_PUMP_SPACE_COP = 2.4f;
+	public static final double DOMESTIC_HEAT_PUMP_SPACE_COP = 2.4d;
 	
 	/**
 	 * The degradation of heat pump coefficient of performance when increasing rather than maintaining temperature.
 	 */
-	public static final float DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE = 0.9f;
+	public static final double DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE = 0.9d;
 	
 	/**
 	 * The typical heat pump coefficient of performance for heating water in a domestic dwelling
 	 */
-	public static final float DOMESTIC_HEAT_PUMP_WATER_COP = 2.0f;
+	public static final double DOMESTIC_HEAT_PUMP_WATER_COP = 2.0d;
 
 	/**
 	 * System exit error codes for different types of error
@@ -127,16 +127,16 @@ public final class Consts {
 	public static final Integer[] NUM_OF_OCCUPANTS_ARRAY = {0,1,2,3,4,5,6,7,8};
 	public static final double[] OCCUPANCY_PROBABILITY_ARRAY = {0.300206371,0.341735335,0.15506365,0.133630415,0.049359587,0.014498622,0.003377304,0.002128716};
 	
-	public static final float[] BASIC_AVERAGE_SET_POINT_PROFILE = {19.5f,19,18.5f,18,18,18,18,18,18,18,18,18,18.25f,18.5f,18.75f,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19.2f,19.4f,19.6f,19.8f,20,20.2f,20.4f,20.6f,20.8f,21,21,21,21,21,21,21,20.5f,20};
+	public static final double[] BASIC_AVERAGE_SET_POINT_PROFILE = {19.5d,19,18.5d,18,18,18,18,18,18,18,18,18,18.25d,18.5d,18.75d,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19.2f,19.4f,19.6f,19.8f,20,20.2f,20.4f,20.6f,20.8f,21,21,21,21,21,21,21,20.5f,20};
 
 
-	public static final float HEAT_PUMP_THRESHOLD_TEMP_DIFF = 3;
+	public static final double HEAT_PUMP_THRESHOLD_TEMP_DIFF = 3;
 
 
-	public static final float[] MONTHLY_MAINS_WATER_TEMP = {5,5,6,8,10,12,12,12,10,8,6,5};
+	public static final double[] MONTHLY_MAINS_WATER_TEMP = {5,5,6,8,10,12,12,12,10,8,6,5};
 
 
-	public static final float MAX_INSOLATION = 170f;
+	public static final double MAX_INSOLATION = 170d;
 	
 	public static final int HEAT_PUMP_MIN_SWITCHOFF = 1;
 	public static final int HEAT_PUMP_MAX_SWITCHOFF = 8;
@@ -148,7 +148,7 @@ public final class Consts {
 	public static final int DAYS_PER_YEAR = 365;
 
 
-	public static final float DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY = 2.0f;
+	public static final double DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY = 2.0d;
 
 
 	public static final int SECONDS_PER_HALF_HOUR = 1800;
@@ -157,15 +157,15 @@ public final class Consts {
 	public static final int NIGHT_TO_DAY_TRANSITION_TICK = 16;
 
 
-	public static final float NIGHT_TEMP_LOSS_THRESHOLD = 1f;
+	public static final double NIGHT_TEMP_LOSS_THRESHOLD = 1d;
 
-	public static final float DAYTIME_TEMP_LOSS_THRESHOLD = 0.5f;
+	public static final double DAYTIME_TEMP_LOSS_THRESHOLD = 0.5d;
 
 
 	public static final int DAYS_PER_WEEK = 7;
 
 
-	public static final float[] ZERO_COST_SIGNAL = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	public static final double[] ZERO_COST_SIGNAL = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	
 	public static String FILE_CHART_FORMAT_EXT = ".png";
 	
@@ -221,7 +221,7 @@ public final class Consts {
 	/**
 	 * factor to convert energy expressed in kWh to Joules.
 	 */
-	public static final float KWH_TO_JOULE_CONVERSION_FACTOR = 3600000;
+	public static final double KWH_TO_JOULE_CONVERSION_FACTOR = 3600000;
 
 
 	public static final int MINUTES_PER_DAY = 1440;
@@ -248,15 +248,15 @@ public final class Consts {
 	public static final double PROBE_PRIORITY = -100;
 
 
-public static final float WATER_TEMP_LOSS_PER_SECOND = 1f/1860f;
+public static final double WATER_TEMP_LOSS_PER_SECOND = 1f/1860d;
 
 /**
  * (Approximate) Specific heat capacity of water in Joules per litre per Kelvin
  */
-public static final float WATER_SPECIFIC_HEAT_CAPACITY = 4200;
+public static final double WATER_SPECIFIC_HEAT_CAPACITY = 4200;
 
 
-public static final float WATER_HEAT_PUMP_MAX_HEAT_POWER = 6.0f;
+public static final double WATER_HEAT_PUMP_MAX_HEAT_POWER = 6.0d;
 
 
 public static final int EST_INTERCEPT = 46;
@@ -268,21 +268,21 @@ public static final int EST_SLOPE = 26;
 public static final double EST_STD_DEV = 7;
 
 
-public static final float[] EST_DRAWOFF = {2.25f, 2.25f, 1.4f,1.4f,1.15f,1.15f,0.95f,0.95f,1.6f,1.6f,2.15f,2.15f,5.3f,5.3f,10.8f,10.8f,9.1f,9.1f,7.25f,7.25f,6.85f,6.85f,6f,6f,5.25f,5.25f,4.35f,4.35f,3.6f,3.6f,3.65f,3.65f,4.45f,4.45f,6.5f,6.5f,9f,9f,8.7f,8.7f,7.2f,7.2f,6.1f,6.1f,5f,5f,3f,3f};
+public static final double[] EST_DRAWOFF = {2.25d, 2.25d, 1.4d,1.4d,1.15d,1.15d,0.95d,0.95d,1.6d,1.6d,2.15d,2.15d,5.3d,5.3d,10.8d,10.8d,9.1d,9.1d,7.25d,7.25d,6.85d,6.85d,6d,6d,5.25d,5.25d,4.35d,4.35d,3.6d,3.6d,3.65d,3.65d,4.45d,4.45d,6.5d,6.5d,9d,9d,8.7d,8.7d,7.2d,7.2d,6.1d,6.1d,5d,5d,3d,3d};
 
 
-public static final float IMMERSION_HEATER_COP = 0.9f;
+public static final double IMMERSION_HEATER_COP = 0.9d;
 
 /**
  * Typical domestic heat pump rating (electrical) in kW
  */
-public static final float TYPICAL_HEAT_PUMP_ELEC_RATING = 4f;
+public static final double TYPICAL_HEAT_PUMP_ELEC_RATING = 4d;
 
 
-public static final float[] MAX_PERMITTED_TEMP_DROPS = {1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f};
+public static final double[] MAX_PERMITTED_TEMP_DROPS = {1d,1d,1d,1d,1d,1d,1d,1d,1d,1d,1d,1d,1d,1d,1d,1d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d,0.5d};
 
 
-public static final float FLOATING_POINT_TOLERANCE = (float) 1e-29;
+public static final double FLOATING_POINT_TOLERANCE = (double) 1e-29;
 
 
 /**
@@ -290,14 +290,14 @@ public static final float FLOATING_POINT_TOLERANCE = (float) 1e-29;
  * 
  * WARNING: Be very careful in using this - can mask some nasty algorithmic errors
  */
-public static final float COST_DECISION_THRESHOLD = 1e-3f;
+public static final double COST_DECISION_THRESHOLD = 1e-3d;
 
 /**
  * Maximum domestic heat pump power (in kW)
  */
-public static final float MAX_DOMESTIC_IMMERSION_POWER = 3;
-public static final float TEMP_CHANGE_TOLERANCE = 1e-3f;
-public static final float NORMALIZING_MAX_COST = 1;
+public static final double MAX_DOMESTIC_IMMERSION_POWER = 3;
+public static final double TEMP_CHANGE_TOLERANCE = 1e-3d;
+public static final double NORMALIZING_MAX_COST = 1;
 
 
 

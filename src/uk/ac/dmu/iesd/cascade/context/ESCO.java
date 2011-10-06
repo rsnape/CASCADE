@@ -53,7 +53,7 @@ public class ESCO extends AggregatorAgent{
 	 * @param context the context in which this agent is situated
 	 * @param baseDemand an array containing the base demand  
 	 */
-	public ESCO(CascadeContext context, float[] baseDemand) {
+	public ESCO(CascadeContext context, double[] baseDemand) {
 
 		super(context);
 	}

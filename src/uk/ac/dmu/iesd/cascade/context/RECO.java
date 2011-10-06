@@ -67,10 +67,10 @@ public class RECO extends AggregatorAgent{
 
 		private static final long serialVersionUID = 1L;
 
-		private float[] arr_C;
-		private float[] arr_B;
-		private float[] arr_e;		
-		private float[][] arr_k;
+		private double[] arr_C;
+		private double[] arr_B;
+		private double[] arr_e;		
+		private double[][] arr_k;
 		private boolean hasSimpleSumConstraint = false;
 		private boolean lessThanConstraint;
 		private double sumConstraintValue;
@@ -154,20 +154,20 @@ public class RECO extends AggregatorAgent{
 
 		}
 
-		public void set_C(float [] c) {
+		public void set_C(double [] c) {
 			arr_C = c;
 		}
 		
 
-		public void set_B(float [] b) {
+		public void set_B(double [] b) {
 			arr_B = b;
 		}
 
-		public void set_e(float [] e) {
+		public void set_e(double [] e) {
 			arr_e = e;
 		}
 
-		public void set_k(float [][] k ) {
+		public void set_k(double [][] k ) {
 			arr_k = k;
 		}
 
@@ -201,10 +201,10 @@ public class RECO extends AggregatorAgent{
 
 	/*	class  RecoMultivariateRealFunction implements MultivariateRealFunction /*,  RealConvergenceChecker  {
 
-		private float[] arr_C;
-		private float[] arr_B;
-		private float[] arr_e;		
-		private float[][] arr_k;
+		private double[] arr_C;
+		private double[] arr_B;
+		private double[] arr_e;		
+		private double[][] arr_k;
 
 		public double value (double[] arr_S) {
 			double m =0d;
@@ -223,19 +223,19 @@ public class RECO extends AggregatorAgent{
 			return m;
 		} 
 
-		public void set_C(float [] c) {
+		public void set_C(double [] c) {
 			arr_C = c;
 		}
 
-		public void set_B(float [] b) {
+		public void set_B(double [] b) {
 			arr_B = b;
 		}
 
-		public void set_e(float [] e) {
+		public void set_e(double [] e) {
 			arr_e = e;
 		}
 
-		public void set_k(float [][] k ) {
+		public void set_k(double [][] k ) {
 			arr_k = k;
 		}
 
@@ -274,14 +274,14 @@ public class RECO extends AggregatorAgent{
 	 * net value which may be + or - tells us the value of S*e. 
 	 * Since we know S, we can get the e for the ith timeslot in which the S was broadcast. 
 	 **/
-	float[] arr_i_e; 
+	double[] arr_i_e; 
 
 	/**
 	 * This field (k) is "displacement factor" at timeslot ij
 	 * There are 48^2 of them (48 values at each timeslot; a day divided into 48 timeslots)
 	 * It is calculated in the training process. 
 	 **/
-	float[][] arr_ij_k; 
+	double[][] arr_ij_k; 
 
 	/**
 	 * This field (S) is "signal" at timeslot i sent to customer's (prosumers)
@@ -292,11 +292,11 @@ public class RECO extends AggregatorAgent{
 	 * When Si is not zero, the aggregator can calculate 
 	 * the resultant aggregate deviation (delta_Bi)
 	 **/
-	float[] arr_i_S;  // (S) signal at timeslot i
+	double[] arr_i_S;  // (S) signal at timeslot i
 
-	//float[] arr_i_B;  // (B) baseline at timeslot i
+	//double[] arr_i_B;  // (B) baseline at timeslot i
 	
-	float[] arr_i_C_all; // all C values (equal to the size of baseDemand, usually 1 week, 336 entries)
+	double[] arr_i_C_all; // all C values (equal to the size of baseDemand, usually 1 week, 336 entries)
 
 	/**
 	 * This field (C) is the "marginal cost" per KWh in the ith timeslot 
@@ -309,7 +309,7 @@ public class RECO extends AggregatorAgent{
 	 * 
 	 * TODO: RS - I think this is so generic it should go in the AggregatorAgent super-class
 	 **/
-	//float[] arr_i_C; 
+	//double[] arr_i_C; 
 
 	/**
 	 * This 2D-array is used to keep the usual aggregate demand of all prosumers at each timeslot 
@@ -321,24 +321,24 @@ public class RECO extends AggregatorAgent{
 	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
 	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
 	 **/
-	float[][] hist_arr_ij_D;
+	double[][] hist_arr_ij_D;
 	
-	//float[] arr_i_D; 
+	//double[] arr_i_D; 
 
 	private boolean firstTimeMinimisation = true;
 
-	private float[][] hist_week_arr_D;  //keep a week demand history
+	private double[][] hist_week_arr_D;  //keep a week demand history
 
-	private float[] hist_day_arr_D; //keep a day demand history 
+	private double[] hist_day_arr_D; //keep a day demand history 
 
 	/**
 	 * A very simple learning factor implementation.  There will be more
 	 * sophisticated implementations in time
 	 */
-	private float alpha;
+	private double alpha;
 
 
-	//private float[] dailyActualCostArr;
+	//private double[] dailyActualCostArr;
 
 	
 	
@@ -348,7 +348,7 @@ public class RECO extends AggregatorAgent{
 	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
 	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
 	 **/
-	//float[] histAvg_B_i_arr; 
+	//double[] histAvg_B_i_arr; 
 	
 	
 
@@ -363,12 +363,12 @@ public class RECO extends AggregatorAgent{
 	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
 	 * @return Price(Pi) per KWh at given timeslot (i) 
 	 */
-	protected float calculate_Price_P(int timeslot) {
-		float a = 2f; // the value of a must be set to a fixed price, e.g. ~baseline price 
-		float b = 0.2f;  //this value of b amplifies the S value signal, to reduce or increase the price
+	protected double calculate_Price_P(int timeslot) {
+		double a = 2d; // the value of a must be set to a fixed price, e.g. ~baseline price 
+		double b = 0.2d;  //this value of b amplifies the S value signal, to reduce or increase the price
 
-		float Si = this.arr_i_S[timeslot];
-		float Pi = a+ (b*Si);
+		double Si = this.arr_i_S[timeslot];
+		double Pi = a+ (b*Si);
 
 		return Pi;
 	}
@@ -384,14 +384,14 @@ public class RECO extends AggregatorAgent{
 	 * @return Baseline aggregate deviation (DelatBi) at given timeslot (i) 
 	 */
 
-	private float calculate_deltaB(int timeslot_i) {	
-		float sumOf_SjKijBi=0;
+	private double calculate_deltaB(int timeslot_i) {	
+		double sumOf_SjKijBi=0;
 		for (int j = 0; j < ticksPerDay; j++) {
 			if (j != timeslot_i) // i!=j
 				sumOf_SjKijBi = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][j]*this.arr_i_B[timeslot_i];
 		}
-		float leftSideEq = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][timeslot_i]*this.arr_i_B[timeslot_i];
-		float deltaBi = leftSideEq + sumOf_SjKijBi;
+		double leftSideEq = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][timeslot_i]*this.arr_i_B[timeslot_i];
+		double deltaBi = leftSideEq + sumOf_SjKijBi;
 		return deltaBi;
 	}
 
@@ -403,31 +403,31 @@ public class RECO extends AggregatorAgent{
 	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
 	 * @return Demand (Di) predicted by the aggregator at given timeslot (i) 
 	 */
-	protected float calcualte_PredictedDemand_D(int timeslot) {
-		float Bi = this.arr_i_B[timeslot];
-		float Si = this.arr_i_S[timeslot];
-		float ei = this.arr_i_e[timeslot];
+	protected double calcualte_PredictedDemand_D(int timeslot) {
+		double Bi = this.arr_i_B[timeslot];
+		double Si = this.arr_i_S[timeslot];
+		double ei = this.arr_i_e[timeslot];
 
-		float delta_Bi = calculate_deltaB(timeslot);
+		double delta_Bi = calculate_deltaB(timeslot);
 
-		float Di= Bi + (Si*ei*Bi) + delta_Bi;
+		double Di= Bi + (Si*ei*Bi) + delta_Bi;
 		return Di;
 	}
 
 	/**
 	 * This method calculates and returns "price elasticity factor" (e) at a given time-slot.
 	 * (It implements the formula proposed by P. Boait, Formula #6)
-	 * @param arr_D a float array containing aggregate demand (D) values for a timeslot of a day (usually 48 timeslots)
-	 * @param arr_B a float array containing average baseline aggregate demand (B) values for each timeslot of a day (usulaly 48 timeslots) 
+	 * @param arr_D a double array containing aggregate demand (D) values for a timeslot of a day (usually 48 timeslots)
+	 * @param arr_B a double array containing average baseline aggregate demand (B) values for each timeslot of a day (usulaly 48 timeslots) 
 	 * @param s signal value at timeslot i
 	 * @param B average baseline aggregate demand (B) value at timeslot i	 	 
 	 * @return elasticity price factor (e) [at timeslot i]
 	 */
-	protected float calculate_e(float[] arr_D, float[] arr_B, float s, float B) {
+	protected double calculate_e(double[] arr_D, double[] arr_B, double s, double B) {
 
-		float e=0;
-		float sum_D = ArrayUtils.sum(arr_D);
-		float sum_B = ArrayUtils.sum(arr_B);
+		double e=0;
+		double sum_D = ArrayUtils.sum(arr_D);
+		double sum_B = ArrayUtils.sum(arr_B);
 		if (( s!=0) && (B!=0))
 			e = (sum_D - sum_B) / (s*B);
 		return e;
@@ -443,20 +443,20 @@ public class RECO extends AggregatorAgent{
 	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
 	 * @return displacement factor (Kij) at given timeslots (i and j) 
 	 */
-	protected float calculate_k(int t_i, int t_j) {
+	protected double calculate_k(int t_i, int t_j) {
 
-		float k_ij = 0;
-		float divisor = 1;
+		double k_ij = 0;
+		double divisor = 1;
 
 		if (t_i == t_j) {  // calculate Kii
-			float delta_Bi= this.calculate_deltaB(t_i);
-			float divident = delta_Bi - (this.arr_i_S[t_i] * this.arr_i_e[t_i] * this.arr_i_B[t_i]);
+			double delta_Bi= this.calculate_deltaB(t_i);
+			double divident = delta_Bi - (this.arr_i_S[t_i] * this.arr_i_e[t_i] * this.arr_i_B[t_i]);
 			divisor= this.arr_i_S[t_i] * this.arr_i_B[t_i];
 			k_ij = divident/divisor;
 		}
 
 		else {  // calculate Kij
-			float delta_Bj= this.calculate_deltaB(t_j);
+			double delta_Bj= this.calculate_deltaB(t_j);
 			divisor= this.arr_i_S[t_i] * this.arr_i_B[t_j];
 			k_ij = delta_Bj /divisor;
 		}
@@ -471,7 +471,7 @@ public class RECO extends AggregatorAgent{
 	 */
 	protected void predictDemand(List<ProsumerAgent> customersList, int t) {
 
-		float sumDemand = 0;
+		double sumDemand = 0;
 		for (ProsumerAgent a : customersList)
 		{
 			sumDemand = sumDemand + a.getNetDemand();
@@ -481,8 +481,8 @@ public class RECO extends AggregatorAgent{
 	}
 
 	private void setB_and_e(List<ProsumerAgent> customers, int time, boolean isTraining) {
-		float sumDemand = 0;
-		float sum_e =0;
+		double sumDemand = 0;
+		double sum_e =0;
 		for (ProsumerAgent agent : customers) {
 			sumDemand = sumDemand + agent.getNetDemand();
 			if (!isTraining)
@@ -502,12 +502,12 @@ public class RECO extends AggregatorAgent{
 	 * TODO: RS - I think this is so generic it should go in the AggregatorAgent super-class
 	 */
 	
-	/*public float getCurrentCost_C()
+	/*public double getCurrentCost_C()
 	{
 		return arr_i_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
 	}
 	
-	public float getCurentBaseline_B() {
+	public double getCurentBaseline_B() {
 		
 		return arr_i_B[(int) RepastEssentials.GetTickCount() % ticksPerDay];
 	
@@ -588,8 +588,8 @@ public class RECO extends AggregatorAgent{
 	 * @param timeOfDay the current timeslot (for a day divided to 48 timeslot, a value between 0 to 47)
 	 * @param hist_arr_B a 2D array for keeping baseline aggregate demand values for each timeslot of the day(column) and for different days (row)  
 	 */
-	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList,int timeOfDay, float[][] hist_arr_B) {
-		float sumDemand = 0f;
+	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList,int timeOfDay, double[][] hist_arr_B) {
+		double sumDemand = 0f;
 		if(Consts.DEBUG)
 		{
 			System.out.println("RECO:: Updating the aggregator demand history array at day: "+mainContext.getDayCount()+ " tick time " + RepastEssentials.GetTickCount() + " customersList size "+customersList.size());
@@ -629,19 +629,19 @@ public class RECO extends AggregatorAgent{
 	 * It is basically a function to provide better readability to the program, as it simply calls 
 	 * ArrayUtils average calculating function for 2D arrays, which could be also called direclty
 	 * @param hist_arr_2D a 2D array containing historical baseline aggregate demand values for each timeslot of the day(column) and for different days (row)
-	 * @return float array of average baseline aggregate demands 
+	 * @return double array of average baseline aggregate demands 
 	 */
-	private float[] calculateBADfromHistoryArray(float[][] hist_arr_2D) {	
+	private double[] calculateBADfromHistoryArray(double[][] hist_arr_2D) {	
 		//System.out.println("RECO: calcualteBADfromHistoy: hist_arrr_2D "+ ArrayUtils.toString(hist_arr_2D));
-		return ArrayUtils.avgCols2DFloatArray(hist_arr_2D);	
+		return ArrayUtils.avgCols2DDoubleArray(hist_arr_2D);	
 	}
 	
 	
 
-	private float calculateAndSetNetDemand(List customersList) {	
+	private double calculateAndSetNetDemand(List customersList) {	
 
 		List<ProsumerAgent> customers = customersList;
-		float sumDemand = 0;
+		double sumDemand = 0;
 		//System.out.println(" custmoers list size: "+customers.size());
 		for (ProsumerAgent a : customers)
 		{
@@ -661,12 +661,12 @@ public class RECO extends AggregatorAgent{
 	 * This method builds a predefine signal based on the passed signal type and a timeslot. 
 	 * @param signalType the type of the signal
 	 * @param timeslot the time of day (usually a day is divided to 48 slots)  
-	 * @return built signal as array of real numbers (float) 
+	 * @return built signal as array of real numbers (double) 
 
 	 */
-	private float[] buildSignal(Consts.SIGNAL_TYPE signalType, int timeslot) {
+	private double[] buildSignal(Consts.SIGNAL_TYPE signalType, int timeslot) {
 
-		float[] sArr = new float[this.ticksPerDay];
+		double[] sArr = new double[this.ticksPerDay];
 
 		switch (signalType) { 
 		case S: 
@@ -708,10 +708,10 @@ public class RECO extends AggregatorAgent{
 	 * It bascially calls buildSignal(SignalType, timeslot) by passing -1 as timeslot
 	 * for those signals where the construction does not require a time value. 
 	 * @param signalType the type of the signal
-	 * @return built signal as array of real numbers (float) 
-	 * @see #sendSignal(uk.ac.dmu.iesd.cascade.Consts.SIGNAL_TYPE, float[], List, int)
+	 * @return built signal as array of real numbers (double) 
+	 * @see #sendSignal(uk.ac.dmu.iesd.cascade.Consts.SIGNAL_TYPE, double[], List, int)
 	 */
-	private float[] buildSignal(Consts.SIGNAL_TYPE signalType) {
+	private double[] buildSignal(Consts.SIGNAL_TYPE signalType) {
 		return buildSignal(signalType,-1);
 	}
 
@@ -722,7 +722,7 @@ public class RECO extends AggregatorAgent{
 	 * @param timeslot the time of day (usually a day is divided to 48 slots)  
 	 * @return true if signal has been sent and received successfully by receiver, false otherwise 
 	 */
-	private boolean sendSignal(Consts.SIGNAL_TYPE signalType, float[] signalArr, List broadcasteesList, int timeOfDay) {
+	private boolean sendSignal(Consts.SIGNAL_TYPE signalType, double[] signalArr, List broadcasteesList, int timeOfDay) {
 
 		boolean isSignalSentSuccessfully = false;
 
@@ -777,16 +777,16 @@ public class RECO extends AggregatorAgent{
 
 
 	/**
-	 * This method broadcasts a passed signal array (of float values) to a list of passed customers (e.g. Prosumers)
-	 * @param signalArr signal (array of real/float numbers) to be broadcasted
+	 * This method broadcasts a passed signal array (of double values) to a list of passed customers (e.g. Prosumers)
+	 * @param signalArr signal (array of real/double numbers) to be broadcasted
 	 * @param customerList the list of customers (of ProsumerAgent type)
 	 * @return true if signal has been sent and received successfully by the receiver, false otherwise 
 	 */
-	private boolean broadcastSignalToCustomers(float[] signalArr, List<ProsumerAgent> customerList) {
+	private boolean broadcastSignalToCustomers(double[] signalArr, List<ProsumerAgent> customerList) {
 
 		boolean isSignalSentSuccessfully = false;
 		//Next line only needed for GUI output at this stage
-		this.priceSignal = new float[signalArr.length];
+		this.priceSignal = new double[signalArr.length];
 		System.arraycopy(signalArr, 0, this.priceSignal, 0, signalArr.length);
 		//List  aList = broadcasteesList;
 		//List <ProsumerAgent> paList = aList;	
@@ -811,12 +811,12 @@ public class RECO extends AggregatorAgent{
 	 * @param arr_e array containing elasticity factors (e) calcuated so far (at the end of each day) 
 	 * @param arr_k the reference to the displacement factor (k) 2D-array where the calculated kii and kji values will be placed into it. 
 	 */
-	private void calculateDisplacementFactors_k(float[] arr_D, float[] arr_B, float[] arr_S, float[] arr_e, float[][] arr_k) {	
+	private void calculateDisplacementFactors_k(double[] arr_D, double[] arr_B, double[] arr_S, double[] arr_e, double[][] arr_k) {	
 
-		float e=0;
-		float b =1;
-		float s=1;
-		float deltaB_i=0;
+		double e=0;
+		double b =1;
+		double s=1;
+		double deltaB_i=0;
 
 		int i =  ArrayUtils.indexOf(arr_S, 1f);
 		if (i != -1 )	 {	
@@ -825,28 +825,18 @@ public class RECO extends AggregatorAgent{
 			e = arr_e[i];
 		}
 		
-		System.out.println("i: "+ i);
-		System.out.println("arr_D[i]: "+ arr_D[i]);
-		System.out.println("b: "+ b);
-		System.out.println("deltaB_i: "+ deltaB_i);
-		System.out.println("s*e*b: "+ (s*e*b));
-
-		System.out.println("deltaB_i - (s*e*b): "+ (deltaB_i - (s*e*b)));
-		System.out.println("s*b: "+ (s*b));
-
 		arr_k[i][i] = (deltaB_i - (s*e*b)) / (s*b);//0;  <- what does k[i][i] mean? Should it be zero?
-		System.out.println("arr_k[i][i]: "+ arr_k[i][i]);
 
 		for (int j = i+1; j < this.ticksPerDay; j++) {
 
-			float b_j = arr_B[j];
-			float deltaB_j = arr_D[j] - b_j;
+			double b_j = arr_B[j];
+			double deltaB_j = arr_D[j] - b_j;
 			arr_k[j][i] =  deltaB_j  / (s*b);
 		}
 
 		for(int j = i-1; j >= 0; --j) {
-			float b_j = arr_B[j];
-			float deltaB_j = arr_D[j] - b_j;
+			double b_j = arr_B[j];
+			double deltaB_j = arr_D[j] - b_j;
 			arr_k[j][i] =  deltaB_j  / (s*b);
 		}
 	}
@@ -862,17 +852,17 @@ public class RECO extends AggregatorAgent{
 	 * @param arr_B array containing average baseline aggregate demand values calcualted after profile building period (usually 7 days)
 	 * @param arr_S array containing signal values sent to customers at the begining of the day
 	 * @param arr_e the reference to the elasticity factor (e) array where the calcualted e value for the specific timeslot of the day when S=1 will be placed into it. 
-	 * @return float the elasticity factors (e) value for timeslot of the day when S=1 (also put into the arr_e passed passed as reference) 
+	 * @return double the elasticity factors (e) value for timeslot of the day when S=1 (also put into the arr_e passed passed as reference) 
 	 */
-	private float calculateElasticityFactors_e(float[] arr_D, float[] arr_B, float[] arr_S, float[] arr_e) {	
+	private double calculateElasticityFactors_e(double[] arr_D, double[] arr_B, double[] arr_S, double[] arr_e) {	
 
-		float e=0;
-		float b =1;
-		float s=1;
+		double e=0;
+		double b =1;
+		double s=1;
 		//System.out.println("RECO: Calculate e ££££££££££££");
 
-		float sum_D = ArrayUtils.sum(arr_D);
-		float sum_B = ArrayUtils.sum(arr_B);
+		double sum_D = ArrayUtils.sum(arr_D);
+		double sum_B = ArrayUtils.sum(arr_B);
 
 		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
 		if (timeslotWhenSwas1 != -1 )	 {	
@@ -887,8 +877,8 @@ public class RECO extends AggregatorAgent{
 	}
 
 
-	private float[] minimise_CD_ApacheSimplex(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
-		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
+	private double[] minimise_CD_ApacheSimplex(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) {
+		//private double[] minimise_CD_Apache(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
 		System.out.println("---------------RECO: Apache Simplex minimisation (Babak implementation) ---------");
 
 		ArrayRealVector coefficientsArrRealVect = new ArrayRealVector();
@@ -948,7 +938,7 @@ public class RECO extends AggregatorAgent{
 
 		System.out.println("RECO: Apache Simplex Solver:: Min value obtained " + solution.getValue());
 		//if (solution != null)
-		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(solution.getPoint());
+		double[] newOpt_S= solution.getPoint();
 
 		return newOpt_S;
 	}
@@ -965,11 +955,11 @@ public class RECO extends AggregatorAgent{
 	 * @param arr_S
 	 * @return
 	 */
-	private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
-		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
+	private double[] minimise_CD_Apache(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) {
+		//private double[] minimise_CD_Apache(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
 		//System.out.println("---------------RECO: Apache minimisation (SimplexSolver) ---------");
 
-		float[] newOpt_S = Arrays.copyOf(arr_S, arr_S.length);
+		double[] newOpt_S = Arrays.copyOf(arr_S, arr_S.length);
 
 		SimplexSolver myOpt = new SimplexSolver(1e-3);
 		myOpt.setMaxIterations(10000);
@@ -1030,7 +1020,7 @@ public class RECO extends AggregatorAgent{
 
 		try {
 			RealPointValuePair optimum = myOpt.optimize(costFunc,constraints,GoalType.MINIMIZE,false);
-			newOpt_S = ArrayUtils.convertDoubleArrayToFloatArray(optimum.getPoint());
+			newOpt_S = optimum.getPoint();
 			System.out.println("Used apache commons Simplex to find optimium " + Arrays.toString(newOpt_S));
 			System.out.println("In " + myOpt.getIterations() + " iterations ");
 			System.out.println("Value " + optimum.getValue());
@@ -1042,8 +1032,8 @@ public class RECO extends AggregatorAgent{
 		return newOpt_S;
 	}
 
-	private float[] minimise_CD_Apache_Nelder_Mead(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
-		//private float[] minimise_CD_Apache(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
+	private double[] minimise_CD_Apache_Nelder_Mead(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) {
+		//private double[] minimise_CD_Apache(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
 		//System.out.println("---------------RECO: Apache minimisation (Nelder Mead) ---------");
 
 
@@ -1063,7 +1053,7 @@ public class RECO extends AggregatorAgent{
 		minFunct.addSimpleSumEqualsConstraintForApache(0, 0.01);
 
 		// initial estimates
-		//double[] start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+		//double[] start =  arr_i_S;
 
 		//If it's the first time through the optimisation - start from an arbitrary
 		//point in search space.  Otherwise, start from the last price signal
@@ -1078,7 +1068,7 @@ public class RECO extends AggregatorAgent{
 		}
 		else 
 		{
-			start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+			start =  arr_i_S;
 		}
 
 		//apacheNelderMead.setMaxIterations(10000);
@@ -1110,8 +1100,8 @@ public class RECO extends AggregatorAgent{
 		minValue.getPoint();
 		minValue.getPointRef(); */
 
-		//float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(param);
-		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(minValue.getPoint());
+		//double[] newOpt_S= param;
+		double[] newOpt_S= minValue.getPoint();
 
 		if (Consts.DEBUG)
 		{
@@ -1132,7 +1122,7 @@ public class RECO extends AggregatorAgent{
 	}
 
 
-	private float[] minimise_CD(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S ) {
+	private double[] minimise_CD(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) {
 
 		Minimisation min = new Minimisation();
 		RecoMinimisationFunction minFunct = new RecoMinimisationFunction();
@@ -1143,7 +1133,7 @@ public class RECO extends AggregatorAgent{
 		minFunct.set_k(arr_ij_k);
 
 		// initial estimates
-		//double[] start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+		//double[] start =  arr_i_S;
 
 		//If it's the first time through the optimisation - start from an arbitrary
 		//point in search space.  Otherwise, start from the last price signal
@@ -1158,7 +1148,7 @@ public class RECO extends AggregatorAgent{
 		}
 		//else
 		//{
-		//	start =  ArrayUtils.convertFloatArrayToDoubleArray(arr_i_S);
+		//	start =  arr_i_S;
 		//}
 
 		// initial step sizes
@@ -1210,14 +1200,14 @@ public class RECO extends AggregatorAgent{
 		}
 
 
-		float[] newOpt_S= ArrayUtils.convertDoubleArrayToFloatArray(param);
+		double[] newOpt_S= param;
 		//System.out.println("Minimum achieved is " + min.getMinimum());
 		return newOpt_S;
 	}
 
-	private float[] minimise_CD_Genetic_Algorithm(float[] arr_C, float[] arr_B, float[] arr_e, float[][] arr_ij_k, float[] arr_S)
+	private double[] minimise_CD_Genetic_Algorithm(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S)
 	{
-		float[] returnArray = new float[ticksPerDay];
+		double[] returnArray = new double[ticksPerDay];
 
 		/*** Richard's Genetic algorithm optimisation ***/
 		Configuration conf = new DefaultConfiguration();
@@ -1273,7 +1263,7 @@ public class RECO extends AggregatorAgent{
 
 			for (int jj = 0; jj < returnArray.length; jj++)
 			{
-				returnArray[jj] = 2 * ((float) ((DoubleGene) bestSolutionSoFar.getGene(jj)).doubleValue() - 0.5f);
+				returnArray[jj] = 2 * ((double) ((DoubleGene) bestSolutionSoFar.getGene(jj)).doubleValue() - 0.5d);
 			}
 		} catch (InvalidConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -1293,10 +1283,10 @@ public class RECO extends AggregatorAgent{
 
 
 	//temp funciton - to be removed
-	private float calculateNetDemand(List customersList) {	
+	private double calculateNetDemand(List customersList) {	
 
 		List<ProsumerAgent> customers = customersList;
-		float sumDemand = 0;
+		double sumDemand = 0;
 		for (ProsumerAgent a : customers)
 		{
 			sumDemand = sumDemand + a.getNetDemand();
@@ -1369,8 +1359,8 @@ public class RECO extends AggregatorAgent{
 					System.out.print("-----RECO: Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
 					System.out.print("End of day: "+mainContext.getDayCount()+" timeOfDay: "+timeOfDay);
 					System.out.println(" timetick: "+mainContext.getTickCount());
-					float[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
-					float e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
+					double[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
+					double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
 			        System.out.println("RECO: e: "+e);
 			        System.out.println("RECO: e_arr: "+ Arrays.toString(arr_i_e));
 			        System.out.println("RECO: arr_last_training_D: "+ Arrays.toString(arr_last_training_D));
@@ -1421,9 +1411,9 @@ public class RECO extends AggregatorAgent{
 
 					/*	if (mainContext.isBeginningOfDay(timeOfDay) && mainContext.isDayChangedSince(Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
 
-		    		float [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay()-1);
+		    		double [] last_arr_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getCountDay()-1);
 
-		    		float e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
+		    		double e = calculateElasticityFactors_e(last_arr_D,arr_i_B,arr_i_S, arr_i_e);
 		    	//	arr_ij_k = this.calculateDisplacementFactors_k(last_arr_D, arr_i_B, arr_i_S, arr_i_e);
 
 		    	} */
@@ -1460,25 +1450,25 @@ public class RECO extends AggregatorAgent{
 					//System.out.println("arr_i_D: "+Arrays.toString(arr_last_training_D));
 
 
-					float[] actualShift = ArrayUtils.add(hist_day_arr_D, ArrayUtils.negate(arr_i_B));
+					double[] actualShift = ArrayUtils.add(hist_day_arr_D, ArrayUtils.negate(arr_i_B));
 					System.out.println("RECO:: actualShift " + Arrays.toString(actualShift));
 					Matrix k = new Matrix(arr_ij_k);
 					double[][] b = new double[1][arr_i_B.length];
-					b[0] = ArrayUtils.convertFloatArrayToDoubleArray(ArrayUtils.mtimes(arr_i_B,arr_i_S));
+					b[0] = ArrayUtils.mtimes(arr_i_B,arr_i_S);
 					Matrix Bm = new Matrix(b);
 					Bm.transpose();			
-					float[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), ArrayUtils.convertDoubleArrayToFloatArray((Matrix.times(Bm, k).getRowCopy(0))));
+					double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(Bm, k).getRowCopy(0)));
 					
 					System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
 
-					float[] errorVector = ArrayUtils.mtimes(actualShift, ArrayUtils.convertDoubleArrayToFloatArray(ArrayUtils.pow(predictedShift,-1)));
+					double[] errorVector = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
 
 					if(Consts.DEBUG)
 					{
 						System.out.println("RECO:: error vector is " + Arrays.toString(errorVector));
 					}
 
-					float[] multiplier = ArrayUtils.offset(ArrayUtils.multiply(errorVector, alpha), (1 - alpha));
+					double[] multiplier = ArrayUtils.offset(ArrayUtils.multiply(errorVector, alpha), (1 - alpha));
 
 					if(Consts.DEBUG)
 					{
@@ -1494,10 +1484,10 @@ public class RECO extends AggregatorAgent{
 					Matrix k = new Matrix(arr_ij_k);
 					System.out.println("After Matrix init, k columns " + k.getNumberOfColumns() + " k rows " + k.getNumberOfRows());
 					double[][] multiplicationVector = new double[1][multiplier.length];
-					multiplicationVector[0] = ArrayUtils.convertFloatArrayToDoubleArray(multiplier);
+					multiplicationVector[0] = multiplier;
 					Matrix multVector = new Matrix(multiplicationVector);
 					Matrix new_k = Matrix.times(k, Matrix.transpose(multVector));
-					arr_ij_k = ArrayUtils.convertDoubleArrayToFloatArray(new_k.getArrayCopy());*/
+					arr_ij_k = new_k.getArrayCopy();*/
 
 					for (int i = 0; i < arr_ij_k.length; i++)
 					{
@@ -1522,11 +1512,11 @@ public class RECO extends AggregatorAgent{
 
 					//arr_i_C = Arrays.copyOfRange(arr_i_C_all, (int) time % arr_i_C_all.length, ((int)time % arr_i_C_all.length) + ticksPerDay);
 
-					//float[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
+					//double[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
 
-					float[] normalizedCosts = ArrayUtils.normalizeValues(arr_i_C);
+					double[] normalizedCosts = ArrayUtils.normalizeValues(arr_i_C);
 
-					//float[] normalizedCosts = (Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay));
+					//double[] normalizedCosts = (Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay));
 					//System.out.println(Arrays.toString(normalizedCosts));
 					//System.out.println(Arrays.toString(arr_i_S));
 
@@ -1641,8 +1631,8 @@ public class RECO extends AggregatorAgent{
 
 		if (mainContext.isEndOfDay(timeOfDay)) 
 		{
-			float predCost = 0;
-			float actualCost = 0;
+			double predCost = 0;
+			double actualCost = 0;
 			for (int i = 0; i < ticksPerDay; i++)
 			{
 				predCost += arr_i_C[i] * calcualte_PredictedDemand_D(i);
@@ -1696,7 +1686,7 @@ public class RECO extends AggregatorAgent{
 			//populate the broadcast signal with the price signal starting from now and continuing for
 			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
 			//broadcast signal out.
-			float[] broadcastSignal= new float[broadcastLength];
+			double[] broadcastSignal= new double[broadcastLength];
 			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
 			int startIndex = (int) time % priceSignal.length;
 
@@ -1735,7 +1725,7 @@ public class RECO extends AggregatorAgent{
 	 * @param context the context in which this agent is situated
 	 * @param baseDemand an array containing the base demand  
 	 */
-	public RECO(CascadeContext context, float[] baseDemand) {
+	public RECO(CascadeContext context, double[] baseDemand) {
 
 		super(context);
 		if (Consts.DEBUG)
@@ -1755,8 +1745,8 @@ public class RECO extends AggregatorAgent{
 			System.err.print("RECO: Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
 			System.err.println(" RECO:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 		}
-		this.priceSignal = new float [baseDemand.length];
-		this.overallSystemDemand = new float [baseDemand.length];
+		this.priceSignal = new double [baseDemand.length];
+		this.overallSystemDemand = new double [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemand.length);
 
 		//Start initially with a flat price signal of 12.5p per kWh
@@ -1767,7 +1757,7 @@ public class RECO extends AggregatorAgent{
 		// Very basic configuration of predicted customer demand as 
 		// a Constant.  We could be more sophisticated than this or 
 		// possibly this gives us an aspirational target...
-		this.predictedCustomerDemand = new float[ticksPerDay];
+		this.predictedCustomerDemand = new double[ticksPerDay];
 		//Put in a constant predicted demand
 		//Arrays.fill(this.predictedCustomerDemand, 5);
 		//Or - put in a variable one
@@ -1776,23 +1766,23 @@ public class RECO extends AggregatorAgent{
 			this.predictedCustomerDemand[j] = baseDemand[j] / 7000;
 		}
 
-		hist_day_arr_D = new float[ticksPerDay];
-		hist_week_arr_D = new float[7][ticksPerDay];
-		this.dailyPredictedCost = new ArrayList<Float>();
-		this.dailyActualCost = new ArrayList<Float>();
+		hist_day_arr_D = new double[ticksPerDay];
+		hist_week_arr_D = new double[7][ticksPerDay];
+		this.dailyPredictedCost = new ArrayList<Double>();
+		this.dailyActualCost = new ArrayList<Double>();
 		
-		//this.dailyPredictedCostArr = new float [ticksPerDay];
-		//this.dailyActualCostArr = new float [ticksPerDay];
+		//this.dailyPredictedCostArr = new double [ticksPerDay];
+		//this.dailyActualCostArr = new double [ticksPerDay];
 
 		///+++++++++++++++++++++++++++++++++++++++
-		this.arr_i_B = new float [ticksPerDay];
-		this.arr_i_e = new float [ticksPerDay];
-		this.arr_i_S = new float [ticksPerDay];
-		this.arr_i_C = new float [ticksPerDay];
-		this.arr_ij_k = new float [ticksPerDay][ticksPerDay];
-		this.hist_arr_ij_D = new float [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
+		this.arr_i_B = new double [ticksPerDay];
+		this.arr_i_e = new double [ticksPerDay];
+		this.arr_i_S = new double [ticksPerDay];
+		this.arr_i_C = new double [ticksPerDay];
+		this.arr_ij_k = new double [ticksPerDay][ticksPerDay];
+		this.hist_arr_ij_D = new double [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
 		
-		//this.arr_i_D = new float [ticksPerDay];
+		//this.arr_i_D = new double [ticksPerDay];
 				
 		arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand),100); //all costs (equivalent to size of baseDemand, usually 1 week)
 		

@@ -19,7 +19,7 @@ public class FlattenWithinDaySmartController implements ISmartController {
 
 	ProsumerAgent owner;
 
-	float[] dayPredictedCostSignal;
+	double[] dayPredictedCostSignal;
 
 	/**
 	 * Method to tell the smart controller to gather the data that it needs and
@@ -30,22 +30,22 @@ public class FlattenWithinDaySmartController implements ISmartController {
 	public void update(int timeStep)
 	{	
 		/*// simplest smart controller implementation - perfect division of load through the day
-		float moveableLoad = owner.inelasticTotalDayDemand * owner.percentageMoveableDemand;
-		float [] daysCostSignal = new float [owner.getContext().getTickPerDay()];
-		float [] daysOptimisedDemand = new float [owner.getContext().getTickPerDay()];
+		double moveableLoad = owner.inelasticTotalDayDemand * owner.percentageMoveableDemand;
+		double [] daysCostSignal = new double [owner.getContext().getTickPerDay()];
+		double [] daysOptimisedDemand = new double [owner.getContext().getTickPerDay()];
 		System.arraycopy(owner.getPredictedCostSignal(), owner.time - owner.predictionValidTime, daysCostSignal, 0, owner.getContext().getTickPerDay());
 
 		System.arraycopy(owner.smartOptimisedProfile, owner.time % owner.smartOptimisedProfile.length, daysOptimisedDemand, 0, owner.getContext().getTickPerDay());
 
-		float [] tempArray = ArrayUtils.mtimes(daysCostSignal, daysOptimisedDemand);
+		double [] tempArray = ArrayUtils.mtimes(daysCostSignal, daysOptimisedDemand);
 
-		float currentCost = ArrayUtils.sum(tempArray);
+		double currentCost = ArrayUtils.sum(tempArray);
 		// Algorithm to minimise this whilst satisfying constraints of
 		// maximum movable demand and total demand being inelastic.
 
-		float movedLoad = 0;
-		float movedThisTime = -1;
-		float swapAmount = -1;
+		double movedLoad = 0;
+		double movedThisTime = -1;
+		double swapAmount = -1;
 		while (movedLoad < moveableLoad && movedThisTime != 0)
 		{
 			Arrays.fill(daysOptimisedDemand, owner.inelasticTotalDayDemand / owner.getContext().getTickPerDay());
@@ -81,7 +81,7 @@ public class FlattenWithinDaySmartController implements ISmartController {
 	/**
 	 * @param dayPredictedCostSignal the dayPredictedCostSignal to set
 	 */
-	public void setDayPredictedCostSignal(float[] dayPredictedCostSignal) {
+	public void setDayPredictedCostSignal(double[] dayPredictedCostSignal) {
 		this.dayPredictedCostSignal = dayPredictedCostSignal;
 	}
 

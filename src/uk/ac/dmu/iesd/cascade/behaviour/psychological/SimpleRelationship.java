@@ -12,7 +12,7 @@ public class SimpleRelationship implements Relationship {
 	boolean isDirected;
 	Construct from;
 	Construct to;
-	float weight;
+	double weight;
 	
 	/* (non-Javadoc)
 	 * @see behaviour.psychological.Relationship#getDirected()
@@ -45,12 +45,12 @@ public class SimpleRelationship implements Relationship {
 	 * @see behaviour.psychological.Relationship#getWeight()
 	 */
 	@Override
-	public float getWeight() {
+	public double getWeight() {
 		// TODO Auto-generated method stub
 		return weight;
 	}
 	
-	public SimpleRelationship(Construct from, Construct to, float weight, boolean directed)
+	public SimpleRelationship(Construct from, Construct to, double weight, boolean directed)
 	{
 		this.from = from;
 		this.to = to;

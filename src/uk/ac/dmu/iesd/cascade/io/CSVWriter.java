@@ -79,7 +79,7 @@ public class CSVWriter {
 
 	}
 	
-	public void appendRow(float[]values) {
+	public void appendRow(double[]values) {
 		try {
 			for (int i=0; i<values.length; i++){
 				writer.append(""+values[i]);
@@ -147,7 +147,7 @@ public class CSVWriter {
 	}
 	
 	
-	public void appendCols(float[][]values) {
+	public void appendCols(double[][]values) {
 		try	{
 			for (int i=0; i<values.length; i++){
 				for (int j=0; j<values[0].length; j++) {
