@@ -25,7 +25,7 @@
           <decorated class="repast.simphony.data.logging.gather.MethodMapping">
             <method>
               <class>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</class>
-              <name>getHasSmartControlAsFloat</name>
+              <name>getHasSmartControlAsDouble</name>
               <parameter-types/>
             </method>
           </decorated>

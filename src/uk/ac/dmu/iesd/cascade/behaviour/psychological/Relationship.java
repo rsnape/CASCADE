@@ -9,7 +9,7 @@ package uk.ac.dmu.iesd.cascade.behaviour.psychological;
  */
 public interface Relationship {
 
-	public float getWeight();
+	public double getWeight();
 	
 	public boolean getDirected();
 	

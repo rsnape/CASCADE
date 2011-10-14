@@ -47,29 +47,29 @@ public class StorageProsumer extends ProsumerAgent{
 	 * instantiated agent is given the boolean attribute which means that they
 	 * have access to one of these technologies.
 	 */
-	float ratedCapacityElectricalStorage;   // Note kWh rather than kW
-	float ratedCapacityHotWaterStorage;
-	float ratedCapacitySpaceHeatStorage; // Note - related to thermal mass
+	double ratedCapacityElectricalStorage;   // Note kWh rather than kW
+	double ratedCapacityHotWaterStorage;
+	double ratedCapacitySpaceHeatStorage; // Note - related to thermal mass
 
 	/*
 	 * Specifically, a household may have a certain percentage of demand
 	 * that it believes is moveable and / or a certain maximum time shift of demand
 	 */
-	float percentageMoveableDemand;  // This can be set constant, or calculated from available appliances
+	double percentageMoveableDemand;  // This can be set constant, or calculated from available appliances
 	int maxTimeShift; // The "furthest" a demand may be moved in time.  This can be constant or calculated dynamically.
 
 	/*
 	 * temperature control parameters
 	 */
-	float minSetPoint;  // The minimum temperature for this Household's building in centigrade (where relevant)
-	float maxSetPoint;  // The maximum temperature for this Household's building in centigrade (where relevant)
-	float currentInternalTemp;
+	double minSetPoint;  // The minimum temperature for this Household's building in centigrade (where relevant)
+	double maxSetPoint;  // The maximum temperature for this Household's building in centigrade (where relevant)
+	double currentInternalTemp;
 	
 	/*
 	 * This may or may not be used, but is a threshold cost above which actions
 	 * take place for the household
 	 */
-	float costThreshold;
+	double costThreshold;
 
 	/*
 	 * Accessor functions (NetBeans style)
@@ -101,21 +101,21 @@ public class StorageProsumer extends ProsumerAgent{
 	/**
 	 * Constructor
 	 */
-	public StorageProsumer(CascadeContext context, float[] baseDemand) {
+	public StorageProsumer(CascadeContext context, double[] baseDemand) {
 		super(context);
-		this.percentageMoveableDemand = (float) RandomHelper.nextDoubleFromTo(0, 0.5);
+		this.percentageMoveableDemand = RandomHelper.nextDoubleFromTo(0, 0.5);
 		setElasticityFactor(percentageMoveableDemand);
-		this.ticksPerDay = context.getTickPerDay();
+		this.ticksPerDay = context.getNbOfTickPerDay();
 		if (baseDemand.length % ticksPerDay != 0)
 		{
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("StorageProsumer:  Will be truncated and may cause unexpected behaviour");
 		}
-		this.baseDemandProfile = new float [baseDemand.length];
+		this.baseDemandProfile = new double [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
 		//Initialise the smart optimised profile to be the same as base demand
 		//smart controller will alter this
-		this.smartOptimisedProfile = new float [baseDemand.length];
+		this.smartOptimisedProfile = new double [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
 	}
 

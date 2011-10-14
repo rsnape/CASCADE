@@ -9,7 +9,7 @@ package uk.ac.dmu.iesd.cascade.behaviour.psychological;
  */
 public class VariableWeightRelationship extends SimpleRelationship {
 
-	public boolean setWeight(float newWeight)
+	public boolean setWeight(double newWeight)
 	{
 		boolean updateSuccess = true;
 		// TODO - this could be more or less complicated update procedure
@@ -22,7 +22,7 @@ public class VariableWeightRelationship extends SimpleRelationship {
 	 * Constructor simply passes variables through - only difference here is that
 	 * the weight can vary dynamically within the use of the model
 	 */
-	public VariableWeightRelationship(Construct from, Construct to, float initialWeight, boolean directed) {
+	public VariableWeightRelationship(Construct from, Construct to, double initialWeight, boolean directed) {
 		// TODO Auto-generated constructor stub
 		super(from, to, initialWeight, directed);
 	}

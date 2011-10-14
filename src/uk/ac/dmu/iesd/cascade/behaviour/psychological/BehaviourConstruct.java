@@ -16,7 +16,7 @@ public class BehaviourConstruct extends SimpleConstruct {
 	 * @param name
 	 * @param initialWeight
 	 */
-	public BehaviourConstruct(String name, float initialWeight) {
+	public BehaviourConstruct(String name, double initialWeight) {
 		// TODO Auto-generated constructor stub
 		super(name, initialWeight);
 	}

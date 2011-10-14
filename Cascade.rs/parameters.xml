@@ -6,10 +6,10 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
-				<parameter name="elecWaterFraction" displayName="elecWaterFraction" type="float" 
+				<parameter name="elecWaterFraction" displayName="elecWaterFraction" type="double" 
 						defaultValue="1.0" 
 						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$FloatConverter"
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
 				<parameter name="randomSeed" displayName="Default Random Seed" type="int" 
@@ -96,10 +96,10 @@
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
 		/>
-				<parameter name="elecSpaceFraction" displayName="elecSpaceFraction" type="float" 
+				<parameter name="elecSpaceFraction" displayName="elecSpaceFraction" type="double" 
 						defaultValue="1.0" 
 						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$FloatConverter"
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
 				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 

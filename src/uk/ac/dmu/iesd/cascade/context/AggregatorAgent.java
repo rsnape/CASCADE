@@ -9,6 +9,7 @@ import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.*;
 import repast.simphony.ui.probe.*;
+import uk.ac.cranfield.market.Aggregator;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.IObservable;
@@ -35,7 +36,7 @@ import flanagan.math.Matrix;
  * 1.2 - Made the class abstract; modified the constructor, added/modified/removed fields/methods
  *       made some methods abstract (Babak)
  */
-public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
+public abstract class AggregatorAgent extends Aggregator implements ICognitiveAgent, IObservable {
 
 	/*
 	 * Agent properties
@@ -76,7 +77,11 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * For the inital experiment, C would be proportional to national demand Ni with 
 	 * the option to make it Ni^2 or fractional power
 	 **/
-	float[] arr_i_C; 
+	double[] arr_i_C; 
+	
+	double[] arr_i_norm_C; // normalized costs
+	
+	double[] arr_i_B; // (B) baseline at timeslot i
 
 	/**
 	 * A boolen to determine whether the name has
@@ -97,14 +102,21 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * This is net demand, may be +ve (consumption), 0, or 
 	 * -ve (generation)
 	 */
-	protected float netDemand;
-	float[] predictedCustomerDemand;
-	float[] overallSystemDemand;
+	protected double netDemand;
+	double[] predictedCustomerDemand;
+	double[] overallSystemDemand;
 	// priceSignal units are £/MWh which translates to p/kWh if divided by 10
-	float[] priceSignal;
+	double[] priceSignal;
 	boolean priceSignalChanged = true;  //set true when we wish to send a new and different price signal.  
 	//True by default as it will always be new until the first broadcast
 	protected int ticksPerDay;
+	
+	protected ArrayList<Double> dailyPredictedCost;
+	//private double[] dailyPredictedCostArr;
+
+	protected ArrayList<Double> dailyActualCost; 
+	
+	protected double cumulativeCostSaving =0;
 
 
 	//-----------------------------
@@ -164,37 +176,97 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 
 
 	/**
-	 * Returns the net demand <code>netDemand</code> for this agent 
-	 * @return  the <code>netDemand</code> 
+	 * Returns the net demand <code>netDemand</code> for this agent (D)
+	 * @return  the <code>netDemand (D)</code> 
 	 **/
-	public float getNetDemand() {
+	public double getNetDemand() {
 		return this.netDemand;
 	}
+	
 	/**
 	 * Sets the <code>netDemand</code> of this agent  
 	 * @param nd the new net demand for the agent
 	 * @see #getNetDemand
 	 */
-	public void setNetDemand(float nd) {
+	public void setNetDemand(double nd) {
 		this.netDemand = nd;
 	}
+	
+	
 
+	/**
+	 * Returns the price signal <code>priceSignal</code> for this agent (S)
+	 * @return  the <code>priceSignal (S)</code> 
+	 **/
+	public double getCurrentPriceSignal()
+	{
+		double time = RepastEssentials.GetTickCount();
+		return priceSignal[(int) time % priceSignal.length];
+	}
+
+
+	
+	/*public double getCurrentCostOfDemand() {
+		return getCurrentCost_C() * this.getNetDemand();
+	} */
 	/**
 	 * This method returns the cost of buying wholesale electricity for this aggregator
 	 * at the current tick
 	 */
-	public float getCurrentCost()
+	
+	public double getCurrentCost_C()
 	{
 		return arr_i_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
 	}
+	
+	public double getCurrentNormalizedCost_C()
+	{
+		if (arr_i_norm_C.length>0)
+			return arr_i_norm_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+		else return -1;
+	}
+	
+	public double getCurrentBaseline_B()
+	{
+		return arr_i_B[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+	}
+	
+	
+	public double getDayPredictedCost()
+	{
+		if (dailyPredictedCost.size() > 1)
+			return  dailyPredictedCost.get(mainContext.getDayCount()-1);
+		      //return  dailyPredictedCost.get(mainContext.getDayCount());
 
-	/**
-	 * This method should define the step for the agents.
-	 * They should be scheduled appropriately by 
-	 * concrete implementing subclasses 
-	 */
-	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
-	abstract public void step();
+		else return 0;
+	}
+	
+	public double getDayActualCost()
+	{
+		if (dailyActualCost.size() > 1)
+			return  dailyActualCost.get(mainContext.getDayCount()-1);
+		else return 0;
+	}
+	
+	
+	public double getCostDifference()
+	{
+		if (mainContext.getDayCount() <= Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) 
+			return 0;
+		else return getDayPredictedCost() - getDayActualCost();
+	}
+	
+	public double getCumulativeCostSaving()
+	{
+		 return this.cumulativeCostSaving;
+	}
+	
+	public int getDayCount() {
+		return mainContext.getDayCount();
+	}
+	
+
+	
 
 	/**
 	 * Add an observer to the list of observer objects
@@ -257,27 +329,22 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * all aggregator agent (like the ones defined above). / Babak  
 	 */
 
-	public float getCurrentPriceSignal()
-	{
-		double time = RepastEssentials.GetTickCount();
-		return priceSignal[(int) time % priceSignal.length];
-	}
 	
 
-	void setPriceSignalFlatRate(float price)
+	void setPriceSignalFlatRate(double price)
 	{
-		float[] oldPrice = priceSignal;
+		double[] oldPrice = priceSignal;
 		Arrays.fill(priceSignal, price);
 		priceSignalChanged = Arrays.equals(priceSignal, oldPrice);
 	}
 
-	void setPriceSignalEconomySeven(float highprice, float lowprice)
+	void setPriceSignalEconomySeven(double highprice, double lowprice)
 	{
 		//Hack to change E7 tariff at 07:30
 		int morningChangeTimeIndex = (int) (ticksPerDay / (24 / 7.5));
 		//Hack to change E7 tariff at 23:30
 		int eveningChangeTimeIndex = (int) (ticksPerDay / (24 / 23.5));
-		float[] oldPrice = Arrays.copyOf(priceSignal,priceSignal.length);
+		double[] oldPrice = Arrays.copyOf(priceSignal,priceSignal.length);
 
 		for(int offset = 0; offset < priceSignal.length; offset = offset + ticksPerDay)
 		{
@@ -288,10 +355,10 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 		}
 	}
 
-	void setPriceSignalRoscoeAndAult(float A, float B, float C)
+	void setPriceSignalRoscoeAndAult(double A, double B, double C)
 	{
-		float price;
-		float x;
+		double price;
+		double x;
 
 		for (int i = 0; i < priceSignal.length; i++)
 		{	
@@ -299,7 +366,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 			//to those compatible with capacities expressed in GW.
 			//TODO: unify units throughout the model
 			x = (predictedCustomerDemand[i % ticksPerDay] / 10 ) / (Consts.MAX_SUPPLY_CAPACITY_GWATTS - Consts.MAX_GENERATOR_CAPACITY_GWATTS);
-			price = (float) (A * Math.exp(B * x) + C);
+			price = (double) (A * Math.exp(B * x) + C);
 			if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 			{
 				System.out.println("AggregatorAgent: Price at tick" + i + " is " + price);
@@ -320,7 +387,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 		// actual demand from projected demand for use next time round.
 
 		//Define a variable to hold the aggregator's predicted demand at this instant.
-		float predictedInstantaneousDemand;
+		double predictedInstantaneousDemand;
 		// There are various things we may want the aggregator to do - e.g. learn predicted instantaneous
 		// demand, have a less dynamic but still non-zero predicted demand 
 		// or predict zero net demand (i.e. aggregators customer base is predicted self-sufficient
@@ -329,11 +396,11 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 		predictedInstantaneousDemand = 0;
 
 		if (netDemand > predictedInstantaneousDemand) {
-			priceSignal[(int) time % priceSignal.length] = (float) (priceSignal[(int) time % priceSignal.length] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
+			priceSignal[(int) time % priceSignal.length] = (double) (priceSignal[(int) time % priceSignal.length] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
 			// Now introduce some prediction - it was high today, so moderate tomorrow...
 			if (priceSignal.length > ((int) time % priceSignal.length + ticksPerDay))
 			{
-				priceSignal[(int) time % priceSignal.length + ticksPerDay] = (float) (priceSignal[(int) time % priceSignal.length + ticksPerDay] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
+				priceSignal[(int) time % priceSignal.length + ticksPerDay] = (double) (priceSignal[(int) time % priceSignal.length + ticksPerDay] * ( 1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
 			}
 			priceSignalChanged = true; }
 	}
@@ -374,7 +441,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 			//populate the broadcast signal with the price signal starting from now and continuing for
 			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
 			//broadcast signal out.
-			float[] broadcastSignal= new float[broadcastLength];
+			double[] broadcastSignal= new double[broadcastLength];
 			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
 			int startIndex = (int) time % priceSignal.length;
 			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignal.length - startIndex);
@@ -403,6 +470,15 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 
 		priceSignalChanged = false;
 	}
+	
+	/**
+	 * This method should define the step for the agents.
+	 * They should be scheduled appropriately by 
+	 * concrete implementing subclasses 
+	 */
+	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	@ScheduledMethod(start = 0.0001, interval = 1, shuffle = true)
+	abstract public void step();
 
 
 	/**

@@ -1,5 +1,5 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Price Signal</name>
+  <name>Aggregator B vs D</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
@@ -11,25 +11,31 @@
   </streamHandler>
   <isBatchAction>false</isBatchAction>
   <dataSetId class="string">AggregatorData</dataSetId>
-  <showLegend>false</showLegend>
+  <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>500.0</visibleXRange>
+  <visibleXRange>100.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
-  <precisionValue>0</precisionValue>
-  <maxHistory>1500</maxHistory>
+  <precisionValue>3</precisionValue>
+  <maxHistory>1000</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>AgentID</seriesID>
-      <valueColumn>CurrentPriceSignal</valueColumn>
-      <hashCode>-841472287</hashCode>
+      <seriesID>NetDemandSeriesName</seriesID>
+      <valueColumn>NetDemand</valueColumn>
+      <hashCode>348819427</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>CurrentBaseline_B_SeriesName</seriesID>
+      <valueColumn>CurrentBaseline_B</valueColumn>
+      <hashCode>-2095056214</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

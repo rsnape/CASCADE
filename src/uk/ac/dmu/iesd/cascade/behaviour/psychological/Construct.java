@@ -9,9 +9,9 @@ package uk.ac.dmu.iesd.cascade.behaviour.psychological;
  */
 public interface Construct {
 
-	public float evaluate();
+	public double evaluate();
 	
 	public String getName();
 	
-	public float getCurrentValue();
+	public double getCurrentValue();
 }

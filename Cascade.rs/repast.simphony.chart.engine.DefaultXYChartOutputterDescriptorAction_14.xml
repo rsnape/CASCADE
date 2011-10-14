@@ -1,18 +1,17 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Smart Adoption</name>
+  <name>TestAggChart</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>SmartControlAdoption</string>
-      <string>TotalDemand</string>
+      <string>TestAggregatorData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">SmartControlAdoption</dataSetId>
-  <showLegend>false</showLegend>
+  <dataSetId class="string">TestAggregatorData</dataSetId>
+  <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
@@ -23,15 +22,21 @@
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
-  <precisionValue>0</precisionValue>
+  <precisionValue>3</precisionValue>
   <maxHistory>500</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Adopters</seriesID>
-      <valueColumn>New Column</valueColumn>
-      <hashCode>246820589</hashCode>
-      <proxy>true</proxy>
+      <seriesID>DemandSeriesName</seriesID>
+      <valueColumn>Demand</valueColumn>
+      <hashCode>-1887352043</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>GenerationSeriesName</seriesID>
+      <valueColumn>Generation</valueColumn>
+      <hashCode>-894703549</hashCode>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

@@ -21,6 +21,21 @@ class reference30 {
 @__modelType reference 
 */
 class reference19 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.controllers.FlattenWithinDaySmartController:oiref><oihard>
+@__modelType reference 
+*/
+class reference21 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.controllers.CopyOfWattboxController:oiref><oihard>
+@__modelType reference 
+*/
+class reference22 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.controllers.ISmartController:oiref><oihard>
+@__modelType reference 
+*/
+class reference23 {
 }}/**
 @__tags
 @shapeType ClassDiagram 
