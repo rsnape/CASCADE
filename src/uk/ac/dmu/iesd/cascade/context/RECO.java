@@ -20,6 +20,7 @@ import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.util.ContextUtils;
+import uk.ac.cranfield.market.SupplyPrediction;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
@@ -589,7 +590,7 @@ public class RECO extends AggregatorAgent{
 	 * @param hist_arr_B a 2D array for keeping baseline aggregate demand values for each timeslot of the day(column) and for different days (row)  
 	 */
 	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList,int timeOfDay, double[][] hist_arr_B) {
-		double sumDemand = 0f;
+		double sumDemand = 0d;
 		if(Consts.DEBUG)
 		{
 			System.out.println("RECO:: Updating the aggregator demand history array at day: "+mainContext.getDayCount()+ " tick time " + RepastEssentials.GetTickCount() + " customersList size "+customersList.size());
@@ -604,16 +605,15 @@ public class RECO extends AggregatorAgent{
 			}
 		}
 
-		if (Consts.DEBUG)
-		{
-			System.out.println("RECO:: Total demand at tick " + RepastEssentials.GetTickCount() + " = " + sumDemand);
-		}
+	
 
 		int dayCount = mainContext.getDayCount();
 
 		if (dayCount < hist_arr_B.length)
 		{
 			hist_arr_B[dayCount][timeOfDay]=sumDemand;
+			System.out.println("RECO:: update Total demand for day " + dayCount+ " timeslot: "+ timeOfDay + " to = " + sumDemand);
+
 		}
 		else
 		{
@@ -679,17 +679,17 @@ public class RECO extends AggregatorAgent{
 			 */
 			int daysSoFar = mainContext.getDayCount();
 			int indexFor1 = (daysSoFar - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)%this.ticksPerDay; 
-			sArr[indexFor1] = 1f;
+			sArr[indexFor1] = 1d;
 			if (indexFor1 > 0) {
 				for (int i = 0; i < indexFor1; i++) {
-					sArr[i] = (-1f/(this.ticksPerDay-1));
-					//sArr[i] = 0;
+					//sArr[i] = (-1d/(this.ticksPerDay-1));
+					sArr[i] = 0;
 				}
 			}
 			if (indexFor1 < this.ticksPerDay) {
 				for (int i = indexFor1+1; i < sArr.length; i++) {
-					sArr[i] = (-1f/(this.ticksPerDay-1));
-					//sArr[i] = 0;
+					//sArr[i] = (-1d/(this.ticksPerDay-1));
+					sArr[i] = 0;
 				}
 			}
 			break;
@@ -813,11 +813,12 @@ public class RECO extends AggregatorAgent{
 	 */
 	private void calculateDisplacementFactors_k(double[] arr_D, double[] arr_B, double[] arr_S, double[] arr_e, double[][] arr_k) {	
 
+		System.out.println(" $ RECO: Calculate k $");
+
 		double e=0;
 		double b =1;
 		double s=1;
 		double deltaB_i=0;
-
 		int i =  ArrayUtils.indexOf(arr_S, 1f);
 		if (i != -1 )	 {	
 			b = arr_B[i];
@@ -825,19 +826,40 @@ public class RECO extends AggregatorAgent{
 			e = arr_e[i];
 		}
 		
-		arr_k[i][i] = (deltaB_i - (s*e*b)) / (s*b);//0;  <- what does k[i][i] mean? Should it be zero?
+		/*System.out.println(" D= "+ arr_D[i]);
+		System.out.println(" B= "+ b);
+		System.out.println(" s= "+ s);
+		System.out.println(" e= "+ e);
+		System.out.println(" deltaB_i: "+ deltaB_i);
+		System.out.println(" (s*e*b): "+ (s*e*b));
+		System.out.println(" (s*b): "+ (s*b));
+		
+		System.out.println(" deltaB_i - (s*e*b) : "+ (deltaB_i - (s*e*b)));
+		System.out.println(" deltaB_i - (s*e*b)/(s*b) : "+ (deltaB_i - (s*e*b))/(s*b));
+		System.out.println(" (s*e*b): "+ (s*e*b)); */
+
+		arr_k[i][i] = (deltaB_i - (s*e*b)) / (s*b);  //0;  <- what does k[i][i] mean? Should it be zero?
+		
+		if (arr_k[i][i] !=0)
+			System.out.println(" arr_k[i][i] ("+i+","+i+")= "+arr_k[i][i]);
 
 		for (int j = i+1; j < this.ticksPerDay; j++) {
 
 			double b_j = arr_B[j];
 			double deltaB_j = arr_D[j] - b_j;
 			arr_k[j][i] =  deltaB_j  / (s*b);
+			if (arr_k[j][i] !=0)
+				System.out.println(" arr_k[j][i] ("+j+","+i+")= "+arr_k[j][i]);
+
+			
 		}
 
 		for(int j = i-1; j >= 0; --j) {
 			double b_j = arr_B[j];
 			double deltaB_j = arr_D[j] - b_j;
 			arr_k[j][i] =  deltaB_j  / (s*b);
+			if (arr_k[j][i] !=0)
+				System.out.println(" arr_k[j][i] ("+j+","+i+")= "+arr_k[j][i]);
 		}
 	}
 
@@ -859,7 +881,7 @@ public class RECO extends AggregatorAgent{
 		double e=0;
 		double b =1;
 		double s=1;
-		//System.out.println("RECO: Calculate e ££££££££££££");
+		System.out.println(" £ RECO: Calculate e £");
 
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
@@ -868,6 +890,16 @@ public class RECO extends AggregatorAgent{
 		if (timeslotWhenSwas1 != -1 )	 {	
 			b = arr_B[timeslotWhenSwas1];
 		}
+		
+		/*System.out.println(" arr_D= " + Arrays.toString(arr_D));
+		System.out.println(" arr_B= " + Arrays.toString(arr_B));
+		System.out.println(" sum_D= " + sum_D);
+		System.out.println(" sum_B= " + sum_B);
+		System.out.println(" b= " + b);
+		System.out.println(" s= " + s);
+		System.out.println(" s= " + (s*b));
+		System.out.println(" sumD-sumB=" + (sum_D - sum_B)); */
+		
 
         e = (sum_D - sum_B) / (s*b);
         
@@ -1296,6 +1328,66 @@ public class RECO extends AggregatorAgent{
 		return sumDemand;
 	}
 
+	
+
+	/**
+	 * Returns a string representing the state of this agent. This 
+	 * method is intended to be used for debugging purposes, and the 
+	 * content and format of the returned string should include the states (variables/parameters)
+	 * which are important for debugging purpose.
+	 * The returned string may be empty but may not be <code>null</code>.
+	 * 
+	 * @return  a string representation of this agent's state parameters
+	 */
+	protected String paramStringReport(){
+		String str="";
+		return str;
+
+	}
+
+	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
+
+		// To avoid computational load (and realistically model a reasonable broadcast strategy)
+		// only prepare and transmit the price signal if it has changed.
+		if(priceSignalChanged)
+		{
+			//populate the broadcast signal with the price signal starting from now and continuing for
+			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
+			//broadcast signal out.
+			double[] broadcastSignal= new double[broadcastLength];
+			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
+			int startIndex = (int) time % priceSignal.length;
+
+			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignal.length - startIndex);
+			for (int i = 1; i <= numCopies; i++)
+			{
+				int addIndex = (priceSignal.length - startIndex) * i;
+				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignal.length);
+			}
+
+			if (broadcastLength > (((numCopies + 1) * priceSignal.length) - startIndex))
+			{
+				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignal.length) - startIndex, broadcastLength - (((numCopies + 1) * priceSignal.length) - startIndex));
+			}
+
+			for (ProsumerAgent a : broadcastCusts){
+				// Broadcast signal to all customers - note we simply say that the signal is valid
+				// from now currently, in future implementations we may want to be able to insert
+				// signals valid at an offset from now.
+				if (Consts.DEBUG)
+				{
+					//System.out.println("Broadcasting to " + a.sAgentID);
+				}
+				//System.out.println(" RECO is sending signal at ticktime "+ RepastEssentials.GetTickCount());
+
+				a.receiveValueSignal(broadcastSignal, broadcastLength);
+			}
+		}
+
+		priceSignalChanged = false;
+	}
+	
+	
 	/**
 	 * This method defines how this object behaves (what it does)
 	 * at at a given scheduled time throughout the simulation. 
@@ -1303,7 +1395,7 @@ public class RECO extends AggregatorAgent{
 	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
 	public void step() {
 
-		System.out.println(" ++++++++++++++ RECO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+" ,TickCount: "+mainContext.getTickCount());
+		System.out.println(" ++++++++++++++ RECO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		int timeTick = mainContext.getTickCount();	
 		int timeOfDay = mainContext.getTimeslotOfDay();
 		int dayOfWeek = ((CascadeContext) ContextUtils.getContext(this)).simulationCalendar.getTime().getDay();
@@ -1325,6 +1417,7 @@ public class RECO extends AggregatorAgent{
 			//Set the Baseline demand on the first time through after building period
 			if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
 			{
+				System.out.println("RECO: history array before calculating B " + ArrayUtils.toString(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));
 				arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
 			}
 
@@ -1337,6 +1430,7 @@ public class RECO extends AggregatorAgent{
 			{  //training period 
 				//signals should be send S=1 for 48 days
 				//System.out.println("bc signal at time: "+RepastEssentials.GetTickCount());
+				System.out.print("-----RECO: Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
 				if (mainContext.isBeginningOfDay(timeOfDay)) 
 				{
 					//System.out.print("day: "+mainContext.getCountDay()+" timeOfDay: "+timeOfDay);
@@ -1345,7 +1439,7 @@ public class RECO extends AggregatorAgent{
 
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
 
-					//System.out.println(Arrays.toString(arr_i_S));
+					System.out.println("RECO: Signal Sent");
 					broadcastSignalToCustomers(arr_i_S, customers);
 					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
 
@@ -1356,7 +1450,7 @@ public class RECO extends AggregatorAgent{
 
 				if (mainContext.isEndOfDay(timeOfDay)) 
 				{
-					System.out.print("-----RECO: Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
+					System.out.print(" --RECO: Training period-END-OF-DAY: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
 					System.out.print("End of day: "+mainContext.getDayCount()+" timeOfDay: "+timeOfDay);
 					System.out.println(" timetick: "+mainContext.getTickCount());
 					double[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
@@ -1366,7 +1460,7 @@ public class RECO extends AggregatorAgent{
 			        System.out.println("RECO: arr_last_training_D: "+ Arrays.toString(arr_last_training_D));
 
 					calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
-					 System.out.println("RECO: k_arr: "+ ArrayUtils.toString(arr_ij_k));
+					// System.out.println("RECO: k_arr: "+ ArrayUtils.toString(arr_ij_k));
 
 					//System.out.println("e: "+e);
 					//System.out.println("B: "+ Arrays.toString(arr_i_B));
@@ -1514,7 +1608,7 @@ public class RECO extends AggregatorAgent{
 
 					//double[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
 
-					double[] normalizedCosts = ArrayUtils.normalizeValues(arr_i_C);
+					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
 
 					//double[] normalizedCosts = (Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay));
 					//System.out.println(Arrays.toString(normalizedCosts));
@@ -1541,7 +1635,7 @@ public class RECO extends AggregatorAgent{
 						res.appendText("C:");
 						res.appendRow(arr_i_C);
 						res.appendText("C (normalized):");
-						res.appendRow(normalizedCosts);
+						res.appendRow(arr_i_norm_C);
 						res.appendText("B:");
 						res.appendRow(arr_i_B);
 						res.appendText("D (for end of day "+(mainContext.getDayCount()-1)+"): ");
@@ -1575,9 +1669,9 @@ public class RECO extends AggregatorAgent{
 					/*
 					 * Uncomment below to use the Nelder Mead implementations.
 					 */
-					arr_i_S = minimise_CD_Apache_Nelder_Mead(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
-					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
+					arr_i_S = minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
+					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 
 					/*
 					 * Uncomment below to use Genetic Algorithm to optimise signal
@@ -1657,66 +1751,9 @@ public class RECO extends AggregatorAgent{
 				System.out.println(" Saving was: " + (dailyPredictedCost.get(j) -dailyActualCost.get(j)));
 
 			}
-			System.out.println("+++++++++ RECO: END ++++++++++ day: "+ mainContext.getDayCount()+" ,tick: "+mainContext.getTickCount());
+			System.out.println("    ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		
 		}
-	}
-
-	/**
-	 * Returns a string representing the state of this agent. This 
-	 * method is intended to be used for debugging purposes, and the 
-	 * content and format of the returned string should include the states (variables/parameters)
-	 * which are important for debugging purpose.
-	 * The returned string may be empty but may not be <code>null</code>.
-	 * 
-	 * @return  a string representation of this agent's state parameters
-	 */
-	protected String paramStringReport(){
-		String str="";
-		return str;
-
-	}
-
-	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
-
-		// To avoid computational load (and realistically model a reasonable broadcast strategy)
-		// only prepare and transmit the price signal if it has changed.
-		if(priceSignalChanged)
-		{
-			//populate the broadcast signal with the price signal starting from now and continuing for
-			//broadcastLength samples - repeating copies of the price signal if necessary to pad the
-			//broadcast signal out.
-			double[] broadcastSignal= new double[broadcastLength];
-			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
-			int startIndex = (int) time % priceSignal.length;
-
-			System.arraycopy(priceSignal,startIndex,broadcastSignal,0,priceSignal.length - startIndex);
-			for (int i = 1; i <= numCopies; i++)
-			{
-				int addIndex = (priceSignal.length - startIndex) * i;
-				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignal.length);
-			}
-
-			if (broadcastLength > (((numCopies + 1) * priceSignal.length) - startIndex))
-			{
-				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignal.length) - startIndex, broadcastLength - (((numCopies + 1) * priceSignal.length) - startIndex));
-			}
-
-			for (ProsumerAgent a : broadcastCusts){
-				// Broadcast signal to all customers - note we simply say that the signal is valid
-				// from now currently, in future implementations we may want to be able to insert
-				// signals valid at an offset from now.
-				if (Consts.DEBUG)
-				{
-					//System.out.println("Broadcasting to " + a.sAgentID);
-				}
-				//System.out.println(" RECO is sending signal at ticktime "+ RepastEssentials.GetTickCount());
-
-				a.receiveValueSignal(broadcastSignal, broadcastLength);
-			}
-		}
-
-		priceSignalChanged = false;
 	}
 
 	/**
@@ -1779,6 +1816,7 @@ public class RECO extends AggregatorAgent{
 		this.arr_i_e = new double [ticksPerDay];
 		this.arr_i_S = new double [ticksPerDay];
 		this.arr_i_C = new double [ticksPerDay];
+		this.arr_i_norm_C = new double [ticksPerDay];
 		this.arr_ij_k = new double [ticksPerDay][ticksPerDay];
 		this.hist_arr_ij_D = new double [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
 		
@@ -1793,6 +1831,39 @@ public class RECO extends AggregatorAgent{
 		this.alpha = 0.1f;
 
 		//+++++++++++++++++++++++++++++++++++++++++++
+	}
+
+
+	/* (non-Javadoc)
+	 * @see uk.ac.cranfield.market.Aggregator#getGeneration()
+	 */
+	@Override
+	public double getGeneration() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see uk.ac.cranfield.market.Aggregator#getDemand()
+	 */
+	@Override
+	public double getDemand() {
+		// TODO Auto-generated method stub
+		return this.getNetDemand() * 50;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see uk.ac.cranfield.market.Aggregator#getPrediction()
+	 */
+	@Override
+	public ArrayList<SupplyPrediction> getPrediction() {
+		// TODO Auto-generated method stub
+		ArrayList<SupplyPrediction> returnList = new ArrayList<SupplyPrediction>();
+		returnList.add(new SupplyPrediction(0,3500,0,0,0));
+		returnList.add(new SupplyPrediction(7000,3450,50,0,0));
+		return returnList;
 	}
 
 

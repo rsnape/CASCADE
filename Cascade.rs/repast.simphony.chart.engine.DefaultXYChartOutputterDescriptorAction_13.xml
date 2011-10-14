@@ -1,36 +1,42 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Wind Speed</name>
+  <name>Aggregator B vs D</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>weather</string>
+      <string>AggregatorData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">weather</dataSetId>
-  <showLegend>false</showLegend>
+  <dataSetId class="string">AggregatorData</dataSetId>
+  <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>500.0</visibleXRange>
+  <visibleXRange>100.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
-  <precisionValue>0</precisionValue>
-  <maxHistory>1500</maxHistory>
+  <precisionValue>3</precisionValue>
+  <maxHistory>1000</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Wind Speed</seriesID>
-      <valueColumn>Wind Speed</valueColumn>
-      <hashCode>-777724445</hashCode>
-      <proxy>true</proxy>
+      <seriesID>NetDemandSeriesName</seriesID>
+      <valueColumn>NetDemand</valueColumn>
+      <hashCode>348819427</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>CurrentBaseline_B_SeriesName</seriesID>
+      <valueColumn>CurrentBaseline_B</valueColumn>
+      <hashCode>-2095056214</hashCode>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

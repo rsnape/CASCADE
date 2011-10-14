@@ -126,7 +126,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * Imported signals and profiles.
 	 */
 	protected double[] baseDemandProfile;
-	private double[] predictedCostSignal;
+	protected double[] predictedCostSignal;
 	protected int predictionValidTime;
 
 	/*
@@ -351,6 +351,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param validTime - the time (in ticks) from which the signal is valid
 	 */
 	public boolean receiveValueSignal(double[] signal, int length) {
+		System.out.println("ProsumerAgent:: receiveValueSignal()");
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();

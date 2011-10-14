@@ -39,7 +39,7 @@ import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
 import static java.lang.Math.*;
 import static repast.simphony.essentials.RepastEssentials.*;
 
-public class HHProsumer extends PAgent{
+public class HHProsumer extends ProsumerAgent{
 
 	/*
 	 * Configuration options
@@ -409,92 +409,7 @@ public class HHProsumer extends PAgent{
 	}
 
 
-	/******************
-	 * This method defines the step behaviour of a prosumer agent
-	 * 
-	 * Input variables: none
-	 * 
-	 ******************/
-	@ScheduledMethod(start = 0, interval = 1, shuffle = true)
-	public void step() {
-		
-		//System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");
-		time = (int) RepastEssentials.GetTickCount();
-		timeOfDay = (time % ticksPerDay);
-		setNetDemand(baseDemandProfile[time % baseDemandProfile.length]);
-		
-		/* ------------------
-		 * have price elasticity behavior 
-		 */
-		
-		setNetDemand(calcualteElasticDemand(time));
-
-	/*
-		checkWeather(time);
-		this.setPoint = this.optimisedSetPointProfile[time % ticksPerDay];
-
-		//Do all the "once-per-day" things here
-		if (timeOfDay == 0)
-		{
-			//TODO: decide whether the inelastic day demand is something that needs
-			// calculating here
-			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
-			//System.out.println(" inelasticTotalDayDemand: "+inelasticTotalDayDemand);
-			if (hasSmartControl){
-				mySmartController.update(time);
-				currentSmartProfiles = mySmartController.getCurrentProfiles();
-				ArrayUtils.replaceRange(this.coldApplianceProfile, (double[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
-				this.optimisedSetPointProfile = (double[]) currentSmartProfiles.get("HeatPump");
-				//System.out.println("CSP (HeatPump)" + Arrays.toString(optimisedSetPointProfile));
-				this.setWaterHeatProfile((double[]) currentSmartProfiles.get("WaterHeat"));
-				//System.out.println("CSP (WaterHeat)" + Arrays.toString((double[])currentSmartProfiles.get("WaterHeat")));
-
-			}
-
-
-			if (sampleOutput != null)
-			{
-				sampleOutput.appendText("timeStep " + time);
-				sampleOutput.appendText(Arrays.toString(baseDemandProfile));
-				sampleOutput.writeColHeaders(new String[]{"pumpSwitching", "wetApp","coldApp"});
-				String[][] outputBuilder = new String[4][spaceHeatPumpOn.length];
-				outputBuilder[0] = ArrayUtils.convertFloatArrayToString(spaceHeatPumpOn);
-				outputBuilder[1] = ArrayUtils.convertFloatArrayToString(recordedHeatPumpDemand);
-				outputBuilder[2] = ArrayUtils.convertFloatArrayToString(wetApplianceProfile);
-				outputBuilder[3] = ArrayUtils.convertFloatArrayToString(coldApplianceProfile);
-				sampleOutput.appendCols(outputBuilder);
-			}
-
-		}
-
-		//Every step we do these actions
-
-		if (hasSmartControl){
-			//System.out.println(" *has smartControl");
-			setNetDemand(smartDemand(time));
-			
-		}
-		else if (hasSmartMeter && exercisesBehaviourChange) {
-			//System.out.println(" **has smartMeter & BehC");
-
-			learnBehaviourChange();
-			setNetDemand(evaluateElasticBehaviour(time));
-			learnSmartAdoptionDecision(time);
-		}
-		else
-		{
-			//No adaptation case
-			//System.out.println(" ***else adaption case");
-			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
-
-			learnSmartAdoptionDecision(time);
-		}
-
-		//After the heat input has been calculated, re-calculate the internal temperature of the house
-		recordInternalAndExternalTemp(time);
-		*/
-
-	}
+	
 
 	public double getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
@@ -786,27 +701,54 @@ public class HHProsumer extends PAgent{
 	 * 
 	 * @param 	int time	- the simulation time in ticks at which to evaluate this prosumer's behaviour
 	 * @return 	double myDemand		- the demand for this half hour, mediated via behaviour change
+	 * 
+	 * TODO: Babak 
+	 * Name the method to calcualteElasticDemand() it is called for those agents who have elasticity behavior
+	 * instead of time (tick time, as currently done), pass timeslot as argument and use it directly,
+	 * so there will be no need to timeSinceSigValid stuff
+	 *  
 	 */
 	private double evaluateElasticBehaviour(int time)
 	{
+		System.out.println("HHProsumer:: evaluateElasticBehaviour --- time: "+time);
 		double myDemand;
 		int timeSinceSigValid = time - predictionValidTime;
+		System.out.println("     predictionValidTime: "+predictionValidTime);
+		System.out.println("     predictionValidTime: "+predictionValidTime);
+		System.out.println("     timeSinceSigValid: "+timeSinceSigValid);
 
 		//As a basic strategy only the base (non-displaceable) demand is
 		//elastic
 		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		double initialDemand = myDemand;
+		
+		//System.out.println("     hasSmartMeter: "+hasSmartMeter);
+		//System.out.println("     getPredictedCostSignalLength: "+getPredictedCostSignalLength());
+		System.out.println("     PredictedCostSignal (cost Sig): "+Arrays.toString(getPredictedCostSignal()));
+		//System.out.println("     dailyEalsticity : "+Arrays.toString(dailyElasticity));
+
 
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
 		// Note, we can only moderate based on cost signal
 		// if we receive it (i.e. if we have smart meter)
 		// TODO: may have to refine this - do we differentiate smart meter and smart display - i.e. whether receive only or Tx/Rx
-		if(hasSmartMeter && getPredictedCostSignalLength() > 0)
+		
+		//if(hasSmartMeter && getPredictedCostSignalLength() > 0)
+		if(getPredictedCostSignalLength() > 0)
 		{
+			System.out.println("     timeSinceSigValid % getPredictedCostSignalLength()): "+timeSinceSigValid % getPredictedCostSignalLength());
 			double predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % getPredictedCostSignalLength()];
+			if (predictedCostNow == 1)
+				System.out.println("    ********  predictedCost is ONE ****** ");
+			System.out.println("     predictedCost (cost Signal): "+predictedCostNow);
+			System.out.println("     dailyElasticity : "+dailyElasticity[time % ticksPerDay]);
+
 			myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay]));
 			if (Consts.DEBUG)
 			{
-				System.out.println("HHProsumer:: Based on predicted cost = " + predictedCostNow + " demand set to " + (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) + " of initial " );
+				System.out.println("    initialDemand: "+initialDemand);
+				System.out.println("    demand multiplier " + (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) );
+				System.out.println("    set finalDemand: " + myDemand);
 			}
 		}
 
@@ -1000,6 +942,190 @@ public class HHProsumer extends PAgent{
 	public double[] getWaterHeatProfile() {
 		return waterHeatProfile;
 	}
+	
+	
+	/*
+	 * Overrides parent receiveValueSignal
+	 */
+	
+	/*
+	public boolean receiveValueSignal(double[] signal, int length) {
+		System.out.println("HHProsumer:: receiveValueSignal()");
+
+		boolean recievedSuccessfuly = true;
+		// Can only receive if we have a smart meter to receive data
+		int validTime = (int) RepastEssentials.GetTickCount();
+	
+		if (hasSmartMeter)
+		{
+			// Note the time from which the signal is valid.
+			// Note - Repast can cope with fractions of a tick (a double is returned)
+			// but I am assuming here we will deal in whole ticks and alter the resolution should we need
+			int time = (int) RepastEssentials.GetTickCount();
+			int newSignalLength = length;
+			setPredictionValidTime(validTime);
+			double[] tempArray;
+
+			int signalOffset = time - validTime;
+			//System.out.println("time: "+time+ " validTime"+validTime);
+			if (signalOffset != 0)
+			{
+				if (Consts.DEBUG)
+				{
+					System.out.println("ProsumerAgent: Signal valid from time other than current time");
+				}
+				newSignalLength = newSignalLength - signalOffset;
+			}
+
+			if ((getPredictedCostSignal() == null) || (newSignalLength != predictedCostSignal.length))
+			{
+				if (Consts.DEBUG)
+				{
+					System.out.println("ProsumerAgent: Re-defining length of signal in agent" + agentID);
+				}
+				setPredictedCostSignal(new double[newSignalLength]);
+			}
+
+			if (signalOffset < 0)
+			{
+				// This is a signal projected into the future.
+				// pad the signal with copies of what was in it before and then add the new signal on
+				System.arraycopy(signal, 0, getPredictedCostSignal(), 0 - signalOffset, length);
+			}
+			else
+			{
+				// This was valid from now or some point in the past.  Copy in the portion that is still valid and 
+				// then "wrap" the front bits round to the end of the array.
+				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
+			}
+		}
+
+		return recievedSuccessfuly;
+	}  */
+	
+	@ScheduledMethod(start = 0, interval = 0, shuffle = true)
+	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	public void init() {
+		
+		//System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");
+		System.out.println("    ---iiii----- HHProsumer: init() ---iii------ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+
+		time = (int) RepastEssentials.GetTickCount();
+		timeOfDay = (time % ticksPerDay);
+		//setNetDemand(baseDemandProfile[time % baseDemandProfile.length]);
+		
+		//evaluateElasticBehaviour(time);
+		
+		/* ------------------
+		 * have price elasticity behavior 
+		 */
+		System.out.println(" dayCount: "+mainContext.getDayCount());
+		System.out.println(" tickTime: "+mainContext.getTickCount());
+		System.out.println(" timeslot: "+mainContext.getTimeslotOfDay());
+		setNetDemand(evaluateElasticBehaviour(time));
+		
+		System.out.println("   ---iii----- HHProsumer: init() END ----iii------ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+
+
+	}
+	
+	/******************
+	 * This method defines the step behaviour of a prosumer agent
+	 * 
+	 * Input variables: none
+	 * 
+	 ******************/
+	@ScheduledMethod(start = 0.2, interval = 1, shuffle = true)
+	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	public void step() {
+		
+		//System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");
+		System.out.println("    -------- HHProsumer: step() ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+
+		time = (int) RepastEssentials.GetTickCount();
+		timeOfDay = (time % ticksPerDay);
+		//setNetDemand(baseDemandProfile[time % baseDemandProfile.length]);
+		
+		//evaluateElasticBehaviour(time);
+		
+		/* ------------------
+		 * have price elasticity behavior 
+		 */
+		System.out.println(" dayCount: "+mainContext.getDayCount());
+		System.out.println(" tickTime: "+mainContext.getTickCount());
+		System.out.println(" timeslot: "+mainContext.getTimeslotOfDay());
+		setNetDemand(evaluateElasticBehaviour(time));
+		
+		System.out.println("     -------- HHProsumer: END ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+
+
+		
+	/*
+		checkWeather(time);
+		this.setPoint = this.optimisedSetPointProfile[time % ticksPerDay];
+
+		//Do all the "once-per-day" things here
+		if (timeOfDay == 0)
+		{
+			//TODO: decide whether the inelastic day demand is something that needs
+			// calculating here
+			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
+			//System.out.println(" inelasticTotalDayDemand: "+inelasticTotalDayDemand);
+			if (hasSmartControl){
+				mySmartController.update(time);
+				currentSmartProfiles = mySmartController.getCurrentProfiles();
+				ArrayUtils.replaceRange(this.coldApplianceProfile, (double[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
+				this.optimisedSetPointProfile = (double[]) currentSmartProfiles.get("HeatPump");
+				//System.out.println("CSP (HeatPump)" + Arrays.toString(optimisedSetPointProfile));
+				this.setWaterHeatProfile((double[]) currentSmartProfiles.get("WaterHeat"));
+				//System.out.println("CSP (WaterHeat)" + Arrays.toString((double[])currentSmartProfiles.get("WaterHeat")));
+
+			}
+
+
+			if (sampleOutput != null)
+			{
+				sampleOutput.appendText("timeStep " + time);
+				sampleOutput.appendText(Arrays.toString(baseDemandProfile));
+				sampleOutput.writeColHeaders(new String[]{"pumpSwitching", "wetApp","coldApp"});
+				String[][] outputBuilder = new String[4][spaceHeatPumpOn.length];
+				outputBuilder[0] = ArrayUtils.convertFloatArrayToString(spaceHeatPumpOn);
+				outputBuilder[1] = ArrayUtils.convertFloatArrayToString(recordedHeatPumpDemand);
+				outputBuilder[2] = ArrayUtils.convertFloatArrayToString(wetApplianceProfile);
+				outputBuilder[3] = ArrayUtils.convertFloatArrayToString(coldApplianceProfile);
+				sampleOutput.appendCols(outputBuilder);
+			}
+
+		}
+
+		//Every step we do these actions
+
+		if (hasSmartControl){
+			//System.out.println(" *has smartControl");
+			setNetDemand(smartDemand(time));
+			
+		}
+		else if (hasSmartMeter && exercisesBehaviourChange) {
+			//System.out.println(" **has smartMeter & BehC");
+
+			learnBehaviourChange();
+			setNetDemand(evaluateElasticBehaviour(time));
+			learnSmartAdoptionDecision(time);
+		}
+		else
+		{
+			//No adaptation case
+			//System.out.println(" ***else adaption case");
+			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
+
+			learnSmartAdoptionDecision(time);
+		}
+
+		//After the heat input has been calculated, re-calculate the internal temperature of the house
+		recordInternalAndExternalTemp(time);
+		*/
+
+	}
 
 
 	/**
@@ -1034,12 +1160,19 @@ public class HHProsumer extends PAgent{
 			dailyElasticity[i] =  0.1d;
 		}
 		
+		this.setPredictedCostSignal(Consts.ZERO_COST_SIGNAL);
+		
+		hasSmartMeter = true;
+		
+		//time = (int) RepastEssentials.GetTickCount();
+		//timeOfDay = (time % ticksPerDay);
+			
+		//setNetDemand(baseDemandProfile[0]);
 		
 		
 		//System.out.println("HHProsumer BD file:"+ Arrays.toString(baseDemandProfile));
 		
 		/*
-		
 		this.percentageMoveableDemand = (double) RandomHelper.nextDoubleFromTo(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
 		this.ticksPerDay = context.getNbOfTickPerDay();
 		this.setNumOccupants(context.occupancyGenerator.nextInt() + 1);

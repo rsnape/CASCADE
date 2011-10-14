@@ -3,6 +3,10 @@
  */
 package uk.ac.dmu.iesd.cascade.context;
 
+import java.util.ArrayList;
+
+import uk.ac.cranfield.market.SupplyPrediction;
+
 /**
  * A <em>ESCO</em> or an Electricity Service Company is a concrete object that represents 
  * a commercial/business electricity/energy company involved in retail trade with
@@ -57,5 +61,33 @@ public class ESCO extends AggregatorAgent{
 
 		super(context);
 	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.cranfield.market.Aggregator#getGeneration()
+	 */
+	@Override
+	public double getGeneration() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.cranfield.market.Aggregator#getDemand()
+	 */
+	@Override
+	public double getDemand() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.cranfield.market.Aggregator#getPrediction()
+	 */
+	@Override
+	public ArrayList<SupplyPrediction> getPrediction() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

@@ -353,6 +353,7 @@ public abstract class PAgent implements ICognitiveAgent {
 	 * @param validTime - the time (in ticks) from which the signal is valid
 	 */
 	public boolean receiveValueSignal(double[] signal, int length) {
+		System.out.println("PAgent: receiveValueSignal()");
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();

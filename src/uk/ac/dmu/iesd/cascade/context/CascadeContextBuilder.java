@@ -56,6 +56,7 @@ import repast.simphony.space.projection.Projection;
 import repast.simphony.ui.RSApplication;
 import repast.simphony.util.collections.IndexedIterable;
 import repast.simphony.util.collections.Pair;
+import uk.ac.cranfield.market.*;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.Consts.GENERATOR_TYPE;
 import uk.ac.dmu.iesd.cascade.Consts.STORAGE_TYPE;
@@ -579,7 +580,7 @@ private void populateContext_Test() {
 	    //initializeHHProsumersWaterHeatingParameters();
 	    //initializeHHProsumersSpaceHeatingParameters();
 	
-		buildSocialNetwork();
+		//buildSocialNetwork();
 
 		//Secondly add aggregator(s)
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
@@ -815,9 +816,51 @@ private void populateContext_Test() {
 		readParamsAndInitializeArrays();
 		initializeProbabilityDistributions();
 		//cascadeMainContext.buildChartSnapshotSchedule();
-		populateContext();
+		//populateContext();
 		
-		//populateContext_Test();
+		populateContext_Test();
+		
+		
+		for(int i = 0; i < 4; i++)
+		{	
+			double minGen = RandomHelper.nextDoubleFromTo(20000,40000);
+			double maxGen = minGen + RandomHelper.nextDoubleFromTo(20000,40000);
+			double minGenPrice = RandomHelper.nextDoubleFromTo(0.1, 10);
+			double maxGenPrice = minGenPrice + RandomHelper.nextDoubleFromTo(10, 20);
+			
+			double minD = RandomHelper.nextDoubleFromTo(20000,40000);
+			double maxD = minD + RandomHelper.nextDoubleFromTo(20000,40000);
+			double maxDPrice = RandomHelper.nextDoubleFromTo(0.1, 10);
+			double minDPrice = maxDPrice+RandomHelper.nextDoubleFromTo(10, 20);
+			
+			
+			testAggregator ta = new testAggregator(minGenPrice,maxGenPrice,
+					   maxGen,minGen,
+					   maxD,maxDPrice,
+					   minD,minDPrice);
+			ta.stDev =i;
+			//context.add(ta);
+			System.out.println("Graham: add to cotext");
+			cascadeMainContext.add(ta);
+			
+			ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,0);
+			RunEnvironment.getInstance().getCurrentSchedule().schedule(params, ta, "updateSupplyDemand");
+			
+		}
+		
+		MarketOperator Mo = new MarketOperator();
+		cascadeMainContext.add(Mo);
+		ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,0);
+		RunEnvironment.getInstance().getCurrentSchedule().schedule(params, Mo, "iterate");
+		
+		
+	/*    IndexedIterable <testAggregator> testAggIter = cascadeMainContext.getObjects(testAggregator.class);
+
+		for (testAggregator it : testAggIter ) {
+			System.out.println(it);
+		}*/
+		
+		
 		
 		//buildSchedulesDirectly();
 	

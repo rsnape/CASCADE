@@ -9,6 +9,7 @@ import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.*;
 import repast.simphony.ui.probe.*;
+import uk.ac.cranfield.market.Aggregator;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.IObservable;
@@ -35,7 +36,7 @@ import flanagan.math.Matrix;
  * 1.2 - Made the class abstract; modified the constructor, added/modified/removed fields/methods
  *       made some methods abstract (Babak)
  */
-public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
+public abstract class AggregatorAgent extends Aggregator implements ICognitiveAgent, IObservable {
 
 	/*
 	 * Agent properties
@@ -77,6 +78,8 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 * the option to make it Ni^2 or fractional power
 	 **/
 	double[] arr_i_C; 
+	
+	double[] arr_i_norm_C; // normalized costs
 	
 	double[] arr_i_B; // (B) baseline at timeslot i
 
@@ -216,6 +219,13 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 		return arr_i_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
 	}
 	
+	public double getCurrentNormalizedCost_C()
+	{
+		if (arr_i_norm_C.length>0)
+			return arr_i_norm_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+		else return -1;
+	}
+	
 	public double getCurrentBaseline_B()
 	{
 		return arr_i_B[(int) RepastEssentials.GetTickCount() % ticksPerDay];
@@ -224,14 +234,16 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	
 	public double getDayPredictedCost()
 	{
-		if (dailyPredictedCost.size() > 0)
+		if (dailyPredictedCost.size() > 1)
 			return  dailyPredictedCost.get(mainContext.getDayCount()-1);
+		      //return  dailyPredictedCost.get(mainContext.getDayCount());
+
 		else return 0;
 	}
 	
 	public double getDayActualCost()
 	{
-		if (dailyActualCost.size() > 0)
+		if (dailyActualCost.size() > 1)
 			return  dailyActualCost.get(mainContext.getDayCount()-1);
 		else return 0;
 	}
@@ -254,13 +266,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	}
 	
 
-	/**
-	 * This method should define the step for the agents.
-	 * They should be scheduled appropriately by 
-	 * concrete implementing subclasses 
-	 */
-	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
-	abstract public void step();
+	
 
 	/**
 	 * Add an observer to the list of observer objects
@@ -464,6 +470,15 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 
 		priceSignalChanged = false;
 	}
+	
+	/**
+	 * This method should define the step for the agents.
+	 * They should be scheduled appropriately by 
+	 * concrete implementing subclasses 
+	 */
+	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	@ScheduledMethod(start = 0.0001, interval = 1, shuffle = true)
+	abstract public void step();
 
 
 	/**
