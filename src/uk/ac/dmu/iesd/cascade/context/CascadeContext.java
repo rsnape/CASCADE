@@ -500,6 +500,7 @@ public class CascadeContext extends DefaultContext{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
+		System.out.println("calendarStep()");
 		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
 	}
 

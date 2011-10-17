@@ -471,13 +471,24 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 		priceSignalChanged = false;
 	}
 	
+
+	/**
+	 * This method should define the pre_step for the agents.
+	 * It is assumed that aggregator takes the first step, using this method, usually to send a signal
+	 * It then processes the behaviour of the prosumers on the sent signal for the same timeslot using this step method
+	 * This has priority 1 (first), followed by prosumers' step (priority second), and aggregators' step (priority thrid) 
+	 */
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.AGGREGATOR_PRIORITY_FIRST)
+	abstract public void step_pre();
+
+	
 	/**
 	 * This method should define the step for the agents.
-	 * They should be scheduled appropriately by 
-	 * concrete implementing subclasses 
+	 * It is assumed that aggregator takes the first step, using step_pre() method, usually to send a signal
+	 * It then processes the behaviour of the prosumers on the sent signal for the same timeslot using this step method
+	 * This has priority 3, after step_pre and the prosumers' step (priority second) 
 	 */
-	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
-	@ScheduledMethod(start = 0.0001, interval = 1, shuffle = true)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.AGGREGATOR_PRIORITY_THIRD)
 	abstract public void step();
 
 

@@ -1003,8 +1003,8 @@ public class HHProsumer extends ProsumerAgent{
 		return recievedSuccessfuly;
 	}  */
 	
-	@ScheduledMethod(start = 0, interval = 0, shuffle = true)
-	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	//@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = Consts.PROSUMER_INIT_PRIORITY_FIRST)
+	@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void init() {
 		
 		//System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");
@@ -1035,8 +1035,10 @@ public class HHProsumer extends ProsumerAgent{
 	 * Input variables: none
 	 * 
 	 ******************/
-	@ScheduledMethod(start = 0.2, interval = 1, shuffle = true)
+	//@ScheduledMethod(start = 0.2, interval = 1, shuffle = true)
 	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_SECOND)
 	public void step() {
 		
 		//System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");

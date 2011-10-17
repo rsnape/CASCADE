@@ -841,7 +841,7 @@ private void populateContext_Test() {
 			ta.stDev =i;
 			//context.add(ta);
 			System.out.println("Graham: add to cotext");
-			cascadeMainContext.add(ta);
+			//cascadeMainContext.add(ta);
 			
 			ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,0);
 			RunEnvironment.getInstance().getCurrentSchedule().schedule(params, ta, "updateSupplyDemand");
