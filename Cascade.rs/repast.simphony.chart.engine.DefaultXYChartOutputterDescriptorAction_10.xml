@@ -16,7 +16,7 @@
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>500.0</visibleXRange>
+  <visibleXRange>144.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>

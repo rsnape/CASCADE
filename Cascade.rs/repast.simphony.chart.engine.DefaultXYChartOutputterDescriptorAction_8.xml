@@ -16,7 +16,7 @@
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>500.0</visibleXRange>
+  <visibleXRange>144.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
@@ -30,7 +30,7 @@
       <seriesID>Wind Speed</seriesID>
       <valueColumn>Wind Speed</valueColumn>
       <hashCode>-777724445</hashCode>
-      <proxy>true</proxy>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

@@ -51,6 +51,10 @@
     </nameMappingTable>
     <mappingNameTable>
       <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>Demand</string>
+      </entry>
+      <entry>
         <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.BSFMapping"/>
         <string>GenerationSeriesName</string>
       </entry>
@@ -65,10 +69,6 @@
       <entry>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>Demand</string>
       </entry>
     </mappingNameTable>
   </dataMappingContainer>

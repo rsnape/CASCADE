@@ -79,7 +79,7 @@
 									
 		/>
 				<parameter name="chartSnapshotInterval" displayName="chartSnapshotInterval" type="int" 
-						defaultValue="47" 
+						defaultValue="144" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									

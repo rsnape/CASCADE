@@ -17,7 +17,7 @@
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>100.0</visibleXRange>
+  <visibleXRange>144.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
@@ -31,7 +31,7 @@
       <seriesID>Adopters</seriesID>
       <valueColumn>New Column</valueColumn>
       <hashCode>246820589</hashCode>
-      <proxy>true</proxy>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

@@ -1,5 +1,5 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Aggregator Chart</name>
+  <name>Aggregator SumOfDemands</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
@@ -16,7 +16,7 @@
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>672.0</visibleXRange>
+  <visibleXRange>144.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
@@ -30,7 +30,7 @@
       <seriesID>Sum of total demand</seriesID>
       <valueColumn>New Column</valueColumn>
       <hashCode>-1773597658</hashCode>
-      <proxy>true</proxy>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

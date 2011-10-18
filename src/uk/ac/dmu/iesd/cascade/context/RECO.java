@@ -689,14 +689,14 @@ public class RECO extends AggregatorAgent{
 			sArr[indexFor1] = 1d;
 			if (indexFor1 > 0) {
 				for (int i = 0; i < indexFor1; i++) {
-					//sArr[i] = (-1d/(this.ticksPerDay-1));
-					sArr[i] = 0;
+					sArr[i] = (-1d/(this.ticksPerDay-1));
+					//sArr[i] = 0;
 				}
 			}
 			if (indexFor1 < this.ticksPerDay) {
 				for (int i = indexFor1+1; i < sArr.length; i++) {
-					//sArr[i] = (-1d/(this.ticksPerDay-1));
-					sArr[i] = 0;
+					sArr[i] = (-1d/(this.ticksPerDay-1));
+					//sArr[i] = 0;
 				}
 			}
 			break;
@@ -833,7 +833,7 @@ public class RECO extends AggregatorAgent{
 			e = arr_e[i];
 		}
 		
-		/*System.out.println(" D= "+ arr_D[i]);
+		System.out.println(" D= "+ arr_D[i]);
 		System.out.println(" B= "+ b);
 		System.out.println(" s= "+ s);
 		System.out.println(" e= "+ e);
@@ -843,7 +843,7 @@ public class RECO extends AggregatorAgent{
 		
 		System.out.println(" deltaB_i - (s*e*b) : "+ (deltaB_i - (s*e*b)));
 		System.out.println(" deltaB_i - (s*e*b)/(s*b) : "+ (deltaB_i - (s*e*b))/(s*b));
-		System.out.println(" (s*e*b): "+ (s*e*b)); */
+		System.out.println(" (s*e*b): "+ (s*e*b)); 
 
 		arr_k[i][i] = (deltaB_i - (s*e*b)) / (s*b);  //0;  <- what does k[i][i] mean? Should it be zero?
 		
@@ -855,8 +855,12 @@ public class RECO extends AggregatorAgent{
 			double b_j = arr_B[j];
 			double deltaB_j = arr_D[j] - b_j;
 			arr_k[j][i] =  deltaB_j  / (s*b);
-			if (arr_k[j][i] !=0)
+			if (arr_k[j][i] !=0) {
+				
 				System.out.println(" arr_k[j][i] ("+j+","+i+")= "+arr_k[j][i]);
+				System.out.println(" where b_j="+b_j +", arr_D[j]= "+arr_D[j]+", deltaB_j="+deltaB_j);
+				System.out.println(", and s="+s +", b= "+b+", s*b= "+(s*b));
+			}
 
 			
 		}
@@ -898,14 +902,14 @@ public class RECO extends AggregatorAgent{
 			b = arr_B[timeslotWhenSwas1];
 		}
 		
-		/*System.out.println(" arr_D= " + Arrays.toString(arr_D));
+		System.out.println(" arr_D= " + Arrays.toString(arr_D));
 		System.out.println(" arr_B= " + Arrays.toString(arr_B));
 		System.out.println(" sum_D= " + sum_D);
 		System.out.println(" sum_B= " + sum_B);
 		System.out.println(" b= " + b);
 		System.out.println(" s= " + s);
 		System.out.println(" s= " + (s*b));
-		System.out.println(" sumD-sumB=" + (sum_D - sum_B)); */
+		System.out.println(" sumD-sumB=" + (sum_D - sum_B)); 
 		
 
         e = (sum_D - sum_B) / (s*b);
