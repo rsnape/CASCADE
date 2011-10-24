@@ -237,8 +237,8 @@ public class CascadeContext extends DefaultContext{
 		if (timeOfDay == 0)
 			return true;
 		else return false;	
-	}
 	
+	}
 	/*
 	 * Accesor methods to context variables
 	 */

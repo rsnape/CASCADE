@@ -341,7 +341,7 @@ public class RECO extends AggregatorAgent{
 	
 	List<ProsumerAgent> customers;
 	int timeTick;
-	int timeOfDay;
+	int timeslotOfDay;
 	int dayOfWeek;
 	
 
@@ -393,12 +393,23 @@ public class RECO extends AggregatorAgent{
 	 */
 
 	private double calculate_deltaB(int timeslot_i) {	
-		double sumOf_SjKijBi=0;
+		//System.out.println(" calculate_deltaB, timslot: "+timeslot_i);
+		double sumOf_SjKijBi=0d;
 		for (int j = 0; j < ticksPerDay; j++) {
-			if (j != timeslot_i) // i!=j
-				sumOf_SjKijBi = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][j]*this.arr_i_B[timeslot_i];
+			if (j != timeslot_i) { // i!=j
+				//sumOf_SjKijBi += arr_i_S[j]*arr_ij_k[timeslot_i][j]*arr_i_B[timeslot_i];
+				sumOf_SjKijBi += arr_i_S[j]*arr_ij_k[j][timeslot_i]*arr_i_B[timeslot_i];
+				//System.out.println(arr_i_S[j]+"* "+arr_ij_k[timeslot_i][j]+" = "+(arr_i_S[j]*arr_ij_k[timeslot_i][j]*arr_i_B[timeslot_i] +" acc: "+sumOf_SjKijBi));
+				//System.out.println();
+				//System.out.println(", "+arr_ij_k[j][timeslot_i]);
+			}
 		}
 		double leftSideEq = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][timeslot_i]*this.arr_i_B[timeslot_i];
+		/*System.out.println(" S[i]: "+arr_i_S[timeslot_i]);
+		System.out.println(" k[i][i]: "+arr_ij_k[timeslot_i][timeslot_i]);
+		System.out.println(" B[i]: "+arr_i_B[timeslot_i]);
+		System.out.println(" leftSideEq "+leftSideEq);
+		System.out.println(" sumOf_SjKijBi "+sumOf_SjKijBi); */
 		double deltaBi = leftSideEq + sumOf_SjKijBi;
 		return deltaBi;
 	}
@@ -411,14 +422,24 @@ public class RECO extends AggregatorAgent{
 	 * @param   timeslot time slot of the day (often/usually 1 day = 48 timeslot)	 
 	 * @return Demand (Di) predicted by the aggregator at given timeslot (i) 
 	 */
-	protected double calcualte_PredictedDemand_D(int timeslot) {
+	protected double calculate_PredictedDemand_D(int timeslot) {
 		double Bi = this.arr_i_B[timeslot];
 		double Si = this.arr_i_S[timeslot];
 		double ei = this.arr_i_e[timeslot];
-
+		
+		/*System.out.println(" calculate_PredictedDemand_D : ");
+		System.out.println(" Bi: "+Bi);
+		System.out.println(" Si: "+Si);
+		System.out.println(" ei: "+ei);
+		System.out.println(" (Si*ei*Bi): "+ (Si*ei*Bi)); */
+		
 		double delta_Bi = calculate_deltaB(timeslot);
+		//System.out.println(" delta_Bi "+delta_Bi);
 
 		double Di= Bi + (Si*ei*Bi) + delta_Bi;
+		
+		//System.out.println(" Di: "+Di);
+
 		return Di;
 	}
 
@@ -658,6 +679,8 @@ public class RECO extends AggregatorAgent{
 		}
 
 		setNetDemand(sumDemand);
+		System.out.println("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+
 		
 		return sumDemand;
 	}
@@ -833,7 +856,7 @@ public class RECO extends AggregatorAgent{
 			e = arr_e[i];
 		}
 		
-		System.out.println(" D= "+ arr_D[i]);
+		/*System.out.println(" D= "+ arr_D[i]);
 		System.out.println(" B= "+ b);
 		System.out.println(" s= "+ s);
 		System.out.println(" e= "+ e);
@@ -843,12 +866,12 @@ public class RECO extends AggregatorAgent{
 		
 		System.out.println(" deltaB_i - (s*e*b) : "+ (deltaB_i - (s*e*b)));
 		System.out.println(" deltaB_i - (s*e*b)/(s*b) : "+ (deltaB_i - (s*e*b))/(s*b));
-		System.out.println(" (s*e*b): "+ (s*e*b)); 
+		System.out.println(" (s*e*b): "+ (s*e*b)); */
 
 		arr_k[i][i] = (deltaB_i - (s*e*b)) / (s*b);  //0;  <- what does k[i][i] mean? Should it be zero?
 		
-		if (arr_k[i][i] !=0)
-			System.out.println(" arr_k[i][i] ("+i+","+i+")= "+arr_k[i][i]);
+		//if (arr_k[i][i] !=0)
+			//System.out.println(" arr_k[i][i] ("+i+","+i+")= "+arr_k[i][i]);
 
 		for (int j = i+1; j < this.ticksPerDay; j++) {
 
@@ -857,9 +880,9 @@ public class RECO extends AggregatorAgent{
 			arr_k[j][i] =  deltaB_j  / (s*b);
 			if (arr_k[j][i] !=0) {
 				
-				System.out.println(" arr_k[j][i] ("+j+","+i+")= "+arr_k[j][i]);
+				/*System.out.println(" arr_k[j][i] ("+j+","+i+")= "+arr_k[j][i]);
 				System.out.println(" where b_j="+b_j +", arr_D[j]= "+arr_D[j]+", deltaB_j="+deltaB_j);
-				System.out.println(", and s="+s +", b= "+b+", s*b= "+(s*b));
+				System.out.println(", and s="+s +", b= "+b+", s*b= "+(s*b)); */
 			}
 
 			
@@ -869,8 +892,8 @@ public class RECO extends AggregatorAgent{
 			double b_j = arr_B[j];
 			double deltaB_j = arr_D[j] - b_j;
 			arr_k[j][i] =  deltaB_j  / (s*b);
-			if (arr_k[j][i] !=0)
-				System.out.println(" arr_k[j][i] ("+j+","+i+")= "+arr_k[j][i]);
+			//if (arr_k[j][i] !=0)
+				//System.out.println(" arr_k[j][i] ("+j+","+i+")= "+arr_k[j][i]);
 		}
 	}
 
@@ -902,14 +925,14 @@ public class RECO extends AggregatorAgent{
 			b = arr_B[timeslotWhenSwas1];
 		}
 		
-		System.out.println(" arr_D= " + Arrays.toString(arr_D));
+		/*System.out.println(" arr_D= " + Arrays.toString(arr_D));
 		System.out.println(" arr_B= " + Arrays.toString(arr_B));
 		System.out.println(" sum_D= " + sum_D);
 		System.out.println(" sum_B= " + sum_B);
 		System.out.println(" b= " + b);
 		System.out.println(" s= " + s);
 		System.out.println(" s= " + (s*b));
-		System.out.println(" sumD-sumB=" + (sum_D - sum_B)); 
+		System.out.println(" sumD-sumB=" + (sum_D - sum_B)); */
 		
 
         e = (sum_D - sum_B) / (s*b);
@@ -1397,6 +1420,7 @@ public class RECO extends AggregatorAgent{
 
 		priceSignalChanged = false;
 	}
+
 	
 	private void writeOutput(String fileName,  double[] C, double[] NC, double[] B, double[] D, double[] S, double[] e, double[][] k) {
 		int [] ts_arr = new int[ticksPerDay];
@@ -1434,352 +1458,20 @@ public class RECO extends AggregatorAgent{
 		
 	}
 	
-	public void step_old_toDelete() {
 
-		System.out.println(" ++++++++++++++ RECO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		int timeTick = mainContext.getTickCount();	
-		int timeOfDay = mainContext.getTimeslotOfDay();
-		int dayOfWeek = ((CascadeContext) ContextUtils.getContext(this)).simulationCalendar.getTime().getDay();
-
-		arr_i_C = Arrays.copyOfRange(arr_i_C_all, timeTick % arr_i_C_all.length, (timeTick % arr_i_C_all.length) + ticksPerDay);
-
-		List<ProsumerAgent> customers = getCustomersList();
-
-		calculateAndSetNetDemand(customers);
-
-		if (!isAggregateDemandProfileBuildingPeriodCompleted()) 
-		{ 
-			updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D); 
-			//System.out.println("hist array " + ArrayUtils.toString(hist_arr_ij_D));
-		}
-		else 
-		{ //End of history profile building period 
-			
-			//Set the Baseline demand on the first time through after building period
-			if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
-			{
-				System.out.println("RECO: history array before calculating B " + ArrayUtils.toString(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));
-				arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
-			}
-
-			if (Consts.DEBUG)
-			{
-				System.out.println("RECO: Baseline demand set to " + Arrays.toString(arr_i_B));
-			}
-
-			if (!isTrainingPeriodCompleted()) 
-			{  //training period 
-				//signals should be send S=1 for 48 days
-				//System.out.println("bc signal at time: "+RepastEssentials.GetTickCount());
-				System.out.print("-----RECO: Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
-				if (mainContext.isBeginningOfDay(timeOfDay)) 
-				{
-					
-					System.out.println("RECO: TrainingPeriod/BeginingOfDay - ND BEFORE sending training signal is:"+this.getNetDemand());
-
-					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
-
-					System.out.println("RECO: Signal Sent");
-					broadcastSignalToCustomers(arr_i_S, customers);
-					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
-
-				}
-
-				//broadcastSignal(Consts.SIGNAL_TYPE.S_TRAINING, customers, timeOfDay);
-				updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
-
-				if (mainContext.isEndOfDay(timeOfDay)) 
-				{
-					System.out.print(" --RECO: Training period-END-OF-DAY: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
-					System.out.print("End of day: "+mainContext.getDayCount()+" timeOfDay: "+timeOfDay);
-					System.out.println(" timetick: "+mainContext.getTickCount());
-					double[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
-					double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
-			        System.out.println("RECO: e: "+e);
-			        System.out.println("RECO: e_arr: "+ Arrays.toString(arr_i_e));
-			        System.out.println("RECO: arr_last_training_D: "+ Arrays.toString(arr_last_training_D));
-
-					calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
-					
-					//if (mainContext.getDayCount() > 7) {
-					
-					writeOutput("output1_beforeEE_day_",null, null, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
-
-				}
-			} //training period completed 
-			else 
-			{ // Begining of the normal operation
-				/* Both the baseline establishing period and the training period are complete */
-
-				if(Consts.DEBUG)
-				{
-					System.out.println("---End of training reached ----day: "+ mainContext.getDayCount());
-					System.out.print("day: "+mainContext.getDayCount());
-					System.out.println("  timetick: "+mainContext.getTickCount());
-				}
-
-				/* Real/Usual business here */  
-
-				//Richard Test to stimulate prosumer behaviour
-				if (mainContext.isBeginningOfDay(timeOfDay)) 
-				{
-					/*
-					 * The section below implements Peter B's very simplistic 
-					 * "Routine error estimation and adjustment" learning
-					 * 
-					 * TODO: Is this the learning / adaptation mechanism we want to run with?
-					 */
-
-					System.out.println("RECO: Cost of ");
-					
-				
-					double[] actualShift = ArrayUtils.add(hist_day_arr_D, ArrayUtils.negate(arr_i_B));
-					System.out.println("RECO:: actualShift " + Arrays.toString(actualShift));
-					Matrix k = new Matrix(arr_ij_k);
-					double[][] b = new double[1][arr_i_B.length];
-					b[0] = ArrayUtils.mtimes(arr_i_B,arr_i_S);
-					Matrix Bm = new Matrix(b);
-					Bm.transpose();			
-					double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(Bm, k).getRowCopy(0)));
-					
-					System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
-
-					double[] errorVector = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
-
-					if(Consts.DEBUG)
-					{
-						System.out.println("RECO:: error vector is " + Arrays.toString(errorVector));
-					}
-
-					double[] multiplier = ArrayUtils.offset(ArrayUtils.multiply(errorVector, alpha), (1 - alpha));
-
-					if(Consts.DEBUG)
-					{
-						System.out.println("RECO:: e before " + Arrays.toString(arr_i_e));
-						System.out.println("RECO:: multiplier " + Arrays.toString(multiplier));
-					}
-					arr_i_e = ArrayUtils.mtimes(arr_i_e, multiplier);
-					if(Consts.DEBUG)
-					{
-						System.out.println("RECO:: e after times multiplier" + Arrays.toString(arr_i_e));
-					}
-					/*System.out.println("Rows " + arr_ij_k.length + " Columns " + arr_ij_k[1].length);
-					Matrix k = new Matrix(arr_ij_k);
-					System.out.println("After Matrix init, k columns " + k.getNumberOfColumns() + " k rows " + k.getNumberOfRows());
-					double[][] multiplicationVector = new double[1][multiplier.length];
-					multiplicationVector[0] = multiplier;
-					Matrix multVector = new Matrix(multiplicationVector);
-					Matrix new_k = Matrix.times(k, Matrix.transpose(multVector));
-					arr_ij_k = new_k.getArrayCopy();*/
-
-					for (int i = 0; i < arr_ij_k.length; i++)
-					{
-						arr_ij_k[i] = ArrayUtils.mtimes(arr_ij_k[i], multiplier);
-					}
-
-
-					//Replace the historical demand for the day of the week before this
-					//with the demand of yesterday
-					// TODO: Could be more sophisticated and have a rolling or weighted average
-					this.hist_week_arr_D[dayOfWeek] = hist_day_arr_D;
-
-					//arr_i_S = ArrayUtils.normalizeValues(minimise_CD(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S));
-					//System.out.println(Arrays.toString(Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
-
-					/*** One possible way to introduce feedback and allow the signal to change. ***/
-					/*** Richard's test version below - with normalisation etc.***/
-					//arr_i_C = ArrayUtils.normalizeValues(ArrayUtils.pow2(this.predictedCustomerDemand));
-
-					//System.out.print("Cost taken from C array, section from: "+(int) time % arr_i_C.length);
-					//System.out.println("  To: "+ (((int)time % arr_i_C.length) + ticksPerDay));
-
-					//arr_i_C = Arrays.copyOfRange(arr_i_C_all, (int) time % arr_i_C_all.length, ((int)time % arr_i_C_all.length) + ticksPerDay);
-
-					//double[] normalizedCosts = ArrayUtils.normalizeValues((Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay)));
-
-					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
-
-					//double[] normalizedCosts = (Arrays.copyOfRange(arr_i_C, (int) time % arr_i_C.length, ((int)time % arr_i_C.length) + ticksPerDay));
-					//System.out.println(Arrays.toString(normalizedCosts));
-					//System.out.println(Arrays.toString(arr_i_S));
-
-					//System.out.println("normalizedCosts: "+Arrays.toString(normalizedCosts));
-
-					if (Consts.DEBUG) 
-					{
-						
-						writeOutput("output2_afterEE_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
-
-					} 
-
-
-					/*
-					 * Uncommment below to use Babak implementation using the SimplexSolver class
-					 */
-					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-					//System.out.println("RECO S by Babak's implementation" + Arrays.toString(arr_i_S));
-
-					/*
-					 * Uncomment below to use the Nelder Mead implementations.
-					 */
-					arr_i_S = minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
-					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
-
-					/*
-					 * Uncomment below to use Genetic Algorithm to optimise signal
-					 */
-					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-					//System.out.println("Genetic : " + Arrays.toString(arr_i_S));
-
-					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-
-
-
-					//Test with flat price
-					//this.setPriceSignalFlatRate(1f);
-					// Test with Econ 7
-					//setPriceSignalEconomySeven(15, 7);
-					//arr_i_S = Arrays.copyOf(priceSignal, arr_i_S.length);
-					//System.out.println(Arrays.toString(arr_i_S));
-					//arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
-					//System.out.println(Arrays.toString(arr_i_S));
-
-					broadcastSignalToCustomers(arr_i_S, customers);
-
-				}
-
-			} //end 
-
-		} //end of else (history profile building) 
-
-		//Things to do right at the end of the step
-
-		hist_day_arr_D[timeOfDay] = getNetDemand();
-		
-		
-		if(hist_week_arr_D[(dayOfWeek + 1) % 7] != null)
-		{
-			predictedCustomerDemand[timeOfDay] = hist_week_arr_D[(dayOfWeek + 1) % 7][timeOfDay];
-		}
-		else
-		{
-			predictedCustomerDemand[timeOfDay] = getNetDemand();
-		}
-
-		if(Consts.DEBUG)
-		{
-			System.out.println("RECO: predictTimeslotDemand("+(timeOfDay+1)+ "): "+ calcualte_PredictedDemand_D(timeOfDay));
-
-		}
-
-		if (mainContext.isEndOfDay(timeOfDay)) 
-		{
-			double predCost = 0;
-			double actualCost = 0;
-			for (int i = 0; i < ticksPerDay; i++)
-			{
-				predCost += arr_i_C[i] * calcualte_PredictedDemand_D(i);
-			}
-
-			dailyPredictedCost.add(predCost);
-			//this.dailyActualCost.add(ArrayUtils.sum(ArrayUtils.mtimes(daysDemandHistory, costs)));
-			actualCost = ArrayUtils.sum(ArrayUtils.mtimes(hist_day_arr_D, arr_i_C));
-			//this.dailyActualCost.add(ArrayUtils.sum(ArrayUtils.mtimes(hist_day_arr_D, arr_i_C)));
-			dailyActualCost.add(actualCost);
-
-			updateCumulativeSaving(predCost - actualCost);
-			
-			
-		}
-
-		if(Consts.DEBUG)
-		{
-			for (int j = 0; j<this.dailyActualCost.size(); j++)
-			{
-				System.out.print("RECO:: For day " + j + " predicted cost was " + this.dailyPredictedCost.get(j)+ " actual cost was " + this.dailyActualCost.get(j));
-				System.out.println(" Saving was: " + (dailyPredictedCost.get(j) -dailyActualCost.get(j)));
-
-			}
-			System.out.println("    ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		
-		}
-	}
-	
-	
-	
-	public void step_pre2() {
-
-		System.out.println(" ++++++++++++++ RECO pre_step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		int timeTick = mainContext.getTickCount();	
-		int timeOfDay = mainContext.getTimeslotOfDay();
-		int dayOfWeek = ((CascadeContext) ContextUtils.getContext(this)).simulationCalendar.getTime().getDay();
-
-		arr_i_C = Arrays.copyOfRange(arr_i_C_all, timeTick % arr_i_C_all.length, (timeTick % arr_i_C_all.length) + ticksPerDay);
-
-		customers = getCustomersList();
-
-		calculateAndSetNetDemand(customers);
-
-		if (!isAggregateDemandProfileBuildingPeriodCompleted()) 
-		{ 
-			updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D); 
-			//System.out.println("hist array " + ArrayUtils.toString(hist_arr_ij_D));
-		}
-		else 
-		{ //End of history profile building period 
-
-			//Set the Baseline demand on the first time through after building period
-			if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
-			{
-				System.out.println("RECO: history array before calculating B " + ArrayUtils.toString(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));
-				arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
-			}
-
-			if (Consts.DEBUG)
-			{
-				System.out.println("RECO: Baseline demand set to " + Arrays.toString(arr_i_B));
-			}
-
-			if (!isTrainingPeriodCompleted()) 
-			{  //training period 
-				//signals should be send S=1 for 48 days
-				//System.out.println("bc signal at time: "+RepastEssentials.GetTickCount());
-				System.out.print("-----RECO: Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
-				if (mainContext.isBeginningOfDay(timeOfDay)) 
-				{
-
-					System.out.println("RECO: TrainingPeriod/BeginingOfDay - ND BEFORE sending training signal is:"+this.getNetDemand());
-
-					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
-
-					System.out.println("RECO: Signal Sent");
-					broadcastSignalToCustomers(arr_i_S, customers);
-					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
-
-				}
-
-			}
-		}
-		System.out.println(" ++++++++++++++ RECO END of pre_step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-
-	}
-	
-	
-	
 	public void step_pre() {
 
 		System.out.println(" ============ RECO pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		timeTick = mainContext.getTickCount();	
-		timeOfDay = mainContext.getTimeslotOfDay();
+		timeslotOfDay = mainContext.getTimeslotOfDay();
 		dayOfWeek = ((CascadeContext) ContextUtils.getContext(this)).simulationCalendar.getTime().getDay();
 		arr_i_C = Arrays.copyOfRange(arr_i_C_all, timeTick % arr_i_C_all.length, (timeTick % arr_i_C_all.length) + ticksPerDay);
-	    customers = getCustomersList();
+		customers = getCustomersList();
 
 		calculateAndSetNetDemand(customers);
 
 		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
-			updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D); 
+			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
 		}
 		else 
 		{ //End of history profile building period 
@@ -1790,11 +1482,11 @@ public class RECO extends AggregatorAgent{
 			}
 			if (Consts.DEBUG)
 				System.out.println("RECO: Baseline demand set to " + Arrays.toString(arr_i_B));
-			
+
 			if (!isTrainingPeriodCompleted()) 
 			{  //training period, signals should be send S=1 for 48 days
 				System.out.println("--RECO: Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
-				if (mainContext.isBeginningOfDay(timeOfDay)) 
+				if (mainContext.isBeginningOfDay(timeslotOfDay)) 
 				{	
 					System.out.println("RECO: TrainingPeriod/BeginingOfDay - ND BEFORE sending training signal is:"+this.getNetDemand());
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
@@ -1807,59 +1499,69 @@ public class RECO extends AggregatorAgent{
 			else 
 			{ // Begining of the normal operation- both baseline establishing & training periods are complete
 
-				if(Consts.DEBUG)
-				{
+				if(Consts.DEBUG){
 					System.out.println("---End of training reached ----day: "+ mainContext.getDayCount());
 					System.out.print("day: "+mainContext.getDayCount());
 					System.out.println("  timetick: "+mainContext.getTickCount());
 				}
 
 				//Richard Test to stimulate prosumer behaviour
-				if (mainContext.isBeginningOfDay(timeOfDay)) 
+				if (mainContext.isBeginningOfDay(timeslotOfDay)) 
 				{
 					// The section below implements Peter B's very simplistic Routine error estimation and adjustment" learning
 					//TODO: Is this the learning / adaptation mechanism we want to run with?
+
+
 					System.out.println("RECO: Cost of ");
-					
+
 					double[] actualShift = ArrayUtils.add(hist_day_arr_D, ArrayUtils.negate(arr_i_B));
 					System.out.println("RECO:: actualShift " + Arrays.toString(actualShift));
+
 					Matrix k = new Matrix(arr_ij_k);
-					double[][] b = new double[1][arr_i_B.length];
-					b[0] = ArrayUtils.mtimes(arr_i_B,arr_i_S);
-					Matrix Bm = new Matrix(b);
-					Bm.transpose();			
-					double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(Bm, k).getRowCopy(0)));
-					
+					double[][] bs = new double[1][arr_i_B.length];
+					bs[0] = ArrayUtils.mtimes(arr_i_B,arr_i_S);
+					//System.out.println("RECO:: arr_i_B " + Arrays.toString(arr_i_B));
+					//System.out.println("RECO:: arr_i_S " + Arrays.toString(arr_i_S));
+					//System.out.println("RECO:: arr_i_e " + Arrays.toString(arr_i_e));
+
+					//System.out.println("RECO:: bs[] " + ArrayUtils.toString(bs));
+					System.out.println("RECO:: bs[0] " + Arrays.toString(bs[0]));
+
+					Matrix bs_mat = new Matrix(bs);
+					bs_mat.transpose();			
+					double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(bs_mat, k).getRowCopy(0)));
+
 					System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
 
-					double[] errorVector = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
+					double[] arr_errorEstim_R = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
 
 					if(Consts.DEBUG)
-						System.out.println("RECO:: error vector is " + Arrays.toString(errorVector));
+						System.out.println("RECO:: errorEstim_R: " + Arrays.toString(arr_errorEstim_R));
 
-					double[] multiplier = ArrayUtils.offset(ArrayUtils.multiply(errorVector, alpha), (1 - alpha));
+					double[] arr_multiplier = ArrayUtils.offset(ArrayUtils.multiply(arr_errorEstim_R, alpha), (1 - alpha));
 
-					if(Consts.DEBUG)
-					{
+					if(Consts.DEBUG)  {
 						System.out.println("RECO:: e before " + Arrays.toString(arr_i_e));
-						System.out.println("RECO:: multiplier " + Arrays.toString(multiplier));
+						System.out.println("RECO:: multiplier " + Arrays.toString(arr_multiplier));
 					}
-					arr_i_e = ArrayUtils.mtimes(arr_i_e, multiplier);
-					
+					arr_i_e = ArrayUtils.mtimes(arr_i_e, arr_multiplier);
+
 					if(Consts.DEBUG)			
 						System.out.println("RECO:: e after times multiplier" + Arrays.toString(arr_i_e));
-					
 
-					for (int i = 0; i < arr_ij_k.length; i++)
-					{
-						arr_ij_k[i] = ArrayUtils.mtimes(arr_ij_k[i], multiplier);
-					}
+
+					for (int i = 0; i < arr_ij_k.length; i++)  {
+						arr_ij_k[i] = ArrayUtils.mtimes(arr_ij_k[i], arr_multiplier);
+					} 
+
+					// end of REEA
 
 					//Replace the historical demand for the day of the week before this with the demand of yesterday
 					// TODO: Could be more sophisticated and have a rolling or weighted average
 					this.hist_week_arr_D[dayOfWeek] = hist_day_arr_D;
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
+
 
 					if (Consts.DEBUG) 							
 						writeOutput("output2_afterEE_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
@@ -1879,10 +1581,10 @@ public class RECO extends AggregatorAgent{
 
 		} //end of else (history profile building) 
 		System.out.println("    ========== RECO: pre_step END =========== DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		
+
 	}
 	
-	
+
 	/**
 	 * This method defines how this object behaves (what it does)
 	 * at at a given scheduled time throughout the simulation. 
@@ -1890,16 +1592,19 @@ public class RECO extends AggregatorAgent{
 	public void step() {
 
 		System.out.println(" ++++++++++++++ RECO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		
+
+		calculateAndSetNetDemand(customers);
+
+
 		if (isAggregateDemandProfileBuildingPeriodCompleted() && !isTrainingPeriodCompleted()) 
 		{  
 			//signal already sent with pre_step, now to process and update history
-			updateAggregateDemandHistoryArray(customers, timeOfDay, hist_arr_ij_D);
+			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D);
 
-			if (mainContext.isEndOfDay(timeOfDay)) 
+			if (mainContext.isEndOfDay(timeslotOfDay)) 
 			{
 				System.out.print(" --RECO: Training period-END-OF-DAY: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
-				System.out.print("End of day: "+mainContext.getDayCount()+" timeOfDay: "+timeOfDay);
+				System.out.print("End of day: "+mainContext.getDayCount()+" timeOfDay: "+timeslotOfDay);
 				System.out.println(" timetick: "+mainContext.getTickCount());
 				double[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
 				double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
@@ -1911,46 +1616,82 @@ public class RECO extends AggregatorAgent{
 
 				//if (mainContext.getDayCount() > 7) {
 				writeOutput("output1_beforeEE_day_",null, null, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
+
+				System.out.println(" just wrote output1_beforeEE_day_"+mainContext.getTimeslotOfDay());
 			}
-		} //training period completed 
+		} 
 
+		//if (isAggregateDemandProfileBuildingPeriodCompleted() && isTrainingPeriodCompleted()) {
 
+		//System.out.println("^ RECO: section for predicting saving ^ "+timeOfDay);
+		//System.out.println("getDemand: "+getNetDemand());
 		//Things to do right at the end of the step
-		hist_day_arr_D[timeOfDay] = getNetDemand();
+		hist_day_arr_D[timeslotOfDay] = getNetDemand();
 
 		if(hist_week_arr_D[(dayOfWeek + 1) % 7] != null){
-			predictedCustomerDemand[timeOfDay] = hist_week_arr_D[(dayOfWeek + 1) % 7][timeOfDay];
+			predictedCustomerDemand[timeslotOfDay] = hist_week_arr_D[(dayOfWeek + 1) % 7][timeslotOfDay];
 		}
 		else	{
-			predictedCustomerDemand[timeOfDay] = getNetDemand();
+			predictedCustomerDemand[timeslotOfDay] = getNetDemand();
 		}
 
-		if(Consts.DEBUG)
-			System.out.println("RECO: predictTimeslotDemand("+(timeOfDay+1)+ "): "+ calcualte_PredictedDemand_D(timeOfDay));
 
-		if (mainContext.isEndOfDay(timeOfDay)) 	{
+		if (mainContext.isEndOfDay(timeslotOfDay)) 	{
 			double predCost = 0;
 			double actualCost = 0;
+
+
+			//Arrays.fill(arr_i_e, 0);
+
+			double [] day_predicted_arr_D = new double [this.ticksPerDay];
+
 			for (int i = 0; i < ticksPerDay; i++) {
-				predCost += arr_i_C[i] * calcualte_PredictedDemand_D(i);
+				//predCost += arr_i_C[i] * calculate_PredictedDemand_D(i);
+				day_predicted_arr_D[i]= calculate_PredictedDemand_D(i);
+
 			}
+
+			System.out.println(" ^RECO step Predicted demand calc ---> DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+
+			System.out.println("getDemand: "+getNetDemand());
+			//System.out.println("^RECO: predictTimeslotDemand("+(timeslotOfDay+1)+ "): "+ calculate_PredictedDemand_D(timeslotOfDay));
+
+			System.out.println(" predicteDemand using B: "+ Arrays.toString(arr_i_B));
+			System.out.println(" predicteDemand using S: "+ Arrays.toString(arr_i_S));
+			System.out.println(" predicteDemand using e: "+ Arrays.toString(arr_i_e));
+			//System.out.println(" predicteDemand using k: "+ ArrayUtils.toString(arr_ij_k));
+
+			System.out.println(" acttualCost is calcuated using hist_day_arr_D: "+ Arrays.toString(hist_day_arr_D));
+			System.out.println(" predCost  calcuated using day_predicted_arr_D: "+ Arrays.toString(day_predicted_arr_D));
+
+			int indexOfMin = ArrayUtils.indexOfMin(hist_day_arr_D);
+			System.out.println("lowest demand index: "+indexOfMin);
+			System.out.println("valueOfMinIndex: "+hist_day_arr_D[indexOfMin]);
+
+			//predCost = ArrayUtils.sum(ArrayUtils.mtimes(day_predicted_arr_D, arr_i_C));
+			predCost = ArrayUtils.sum(ArrayUtils.mtimes(arr_i_B, arr_i_C));
 
 			dailyPredictedCost.add(predCost);
 			//this.dailyActualCost.add(ArrayUtils.sum(ArrayUtils.mtimes(daysDemandHistory, costs)));
 			actualCost = ArrayUtils.sum(ArrayUtils.mtimes(hist_day_arr_D, arr_i_C));
+
 			//this.dailyActualCost.add(ArrayUtils.sum(ArrayUtils.mtimes(hist_day_arr_D, arr_i_C)));
 			dailyActualCost.add(actualCost);
+			System.out.println(" predCost: "+ predCost);
+			System.out.println(" acutalCost: "+ actualCost);
+			System.out.println(" predCost - acutalCost: "+ (predCost - actualCost));
 
 			updateCumulativeSaving(predCost - actualCost);
+			if(Consts.DEBUG)	{
+				for (int j = 0; j<this.dailyActualCost.size(); j++)		{
+					System.out.print("Day " + j + " pred-cost: " + this.dailyPredictedCost.get(j)+ " actual-cost: " + this.dailyActualCost.get(j));
+					System.out.println(" saving: " + (dailyPredictedCost.get(j) -dailyActualCost.get(j)));
+				}
+			}
+
 		}
 
-		if(Consts.DEBUG)	{
-			for (int j = 0; j<this.dailyActualCost.size(); j++)		{
-				System.out.print("RECO:: For day " + j + " predicted cost was " + this.dailyPredictedCost.get(j)+ " actual cost was " + this.dailyActualCost.get(j));
-				System.out.println(" Saving was: " + (dailyPredictedCost.get(j) -dailyActualCost.get(j)));
-			}
-			System.out.println("    ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		}
+		System.out.println("    ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 	}
 
 	/**
@@ -2025,7 +1766,7 @@ public class RECO extends AggregatorAgent{
 		//this.arr_i_B = baseDemand; 
 
 		//Set up basic learning factor
-		this.alpha = 0.1f;
+		this.alpha = 0.1d;
 
 		//+++++++++++++++++++++++++++++++++++++++++++
 	}
