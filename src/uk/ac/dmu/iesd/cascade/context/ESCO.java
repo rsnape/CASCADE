@@ -31,6 +31,16 @@ public class ESCO extends AggregatorAgent{
 	/**
 	 * This method defines how this object behaves (what it does)
 	 * at at a given scheduled time throughout the simulation. 
+	 * this is called before 'step' method, usually to send a (first) signal. 
+	 * Using this method, this is how aggregator takes the first step (before prosumers start) 
+	 */
+	public void step_pre() {
+
+	}
+
+	/**
+	 * This method defines how this object behaves (what it does)
+	 * at at a given scheduled time throughout the simulation. 
 	 */
 	public void step() {
 

@@ -22,10 +22,19 @@ import simphony.util.messages.MessageCenter;
  */
 public final class Consts {
 	
+	
+	///Scheudling priorities
+	
+	public static final double PROSUMER_INIT_PRIORITY_FIRST = 500; 
+	public static final double AGGREGATOR_PRIORITY_FIRST = 400;
+	public static final double PROSUMER_PRIORITY_SECOND = 300;
+	public static final double AGGREGATOR_PRIORITY_THIRD = 200;
+	 
+	  
 	/**
 	 * Model level constants
 	 */
-	public static boolean DEBUG = false;  //use for debugging, default is false
+	public static boolean DEBUG = true;  //use for debugging, default is false
 	public static final String DEBUG_OUTPUT_FILE = "DebugOutput.txt"; //Change this to a name to desired filename to divert System.out to a file when DEBUG is true
 
 

@@ -208,6 +208,9 @@ public class HHProsumer extends ProsumerAgent{
 	private double[] historicalExtTemp;
 	private double[] historicalWaterHeatDemand;
 	public double freeRunningTemperatureLossPerTickMultiplier;
+	
+	
+	double[] modifiedDemandProfile;
 
 
 
@@ -754,6 +757,71 @@ public class HHProsumer extends ProsumerAgent{
 
 		return myDemand;
 	}
+	
+	private double evaluateElasticBehaviour2(int time)
+	{
+		System.out.println("HHProsumer:: evaluateElasticBehaviour --- time: "+time);
+		double myDemand;
+		int timeSinceSigValid = time - predictionValidTime;
+		System.out.println("     predictionValidTime: "+predictionValidTime);
+		System.out.println("     predictionValidTime: "+predictionValidTime);
+		System.out.println("     timeSinceSigValid: "+timeSinceSigValid);
+
+		//As a basic strategy only the base (non-displaceable) demand is
+		//elastic
+		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		double initialDemand = myDemand;
+		
+		//System.out.println("     hasSmartMeter: "+hasSmartMeter);
+		//System.out.println("     getPredictedCostSignalLength: "+getPredictedCostSignalLength());
+		System.out.println("     PredictedCostSignal (cost Sig): "+Arrays.toString(getPredictedCostSignal()));
+		//System.out.println("     dailyEalsticity : "+Arrays.toString(dailyElasticity));
+
+
+		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
+		// Note, we can only moderate based on cost signal
+		// if we receive it (i.e. if we have smart meter)
+		// TODO: may have to refine this - do we differentiate smart meter and smart display - i.e. whether receive only or Tx/Rx
+		
+		//if(hasSmartMeter && getPredictedCostSignalLength() > 0)
+		if(getPredictedCostSignalLength() > 0)
+		{
+			System.out.println("     timeSinceSigValid % getPredictedCostSignalLength()): "+timeSinceSigValid % getPredictedCostSignalLength());
+			double predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % getPredictedCostSignalLength()];
+			if (predictedCostNow == 1)
+				System.out.println("    ********  predictedCost is ONE ****** ");
+			System.out.println("     predictedCost (cost Signal): "+predictedCostNow);
+			System.out.println("     dailyElasticity : "+dailyElasticity[time % ticksPerDay]);
+			if (predictedCostNow == 1)
+				myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay]));
+			if (Consts.DEBUG)
+			{
+				System.out.println("    initialDemand: "+initialDemand);
+				System.out.println("    demand multiplier " + (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) );
+				System.out.println("    set finalDemand: " + myDemand);
+			}
+		}
+
+		return myDemand;
+	}
+	
+	private double evaluateElasticBehaviour3_Peter(int time)
+	{
+		System.out.println("HHProsumer:: evaluateElasticBehaviour3 --- time: "+time);
+		
+		double demand =0;
+		if (modifiedDemandProfile != null) {
+			System.out.println(" modifiedDemandProfile: "+ Arrays.toString(modifiedDemandProfile));
+
+			demand = modifiedDemandProfile[time % modifiedDemandProfile.length];
+			System.out.println("   modifiedDemandProfile vlaue @ index " + (time % modifiedDemandProfile.length));
+		}
+		else demand = baseDemandProfile[time % baseDemandProfile.length];
+		
+		System.out.println(" set finalDemand: " + demand);
+		return demand;
+
+	}
 
 	/**
 	 * Evaluates the net demand mediated by smart controller behaviour at a given tick.
@@ -1003,8 +1071,101 @@ public class HHProsumer extends ProsumerAgent{
 		return recievedSuccessfuly;
 	}  */
 	
-	@ScheduledMethod(start = 0, interval = 0, shuffle = true)
-	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	
+	/*
+	 * overrid 
+	 */
+
+	public boolean receiveValueSignal(double[] signal, int length) {
+		System.out.println("HHProsumerAgent:: override receiveValueSignal()");
+		boolean success = true;
+		// Can only receive if we have a smart meter to receive data
+		int validTime = (int) RepastEssentials.GetTickCount();
+		//System.out.println(validTime+ " HHProsumer recive signal at ticktime "+ RepastEssentials.GetTickCount());
+		//System.out.println("This prosumer hasSmartMeter = " + hasSmartMeter + " and receives signal " + Arrays.toString(signal));
+		
+		if (hasSmartMeter)
+		{
+			// Note the time from which the signal is valid.
+			// Note - Repast can cope with fractions of a tick (a double is returned)
+			// but I am assuming here we will deal in whole ticks and alter the resolution should we need
+			int time = (int) RepastEssentials.GetTickCount();
+			int newSignalLength = length;
+			setPredictionValidTime(validTime);
+			double[] tempArray;
+
+			int signalOffset = time - validTime;
+			//System.out.println("time: "+time+ " validTime"+validTime);
+			if (signalOffset != 0)
+			{
+				if (Consts.DEBUG)
+				{
+					System.out.println("ProsumerAgent: Signal valid from time other than current time");
+				}
+				newSignalLength = newSignalLength - signalOffset;
+			}
+
+			if ((getPredictedCostSignal() == null) || (newSignalLength != predictedCostSignal.length))
+			{
+				if (Consts.DEBUG)
+				{
+					System.out.println("ProsumerAgent: Re-defining length of signal in agent" + agentID);
+				}
+				setPredictedCostSignal(new double[newSignalLength]);
+			}
+
+			if (signalOffset < 0)
+			{
+				// This is a signal projected into the future.
+				// pad the signal with copies of what was in it before and then add the new signal on
+				System.arraycopy(signal, 0, getPredictedCostSignal(), 0 - signalOffset, length);
+			}
+			else
+			{
+				// This was valid from now or some point in the past.  Copy in the portion that is still valid and 
+				// then "wrap" the front bits round to the end of the array.
+				System.arraycopy(signal, signalOffset, predictedCostSignal, 0, length);
+			}
+			
+			System.out.println(" signal Recieved: "+ Arrays.toString(signal));
+			System.out.println(" predictedCostSignal: "+ Arrays.toString(predictedCostSignal));
+
+			System.out.println(" baseDemandProfile: "+ Arrays.toString(baseDemandProfile));
+			int maxIndex = ArrayUtils.indexOfMax(predictedCostSignal);
+			//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
+			System.out.println(" maxIndex: "+ maxIndex);
+			double valueOfMaxIndex = baseDemandProfile[maxIndex];
+			System.out.println(" valueOfMaxIndex "+ valueOfMaxIndex);
+			modifiedDemandProfile = new double[ticksPerDay];
+			modifiedDemandProfile[maxIndex] = 0; 
+			double demandToShiftEqually = valueOfMaxIndex/47;
+			
+			System.out.println(" demandToShiftEqually "+ demandToShiftEqually);
+			
+			for (int j = maxIndex+1; j < this.ticksPerDay; j++) {
+				
+				modifiedDemandProfile[j] = baseDemandProfile[j]+ demandToShiftEqually;
+
+			}
+			
+			for(int j = maxIndex-1; j >= 0; --j) {
+				modifiedDemandProfile[j] = baseDemandProfile[j]+ demandToShiftEqually;
+			}
+			
+			System.out.println(" after: modifiedDemandProfile: "+ Arrays.toString(modifiedDemandProfile));
+			
+			//System.arraycopy(modifiedDemandProfile, 0, baseDemandProfile, 0, baseDemandProfile.length);
+			
+			//System.out.println(" baseDemandProfile: "+ Arrays.toString(baseDemandProfile));
+
+			
+		}
+
+		return success;
+	}
+	
+	//@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = Consts.PROSUMER_INIT_PRIORITY_FIRST)
+	@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void init() {
 		
 		//System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");
@@ -1035,8 +1196,7 @@ public class HHProsumer extends ProsumerAgent{
 	 * Input variables: none
 	 * 
 	 ******************/
-	@ScheduledMethod(start = 0.2, interval = 1, shuffle = true)
-	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_SECOND)
 	public void step() {
 		
 		//System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");
@@ -1054,7 +1214,10 @@ public class HHProsumer extends ProsumerAgent{
 		System.out.println(" dayCount: "+mainContext.getDayCount());
 		System.out.println(" tickTime: "+mainContext.getTickCount());
 		System.out.println(" timeslot: "+mainContext.getTimeslotOfDay());
-		setNetDemand(evaluateElasticBehaviour(time));
+		//setNetDemand(evaluateElasticBehaviour2(time));
+		
+		setNetDemand(evaluateElasticBehaviour3_Peter(time));
+
 		
 		System.out.println("     -------- HHProsumer: END ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 

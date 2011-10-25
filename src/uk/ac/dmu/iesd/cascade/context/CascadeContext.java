@@ -237,8 +237,8 @@ public class CascadeContext extends DefaultContext{
 		if (timeOfDay == 0)
 			return true;
 		else return false;	
-	}
 	
+	}
 	/*
 	 * Accesor methods to context variables
 	 */
@@ -424,8 +424,8 @@ public class CascadeContext extends DefaultContext{
 		 case 0:  chartName = "chart0_Insol_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
 		 case 1:  chartName = "chart1_AirTemp_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
 		 case 2:  chartName = "chart2_WindSpeed_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 3:  chartName = "chart3_Agg_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 4:  chartName = "chart4_PriceSig_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 3:  chartName = "chart3_AggSumOfD_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 4:  chartName = "chart4_SvsC_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
 		 case 5:  chartName = "chart5_SmartAdapt_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
 		 case 6:  chartName = "chart6_AggCost_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
 		 case 7:  chartName = "chart7_BvsD_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
@@ -500,6 +500,7 @@ public class CascadeContext extends DefaultContext{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
+		System.out.println("calendarStep()");
 		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
 	}
 
