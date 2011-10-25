@@ -22,7 +22,7 @@ CascadeContext cascadeMainContext;
 		return aCO;
 	}
 	
-	public UtilityCo createUtilityCo(float[] baseProfile){
+	public UtilityCo createUtilityCo(double[] baseProfile){
 		return new UtilityCo(cascadeMainContext,baseProfile);
 	}
 
