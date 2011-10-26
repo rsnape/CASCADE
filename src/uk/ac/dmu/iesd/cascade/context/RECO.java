@@ -159,7 +159,6 @@ public class RECO extends AggregatorAgent{
 			arr_C = c;
 		}
 		
-
 		public void set_B(double [] b) {
 			arr_B = b;
 		}
@@ -193,7 +192,7 @@ public class RECO extends AggregatorAgent{
 			return (int) Math.max(1,(100000 - value(testArray)));
 		}
 
-	} //End of RecoMinimisationFunction class
+	}
 
 	/**
 	 * Babak test implementation
