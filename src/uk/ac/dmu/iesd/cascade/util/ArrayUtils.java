@@ -1196,7 +1196,7 @@ public class ArrayUtils {
 
 			if (returnArrayList.size() != n)
 			{
-				System.err.println("Non - tied find n smallest failed");
+				System.err.println("Find n smallest failed - sort reported non-tied, but didn't find clear n smallest");
 			}
 		}
 		else

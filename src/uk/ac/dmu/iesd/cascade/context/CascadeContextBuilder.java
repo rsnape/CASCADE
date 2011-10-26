@@ -818,9 +818,9 @@ private void populateContext_Test() {
 		initializeProbabilityDistributions();
 		//cascadeMainContext.buildChartSnapshotSchedule();
 		
-		//populateContext();
+		populateContext();
 		
-		populateContext_Test();
+		//populateContext_Test();
 		
 		
 		for(int i = 0; i < 4; i++)

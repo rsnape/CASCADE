@@ -1700,15 +1700,9 @@ public class RECO extends AggregatorAgent{
 
 			if (mainContext.isEndOfDay(timeslotOfDay)) 
 			{
-				System.out.print(" --RECO: Training period-END-OF-DAY: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
-				System.out.print("End of day: "+mainContext.getDayCount()+" timeOfDay: "+timeslotOfDay);
-				System.out.println(" timetick: "+mainContext.getTickCount());
 				double[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
 				double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
-				System.out.println("RECO: e: "+e);
-				System.out.println("RECO: e_arr: "+ Arrays.toString(arr_i_e));
-				System.out.println("RECO: arr_last_training_D: "+ Arrays.toString(arr_last_training_D));
-
+				
 				calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
 
 				//if (mainContext.getDayCount() > 7) {
