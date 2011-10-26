@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.jgap.Gene;
 import org.jgap.impl.DoubleGene;
 
+import repast.simphony.random.RandomHelper;
 import repast.simphony.util.collections.Pair;
 
 /**
@@ -56,7 +57,7 @@ public class ArrayUtils {
 		}
 		return null;
 	}
-	
+
 	public static double[] convertStringArrayToDoubleArray(String[] sarray) {
 		if (sarray != null) {
 			double doubleArray[] = new double[sarray.length];
@@ -163,7 +164,7 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
-	
+
 	/**
 	 * function to multiply the values of an arbitrary number of arrays
 	 * together element by element
@@ -232,7 +233,7 @@ public class ArrayUtils {
 	{
 		return normalizeValues(array, 1f);
 	}
-	
+
 	/**
 	 * normalize array values to lie in the range -1 <= memberValue <= +1
 	 * the relative value of the array values is preserved
@@ -258,7 +259,7 @@ public class ArrayUtils {
 		return normalizeValues(array, maxMagnitude, true);
 
 	}
-	
+
 	/**
 	 * normalize array values to lie in the range -maxMagnitude <= memberValue <= +maxMagnitude
 	 * the relative value of the array values is preserved
@@ -301,7 +302,7 @@ public class ArrayUtils {
 		}
 		return returnArray;
 	}
-	
+
 	/**
 	 * normalize array values to lie in the range 
 	 * <li>-maxMagnitude <= memberValue <= +maxMagnitude if allowNegatives is true
@@ -348,7 +349,7 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
-	
+
 	/**
 	 * returns an array containing the absolute values of the members of the input array
 	 * 
@@ -385,7 +386,7 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
-	
+
 	public static double[] multiply(double[] array, double multiplier)
 	{
 		double[] returnArray = new double [array.length];
@@ -415,7 +416,7 @@ public class ArrayUtils {
 
 		return maxVal;
 	}
-	
+
 	/**
 	 * returns the maximum value of the input array
 	 * 
@@ -451,7 +452,7 @@ public class ArrayUtils {
 
 		return minVal;
 	}
-	
+
 	/**
 	 * returns the minimum value of the input array
 	 * 
@@ -486,7 +487,7 @@ public class ArrayUtils {
 
 		return array;
 	}
-	
+
 	/**
 	 * offsets each member of the input array by the specified offset
 	 * 
@@ -522,7 +523,7 @@ public class ArrayUtils {
 
 		return index;
 	}
-	
+
 	/**
 	 * find the index of the member of the input array with the maximum value (note real value, not absolute magnitude)
 	 * 
@@ -561,7 +562,7 @@ public class ArrayUtils {
 
 		return index;
 	}
-	
+
 	/**
 	 * find the index of the member of the input array with the minimum value (note real value, not absolute magnitude)
 	 * 
@@ -615,13 +616,13 @@ public class ArrayUtils {
 
 		for(int i = 0; i<floatArrayBase.length; i++) {
 			double val = Math.pow(floatArrayBase[i], exp);
-		
+
 			powArray[i]=val;
 		}
 
 		return powArray;	
 	} */
-	
+
 	/**
 	 * This utility function returns an array of double values after 
 	 * raising the values of first argument (passed float array) to the power of second
@@ -646,7 +647,7 @@ public class ArrayUtils {
 				val =0;
 				System.out.println("ArrayUtils:: pow(), calculated val was NaN and set to 0");
 			}
-			
+
 			if (Double.isInfinite(val)) {
 				System.out.println("ArrayUtils:: pow(), calculated val was Infinity and set to 0");
 				val =0;
@@ -676,7 +677,7 @@ public class ArrayUtils {
 		}   
 		return floatArray; 
 	}
-	
+
 	/**
 	 * This utility function accept a double array as an argument and returns 
 	 * a float array containing converted double values of the passed array (argument).
@@ -687,7 +688,7 @@ public class ArrayUtils {
 	 * @return array containing the passed array values (as argument) converted to <tt>float</tt>  
 	 */
 	public static float[][] convertDoubleArrayToFloatArray(double[][] array){ 
-		
+
 		float[][] floatArray = new float[array.length][array[0].length];    
 		for (int i = 0; i < array.length; i++)  {
 			floatArray[i] = convertDoubleArrayToFloatArray(array[i]);    
@@ -731,7 +732,7 @@ public class ArrayUtils {
 		}
 		return index;
 	}
-	
+
 	/**
 	 * This utility function returns the index where the passed value is found.
 	 * If there is no such a value, it returns -1 as index.
@@ -798,7 +799,7 @@ public class ArrayUtils {
 		}
 		return aCol;
 	}
-	
+
 	/**
 	 * This utility function returns a copy of the specific column of a passed 2D double array
 	 * as a one dimensional double array.
@@ -836,7 +837,7 @@ public class ArrayUtils {
 		}
 		return subArr;
 	}
-	
+
 	/**
 	 * This utility function returns a sub-array copy of a given 2D array (with the same columns' size)
 	 * by passing/specifying a startRow and endRow indices.
@@ -873,7 +874,7 @@ public class ArrayUtils {
 		}
 		return rowCopyArr;
 	}
-	
+
 	/**
 	 * This utility function returns an array copy containing of passed row index of a given 2D array
 	 *  
@@ -903,7 +904,7 @@ public class ArrayUtils {
 		}
 		return avg;
 	}
-	
+
 	/**
 	 * This utility function calculates the average of a double array values and returns it.
 	 * 
@@ -935,7 +936,7 @@ public class ArrayUtils {
 		}
 		return avgArr;
 	}
-	
+
 	/**
 	 * This utility function builds an printable string of the elements (values) of a given 2D integer array
 	 * and returns it. The string could be used in any standard print/output function (such as println)
@@ -967,7 +968,7 @@ public class ArrayUtils {
 		}
 		return output;
 	}
-	
+
 	/**
 	 * This utility function builds an printable string of the elements (values) of a given 2D double array
 	 * and returns it. The string could be used in any standard print/output function (such as println)
@@ -1005,7 +1006,7 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
-	
+
 	/**
 	 * Add together an arbitrary number of arrays by index i.e. <code>return[i] = a1[i] + a2[i] + ... + an[i]</code>
 	 * 
@@ -1042,7 +1043,7 @@ public class ArrayUtils {
 		}
 		return returnArray;
 	}
-	
+
 	/**
 	 * negate the member values of an array 
 	 * 
@@ -1077,7 +1078,7 @@ public class ArrayUtils {
 			destArray[startIndex + counter] = replacementArray[counter];
 		}
 	}
-	
+
 	/**
 	 * Replaces the portion of the array passed in as the first argument with the content
 	 * of the second.
@@ -1131,7 +1132,7 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
-	
+
 	/**
 	 * @param doubleArray
 	 * @return
@@ -1156,53 +1157,72 @@ public class ArrayUtils {
 	public static int[] findNSmallestIndices(double[] doubleArray, int n) {
 		// TODO Poor algorithm - improve
 		ArrayList<Pair<Integer,Double>> returnArrayList = new ArrayList<Pair<Integer,Double>>();
+		ArrayList<Pair<Integer,Double>> tiesList = new ArrayList<Pair<Integer,Double>>();
+
+		double tiedValue;
+		boolean tiesToResolve = false;
+		int[] returnArray = new int[n];
+		double[] workingArray = Arrays.copyOf(doubleArray, doubleArray.length);
+
 		if (n < 0)
 		{
 			System.err.println("ArrayUtils: Trying to find " + n + " smallest indices. Negative count makes no sense");
 		}
-
-		int[] returnArray = new int[n];
-
-		int indicesToFill = n;
-		int indexOfCurrMaxOfMins = -1;
-		double currMaxOfMins = Double.NEGATIVE_INFINITY;
-
 		if (doubleArray.length < n)
 		{
 			System.err.println("Trying to find the " + n + " smallest elements of an array with only " + doubleArray.length + " elements!");
 		}
 
-		for (int i = 0; i < doubleArray.length; i++)
+		//First check for the easy case, where there are no ties to worry about
+		Arrays.sort(workingArray);	
+		tiedValue = workingArray[n];
+		if(workingArray[n-1] == workingArray[n])
 		{
-			if (indicesToFill > 0)
+			tiesToResolve = true;
+		}
+
+		if (!tiesToResolve)
+		{
+			//No ties to resolve, so just fill the return Array with the elements less than tiedValue 
+			//iterate through for any smaller
+			for (int i = 0; i < doubleArray.length; i++)
 			{
-				returnArrayList.add(new Pair(i,doubleArray[i]));
-				if (doubleArray[i] > currMaxOfMins)
+				Pair<Integer, Double> thisElement = new Pair(i,doubleArray[i]);
+				if (thisElement.getSecond() < tiedValue)
 				{
-					currMaxOfMins = doubleArray[i];
-					indexOfCurrMaxOfMins = n-indicesToFill;
+					returnArrayList.add(thisElement);
 				}
-				indicesToFill--;
 			}
-			else
+
+			if (returnArrayList.size() != n)
 			{
-				if (doubleArray[i] < currMaxOfMins)
+				System.err.println("Non - tied find n smallest failed");
+			}
+		}
+		else
+		{
+			//We have ties to resolve
+			for (int i = 0; i < doubleArray.length; i++)
+			{
+				Pair<Integer, Double> thisElement = new Pair(i,doubleArray[i]);
+
+				if (doubleArray[i] < tiedValue)
 				{
-					returnArrayList.remove(indexOfCurrMaxOfMins);
-					returnArrayList.add(new Pair(i,doubleArray[i]));
-					indexOfCurrMaxOfMins = -1;
-					currMaxOfMins = Double.NEGATIVE_INFINITY;
-
-					for(int l = 0; l < n; l++)
-					{
-						if (returnArrayList.get(l).getSecond() > currMaxOfMins)
-						{
-							currMaxOfMins = returnArrayList.get(l).getSecond();
-							indexOfCurrMaxOfMins = l;
-						}
-					}
-
+					returnArrayList.add(thisElement);
 				}
+				else if (doubleArray[i] == tiedValue)
+				{
+					tiesList.add(thisElement);
+				}
+			}
+
+			int tiesToSelect = n - returnArrayList.size();
+			
+			for (int l = 0; l < tiesToSelect; l++)
+			{
+				int selectedPair = RandomHelper.nextIntFromTo(0, tiesList.size() - 1);
+				returnArrayList.add(tiesList.get(selectedPair));
+				tiesList.remove(selectedPair);
 			}
 		}
 
@@ -1235,4 +1255,6 @@ public class ArrayUtils {
 
 		return returnArray;
 	}
+
+
 }
