@@ -1498,10 +1498,22 @@ public class RECO extends AggregatorAgent{
 		System.out.println("RECO:: arr_i_e " + Arrays.toString(arr_i_e));
 		
 		//System.out.println("RECO:: bs[] " + ArrayUtils.toString(bs));
-		System.out.println("RECO:: bs[0] " + Arrays.toString(bs[0]));
+		System.out.println("RECO:: B*S [0] " + Arrays.toString(bs[0]));
 		
 		Matrix bs_mat = new Matrix(bs);
 		bs_mat.transpose();			
+		
+		double[] bse = new double[this.ticksPerDay];
+		
+		//Arrays.fill(arr_i_e, 0);
+		
+		bse = ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B);
+		System.out.println("S*E*B: "+ Arrays.toString(bse));
+		
+		double[] bsk = new double[this.ticksPerDay];		
+		bsk = Matrix.times(bs_mat, k).getRowCopy(0);
+		System.out.println("B*S*K: "+ Arrays.toString(bsk));
+		
 		double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(bs_mat, k).getRowCopy(0)));
 		
 		System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
@@ -1663,7 +1675,7 @@ public class RECO extends AggregatorAgent{
 					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
 					
 					if (Consts.DEBUG) 							
-						writeOutput("output2_afterEE_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
+						writeOutput("output2_NormalBiz_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
 
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
@@ -1713,9 +1725,9 @@ public class RECO extends AggregatorAgent{
 				calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
 
 				//if (mainContext.getDayCount() > 7) {
-				writeOutput("output1_beforeEE_day_",null, null, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
+				writeOutput("output1_TrainingPhase_day_",null, null, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 
-				System.out.println(" just wrote output1_beforeEE_day_"+mainContext.getTimeslotOfDay());
+				System.out.println(" just wrote output1_TrainingPhase_day_"+mainContext.getTimeslotOfDay());
 			}
 		} 
 

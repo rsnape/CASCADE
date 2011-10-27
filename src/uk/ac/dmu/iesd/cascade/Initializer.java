@@ -40,6 +40,7 @@ import repast.simphony.visualization.IDisplay;
 import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
+import uk.ac.dmu.iesd.cascade.ui.TicksToDaysFormatter;
 
 
 
@@ -157,6 +158,10 @@ public class Initializer implements ModelInitializer{
 			} */
 			
 			RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
+			
+			RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
+			RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
+
 			
 			
 			//runParams.
