@@ -36,6 +36,7 @@ public final class Consts {
 	 */
 	public static boolean DEBUG = true;  //use for debugging, default is false
 	public static final String DEBUG_OUTPUT_FILE = "DebugOutput.txt"; //Change this to a name to desired filename to divert System.out to a file when DEBUG is true
+	public static boolean VERBOSE = false;  //if true, gets wordy by printing out some information on console 
 
 
 	public static int SECONDS_PER_DAY = 86400;
@@ -66,7 +67,7 @@ public final class Consts {
 	/**
 	 * Defines is the maximum fraction of any domestic load that is moveable.
 	 */
-	public static final double MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION = 0.5f;
+	public static final double MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION = 0.5d;
 
 	/**
 	 * Threshold in price signal at which behaviour change is prompted (if agent is willing)

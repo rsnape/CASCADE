@@ -175,7 +175,7 @@ public class ArrayUtils {
 	public static double[] mtimes(double[]... arrays)
 	{
 		double [] returnArray = new double[arrays[1].length];
-		Arrays.fill(returnArray, 1f);
+		Arrays.fill(returnArray, 1d);
 
 		for (double[] nextArray : arrays)
 		{

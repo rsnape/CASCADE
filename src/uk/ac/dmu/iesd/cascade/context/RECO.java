@@ -1443,7 +1443,7 @@ public class RECO extends AggregatorAgent{
 		for (int i=0; i<ts_arr.length; i++){
 			ts_arr[i] = i;	
 		}
-		String resFileName = fileName+(mainContext.getDayCount()-1)+".csv";
+		String resFileName = fileName+mainContext.getDayCount()+".csv";
 
 		CSVWriter res = new CSVWriter(resFileName, false);
 
@@ -1461,18 +1461,18 @@ public class RECO extends AggregatorAgent{
 		
 		res.appendText("B:");
 		res.appendRow(B);
-		res.appendText("D (for end of day "+(mainContext.getDayCount()-1)+"): ");
+		res.appendText("D (for end of day "+mainContext.getDayCount()+"): ");
 		res.appendRow(D);
-		res.appendText("S (for end of day "+(mainContext.getDayCount()-1)+"): ");
+		res.appendText("S (for end of day "+mainContext.getDayCount()+"): ");
 		res.appendRow(S);
-		res.appendText("e (for end of day "+(mainContext.getDayCount()-1)+"): ");
+		res.appendText("e (for end of day "+mainContext.getDayCount()+"): ");
 		res.appendRow(e);
-		res.appendText("k (for end of day "+(mainContext.getDayCount()-1)+"): ");
+		res.appendText("k (for end of day "+mainContext.getDayCount()+"): ");
 		res.appendCols(k);
 		res.close(); 
 		
 	}
-	
+
 	
 	/**
 	 * This methods estimates the error and ajust k and e values accordingly.
@@ -1516,9 +1516,18 @@ public class RECO extends AggregatorAgent{
 		
 		double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(bs_mat, k).getRowCopy(0)));
 		
+        //--RRR---initial R estimation based on paper: 
+		//double[] arr_errorEstim_R = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
+		//--RRR --End------
+		
+		///--sss--Richard suggestion
+		predictedShift = ArrayUtils.add(predictedShift, arr_i_B);
+		double[] arr_errorEstim_R = ArrayUtils.add(predictedShift, ArrayUtils.negate(actualShift));
+		arr_errorEstim_R = ArrayUtils.mtimes(arr_errorEstim_R, ArrayUtils.pow(arr_i_B,-1));
+		///--sss--End-------
+		
 		System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
 
-		double[] arr_errorEstim_R = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
 
 		if(Consts.DEBUG)
 			System.out.println("RECO:: errorEstim_R: " + Arrays.toString(arr_errorEstim_R));
@@ -1673,10 +1682,7 @@ public class RECO extends AggregatorAgent{
 					this.hist_week_arr_D[dayOfWeek] = hist_day_arr_D;
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
-					
-					if (Consts.DEBUG) 							
-						writeOutput("output2_NormalBiz_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
-
+				
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
@@ -1686,6 +1692,11 @@ public class RECO extends AggregatorAgent{
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 
 					broadcastSignalToCustomers(arr_i_S, customers);
+					
+					
+					if (Consts.DEBUG) 							
+						writeOutput("output2_NormalBiz_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
+
 				}
 
 			} //end of begining of normal operation
@@ -1724,10 +1735,9 @@ public class RECO extends AggregatorAgent{
 
 				calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
 
-				//if (mainContext.getDayCount() > 7) {
-				writeOutput("output1_TrainingPhase_day_",null, null, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
+				if (mainContext.getDayCount() > 53) 
+					writeOutput("output1_TrainingPhase_day_",arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 
-				System.out.println(" just wrote output1_TrainingPhase_day_"+mainContext.getTimeslotOfDay());
 			}
 		} 
 
