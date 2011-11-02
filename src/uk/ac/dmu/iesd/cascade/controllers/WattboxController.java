@@ -89,7 +89,6 @@ public class WattboxController implements ISmartController{
 	{
 		double[] ownersCostSignal = owner.getPredictedCostSignal();
 		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
-		System.out.println("EASYFIND: for debugging - predicted cost at time " + timeStep + " = " + Arrays.toString(dayPredictedCostSignal));
 		this.dayPredictedCostSignal = ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal, predictedCostToRealCostA),realCostOffsetb);
 		this.setPointProfile = owner.getSetPointProfile();
 		this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
@@ -160,7 +159,10 @@ public class WattboxController implements ISmartController{
 	public WeakHashMap getCurrentProfiles()
 	{
 		WeakHashMap returnMap = new WeakHashMap();
-		System.out.println("WattboxController:: putting arrays into the return map and returning to caller");
+		if(Consts.DEBUG)
+		{
+			System.out.println("WattboxController:: putting arrays into the return map and returning to caller");
+		}
 		returnMap.put("HeatPump", optimisedSetPointProfile);
 		returnMap.put("ColdApps", coldApplianceProfile);
 		returnMap.put("WetApps", wetApplianceProfile);
@@ -363,7 +365,10 @@ public class WattboxController implements ISmartController{
 	 */
 	void optimiseSetPointProfile()
 	{ 		
-		System.out.println("WattboxController:: optimise set point called for agent " + owner.getAgentName());
+		if (Consts.DEBUG)
+		{
+			System.out.println("WattboxController:: optimise set point called for agent " + owner.getAgentName());
+		}
 		//Initialise optimisation
 		double[] localSetPointArray = Arrays.copyOf(setPointProfile, setPointProfile.length);
 		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
@@ -390,15 +395,16 @@ public class WattboxController implements ISmartController{
 					localSetPointArray[k] = this.setPointProfile[k] - totalTempLoss;
 					availableHeatRecoveryTicks++;
 				}
-				
+
 
 
 				availableHeatRecoveryTicks--;
 
-				//Sort out where to regain the temperature (if possible)				
+				//Sort out where to regain the temperature (if possible)
 				int n = (int) Math.ceil((totalTempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
 
-				if (n < availableHeatRecoveryTicks)
+
+				if (n < availableHeatRecoveryTicks && n > 0)
 				{
 					double tempToRecover = (totalTempLoss / (double) n);
 					//It's possible to recover the temperature
@@ -411,7 +417,7 @@ public class WattboxController implements ISmartController{
 							localSetPointArray[m] += tempToRecover;
 							//System.out.println("Adding " + tempToRecover + " at index " + m + " to counter temp loss at tick " + (i+j+1));
 						}
-						if ((i+j) == 0)
+						if ((i+j) == 0 && Consts.DEBUG)
 						{
 							System.out.println("Evaluating switchoff for tick zero, set point array = " + Arrays.toString(localSetPointArray));
 						}
@@ -428,7 +434,7 @@ public class WattboxController implements ISmartController{
 						//System.out.println("Calculate pump profile for this temp profile");
 						//calculate energy implications and cost for this candidate setPointProfile
 						localDemandProfile = calculateSpaceHeatPumpDemand(localSetPointArray);
-						if ((i+j) == 0)
+						if ((i+j) == 0 && Consts.DEBUG)
 						{
 							System.out.println("Calculated demand for set point array = " + Arrays.toString(localSetPointArray));
 							System.out.println("Demand = " + Arrays.toString(localDemandProfile));

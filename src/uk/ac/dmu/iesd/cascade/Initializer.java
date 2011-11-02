@@ -40,6 +40,7 @@ import repast.simphony.visualization.IDisplay;
 import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
+import uk.ac.dmu.iesd.cascade.ui.TicksToDaysFormatter;
 
 
 
@@ -77,7 +78,8 @@ public class Initializer implements ModelInitializer{
 			CascadeContext cascadeContext = (CascadeContext) context;
 			//System.out.println("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
 			GUIRegistry guiRegis = runState.getGUIRegistry();
-
+			RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
+			RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
 			//Collection <Pair<GUIRegistryType,Collection<JComponent>>> typeAndComp = guiRegis.getTypesAndComponents();
 			Collection typeAndComp = guiRegis.getTypesAndComponents();
 			//Iterator <Pair<GUIRegistryType,Collection<JComponent>>> typeAndCompIter = typeAndComp.iterator();

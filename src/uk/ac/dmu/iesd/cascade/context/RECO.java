@@ -1503,9 +1503,10 @@ public class RECO extends AggregatorAgent{
 		bs_mat.transpose();			
 		double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(bs_mat, k).getRowCopy(0)));
 		
-		System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
+		System.out.println("RECO:: predictedShift " + Arrays.toString(predictedShift));
 
-		double[] arr_errorEstim_R = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
+		//double[] arr_errorEstim_R = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
+		double[] arr_errorEstim_R = ArrayUtils.mtimes(ArrayUtils.add(actualShift, ArrayUtils.multiply(predictedShift,-1)), ArrayUtils.pow(arr_i_B,-1));
 
 		if(Consts.DEBUG)
 			System.out.println("RECO:: errorEstim_R: " + Arrays.toString(arr_errorEstim_R));
@@ -1661,16 +1662,18 @@ public class RECO extends AggregatorAgent{
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
 					
-					if (Consts.DEBUG) 							
-						writeOutput("output2_afterEE_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
+					if (Consts.DEBUG) 
+					{
 
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					}
 
 					arr_i_S = minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
+					writeOutput("output2_afterEE_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
 
 					broadcastSignalToCustomers(arr_i_S, customers);
 				}

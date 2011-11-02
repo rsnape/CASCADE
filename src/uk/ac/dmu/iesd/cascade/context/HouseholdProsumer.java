@@ -415,7 +415,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		returnAmount = returnAmount + CHPGeneration() + windGeneration() + hydroGeneration() + thermalGeneration() + PVGeneration();
 		if (Consts.DEBUG)
 		{
-			if (returnAmount != 0)
+			if (returnAmount != 0 && Consts.DEBUG)
 			{
 				System.out.println("HouseholdProsumer:: Generating " + returnAmount);
 			}
@@ -587,11 +587,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//System.out.println("deltaT: "+ deltaT);
 
 		double requiredTempChange = this.setPoint - currentInternalTemp;
-		System.out.println("requiredTempChange: "+ requiredTempChange + " Current internal = " + currentInternalTemp + " set point = " + setPoint);
-		//System.out.println("buildingHeatLossRate: "+ buildingHeatLossRate);
-		//System.out.println("Consts.SECONDS_PER_DAY / ticksPerDay: "+ (double)Consts.SECONDS_PER_DAY / ticksPerDay);
-		//System.out.println("(Consts.SECONDS_PER_DAY / ticksPerDay) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR: "+ ((double)Consts.SECONDS_PER_DAY / ticksPerDay)/Consts.KWH_TO_JOULE_CONVERSION_FACTOR);
-
+		if (Consts.DEBUG)
+		{
+			System.out.println("requiredTempChange: "+ requiredTempChange + " Current internal = " + currentInternalTemp + " set point = " + setPoint);
+			//System.out.println("buildingHeatLossRate: "+ buildingHeatLossRate);
+			//System.out.println("Consts.SECONDS_PER_DAY / ticksPerDay: "+ (double)Consts.SECONDS_PER_DAY / ticksPerDay);
+			//System.out.println("(Consts.SECONDS_PER_DAY / ticksPerDay) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR: "+ ((double)Consts.SECONDS_PER_DAY / ticksPerDay)/Consts.KWH_TO_JOULE_CONVERSION_FACTOR);
+		}
 
 		double maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((double)(Consts.SECONDS_PER_DAY / ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
 		//System.out.println("maintenanceEnergy: "+ maintenanceEnergy);
@@ -609,7 +611,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 		{
 			//heat pump off, leave demand at zero and decrement internal temperature
 			this.currentInternalTemp -= maintenanceEnergy / this.buildingThermalMass;
+			if(Consts.DEBUG)
+			{
 			System.out.println("HouseholdProsumer:: HeatPump off - currentInternalTemp1: "+ currentInternalTemp);
+			}
 		}
 		else
 		{
@@ -618,13 +623,19 @@ public class HouseholdProsumer extends ProsumerAgent{
 			{
 				demand = (this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * ((double) 24 / ticksPerDay);
 				this.currentInternalTemp = this.currentInternalTemp + ((demand - maintenanceEnergy) / this.buildingThermalMass);
+				if (Consts.DEBUG)
+				{
 				System.out.println("HouseholdProsumer:: Heatpump on max, can't regain set point currentInternalTemp2: "+ currentInternalTemp);
+				}
 
 			}
 			else
 			{
 				this.currentInternalTemp = this.setPoint;
+				if (Consts.DEBUG)
+				{
 				System.out.println("HouseholdProsumer:: Heat pump on and regains set point - currentInternalTemp3: "+ currentInternalTemp);
+				}
 
 			}
 		}
@@ -916,7 +927,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		timeOfDay = (time % ticksPerDay);
 
 		checkWeather(time);
-		
+
 
 		//Do all the "once-per-day" things here
 		if (timeOfDay == 0)
@@ -934,7 +945,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 				//System.out.println("CSP (WaterHeat)" + Arrays.toString((double[])currentSmartProfiles.get("WaterHeat")));
 
 			}
-			
+
 
 			//***Richard output test for prosumer behaviour***
 
@@ -1008,7 +1019,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//System.out.println(" ---HH Prosumer----: "+this.getAgentID());
 		//System.out.println(" P ND (start): "+this.getNetDemand());
 		//System.out.println(" HouseholdProsumers step()");
+		if (Consts.DEBUG)
+		{
 		System.out.println("    -------- HouseholdProsumer: step() ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		}
 
 		time = (int) RepastEssentials.GetTickCount();
 		timeOfDay = (time % ticksPerDay);
@@ -1024,11 +1038,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 			//System.out.println(" inelasticTotalDayDemand: "+inelasticTotalDayDemand);
 			if (hasSmartControl){
 				mySmartController.update(time);
-				System.out.println("HouseholdProsumer:: " + getAgentName() + "getting optimised profiles");
+				//System.out.println("HouseholdProsumer:: " + getAgentName() + "getting optimised profiles");
 				currentSmartProfiles = mySmartController.getCurrentProfiles();
 				ArrayUtils.replaceRange(this.coldApplianceProfile, (double[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
 				this.optimisedSetPointProfile = (double[]) currentSmartProfiles.get("HeatPump");
-				System.out.println("HouseholdProsumer:: optimised set point = CSP (HeatPump)" + Arrays.toString(optimisedSetPointProfile));
+				//System.out.println("HouseholdProsumer:: optimised set point = CSP (HeatPump)" + Arrays.toString(optimisedSetPointProfile));
 				//System.out.println("CSP (HeatPump)" + Arrays.toString(optimisedSetPointProfile));
 				this.setWaterHeatProfile((double[]) currentSmartProfiles.get("WaterHeat"));
 				//System.out.println("CSP (WaterHeat)" + Arrays.toString((double[])currentSmartProfiles.get("WaterHeat")));
@@ -1051,7 +1065,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			}
 
 		}
-		
+
 		this.setPoint = this.optimisedSetPointProfile[timeOfDay];
 
 
@@ -1080,7 +1094,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		//After the heat input has been calculated, re-calculate the internal temperature of the house
 		recordInternalAndExternalTemp(time);
+		
+		if (Consts.DEBUG)
+		{
 		System.out.println("     -------- HouseholdProsumer: END ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		}
 
 
 		//System.out.println(" P ND (end): "+this.getNetDemand());

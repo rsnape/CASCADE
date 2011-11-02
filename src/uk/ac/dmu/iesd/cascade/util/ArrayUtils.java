@@ -1164,9 +1164,9 @@ public class ArrayUtils {
 		int[] returnArray = new int[n];
 		double[] workingArray = Arrays.copyOf(doubleArray, doubleArray.length);
 
-		if (n < 0)
+		if (n < 1)
 		{
-			System.err.println("ArrayUtils: Trying to find " + n + " smallest indices. Negative count makes no sense");
+			System.err.println("ArrayUtils: Trying to find " + n + " smallest indices. Zero or negative count makes no sense");
 		}
 		if (doubleArray.length < n)
 		{
