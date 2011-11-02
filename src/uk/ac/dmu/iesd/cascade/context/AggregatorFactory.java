@@ -21,5 +21,9 @@ CascadeContext cascadeMainContext;
 		RECO aCO = new RECO(cascadeMainContext,baseProfile);
 		return aCO;
 	}
+	
+	public UtilityCo createUtilityCo(double[] baseProfile){
+		return new UtilityCo(cascadeMainContext,baseProfile);
+	}
 
 }

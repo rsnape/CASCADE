@@ -530,6 +530,7 @@ public class CascadeContext extends DefaultContext{
 		//tttttttttttttt   Babak test ttttttttttttttttttttt
 		RunState runState = RunState.getInstance();
 		GUIRegistry guiRegis = runState.getGUIRegistry();
+		
 		//List<IDisplay> listOfDisplays =  guiRegis.getDisplays();		
 		//System.out.println("list of displays size: "+listOfDisplays.size());
 		//tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt

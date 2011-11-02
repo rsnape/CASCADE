@@ -54,6 +54,7 @@ import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.projection.Projection;
 import repast.simphony.ui.RSApplication;
+import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
 import repast.simphony.util.collections.Pair;
 import uk.ac.cranfield.market.*;
@@ -143,7 +144,6 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		cascadeMainContext.verbose = (Boolean) params.getValue("verboseOutput");
 		cascadeMainContext.chartSnapshotOn = (Boolean) params.getValue("chartSnapshot");
 		cascadeMainContext.setChartSnapshotInterval((Integer) params.getValue("chartSnapshotInterval"));
-		
 		
 		Date startDate;
 		try {
@@ -384,6 +384,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		//Secondly add aggregator(s)
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
+		//UtilityCo firstAggregator = aggregatorFactory.createUtilityCo(cascadeMainContext.systemPriceSignalDataArray);
 		RECO firstAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
 		//AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(firstAggregator);
@@ -817,9 +818,9 @@ private void populateContext_Test() {
 		initializeProbabilityDistributions();
 		//cascadeMainContext.buildChartSnapshotSchedule();
 		
-		//populateContext();
+		populateContext();
 		
-		populateContext_Test();
+		//populateContext_Test();
 		
 		
 		for(int i = 0; i < 4; i++)

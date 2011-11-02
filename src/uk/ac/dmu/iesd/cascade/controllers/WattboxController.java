@@ -159,6 +159,10 @@ public class WattboxController implements ISmartController{
 	public WeakHashMap getCurrentProfiles()
 	{
 		WeakHashMap returnMap = new WeakHashMap();
+		if(Consts.DEBUG)
+		{
+			System.out.println("WattboxController:: putting arrays into the return map and returning to caller");
+		}
 		returnMap.put("HeatPump", optimisedSetPointProfile);
 		returnMap.put("ColdApps", coldApplianceProfile);
 		returnMap.put("WetApps", wetApplianceProfile);
@@ -361,6 +365,10 @@ public class WattboxController implements ISmartController{
 	 */
 	void optimiseSetPointProfile()
 	{ 		
+		if (Consts.DEBUG)
+		{
+			System.out.println("WattboxController:: optimise set point called for agent " + owner.getAgentName());
+		}
 		//Initialise optimisation
 		double[] localSetPointArray = Arrays.copyOf(setPointProfile, setPointProfile.length);
 		this.optimisedSetPointProfile = Arrays.copyOf(setPointProfile, setPointProfile.length);
@@ -376,35 +384,42 @@ public class WattboxController implements ISmartController{
 			localSetPointArray = Arrays.copyOf(setPointProfile, setPointProfile.length);
 			double totalTempLoss = 0;
 
-			for ( int j = Consts.HEAT_PUMP_MIN_SWITCHOFF - 1; (j < Consts.HEAT_PUMP_MAX_SWITCHOFF && (i+j < ticksPerDay)); j++)
+			for ( int j = 0; (j < Consts.HEAT_PUMP_MAX_SWITCHOFF && (i+j < ticksPerDay)); j++)
 			{
 				double tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * Math.max(0,(localSetPointArray[i+j] - priorDayExternalTempProfile[i+j]))) / owner.buildingThermalMass);
 				//System.out.println("Temp loss in tick " + (i + j) + " = " + tempLoss);
 				totalTempLoss += tempLoss;
 				double availableHeatRecoveryTicks = 0;
-				for (int k = i+j+1; k < localSetPointArray.length; k++)
+				for (int k = i+j/*+1*/; k < localSetPointArray.length; k++)
 				{
 					localSetPointArray[k] = this.setPointProfile[k] - totalTempLoss;
 					availableHeatRecoveryTicks++;
 				}
 
+
+
 				availableHeatRecoveryTicks--;
 
-				//Sort out where to regain the temperature (if possible)				
+				//Sort out where to regain the temperature (if possible)
 				int n = (int) Math.ceil((totalTempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
 
-				if (n <= availableHeatRecoveryTicks)
+
+				if (n < availableHeatRecoveryTicks && n > 0)
 				{
 					double tempToRecover = (totalTempLoss / (double) n);
 					//It's possible to recover the temperature
-					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+2,ticksPerDay),n);
+					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+1,ticksPerDay),n);
 
 					for (int l : recoveryIndices)
 					{
-						for (int m = i+j+l+2; m < ticksPerDay; m++)
+						for (int m = i+j+l+1; m < ticksPerDay; m++)
 						{
 							localSetPointArray[m] += tempToRecover;
 							//System.out.println("Adding " + tempToRecover + " at index " + m + " to counter temp loss at tick " + (i+j+1));
+						}
+						if ((i+j) == 0 && Consts.DEBUG)
+						{
+							System.out.println("Evaluating switchoff for tick zero, set point array = " + Arrays.toString(localSetPointArray));
 						}
 						//System.out.println("In here, adding temp " + tempToRecover + " from index " + l);
 						//System.out.println("With result " + Arrays.toString(localSetPointArray));
@@ -419,6 +434,11 @@ public class WattboxController implements ISmartController{
 						//System.out.println("Calculate pump profile for this temp profile");
 						//calculate energy implications and cost for this candidate setPointProfile
 						localDemandProfile = calculateSpaceHeatPumpDemand(localSetPointArray);
+						if ((i+j) == 0 && Consts.DEBUG)
+						{
+							System.out.println("Calculated demand for set point array = " + Arrays.toString(localSetPointArray));
+							System.out.println("Demand = " + Arrays.toString(localDemandProfile));
+						}
 						if (localDemandProfile != null)
 						{
 							//in here if the set point profile is achievable
@@ -472,13 +492,13 @@ public class WattboxController implements ISmartController{
 			//currentTempProfile[i] = internalTemp;
 			double tempChange;
 
-			if (i < ticksPerDay - 1)
+			if (i > 0)
 			{
-				tempChange = localSetPointArray[i+1] - localSetPointArray[i];
+				tempChange = localSetPointArray[i] - localSetPointArray[i - 1];
 			}
 			else
 			{
-				tempChange = localSetPointArray[0] - localSetPointArray[i];
+				tempChange = localSetPointArray[i] - this.setPointProfile[0] ;
 			}
 
 			//double setPointMaintenanceEnergy = deltaT[i] * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
