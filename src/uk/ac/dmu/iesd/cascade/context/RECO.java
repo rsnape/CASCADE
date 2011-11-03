@@ -1522,7 +1522,7 @@ public class RECO extends AggregatorAgent{
 		
 		///--sss--Richard suggestion
 		predictedShift = ArrayUtils.add(predictedShift, arr_i_B);
-		double[] arr_errorEstim_R = ArrayUtils.add(predictedShift, ArrayUtils.negate(actualShift));
+		double[] arr_errorEstim_R = ArrayUtils.add(predictedShift, ArrayUtils.negate(hist_day_arr_D));
 		arr_errorEstim_R = ArrayUtils.mtimes(arr_errorEstim_R, ArrayUtils.pow(arr_i_B,-1));
 		///--sss--End-------
 		
