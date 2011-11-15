@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.WeakHashMap;
 
 import repast.simphony.random.RandomHelper;
@@ -27,9 +28,9 @@ import cern.jet.random.Empirical;
  * 1.01 - added dot product functionality and normalization
  *
  */
- 
+
 public class AgentUtils {
-	
+
 	/*
 	 * Assign agents a given parameter value based on an input probability distribution
 	 * This implementation requires a JavaBean type setters for the parameter.
@@ -49,7 +50,7 @@ public class AgentUtils {
 	{
 		//set up the distribution for drawing values
 		Empirical myDist = RandomHelper.createEmpirical(probs, Empirical.NO_INTERPOLATION);
-		
+
 		//find the agent class
 		for (Object thisAgent : agents)
 		{
@@ -67,8 +68,8 @@ public class AgentUtils {
 				System.err.println("AgentUtils: failed to get find Bean Info for agent " + thisAgent.toString());
 				e.printStackTrace();
 			}
-			
-			
+
+
 			if (modProp != null)
 			{
 				int i = 0;
@@ -82,12 +83,12 @@ public class AgentUtils {
 					}
 					i++;
 				}
-				
+
 				if (selectedVal >= values.length)
 				{
 					selectedVal = values.length - 1;
 				}
-				
+
 				try {
 					modProp.getWriteMethod().invoke(thisAgent, values[selectedVal]);
 				} catch (Exception e) {
@@ -103,7 +104,7 @@ public class AgentUtils {
 			}
 		}
 	}
-	
+
 	/*
 	 * Assign agents a given parameter value based on a list of input values
 	 * This implementation requires a JavaBean type setters for the parameter
@@ -132,7 +133,7 @@ public class AgentUtils {
 			System.err.println("This method has failed - it is likely that simulation will give unintended results.");
 			return;
 		}
-		
+
 		int i = 0;
 		for (Object thisAgent : agents)
 		{
@@ -151,7 +152,7 @@ public class AgentUtils {
 
 				e.printStackTrace();
 			}
-		
+
 			if (modProp != null)
 			{
 				try {
@@ -170,7 +171,7 @@ public class AgentUtils {
 			i++;
 		}
 	}
-	
+
 	/*
 	 * Assign agents a given parameter value based on a list of input values
 	 * This implementation requires a JavaBean type setters for the parameter
@@ -186,9 +187,10 @@ public class AgentUtils {
 	 */
 	public static void assignParameterSingleValue(String paramName, Object value, Iterable agents)
 	{
-
+		
 		for (Object thisAgent : agents)
 		{
+
 			PropertyDescriptor modProp = null;
 			try {
 				for (PropertyDescriptor prop : Introspector.getBeanInfo(thisAgent.getClass()).getPropertyDescriptors())
@@ -203,7 +205,46 @@ public class AgentUtils {
 				System.err.println("AgentUtils: failed to get find Bean Info for agent " + thisAgent.toString());
 				e.printStackTrace();
 			}
-		
+
+			if (modProp != null)
+			{
+				try {
+					modProp.getWriteMethod().invoke(thisAgent, value);
+				} catch (Exception e) {
+					System.err.println("AgentUtils: Caught an exception while invoking the bean setter method on propert " + modProp.toString() + " on agent " + thisAgent.toString());
+					System.err.println("Likely to cause unintended behaviour");
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				System.err.println("AgentUtils: Agent " + thisAgent.toString() + " doesn't have property " + paramName);
+				System.err.println("Cannot complete the action");
+			}
+		}
+	}
+
+
+	public static void assignParameterSingleValue(String paramName, Object value, Iterator agents)
+	{
+		while (agents.hasNext())
+		{
+			Object thisAgent = agents.next();
+			PropertyDescriptor modProp = null;
+			try {
+				for (PropertyDescriptor prop : Introspector.getBeanInfo(thisAgent.getClass()).getPropertyDescriptors())
+				{
+					if (prop.getName().contentEquals(paramName))
+					{
+						modProp = prop;
+					}
+				}
+			} catch (IntrospectionException e) {
+				// TODO Auto-generated catch block
+				System.err.println("AgentUtils: failed to get find Bean Info for agent " + thisAgent.toString());
+				e.printStackTrace();
+			}
+
 			if (modProp != null)
 			{
 				try {
@@ -223,3 +264,7 @@ public class AgentUtils {
 	}
 
 }
+
+
+
+

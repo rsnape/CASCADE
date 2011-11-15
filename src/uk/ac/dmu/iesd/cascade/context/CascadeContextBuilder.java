@@ -59,8 +59,8 @@ import repast.simphony.util.collections.IndexedIterable;
 import repast.simphony.util.collections.Pair;
 import uk.ac.cranfield.market.*;
 import uk.ac.dmu.iesd.cascade.Consts;
-import uk.ac.dmu.iesd.cascade.Consts.GENERATOR_TYPE;
-import uk.ac.dmu.iesd.cascade.Consts.STORAGE_TYPE;
+//import uk.ac.dmu.iesd.cascade.Consts.GENERATOR_TYPE;
+//import uk.ac.dmu.iesd.cascade.Consts.STORAGE_TYPE;
 import uk.ac.dmu.iesd.cascade.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.test.HHProsumer;
@@ -124,8 +124,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	int numDemandColumns;
 	//Normal buildingLossRateGenerator = RandomHelper.createNormal(275,75);
 	//Normal thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
-	Normal buildingLossRateGenerator = null;
-	Normal thermalMassGenerator = null;
+
 	double[] monthlyMainsWaterTemp = new double[12];
 
 	/*
@@ -232,7 +231,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	/**
 	 * Populate the context(by creating agents, actors, objects, etc)
 	 */
-	private void populateContext() {
+	private void populateContext_Old() {
 		
 		//Convert base demand to half hourly (or whatever fraction of a day we are working with)
 		// NOTE - I am assuming input in kWh.  If in kW, this should average rather than sum!!
@@ -326,8 +325,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				thisAgent.hasDishWasher = true;
 			}
 
-			thisAgent.setBuildingHeatLossRate/*(225f);//For test*/(buildingLossRateGenerator.nextDouble());
-			thisAgent.setBuildingThermalMass/*(10f);//For test*/(thermalMassGenerator.nextDouble());
+			thisAgent.setBuildingHeatLossRate/*(225f);//For test*/(cascadeMainContext.buildingLossRateGenerator.nextDouble());
+			thisAgent.setBuildingThermalMass/*(10f);//For test*/(cascadeMainContext.thermalMassGenerator.nextDouble());
 			thisAgent.tau = (thisAgent.buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / thisAgent.buildingHeatLossRate;
 			thisAgent.freeRunningTemperatureLossPerTickMultiplier = (thisAgent.buildingHeatLossRate / thisAgent.buildingThermalMass) / (Consts.KWH_TO_JOULE_CONVERSION_FACTOR / (Consts.SECONDS_PER_DAY / cascadeMainContext.ticksPerDay));
 			
@@ -389,10 +388,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		//AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(firstAggregator);
 		
-		buildNetworks(firstAggregator);
+		buildOtherNetworks(firstAggregator);
 	}
 	
-	private void createHHProsumersAndAddThemToContext() {
+	private void createTestHHProsumersAndAddThemToContext() {
 		
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 
@@ -420,11 +419,11 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 	}
 	
-private void createHouseholdProsumersAndAddThemToContext() {
+    private void createHouseholdProsumersAndAddThemToContext(int occupancyNb) {
 		
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 
-		double[] householdBaseDemandArray = null;
+		double[] householdMiscDemandArray = null; //Misc demand profile array consists of electricity demand for lightening, entertainment, computer and small appliances  
 		for (int i = 0; i < numProsumers; i++) {
 
 			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
@@ -435,20 +434,18 @@ private void createHouseholdProsumersAndAddThemToContext() {
 			{
 				System.out.println("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
 			}
-			householdBaseDemandArray = ArrayUtils.convertStringArrayToDoubleArray(baseDemandReader.getColumn(demandName));
+			
+			householdMiscDemandArray = ArrayUtils.convertStringArrayToDoubleArray(baseDemandReader.getColumn(demandName));
 
-			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer_Test(householdBaseDemandArray, false);
-			// HHProsumer hhProsAgent = prosumerFactory.createHHProsumer(householdBaseDemandArray, false);
+			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(householdMiscDemandArray, false, occupancyNb);
+			//HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer_Test(householdBaseDemandArray, false);
 
-			//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
-			//hhProsAgent.hasSmartMeter = true;
-			//hhProsAgent.hasSmartControl = true;  // Babak: this is also done in HHProsumer Constructor!
 			cascadeMainContext.add(hhProsAgent);			
 		} 
 		
 	}
 	
-	private void initializeHHProsumersWetAppliancesParameters() {
+	private void initializeHHProsumersWetAppliancesPar4All() {
 		
 		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
 
@@ -490,11 +487,6 @@ private void createHouseholdProsumersAndAddThemToContext() {
 			{
 				thisAgent.hasDishWasher = true;
 			}
-
-			thisAgent.setBuildingHeatLossRate/*(225f);//For test*/(buildingLossRateGenerator.nextDouble());
-			thisAgent.setBuildingThermalMass/*(10f);//For test*/(thermalMassGenerator.nextDouble());
-			thisAgent.tau = (thisAgent.buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / thisAgent.buildingHeatLossRate;
-			thisAgent.freeRunningTemperatureLossPerTickMultiplier = (thisAgent.buildingHeatLossRate / thisAgent.buildingThermalMass) / (Consts.KWH_TO_JOULE_CONVERSION_FACTOR / (Consts.SECONDS_PER_DAY / cascadeMainContext.ticksPerDay));
 			
 			//populate the initial heating profile from the above baseline demand for hot water
 			thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
@@ -518,21 +510,84 @@ private void createHouseholdProsumersAndAddThemToContext() {
 			System.out.println("Dish Washer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
 		}
 		
-		
 	}
-	private void initializeHHProsumersWaterHeatingParameters() {
-		Iterable waterHeated = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecWaterFraction")));
-		AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true, waterHeated);
+	private void setHHProsumersElecWaterHeatBasedOnFraction() {
+		
+		Iterable waterHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecWaterFraction")));
+		ArrayList prosumersWithElecWaterHeatList = IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
+		
+		//System.out.println("ArrayList.size: WaterHeat "+ prosumersWithElecWaterHeatList.size());
+		AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true, prosumersWithElecWaterHeatList.iterator());
+	
+		Iterator iter = prosumersWithElecWaterHeatList.iterator();
+      
+		while (iter.hasNext()) {
+			//System.out.println("FOR WaterHeat hasNext");
+			((HouseholdProsumer) iter.next()).initializeElectWaterHeatPar();
+		}
+	}
+	
+	private void setHHProsumersElecSpaceHeatBasedOnFraction() {
+		Iterable spaceHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecSpaceFraction")));
+		
+		ArrayList prosumersWithElecSpaceHeatList = IterableUtils.Iterable2ArrayList(spaceHeatedProsumersIter);
+
+		//System.out.println("ArrayList.size: Space Heat "+ prosumersWithElecSpaceHeatList.size());
+
+		AgentUtils.assignParameterSingleValue("hasElectricalSpaceHeat", true, prosumersWithElecSpaceHeatList.iterator());
+		
+		Iterator iter = prosumersWithElecSpaceHeatList.iterator();
+	      
+		while (iter.hasNext()) {
+			//System.out.println("FOR  spaceHeat hasNext");
+			((HouseholdProsumer) iter.next()).initializeElecSpaceHeatPar();
+		}
 		
 	}
 	
-	private void initializeHHProsumersSpaceHeatingParameters() {
-		Iterable spaceHeated = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecSpaceFraction")));
-		AgentUtils.assignParameterSingleValue("hasElectricalSpaceHeat", true, spaceHeated);
-		
+	
+	/**
+	 * This method uses rule set as described in Boait et al draft paper to assign
+	 * cold appliance ownership on a stochastic, but statistically representative, basis.
+	 */
+	private void initializeHHProsumersColdAppliancesPar4All()
+	{
+		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
+
+		for (HouseholdProsumer pAgent : householdProsumers)
+		{
+			// Set up cold appliance ownership
+			if(RandomHelper.nextDouble() < 0.651)
+			{
+				pAgent.hasFridgeFreezer = true;
+				if (RandomHelper.nextDouble() < 0.15)
+				{
+					pAgent.hasRefrigerator = true;
+				}
+			}
+			else
+			{
+				if (RandomHelper.nextDouble() < 0.95)
+				{
+					pAgent.hasRefrigerator = true;
+				}
+				if (RandomHelper.nextDouble() < 0.835)
+				{
+					pAgent.hasUprightFreezer = true;
+				}
+			}
+
+			if (RandomHelper.nextDouble() < 0.163)
+			{
+				pAgent.hasChestFreezer = true;
+			}
+			
+			pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer && pAgent.hasChestFreezer));
+		}
 	}
 	
-	private void initializeHHProsumersMiscParameters() {
+	/*
+	private void initializeHouseholdProsumersMiscParameters() {
 
 		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
 
@@ -552,10 +607,12 @@ private void createHouseholdProsumersAndAddThemToContext() {
 			//--------------
 			pAgent.hasSmartControl = true;
 		}
-	
 	}
+	*/
+	
+	/*
 
-	private void setHHProsumersResponsivenessToPriceSignal(boolean isResponsiveToSignal) {
+	private void setHouseholdProsumersResponsivenessToPriceSignal(boolean isResponsiveToSignal) {
 		// this can be done by setting hasSmartControl to false
 		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
 		for (HouseholdProsumer pAgent : householdProsumers)
@@ -564,34 +621,8 @@ private void createHouseholdProsumersAndAddThemToContext() {
 			pAgent.hasSmartMeter = isResponsiveToSignal;
 		}
 	}
+	*/
 		
-	
-private void populateContext_Test() {
-	
-	   createHHProsumersAndAddThemToContext();
-	    
-	    //createHouseholdProsumersAndAddThemToContext();
-	    
-	    
-	    //initializeHHProsumersMiscParameters();
-	    //initializeHHProsumersWetAppliancesParameters();
-	    
-	    //setHHProsumersResponsivenessToPriceSignal(false);
-	    
-	    //initializeHHProsumersWaterHeatingParameters();
-	    //initializeHHProsumersSpaceHeatingParameters();
-	
-		//buildSocialNetwork();
-
-		//Secondly add aggregator(s)
-		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
-		RECO firstAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
-		//AggregatorAgent firstAggregator = new AggregatorAgent(cascadeMainContext, cascadeMainContext.systemPriceSignalDataArray);
-		cascadeMainContext.add(firstAggregator);
-		
-		buildNetworks(firstAggregator);
-	}
-	
 	
 	/**
 	 * This method will builds the social networks
@@ -655,7 +686,7 @@ private void populateContext_Test() {
 	 * Later this method (or its breakup(s)) can receive parameters such as EdgeSource and EdgeTarget 
 	 * to create edges between a source and a target
 	 */
-	private void buildNetworks(AggregatorAgent firstAggregator) {
+	private void buildOtherNetworks(AggregatorAgent firstAggregator) {
 		boolean directed = true;
 		
 		//Create the household social network before other agent types are added to the context.
@@ -765,8 +796,8 @@ private void populateContext_Test() {
 		cascadeMainContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
 		cascadeMainContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
 		
-		buildingLossRateGenerator = RandomHelper.createNormal(275,75);
-		thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
+		cascadeMainContext.buildingLossRateGenerator = RandomHelper.createNormal(275,75);
+		cascadeMainContext.thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
 	}
 	
 	/**
@@ -798,31 +829,11 @@ private void populateContext_Test() {
 		schedule.scheduleIterable(aggregatorScheduleParams, aggregatorIndIter, "step", true);
 		
 	}
-
-
-	/*
-	 * Builds the <tt> Cascade Context </tt> (by calling other private sub-methods)
-	 * @see uk.ac.dmu.iesd.cascade.context.CascadeContext
-	 * @see repast.simphony.dataLoader.ContextBuilder#build(repast.simphony.context.Context)
-	 * @return built context
-	 */
-	public CascadeContext build(Context context) {
-		// Instantiate the Cascade context, passing in the context that was given to this builder
-		// to clone any existing parameters
-		//tempCont =context;
-		//System.out.println("CascadeContextBuilder");
+	
+	private void cranfieldMarketModelIntegrationTest () {
 		
-		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
-
-		readParamsAndInitializeArrays();
-		initializeProbabilityDistributions();
-		//cascadeMainContext.buildChartSnapshotSchedule();
-		
-		populateContext();
-		
-		//populateContext_Test();
-		
-		
+		// first integration attempt test with Cranfield market model
+		// to be arranged later
 		for(int i = 0; i < 4; i++)
 		{	
 			double minGen = RandomHelper.nextDoubleFromTo(20000,40000);
@@ -842,7 +853,7 @@ private void populateContext_Test() {
 					   minD,minDPrice);
 			ta.stDev =i;
 			//context.add(ta);
-			System.out.println("Graham: add to cotext");
+			System.out.println("Graham: add to context");
 			//cascadeMainContext.add(ta);
 			
 			ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,0);
@@ -856,24 +867,69 @@ private void populateContext_Test() {
 		RunEnvironment.getInstance().getCurrentSchedule().schedule(params, Mo, "iterate");
 		
 		
-	/*    IndexedIterable <testAggregator> testAggIter = cascadeMainContext.getObjects(testAggregator.class);
-
-		for (testAggregator it : testAggIter ) {
-			System.out.println(it);
-		}*/
 		
-		
-		
-		//buildSchedulesDirectly();
+	}
 	
-		//buildNetworks();
+	private void populateContext_test() {
+		createTestHHProsumersAndAddThemToContext();
 		
-		//++++++++++++++Add stuff to user panel
-		/*JPanel customPanel = new JPanel();
-		customPanel.add(new JLabel("TestLabel"));
-		customPanel.add(new JButton("Test Button"));		
-		RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel); */
-		//+++++++++++++++++++++++++++++++++++++
+	}
+	
+	
+	private void populateContext() {
+
+		//createHouseholdProsumersAndAddThemToContext(1); //pass in parameter nb of occupants, or random
+		createHouseholdProsumersAndAddThemToContext(Consts.RANDOM);
+
+		if (Consts.HHPRO_HAS_WET_APPL)
+			initializeHHProsumersWetAppliancesPar4All();
+
+		if (Consts.HHPRO_HAS_COLD_APPL)
+			initializeHHProsumersColdAppliancesPar4All();
+		
+		if (Consts.HHPRO_HAS_ELEC_WATER_HEAT)
+			setHHProsumersElecWaterHeatBasedOnFraction();
+		
+		if (Consts.HHPRO_HAS_ELEC_SPACE_HEAT)
+			setHHProsumersElecSpaceHeatBasedOnFraction();
+
+		
+		buildSocialNetwork();
+
+		//Secondly add aggregator(s), currently one
+		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
+		RECO firstRecoAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(firstRecoAggregator);
+
+		buildOtherNetworks(firstRecoAggregator);
+	}
+
+
+	/*
+	 * Builds the <tt> Cascade Context </tt> (by calling other private sub-methods)
+	 * In part, it instantiates the Cascade context by passing in the context that is passed to 
+	 * the builder
+	 * @see uk.ac.dmu.iesd.cascade.context.CascadeContext
+	 * @see repast.simphony.dataLoader.ContextBuilder#build(repast.simphony.context.Context)
+	 * @return built context
+	 */
+	public CascadeContext build(Context context) {
+
+		//System.out.println("CascadeContextBuilder");
+		
+		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
+
+		readParamsAndInitializeArrays();
+		initializeProbabilityDistributions();
+		
+		//populateContext_Old(); // this was the original implementation
+		
+		//populateContext_test();
+		
+		populateContext();
+		
+		cranfieldMarketModelIntegrationTest();
+		
 		
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());

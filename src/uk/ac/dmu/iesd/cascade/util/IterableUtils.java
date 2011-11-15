@@ -32,4 +32,32 @@ public class IterableUtils {
 
 		return count;
 	}
+	
+	public static int count(Iterator thisIterator)
+	{
+		int count = 0;
+		
+		while(thisIterator.hasNext())
+		{
+			thisIterator.next();
+			count++;
+		}
+
+		return count;
+	}
+	
+	public static ArrayList Iterable2ArrayList(Iterable anIterable) {
+		
+		ArrayList iterableItems = new ArrayList();
+		Iterator iterable = anIterable.iterator();
+		
+		while(iterable.hasNext())
+		{
+			iterableItems.add(iterable.next());
+		}
+
+		return iterableItems;
+		
+	}
+
 }

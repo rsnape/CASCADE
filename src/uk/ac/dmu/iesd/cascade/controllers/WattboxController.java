@@ -90,13 +90,22 @@ public class WattboxController implements ISmartController{
 		double[] ownersCostSignal = owner.getPredictedCostSignal();
 		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
 		this.dayPredictedCostSignal = ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal, predictedCostToRealCostA),realCostOffsetb);
-		this.setPointProfile = owner.getSetPointProfile();
-		this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
-		this.currentTempProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
-		this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length) , (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
-		this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
-		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.baselineHotWaterVolumeProfile,(timeStep % owner.baselineHotWaterVolumeProfile.length), (timeStep % owner.baselineHotWaterVolumeProfile.length) + ticksPerDay);
-		if (owner.isHasElectricalSpaceHeat())
+		if (owner.getHasElectricalSpaceHeat()) {
+			this.setPointProfile = owner.getSetPointProfile();
+			this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
+			this.currentTempProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
+		}
+		
+		if (owner.getHasColdAppliances())
+			this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length) , (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
+		
+		if (owner.getHasWetAppliances())
+			this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
+
+		if (owner.getHasElectricalWaterHeat())
+			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(),(timeStep % owner.getBaselineHotWaterVolumeProfile().length), (timeStep % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
+
+		if (owner.getHasElectricalSpaceHeat())
 		{
 			this.heatPumpDemandProfile = ArrayUtils.multiply(calculateSpaceHeatPumpDemand(this.setPointProfile), (1/Consts.DOMESTIC_HEAT_PUMP_SPACE_COP));
 		}
@@ -105,7 +114,7 @@ public class WattboxController implements ISmartController{
 			this.heatPumpDemandProfile = Arrays.copyOf(noElecHeatingDemand, noElecHeatingDemand.length);
 		}
 
-		if (owner.isHasElectricalWaterHeat())
+		if (owner.getHasElectricalWaterHeat())
 		{
 			this.waterHeatDemandProfile = ArrayUtils.multiply(hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
 		}
@@ -114,13 +123,14 @@ public class WattboxController implements ISmartController{
 			this.waterHeatDemandProfile = Arrays.copyOf(noElecHeatingDemand, noElecHeatingDemand.length);
 
 		}
-
-		if (coldAppliancesControlled)
+		
+		if (coldAppliancesControlled && owner.getHasColdAppliances())
 		{
 			optimiseColdProfile();
 		}
+		
 
-		if (wetAppliancesControlled)
+		if (wetAppliancesControlled && owner.getHasWetAppliances())
 		{
 			optimiseWetProfile();
 		}
@@ -129,7 +139,7 @@ public class WattboxController implements ISmartController{
 		// Note - optimise space heating first.  This is so that we can look for absolute
 		// heat pump limit and add the cost of using immersion heater (COP 0.9) to top
 		// up water heating if the heat pump is too great
-		if (spaceHeatingControlled && owner.isHasElectricalSpaceHeat())
+		if (spaceHeatingControlled && owner.getHasElectricalSpaceHeat())
 		{
 			//optimiseSpaceHeatProfile();
 			optimiseSetPointProfile();
@@ -137,14 +147,14 @@ public class WattboxController implements ISmartController{
 		}	
 
 
-		if (waterHeatingControlled && owner.isHasElectricalWaterHeat())
+		if (waterHeatingControlled && owner.getHasElectricalWaterHeat())
 		{
 			//optimiseWaterHeatProfile();
 			optimiseWaterHeatProfileWithSpreading();
 		}
 
 
-		if (eVehicleControlled && owner.isHasElectricVehicle())
+		if (eVehicleControlled && owner.hasElectricVehicle())
 		{
 			optimiseEVProfile();
 		}
@@ -164,8 +174,10 @@ public class WattboxController implements ISmartController{
 			System.out.println("WattboxController:: putting arrays into the return map and returning to caller");
 		}
 		returnMap.put("HeatPump", optimisedSetPointProfile);
-		returnMap.put("ColdApps", coldApplianceProfile);
-		returnMap.put("WetApps", wetApplianceProfile);
+		if (owner.getHasColdAppliances())
+			returnMap.put("ColdApps", coldApplianceProfile);
+		if (owner.getHasWetAppliances())
+			returnMap.put("WetApps", wetApplianceProfile);
 		returnMap.put("WaterHeat", waterHeatDemandProfile);
 		return returnMap;
 	}
@@ -571,9 +583,15 @@ public class WattboxController implements ISmartController{
 		//Initialise with a flat external temperature - thus no incentive to move demand on first day of use.
 		this.priorDayExternalTempProfile = new double[ticksPerDay];
 		Arrays.fill(priorDayExternalTempProfile, Double.parseDouble("7"));
-		this.heatPumpOnOffProfile = Arrays.copyOf(owner.spaceHeatPumpOn,owner.spaceHeatPumpOn.length);
+		
+		if (owner.getHasElectricalSpaceHeat())
+			this.heatPumpOnOffProfile = Arrays.copyOf(owner.spaceHeatPumpOn,owner.spaceHeatPumpOn.length);
 		//this.heatPumpDemandProfile = new double[ticksPerDay];
-		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.baselineHotWaterVolumeProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.baselineHotWaterVolumeProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.baselineHotWaterVolumeProfile.length) + ticksPerDay);
+		//double [] prosumerBaselineHotwaterVolProfile = owner.getBaselineHotWaterVolumeProfile();
+		
+		if (owner.getHasElectricalWaterHeat())
+			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(),((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
+		//this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(prosumerBaselineHotwaterVolProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % prosumerBaselineHotwaterVolProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % prosumerBaselineHotwaterVolProfile.length) + ticksPerDay);
 
 
 		if(owner.coldApplianceProfile != null)

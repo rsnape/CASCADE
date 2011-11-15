@@ -98,6 +98,9 @@ public class CascadeContext extends DefaultContext{
 	public EmpiricalWalker drawOffGenerator;
 	public EmpiricalWalker occupancyGenerator;
 	public Normal waterUsageGenerator;
+	
+	public Normal buildingLossRateGenerator;
+	public Normal thermalMassGenerator;
 
 	
 	/**
@@ -421,16 +424,42 @@ public class CascadeContext extends DefaultContext{
 		String chartName; 
 
 		switch (chartNb) {
-		 case 0:  chartName = "chart0_Insol_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 1:  chartName = "chart1_AirTemp_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 2:  chartName = "chart2_WindSpeed_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 3:  chartName = "chart3_AggSumOfD_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 0:  
+			 if (Consts.TAKE_SNAPSHOT_OF_CHART_0_Insol)
+				 chartName = "chart0_Insol_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;  
+			 else chartName="";
+			 break;
+		 case 1:  
+			 if (Consts.TAKE_SNAPSHOT_OF_CHART_1_AirTemp)
+				 chartName = "chart1_AirTemp_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT; 
+			 else chartName="";
+			 break;
+		 case 2:  
+			 if (Consts.TAKE_SNAPSHOT_OF_CHART_2_WindSpeed)
+				 chartName = "chart2_WindSpeed_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   
+			 else chartName="";
+			 break;
+		 case 3:  
+			 if (Consts.TAKE_SNAPSHOT_OF_CHART_3_AggSumOfD)
+			 chartName = "chart3_AggSumOfD_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;
+			 else chartName="";
+			 break;
 		 case 4:  chartName = "chart4_SvsC_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 5:  chartName = "chart5_SmartAdapt_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 5:  
+			 if (Consts.TAKE_SNAPSHOT_OF_CHART_5_SmartAdapt)
+				 chartName = "chart5_SmartAdapt_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;
+			 else chartName="";
+			 break;
 		 case 6:  chartName = "chart6_AggCost_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
 		 case 7:  chartName = "chart7_BvsD_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
-		 case 8:  chartName = "chart8_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 8:  
+			 if (Consts.TAKE_SNAPSHOT_OF_CHART_8_Market)
+				 chartName = "chart8_Market_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   
+			 else chartName="";
+			 break;
 		 case 9:  chartName = "chart9_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+		 case 10:  chartName = "chart10_r"+getTickCount()+Consts.FILE_CHART_FORMAT_EXT;   break;
+
 
 		 default: chartName = "chartDefaultName_"+Consts.FILE_CHART_FORMAT_EXT;; break;
 		}
@@ -446,8 +475,12 @@ public class CascadeContext extends DefaultContext{
 		try {
 			for (int i=0; i<snapshotTakerArrList.size();i++) {
 				SnapshotTaker snapshotTaker = (SnapshotTaker)snapshotTakerArrList.get(i);
-				File file = new File(getFileNameForChart(i));
-				snapshotTaker.save(file, "png");
+				String fileName = getFileNameForChart(i);
+				if (fileName != "") {
+					//System.out.println("takeSnapshot: fileName is empty");
+					File file = new File(fileName);
+					snapshotTaker.save(file, "png");
+				}
 			}
 
 		} catch (IOException e) {

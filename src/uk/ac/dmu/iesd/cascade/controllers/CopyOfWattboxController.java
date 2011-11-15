@@ -91,7 +91,7 @@ public class CopyOfWattboxController implements ISmartController{
 		this.currentTempProfile = this.setPointProfile;
 		this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length) , (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
 		this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
-		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.baselineHotWaterVolumeProfile,(timeStep % owner.baselineHotWaterVolumeProfile.length), (timeStep % owner.baselineHotWaterVolumeProfile.length) + ticksPerDay);
+		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(),(timeStep % owner.getBaselineHotWaterVolumeProfile().length), (timeStep % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
 		this.heatPumpDemandProfile = calculatePredictedHeatPumpDemandAndTempProfile(this.heatPumpOnOffProfile);
 
 
@@ -111,7 +111,7 @@ public class CopyOfWattboxController implements ISmartController{
 		// Note - optimise space heating first.  This is so that we can look for absolute
 		// heat pump limit and add the cost of using immersion heater (COP 0.9) to top
 		// up water heating if the heat pump is too great
-		if (spaceHeatingControlled && owner.isHasElectricalSpaceHeat())
+		if (spaceHeatingControlled && owner.getHasElectricalSpaceHeat())
 		{
 			//optimiseSpaceHeatProfile();
 			optimiseSetPointProfile();
@@ -119,13 +119,13 @@ public class CopyOfWattboxController implements ISmartController{
 		}	
 
 
-		if (waterHeatingControlled && owner.isHasElectricalWaterHeat())
+		if (waterHeatingControlled && owner.getHasElectricalWaterHeat())
 		{
 			optimiseWaterHeatProfile();
 		}
 
 
-		if (eVehicleControlled && owner.isHasElectricVehicle())
+		if (eVehicleControlled && owner.hasElectricVehicle())
 		{
 			optimiseEVProfile();
 		}
@@ -594,7 +594,7 @@ public class CopyOfWattboxController implements ISmartController{
 		this.priorDayExternalTempProfile = Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
 		this.heatPumpOnOffProfile = Arrays.copyOf(owner.spaceHeatPumpOn,owner.spaceHeatPumpOn.length);
 		//this.heatPumpDemandProfile = new double[ticksPerDay];
-		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.baselineHotWaterVolumeProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.baselineHotWaterVolumeProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.baselineHotWaterVolumeProfile.length) + ticksPerDay);
+		this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(),((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
 
 		ticksPerDay = owner.getContext().getNbOfTickPerDay();
 		if(owner.coldApplianceProfile != null)

@@ -5,6 +5,7 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.accessibility.AccessibleContext;
 
@@ -37,6 +38,11 @@ public class ProsumerFactory implements IProsumerFactory {
 		this.cascadeMainContext= context;
 
 	}
+	
+	public HouseholdProsumer createHouseholdProsumer(double[] miscDemandProfileArray, boolean addNoise) {
+		return createHouseholdProsumer(miscDemandProfileArray, addNoise, Consts.RANDOM);
+	}
+
 
 	/**
 	 * Creates a household prosumer with a basic consumption profile as supplied
@@ -49,10 +55,10 @@ public class ProsumerFactory implements IProsumerFactory {
 	 * @param addNoise - boolean specifying whether or not to add noise to the profile
 	 */
 
-	public HouseholdProsumer createHouseholdProsumer(double[] baseProfileArray, boolean addNoise) {
+	public HouseholdProsumer createHouseholdProsumer(double[] miscDemandProfileArray, boolean addNoise, int occupancyNb) {
 		HouseholdProsumer pAgent;
 		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
-		if (baseProfileArray.length % ticksPerDay != 0)
+		if (miscDemandProfileArray.length % ticksPerDay != 0)
 		{
 			System.err.println("ProsumerFactory: Household base demand array not a whole number of days");
 			System.err.println("ProsumerFactory: May cause unexpected behaviour");
@@ -60,23 +66,40 @@ public class ProsumerFactory implements IProsumerFactory {
 
 		if (addNoise) 
 		{
-			pAgent = new HouseholdProsumer(cascadeMainContext, createRandomHouseholdDemand(baseProfileArray));
+			pAgent = new HouseholdProsumer(cascadeMainContext, createRandomHouseholdDemand(miscDemandProfileArray));
 		}
 		else
 		{
-			pAgent = new HouseholdProsumer(cascadeMainContext, baseProfileArray);
+			pAgent = new HouseholdProsumer(cascadeMainContext, miscDemandProfileArray);
 		}
-
+		
+		pAgent.exercisesBehaviourChange = true;
 		pAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WILLING_TO_CHANGE_BEHAVIOUR));
 		//pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
-		pAgent.exercisesBehaviourChange = true;
-		//pAgent.hasSmartMeter = true; //Babak: this has been repeated in two places
+		
 		pAgent.costThreshold = Consts.HOUSEHOLD_COST_THRESHOLD;
-		pAgent.minSetPoint = Consts.HOUSEHOLD_MIN_SETPOINT;
-		pAgent.maxSetPoint = Consts.HOUSEHOLD_MAX_SETPOINT;
+		pAgent.setPredictedCostSignal(Consts.ZERO_COST_SIGNAL);
 
+		//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
+		pAgent.hasSmartMeter = true;
+		pAgent.hasSmartControl = true;  
 		pAgent.transmitPropensitySmartControl = (double) RandomHelper.nextDouble();
+			
+		pAgent.initializeRandomlyDailyElasticityArray(0, 0.1);
+		pAgent.setRandomlyPercentageMoveableDemand(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
 
+		/*==========ENERGY CONSUMPTION FUNCTION=====================
+		 *               2-  OCCUPANCY                             */
+		if (occupancyNb == Consts.RANDOM)
+			pAgent.setNumOccupants(cascadeMainContext.occupancyGenerator.nextInt() + 1);
+		else 
+			pAgent.setNumOccupants(occupancyNb);
+		//System.out.println("HHProsumer:: Nb of occupant: "+getNumOccupants());
+		 //========================================================*/
+							
+		if (pAgent.hasSmartControl)
+			pAgent.setWattboxController();
+	
 		return pAgent;
 	}
 	

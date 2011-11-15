@@ -16,6 +16,11 @@ class reference {
 @__modelType reference 
 */
 class reference25 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.ui.TicksToDaysFormatter:oiref><oihard>
+@__modelType reference 
+*/
+class reference27 {
 }}/**
 @__tags
 @shapeType ClassDiagram 
