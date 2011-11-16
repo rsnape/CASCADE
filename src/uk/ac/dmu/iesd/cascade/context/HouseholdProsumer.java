@@ -302,11 +302,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	public boolean getHasWetAppliances() {
 		boolean hasWetAppliances = false;
 
-		//System.out.println("hasWashingMachine: "+ hasWashingMachine);
-		//System.out.println("hasWasherDryer: "+ hasWasherDryer);
-		//System.out.println("hasTumbleDryer: "+ hasTumbleDryer);
-		//System.out.println("hasDishWasher: "+ hasDishWasher);
-
 		hasWetAppliances = (hasWashingMachine || hasWasherDryer ||
 				            hasTumbleDryer || hasDishWasher );
 		
@@ -536,22 +531,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 			//System.out.println(" ^^^hasElecSpaceheat ");
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
 			recordedHeatPumpDemand[timeOfDay] += calculateHeatPumpDemandAndInternalTemp(time);
-			//System.out.println("calcualteHeatPumpDem&IntTemp: "+recordedHeatPumpDemand[timeOfDay]);
 
 		}
 
 		if (hasElectricalWaterHeat)
 		{
-			//System.out.println(" ^^^hasElecWaterHeat ");
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
-			//System.out.println("getWaterHeatProf: "+Arrays.toString(getWaterHeatProfile()));
-			//System.out.println("recordedHeatPumpDemand: "+Arrays.toString(recordedHeatPumpDemand));
 			recordedHeatPumpDemand[timeOfDay] += getWaterHeatProfile()[timeOfDay];
-			//System.out.println("getWaterHeatProf: "+recordedHeatPumpDemand[timeOfDay]);
-
 
 		}
-		//System.out.println("return: "+ recordedHeatPumpDemand[timeOfDay]);
 
 		return recordedHeatPumpDemand[timeOfDay];
 	}
@@ -610,25 +598,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private double calculateHeatPumpDemandAndInternalTemp(int timeStep) {
 		//demand is the local variable holding the energy demand
 
-		//System.out.println("Inside: Calcualted Heat pump Demand&IntTemp");
 		double demand = 0;
 		double deltaT = this.currentInternalTemp - this.getContext().getAirTemperature(timeStep);
-		//System.out.println("deltaT: "+ deltaT);
 
 		double requiredTempChange = this.setPoint - currentInternalTemp;
 		if (Consts.DEBUG)
 		{
 			System.out.println("requiredTempChange: "+ requiredTempChange + " Current internal = " + currentInternalTemp + " set point = " + setPoint);
-			//System.out.println("buildingHeatLossRate: "+ buildingHeatLossRate);
-			//System.out.println("Consts.SECONDS_PER_DAY / ticksPerDay: "+ (double)Consts.SECONDS_PER_DAY / ticksPerDay);
-			//System.out.println("(Consts.SECONDS_PER_DAY / ticksPerDay) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR: "+ ((double)Consts.SECONDS_PER_DAY / ticksPerDay)/Consts.KWH_TO_JOULE_CONVERSION_FACTOR);
 		}
 
 		double maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((double)(Consts.SECONDS_PER_DAY / ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
-		//System.out.println("maintenanceEnergy: "+ maintenanceEnergy);
 
 		double heatingEnergy = requiredTempChange * this.buildingThermalMass;
-		//System.out.println("heatingEnergy: "+ heatingEnergy);
 
 
 		if(Consts.DEBUG)
@@ -768,32 +749,26 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// Evaluate behaviour applies elasticity behaviour to the base
 		// (non-displaceable) load.
 		double currentBase = evaluateElasticBehaviour(time);
-		//System.out.println("smartDemand: currentBase: "+currentBase);
 
 		double currentCold = coldApplianceDemand();
-		//System.out.println("smartDemand: currentCold: "+currentCold);
 
 		double currentWet = wetApplianceDemand();
-		//System.out.println("smartDemand: currentWet: "+currentWet);
 
 		double currentHeat= 0;
 		currentHeat = heatingDemand();
-		//System.out.println("smartDemand: currentHeat: "+currentHeat);
 
 
 		historicalBaseDemand[time % ticksPerDay] = currentBase;
 		historicalWetDemand[time % ticksPerDay] = currentWet;
 		historicalColdDemand[time % ticksPerDay] = currentCold;
 
-		if (this.getHasElectricalWaterHeat())
+		if (this.getHasElectricalSpaceHeat())
 			historicalSpaceHeatDemand[time % ticksPerDay] = currentHeat - getWaterHeatProfile()[time % ticksPerDay];
 
-		//if (this.getHasElectricalWaterHeat())	
 		if (this.getHasElectricalWaterHeat())
 			historicalWaterHeatDemand[time % ticksPerDay] = getWaterHeatProfile()[time % ticksPerDay];
 
 		double returnAmount = currentBase + currentCold + currentWet + currentHeat;
-		//System.out.println("smartDemand: returnAmount: "+returnAmount);
 
 
 		if (Consts.DEBUG)
@@ -897,41 +872,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 	}
 
-	/**
-	 * This method uses rule set as described in Boait et al draft paper to assign
-	 * cold appliance ownership on a stochastic, but statistically representative, basis.
-	 * 
-	 * TODO: consider where this code should be placed.
-	 */
-	/*
-	private void setUpColdApplianceOwnership()
-	{
-		// Set up cold appliance ownership
-		if(RandomHelper.nextDouble() < 0.651)
-		{
-			this.hasFridgeFreezer = true;
-			if (RandomHelper.nextDouble() < 0.15)
-			{
-				this.hasRefrigerator = true;
-			}
-		}
-		else
-		{
-			if (RandomHelper.nextDouble() < 0.95)
-			{
-				this.hasRefrigerator = true;
-			}
-			if (RandomHelper.nextDouble() < 0.835)
-			{
-				this.hasUprightFreezer = true;
-			}
-		}
-
-		if (RandomHelper.nextDouble() < 0.163)
-		{
-			this.hasChestFreezer = true;
-		}
-	} */
 
 	public void setBaselineHotWaterVolumeProfile(double[] aBaselineHotWaterVolumeProfile) {
 		this.baselineHotWaterVolumeProfile = aBaselineHotWaterVolumeProfile;
@@ -962,9 +902,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// Note the simulation time if needed.
 		// Note - Repast can cope with fractions of a tick (a double is returned)
 		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
-		//System.out.println(" ---HH Prosumer----: "+this.getAgentID());
-		//System.out.println(" P ND (start): "+this.getNetDemand());
-		//System.out.println(" HouseholdProsumers step()");
+		
 		System.out.println("    ---iiii----- HouseholdProsumer: init() ---iii------ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 
 		time = (int) RepastEssentials.GetTickCount();
@@ -979,7 +917,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 			//TODO: decide whether the inelastic day demand is something that needs
 			// calculating here
 			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
-			//System.out.println(" inelasticTotalDayDemand: "+inelasticTotalDayDemand);
 			if (hasSmartControl){
 				mySmartController.update(time);
 				currentSmartProfiles = mySmartController.getCurrentProfiles();
@@ -987,7 +924,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 					ArrayUtils.replaceRange(this.coldApplianceProfile, (double[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
 				this.optimisedSetPointProfile = (double[]) currentSmartProfiles.get("HeatPump");
 				this.setWaterHeatProfile((double[]) currentSmartProfiles.get("WaterHeat"));
-				//System.out.println("CSP (WaterHeat)" + Arrays.toString((double[])currentSmartProfiles.get("WaterHeat")));
 
 			}
 
@@ -1024,13 +960,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//Every step we do these actions
 
 		if (hasSmartControl){
-			//System.out.println(" *has smartControl");
 			setNetDemand(smartDemand(time));
 			System.out.println("Agent " + this.agentName + "set netdemand at time " + time + " to " + this.getNetDemand());
 
 		}
 		else if (hasSmartMeter && exercisesBehaviourChange) {
-			//System.out.println(" **has smartMeter & BehC");
 
 			learnBehaviourChange();
 			setNetDemand(evaluateElasticBehaviour(time));
@@ -1039,7 +973,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else
 		{
 			//No adaptation case
-			//System.out.println(" ***else adaption case");
 			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
 
 			learnSmartAdoptionDecision(time);
@@ -1048,7 +981,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//After the heat input has been calculated, re-calculate the internal temperature of the house
 		recordInternalAndExternalTemp(time);
 
-		//System.out.println(" P ND (end): "+this.getNetDemand());
 		System.out.println("   ---iii----- HouseholdProsumer: init() END ----iii------ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 
 
@@ -1066,9 +998,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// Note the simulation time if needed.
 		// Note - Repast can cope with fractions of a tick (a double is returned)
 		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
-		//System.out.println(" ---HH Prosumer----: "+this.getAgentID());
-		//System.out.println(" P ND (start): "+this.getNetDemand());
-		//System.out.println(" HouseholdProsumers step()");
+		
 		if (Consts.DEBUG)
 		{
 		System.out.println("    -------- HouseholdProsumer: step() ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
@@ -1085,18 +1015,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 			//TODO: decide whether the inelastic day demand is something that needs
 			// calculating here
 			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
-			//System.out.println(" inelasticTotalDayDemand: "+inelasticTotalDayDemand);
 			if (hasSmartControl){
 				mySmartController.update(time);
-				//System.out.println("HouseholdProsumer:: " + getAgentName() + "getting optimised profiles");
 				currentSmartProfiles = mySmartController.getCurrentProfiles();
 				if (this.getHasColdAppliances())
 					ArrayUtils.replaceRange(this.coldApplianceProfile, (double[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
 				this.optimisedSetPointProfile = (double[]) currentSmartProfiles.get("HeatPump");
-				//System.out.println("HouseholdProsumer:: optimised set point = CSP (HeatPump)" + Arrays.toString(optimisedSetPointProfile));
-				//System.out.println("CSP (HeatPump)" + Arrays.toString(optimisedSetPointProfile));
 				this.setWaterHeatProfile((double[]) currentSmartProfiles.get("WaterHeat"));
-				//System.out.println("CSP (WaterHeat)" + Arrays.toString((double[])currentSmartProfiles.get("WaterHeat")));
 
 			}
 
@@ -1129,12 +1054,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//Every step we do these actions
 
 		if (hasSmartControl){
-			//System.out.println(" *has smartControl");
 			setNetDemand(smartDemand(time));
 
 		}
 		else if (hasSmartMeter && exercisesBehaviourChange) {
-			//System.out.println(" **has smartMeter & BehC");
 
 			learnBehaviourChange();
 			setNetDemand(evaluateElasticBehaviour(time));
@@ -1143,7 +1066,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else
 		{
 			//No adaptation case
-			//System.out.println(" ***else adaption case");
 			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
 
 			learnSmartAdoptionDecision(time);
@@ -1157,8 +1079,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		System.out.println("     -------- HouseholdProsumer: END ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		}
 
-
-		//System.out.println(" P ND (end): "+this.getNetDemand());
 
 	}
 	
@@ -1174,11 +1094,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	
 	public void initializeElectWaterHeatPar() {
 		
-		/*==========ENERGY CONSUMPTION FUNCTION=====================
-		 *               6-  Elec HOT WATER                             */
-		//Assign hot water storage capacity - note based on EST report, page 9
-		
-		//System.out.println("initializeElectWaterHeatPar()");
 		double dailyHotWaterUsage = mainContext.waterUsageGenerator.nextDouble(Consts.EST_INTERCEPT + (this.getNumOccupants() * Consts.EST_SLOPE), Consts.EST_STD_DEV);
 		this.setDailyHotWaterUsage(dailyHotWaterUsage);
 
@@ -1206,10 +1121,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	
 	public void initializeElecSpaceHeatPar() {
 		
-		/*==========ENERGY CONSUMPTION FUNCTION=====================
-		 *               7-  Space Heating                             */
-		//System.out.println("initializeElecSpaceHeatPar()");
-
 		this.minSetPoint = Consts.HOUSEHOLD_MIN_SETPOINT;
 		this.maxSetPoint = Consts.HOUSEHOLD_MAX_SETPOINT;
 
@@ -1239,9 +1150,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	
 	
 	public void setWattboxController() {
-		/*
-		 *Set up "smart" stuff here
-		 */
+	
 		this.mySmartController = new WattboxController(this);
 	}
 

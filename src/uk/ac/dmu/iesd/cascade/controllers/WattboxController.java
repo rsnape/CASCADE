@@ -174,9 +174,9 @@ public class WattboxController implements ISmartController{
 			System.out.println("WattboxController:: putting arrays into the return map and returning to caller");
 		}
 		returnMap.put("HeatPump", optimisedSetPointProfile);
-		if (owner.getHasColdAppliances())
+		if (this.coldAppliancesControlled && owner.getHasColdAppliances())
 			returnMap.put("ColdApps", coldApplianceProfile);
-		if (owner.getHasWetAppliances())
+		if (this.waterHeatingControlled && owner.getHasWetAppliances())
 			returnMap.put("WetApps", wetApplianceProfile);
 		returnMap.put("WaterHeat", waterHeatDemandProfile);
 		return returnMap;
@@ -582,7 +582,7 @@ public class WattboxController implements ISmartController{
 		//this.priorDayExternalTempProfile = Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
 		//Initialise with a flat external temperature - thus no incentive to move demand on first day of use.
 		this.priorDayExternalTempProfile = new double[ticksPerDay];
-		Arrays.fill(priorDayExternalTempProfile, Double.parseDouble("7"));
+		Arrays.fill(priorDayExternalTempProfile, Double.parseDouble("7"));  //TODO: Richard will declare this number as Const.
 		
 		if (owner.getHasElectricalSpaceHeat())
 			this.heatPumpOnOffProfile = Arrays.copyOf(owner.spaceHeatPumpOn,owner.spaceHeatPumpOn.length);

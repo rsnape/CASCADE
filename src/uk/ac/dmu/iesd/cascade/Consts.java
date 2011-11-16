@@ -60,6 +60,12 @@ public final class Consts {
 	public static enum AGENT_TYPE {
 		PROSUMER,AGGREGATOR
 	}
+	
+	/*--------------------------------------
+	 * System exit error codes for different types of error
+	 *---------------------------------------*/
+	public static final int BAD_FILE_ERR_CODE = 1;
+
 
 	/*-----------------------------
 	 * Units of Measurement Constants
@@ -73,11 +79,6 @@ public final class Consts {
 	//factor to convert energy expressed in kWh to Joules.
 	public static final double KWH_TO_JOULE_CONVERSION_FACTOR = 3600000;
 
-
-	/*--------------------------------------
-	 * System exit error codes for different types of error
-	 *---------------------------------------*/
-	public static final int BAD_FILE_ERR_CODE = 1;
 
 
 	/*------------------------
@@ -176,9 +177,9 @@ public final class Consts {
 	// Babak: used for behavioral change purpose (not Space Heating), although currently does nothing!
 	public static final double HOUSEHOLD_MAX_SETPOINT = 28;
 	
-	/**+++++++++++++
-	 * Space Heating
-	 *+++++++++++++++*/
+	/**++++++++++++++++++++++
+	 * Electrical Space Heat
+	 *+++++++++++++++++++++++*/
 
 	//The typical heat pump coefficient of performance for space heating a domestic dwelling
 	public static final double DOMESTIC_HEAT_PUMP_SPACE_COP = 2.4d;
@@ -215,9 +216,9 @@ public final class Consts {
 	public static final double COST_DECISION_THRESHOLD = 1e-3d; //used by Wattbox
 
 
-	/**+++++++++++
-	 * Hot Water
-	 *++++++++++++*/
+	/**++++++++++++++++++++++++++++++++
+	 * Hot Water/ Electrical Water Heat
+	 *+++++++++++++++++++++++++++++++++*/
 
 	//Maximum domestic hot water storage capacity (litres)
 	public static final int MAX_HOUSHOLD_HOT_WATER_USE = 50;

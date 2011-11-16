@@ -326,7 +326,6 @@ public class RECO extends AggregatorAgent{
 	 **/
 	double[][] hist_arr_ij_D;
 	
-	//double[] arr_i_D; 
 
 	private boolean firstTimeMinimisation = true;
 
@@ -347,20 +346,6 @@ public class RECO extends AggregatorAgent{
 	int dayOfWeek;
 	
 
-
-	//private double[] dailyActualCostArr;
-
-	
-	
-	/**
-	 * This array is used to keep the average (i.e. baseline) of aggregate demands (D)
-	 * (usually kept in the 2D history D array (hist_D_ij_arr))  
-	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
-	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
-	 **/
-	//double[] histAvg_B_i_arr; 
-	
-	
 
 	/**
 	 * This method calculates and returns the price (Pi) per kWh 
@@ -395,25 +380,14 @@ public class RECO extends AggregatorAgent{
 	 */
 
 	private double calculate_deltaB(int timeslot_i) {	
-		//System.out.println(" calculate_deltaB, timslot: "+timeslot_i);
 		double sumOf_SjKijBi=0d;
 		for (int j = 0; j < ticksPerDay; j++) {
 			if (j != timeslot_i) { // i!=j
 				sumOf_SjKijBi += arr_i_S[j]*arr_ij_k[timeslot_i][j]*arr_i_B[timeslot_i];
-				//sumOf_SjKijBi += arr_i_S[j]*arr_ij_k[j][timeslot_i]*arr_i_B[timeslot_i];
-				//System.out.println(arr_i_S[j]+"* "+arr_ij_k[timeslot_i][j]+" = "+(arr_i_S[j]*arr_ij_k[timeslot_i][j]*arr_i_B[timeslot_i] +" acc: "+sumOf_SjKijBi));
-				//System.out.println(arr_i_S[j]+"* "+arr_ij_k[j][timeslot_i]+" = "+(arr_i_S[j]*arr_ij_k[j][timeslot_i]*arr_i_B[timeslot_i] +" acc: "+sumOf_SjKijBi));
-
-				//System.out.println();
-				//System.out.println(", "+arr_ij_k[j][timeslot_i]);
 			}
 		}
 		double leftSideEq = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][timeslot_i]*this.arr_i_B[timeslot_i];
-		/*System.out.println(" S[i]: "+arr_i_S[timeslot_i]);
-		System.out.println(" k[i][i]: "+arr_ij_k[timeslot_i][timeslot_i]);
-		System.out.println(" B[i]: "+arr_i_B[timeslot_i]);
-		System.out.println(" leftSideEq "+leftSideEq);
-		System.out.println(" sumOf_SjKijBi "+sumOf_SjKijBi);*/
+	
 		double deltaBi = leftSideEq + sumOf_SjKijBi; 
 		return deltaBi;
 	}
@@ -431,19 +405,10 @@ public class RECO extends AggregatorAgent{
 		double Si = this.arr_i_S[timeslot];
 		double ei = this.arr_i_e[timeslot];
 		
-		/*System.out.println(" calculate_PredictedDemand_D : ");
-		System.out.println(" Bi: "+Bi);
-		System.out.println(" Si: "+Si);
-		System.out.println(" ei: "+ei);
-		System.out.println(" (Si*ei*Bi): "+ (Si*ei*Bi)); */
-		
 		double delta_Bi = calculate_deltaB(timeslot);
-		//System.out.println(" delta_Bi "+delta_Bi);
 
 		double Di= Bi + (Si*ei*Bi) + delta_Bi;
 		
-		//System.out.println(" Di: "+Di);
-
 		return Di;
 	}
 
@@ -527,26 +492,6 @@ public class RECO extends AggregatorAgent{
 		if (!isTraining)
 			this.arr_i_e[time]= sum_e;
 	}
-
-	/**
-	 * This method returns the cost of buying wholesale electricity for this aggregator
-	 * at the current tick
-	 * 
-	 * TODO: RS - I think this is so generic it should go in the AggregatorAgent super-class
-	 */
-	
-	/*public double getCurrentCost_C()
-	{
-		return arr_i_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
-	}
-	
-	public double getCurentBaseline_B() {
-		
-		return arr_i_B[(int) RepastEssentials.GetTickCount() % ticksPerDay];
-	
-	} */
-	
-	
 
 
 	/**
@@ -1516,15 +1461,15 @@ public class RECO extends AggregatorAgent{
 		
 		double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(bs_mat, k).getRowCopy(0)));
 		
-        //--RRR---initial R estimation based on paper: 
+        //----initial R estimation based on paper: 
 		//double[] arr_errorEstim_R = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
-		//--RRR --End------
 		
-		///--sss--Richard suggestion
+		
+		///----Richard suggestion
 		predictedShift = ArrayUtils.add(predictedShift, arr_i_B);
 		double[] arr_errorEstim_R = ArrayUtils.add(predictedShift, ArrayUtils.negate(hist_day_arr_D));
 		arr_errorEstim_R = ArrayUtils.mtimes(arr_errorEstim_R, ArrayUtils.pow(arr_i_B,-1));
-		///--sss--End-------
+		///----End-------
 		
 		System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
 
@@ -1816,8 +1761,6 @@ public class RECO extends AggregatorAgent{
 		this.dailyPredictedCost = new ArrayList<Double>();
 		this.dailyActualCost = new ArrayList<Double>();
 		
-		//this.dailyPredictedCostArr = new double [ticksPerDay];
-		//this.dailyActualCostArr = new double [ticksPerDay];
 
 		///+++++++++++++++++++++++++++++++++++++++
 		this.arr_i_B = new double [ticksPerDay];
@@ -1828,13 +1771,9 @@ public class RECO extends AggregatorAgent{
 		this.arr_ij_k = new double [ticksPerDay][ticksPerDay];
 		this.hist_arr_ij_D = new double [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
 		
-		//this.arr_i_D = new double [ticksPerDay];
-	
 				
 		arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand),100); //all costs (equivalent to size of baseDemand, usually 1 week)
 		
-
-		//this.arr_i_B = baseDemand; 
 
 		//Set up basic learning factor
 		this.alpha = 0.1d;
