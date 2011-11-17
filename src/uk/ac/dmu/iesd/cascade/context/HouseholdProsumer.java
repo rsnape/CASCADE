@@ -897,7 +897,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 	}
 
 
-	@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
+	//@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
+	/*
 	public void init() {
 		// Note the simulation time if needed.
 		// Note - Repast can cope with fractions of a tick (a double is returned)
@@ -984,7 +985,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		System.out.println("   ---iii----- HouseholdProsumer: init() END ----iii------ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 
 
-	}
+	} */
 
 	/******************
 	 * This method defines the step behaviour of a prosumer agent

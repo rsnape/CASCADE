@@ -1568,6 +1568,8 @@ public class RECO extends AggregatorAgent{
 		}
 	}
 
+	
+	
 	public void step_pre() {
 
 		System.out.println(" ============ RECO pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
@@ -1575,14 +1577,11 @@ public class RECO extends AggregatorAgent{
 		timeslotOfDay = mainContext.getTimeslotOfDay();
 		dayOfWeek = ((CascadeContext) ContextUtils.getContext(this)).simulationCalendar.getTime().getDay();
 		arr_i_C = Arrays.copyOfRange(arr_i_C_all, timeTick % arr_i_C_all.length, (timeTick % arr_i_C_all.length) + ticksPerDay);
-	    customers = getCustomersList();
+		customers = getCustomersList();
 
-		calculateAndSetNetDemand(customers);
+		//calculateAndSetNetDemand(customers);
 
-		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
-			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
-		}
-		else 
+		if (isAggregateDemandProfileBuildingPeriodCompleted())  
 		{ //End of history profile building period 
 			//Set the Baseline demand on the first time through after building period
 			if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) {
@@ -1591,7 +1590,7 @@ public class RECO extends AggregatorAgent{
 			}
 			if (Consts.DEBUG)
 				System.out.println("RECO: Baseline demand set to " + Arrays.toString(arr_i_B));
-			
+
 			if (!isTrainingPeriodCompleted()) 
 			{  //training period, signals should be send S=1 for 48 days
 				System.out.println("--RECO: Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
@@ -1619,7 +1618,7 @@ public class RECO extends AggregatorAgent{
 				{
 					// The section below implements Peter B's very simplistic Routine error estimation and adjustment" learning
 					//TODO: Is this the learning / adaptation mechanism we want to run with?
-					
+
 					errorEstimationAndAdjustment(arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
 
 					//Replace the historical demand for the day of the week before this with the demand of yesterday
@@ -1627,7 +1626,7 @@ public class RECO extends AggregatorAgent{
 					this.hist_week_arr_D[dayOfWeek] = hist_day_arr_D;
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
-				
+
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
@@ -1637,8 +1636,8 @@ public class RECO extends AggregatorAgent{
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 
 					broadcastSignalToCustomers(arr_i_S, customers);
-					
-					
+
+
 					if (Consts.DEBUG) 							
 						writeOutput("output2_NormalBiz_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
 
@@ -1648,9 +1647,10 @@ public class RECO extends AggregatorAgent{
 
 		} //end of else (history profile building) 
 		System.out.println("    ========== RECO: pre_step END =========== DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		
-	}
-	
+
+	} 
+
+
 
 	/**
 	 * This method defines how this object behaves (what it does)
@@ -1659,12 +1659,12 @@ public class RECO extends AggregatorAgent{
 	public void step() {
 
 		System.out.println(" ++++++++++++++ RECO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-
-		calculateAndSetNetDemand(customers);
-
-		if (isAggregateDemandProfileBuildingPeriodCompleted() && !isTrainingPeriodCompleted()) 
-		{  
-			//signal already sent with pre_step, now to process and update history
+		
+		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
+			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
+		}
+		else if (!isTrainingPeriodCompleted()) {
+			
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D);
 
 			if (mainContext.isEndOfDay(timeslotOfDay)) 
@@ -1682,9 +1682,10 @@ public class RECO extends AggregatorAgent{
 
 				if (mainContext.getDayCount() > 53) 
 					writeOutput("output1_TrainingPhase_day_",arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
-
 			}
-		} 
+		}
+
+		calculateAndSetNetDemand(customers);
 
 		//if (isAggregateDemandProfileBuildingPeriodCompleted() && isTrainingPeriodCompleted()) {
 
@@ -1708,6 +1709,8 @@ public class RECO extends AggregatorAgent{
 		
 		System.out.println("    ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 	}
+	
+
 
 	/**
 	 * Constructs a RECO agent with the context in which is created and its
