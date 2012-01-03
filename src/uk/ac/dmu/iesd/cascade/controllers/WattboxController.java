@@ -5,7 +5,10 @@ package uk.ac.dmu.iesd.cascade.controllers;
 
 import java.util.*;
 
+import cern.jet.random.Uniform;
+
 import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.random.RandomHelper;
 
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
@@ -70,6 +73,9 @@ public class WattboxController implements ISmartController{
 	private double expectedNextDaySpaceHeatCost;
 	private double maxImmersionHeatPerTick;
 	private double[] noElecHeatingDemand = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	
+	
+	 Uniform coldApplTimeslotDelayRandDist;  //temp
 
 
 	/**
@@ -89,7 +95,15 @@ public class WattboxController implements ISmartController{
 	{
 		double[] ownersCostSignal = owner.getPredictedCostSignal();
 		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
+		
+		System.out.println("update");
+
+		System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
+
 		this.dayPredictedCostSignal = ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal, predictedCostToRealCostA),realCostOffsetb);
+		
+		System.out.println("afterOffset dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
+
 		if (owner.getHasElectricalSpaceHeat()) {
 			this.setPointProfile = owner.getSetPointProfile();
 			this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
@@ -171,7 +185,21 @@ public class WattboxController implements ISmartController{
 		WeakHashMap returnMap = new WeakHashMap();
 		if(Consts.DEBUG)
 		{
-			System.out.println("WattboxController:: putting arrays into the return map and returning to caller");
+			
+			/*System.out.println("&&&&&& WattboxController:: putting arrays into the return map and returning to caller");
+			if (this.coldAppliancesControlled && owner.getHasColdAppliances()) {
+			  System.out.println("ColdProfile.length: "+ coldApplianceProfile.length);
+			  System.out.println("ColdProfile: "+ Arrays.toString(coldApplianceProfile));
+			}
+			if (this.waterHeatingControlled && owner.getHasWetAppliances()) {
+			    System.out.println("WetProfile.length: "+ wetApplianceProfile.length);
+			   System.out.println("WetProfile: "+ Arrays.toString(wetApplianceProfile));
+		    } */
+			//System.out.println("WaterHeatProfile.length: "+ waterHeatDemandProfile.length);
+			//System.out.println("WaterHeatProfile: "+ Arrays.toString(waterHeatDemandProfile));
+			//System.out.println("HeatPumpProfile.length: "+ optimisedSetPointProfile.length);
+			//System.out.println("HeatPupProfile: "+ Arrays.toString(optimisedSetPointProfile));
+
 		}
 		returnMap.put("HeatPump", optimisedSetPointProfile);
 		if (this.coldAppliancesControlled && owner.getHasColdAppliances())
@@ -314,11 +342,12 @@ public class WattboxController implements ISmartController{
 	 * which owns this Wattbox.
 	 * 
 	 */
-	private void optimiseWetProfile() 
+	private void optimiseWetProfile_old() 
 	{
 		double[] currentCost = ArrayUtils.mtimes(wetApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
 		int minIndex = ArrayUtils.indexOfMin(currentCost);
+	
 		// First pass - simply swap the load in the max cost slot with that in the min cost slot
 		//TODO: very crude and will give nasty positive feedback in all likelihood
 		if (maxIndex < (wetApplianceProfile.length -1 ))
@@ -327,6 +356,41 @@ public class WattboxController implements ISmartController{
 			wetApplianceProfile[minIndex] = wetApplianceProfile[maxIndex];
 			wetApplianceProfile[maxIndex] = temp;
 		}
+
+	}
+	
+	private void optimiseWetProfile() 
+	{
+		
+		//System.out.println("WetProf length: "+ wetApplianceProfile.length);
+		//System.out.println("WetProf Before Optim: "+ Arrays.toString(wetApplianceProfile));
+		//System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
+        /*
+         * this is test. We simply find the most expensive timeslot (for whichever appliance it is, not that 
+         * currently washingMachine-TumbleDry and dishwasher may work on different timeslots)
+         * and then delay its used by 4h
+         */
+
+		double[] currentCost = ArrayUtils.mtimes(wetApplianceProfile, dayPredictedCostSignal);
+		int maxIndex = ArrayUtils.indexOfMax(currentCost);
+		
+		double maxVal = wetApplianceProfile[maxIndex];
+		
+		wetApplianceProfile[maxIndex] = 0;
+		
+		int timeShift = 8; //temporary test: delay 4 hours 
+		
+		int newIndex = maxIndex + timeShift;
+		//System.out.println("newIndex before: "+ newIndex);
+		if (newIndex >= wetApplianceProfile.length)
+			newIndex = wetApplianceProfile.length -1;
+		
+		//System.out.println("newIndex after: "+ newIndex);
+
+		wetApplianceProfile[newIndex] = wetApplianceProfile[newIndex] + maxVal;
+		
+		//System.out.println("Wet Prof AFTER Optim: "+ Arrays.toString(wetApplianceProfile));
+
 	}
 
 	/**
@@ -336,9 +400,19 @@ public class WattboxController implements ISmartController{
 	 */
 	private void optimiseColdProfile() 
 	{
+		
+		System.out.println("ColdProf.length: "+ coldApplianceProfile.length);
+		System.out.println("ColdProf Before Optim: "+ Arrays.toString(coldApplianceProfile));
+		System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
+
 		double[] currentCost = ArrayUtils.mtimes(coldApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
 		int minIndex = ArrayUtils.indexOfMin(currentCost);
+		
+        System.out.println("minIndex: "+ minIndex + " minVal= "+ coldApplianceProfile[minIndex]);
+		System.out.println("maxIndex: "+ maxIndex + " maxVal= "+ coldApplianceProfile[maxIndex]);
+
+
 		// First pass - simply swap the load in the max cost slot with that in the min cost slot
 		//TODO: very crude and will give nasty positive feedback in all likelihood
 		if (maxIndex < (coldApplianceProfile.length -1 ))
@@ -348,6 +422,55 @@ public class WattboxController implements ISmartController{
 			coldApplianceProfile[maxIndex] = temp;
 		}
 	}
+	
+	/**
+	 * Optimise the Cold appliance usage profile for the household
+	 * which owns this Wattbox.
+	 * 
+	 */
+	private void optimiseColdProfile_test() 
+	{
+		
+		System.out.println("ColdProf.length: "+ coldApplianceProfile.length);
+		System.out.println("ColdProf Before Optim: "+ Arrays.toString(coldApplianceProfile));
+		System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
+
+		double[] currentCost = ArrayUtils.mtimes(coldApplianceProfile, dayPredictedCostSignal);
+		int maxIndex = ArrayUtils.indexOfMax(currentCost);
+		//int minIndex = ArrayUtils.indexOfMin(currentCost);
+		
+        //System.out.println("minIndex: "+ minIndex + " minVal= "+ coldApplianceProfile[minIndex]);
+		System.out.println("maxIndex: "+ maxIndex + " maxVal= "+ coldApplianceProfile[maxIndex]);
+		
+        double maxVal = coldApplianceProfile[maxIndex];
+		
+        coldApplianceProfile[maxIndex] = 0;
+        
+        coldApplTimeslotDelayRandDist.nextIntFromTo(1, 2);
+		
+		int timeShift = 8; //temporary test: delay 4 hours 
+		
+		int newIndex = maxIndex + timeShift;
+		//System.out.println("newIndex before: "+ newIndex);
+		if (newIndex >= coldApplianceProfile.length)
+			newIndex = coldApplianceProfile.length -1;
+		
+		//System.out.println("newIndex after: "+ newIndex);
+
+		coldApplianceProfile[newIndex] = coldApplianceProfile[newIndex] + maxVal;
+		
+		System.out.println("Wet Prof AFTER Optim: "+ Arrays.toString(coldApplianceProfile));
+
+      /*
+		if (maxIndex < (coldApplianceProfile.length -1 ))
+		{
+			double temp = coldApplianceProfile[minIndex];
+			coldApplianceProfile[minIndex] = coldApplianceProfile[maxIndex];
+			coldApplianceProfile[maxIndex] = temp;
+		} */
+		
+	}
+
 
 	/**
 	 * @param dayPredictedCostSignal the dayPredictedCostSignal to set
@@ -407,8 +530,6 @@ public class WattboxController implements ISmartController{
 					localSetPointArray[k] = this.setPointProfile[k] - totalTempLoss;
 					availableHeatRecoveryTicks++;
 				}
-
-
 
 				availableHeatRecoveryTicks--;
 
@@ -623,5 +744,7 @@ public class WattboxController implements ISmartController{
 		this.owner = owner;
 		this.userProfile = userProfile;
 		this.userLifestyle = userLifestyle;
+		
+		coldApplTimeslotDelayRandDist = RandomHelper.createUniform();  //temp
 	}
 }

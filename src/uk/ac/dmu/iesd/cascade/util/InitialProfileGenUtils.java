@@ -5,6 +5,9 @@ package uk.ac.dmu.iesd.cascade.util;
 
 import java.util.Arrays;
 
+import cern.jet.random.Empirical;
+import cern.jet.random.EmpiricalWalker;
+
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.Consts;
 
@@ -70,6 +73,8 @@ public abstract class InitialProfileGenUtils {
 		{
 			for (int HH=0; HH < Consts.MELODY_MODELS_TICKS_PER_DAY; HH++)
 			{
+				//System.out.println("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
+
 				d_fridge[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridges * ( Math.max(0, scale_fridge[HH]*Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH])+const_fridge[HH]+(RandomHelper.getNormal().nextDouble()*stddev_fridge[HH])));
 				d_freezer[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridgeFreezers * ( Math.max(0,scale_freezer[HH]* Math.sin(2*Math.PI*(i / Consts.DAYS_PER_YEAR)-2.05)+const_freezer[HH]+(RandomHelper.getNormal().nextDouble()*stddev_freezer[HH])));
 				d_fridge_freezer[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=freezers * ( Math.max(0,scale_fridge_freezer[HH]* Math.sin(2*Math.PI*(i / Consts.DAYS_PER_YEAR)-phase_fridge_freezer[HH])+const_fridge_freezer[HH]+(RandomHelper.getNormal().nextDouble()*stddev_fridge_freezer[HH])));
@@ -95,9 +100,7 @@ public abstract class InitialProfileGenUtils {
 			boolean dishWasher, boolean tumbleDryer) {
 		// TODO Auto-generated method stub
 		return 	melodyStokesWetApplianceGen(numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
-
 	}
-
 
 	/**
 	 * @param numDays
@@ -107,7 +110,7 @@ public abstract class InitialProfileGenUtils {
 	 * @param l
 	 * @return
 	 */
-	private static double[] melodyStokesWetApplianceGen(int numDays, int washMach,
+	private static double[] melodyStokesWetApplianceGen_old(int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
 		// nasty implementation that assumes this starts 1st Jan and that's a Sunday
 		// TODO: refine days of week.  Possibly add start date to context and maintain day of week etc in there too
@@ -215,5 +218,59 @@ public abstract class InitialProfileGenUtils {
 	return ArrayUtils.add(d_washer_UR, d_dryer_UR, d_dish_UR);
 
 }
+	
+	
+	/**
+	 * @param numDays
+	 * @param i
+	 * @param j
+	 * @param k
+	 * @param l
+	 * @return
+	 */
+	private static double[] melodyStokesWetApplianceGen(int numDays, int washMach,
+			int washDry, int dishWash, int tumbleDry) {
+		// Each day of week is treated the same way! 
+		//this sub-model is for half-hourly electricty demand for washing appliances
+		//it covers washers, dryers, washer-dryers combined and dishwashers
+
+		final double[] wet_pdf = {18.91,16.45,13.49,12.52,16.80,14.41,11.13,9.99,13.90,10.18,13.30,15.53,18.79,17.65,21.79,25.72,36.83,43.13,43.94,46.43,49.61,52.02,49.30,45.71,42.85,42.42,39.08,39.67,41.19,40.16,37.68,37.56,37.67,38.10,38.19,37.10,36.46,37.32,39.44,37.77,37.05,35.09,35.13,34.19,29.75,26.68,26.01,21.30};
+		EmpiricalWalker wetApplProbDistGenerator = RandomHelper.createEmpiricalWalker(wet_pdf, Empirical.NO_INTERPOLATION); //temporarily used for test
+
+		//ChartUtils.testProbabilityDistAndShowHistogram(wetApplProbDistGenerator, 10000, 48);
+
+		double[] d_washer_UR = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
+		double[] d_dryer_UR =new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
+		double[] d_dish_UR =new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
+
+		double[] scale_washer_wkdays_UR={0.002d, 0.001d, 0d, 0d, 0.022d, 0.01d, 0d, 0.003d, 0.026d, 0d, 0d, 0.005d, 0.002d, 0.004d, 0.029d, 0.013d, 0.046d, 0.029d, 0.006d, 0.023d, 0.009d, 0.029d, 0.019d, 0.014d, 0.014d, 0.009d, 0.007d, 0.022d, 0.019d, 0.009d, 0.01d, 0.015d, 0.021d, 0.01d, 0.017d, 0.018d, 0.018d, 0.025d, 0.022d, 0.01d, 0.034d, 0.023d, 0.025d, 0.018d, 0.003d, 0.002d, 0.003d, 0.002d};
+		double[] phase_washer_wkdays_UR={1.4d, 1.4d, 0d, 0d, 2.4d, 2.6d, 0d, 5d, 5.4d, 0d, 0d, 2.9d, 4.2d, 2.8d, 0.5d, 0.9d, 1d, 6.2d, 2d, 5.9d, 0d, 0d, 5.9d, 0.5d, 4.6d, 4.4d, 5.2d, 0d, 5.5d, 4.9d, 5.8d, 5.4d, 6d, 5.5d, 6d, 6.2d, 6d, 4.9d, 5.3d, 6d, 6d, 0.5d, 0.7d, 0.4d, 2.5d, 1.9d, 0.6d, 0.4d};
+		double[] const_washer_wkdays_UR={0.011d, 0.005d, 0.002d, 0.001d, 0.025d, 0.016d, 0.004d, 0.003d, 0.016d, 0.004d, 0.005d, 0.02d, 0.039d, 0.032d, 0.072d, 0.081d, 0.186d, 0.262d, 0.257d, 0.279d, 0.26d, 0.239d, 0.216d, 0.18d, 0.171d, 0.164d, 0.127d, 0.116d, 0.131d, 0.116d, 0.103d, 0.108d, 0.112d, 0.127d, 0.125d, 0.123d, 0.113d, 0.114d, 0.119d, 0.098d, 0.1d, 0.094d, 0.089d, 0.08d, 0.05d, 0.036d, 0.031d, 0.016d};
+		double[] stddev_washer_wkdays_UR={0.027d, 0.018d, 0.01d, 0.006d, 0.044d, 0.038d, 0.014d, 0.007d, 0.043d, 0.014d, 0.02d, 0.039d, 0.054d, 0.041d, 0.059d, 0.071d, 0.13d, 0.148d, 0.12d, 0.133d, 0.134d, 0.134d, 0.127d, 0.117d, 0.12d, 0.126d, 0.096d, 0.099d, 0.109d, 0.089d, 0.078d, 0.086d, 0.087d, 0.099d, 0.1d, 0.094d, 0.092d, 0.096d, 0.091d, 0.082d, 0.089d, 0.082d, 0.078d, 0.086d, 0.055d, 0.049d, 0.051d, 0.031d};
+
+		double[] scale_dryer_wkdays_UR={0.01d, 0.005d, 0.005d, 0.004d, 0d, 0.001d, 0.001d, 0d, 0d, 0d, 0d, 0.033d, 0.035d, 0.027d, 0.025d, 0.028d, 0.03d, 0.033d, 0.05d, 0.06d, 0.075d, 0.077d, 0.069d, 0.08d, 0.088d, 0.104d, 0.095d, 0.08d, 0.09d, 0.082d, 0.068d, 0.099d, 0.094d, 0.109d, 0.093d, 0.086d, 0.081d, 0.046d, 0.019d, 0.024d, 0.038d, 0.027d, 0.01d, 0.004d, 0.01d, 0.013d, 0.02d, 0.018d};
+		double[] phase_dryer_wkdays_UR={2.8d, 3.5d, 3.4d, 4.3d, 0d, 3.7d, 3.7d, 0d, 0d, 0d, 3.7d, 5.6d, 5.6d, 5.5d, 5.7d, 6.1d, 5.9d, 4.7d, 5.1d, 4.9d, 5d, 5d, 5d, 5.2d, 5.2d, 5.3d, 5.1d, 5.1d, 5d, 4.8d, 5.1d, 5.2d, 4.9d, 5.2d, 5.3d, 5.4d, 5.1d, 5.3d, 5.3d, 0.1d, 0.1d, 0.1d, 0.6d, 5.2d, 3.1d, 2.2d, 2.5d, 2.6d};
+		double[] const_dryer_wkdays_UR={0.028d, 0.017d, 0.01d, 0.006d, 0.007d, 0.002d, 0.002d, 0.003d, 0.002d, 0.004d, 0.015d, 0.029d, 0.042d, 0.052d, 0.06d, 0.073d, 0.087d, 0.085d, 0.082d, 0.092d, 0.121d, 0.137d, 0.143d, 0.133d, 0.145d, 0.154d, 0.139d, 0.126d, 0.129d, 0.126d, 0.116d, 0.12d, 0.136d, 0.158d, 0.163d, 0.156d, 0.135d, 0.129d, 0.107d, 0.103d, 0.092d, 0.085d, 0.079d, 0.082d, 0.079d, 0.061d, 0.055d, 0.038d};
+		double[] stddev_dryer_wkdays_UR={0.062d, 0.049d, 0.033d, 0.028d, 0.043d, 0.012d, 0.016d, 0.018d, 0.013d, 0.019d, 0.05d, 0.065d, 0.076d, 0.081d, 0.08d, 0.085d, 0.102d, 0.096d, 0.101d, 0.117d, 0.118d, 0.121d, 0.125d, 0.118d, 0.138d, 0.131d, 0.134d, 0.129d, 0.141d, 0.139d, 0.121d, 0.117d, 0.124d, 0.128d, 0.131d, 0.121d, 0.119d, 0.127d, 0.117d, 0.111d, 0.101d, 0.094d, 0.096d, 0.096d, 0.09d, 0.08d, 0.078d, 0.065d};
+		//dishwasher parameters
+		double[] scale_dish_UR={0.004d, 0.015d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0.001d, 0.012d, 0.016d, 0d, 0d, 0.005d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0.022d, 0.022d, 0.017d, 0.014d, 0.006d, 0.016d, 0.015d, 0.017d, 0.025d, 0.009d, 0.037d, 0.024d, 0.024d, 0.001d, 0.015d, 0.012d, 0.004d, 0.005d};
+		double[] phase_dish_UR={2.6d, 2.4d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 2d, 1d, 0.5d, 0d, 0d, 3.4d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 5.2d, 5.1d, 5.3d, 4.7d, 5.2d, 5d, 5d, 5.5d, 5d, 5.8d, 5.7d, 0d, 0.1d, 0d, 0d, 5.7d, 4.4d, 5.5d};
+		double[] const_dish_UR={0.058d, 0.053d, 0.017d, 0.009d, 0.008d, 0.006d, 0.006d, 0.003d, 0.001d, 0.001d, 0.001d, 0.001d, 0.001d, 0.002d, 0.009d, 0.025d, 0.072d, 0.104d, 0.114d, 0.117d, 0.137d, 0.128d, 0.094d, 0.068d, 0.06d, 0.051d, 0.061d, 0.079d, 0.083d, 0.085d, 0.078d, 0.068d, 0.06d, 0.056d, 0.053d, 0.061d, 0.067d, 0.094d, 0.143d, 0.196d, 0.212d, 0.195d, 0.182d, 0.187d, 0.172d, 0.13d, 0.093d, 0.068d};
+		double[] stddev_dish_UR={0.071d, 0.053d, 0.036d, 0.032d, 0.03d, 0.023d, 0.025d, 0.016d, 0.007d, 0.006d, 0.011d, 0.013d, 0.007d, 0.015d, 0.034d, 0.053d, 0.094d, 0.114d, 0.112d, 0.106d, 0.113d, 0.11d, 0.102d, 0.088d, 0.087d, 0.073d, 0.082d, 0.098d, 0.102d, 0.112d, 0.101d, 0.094d, 0.088d, 0.081d, 0.086d, 0.095d, 0.091d, 0.095d, 0.133d, 0.146d, 0.14d, 0.134d, 0.141d, 0.132d, 0.125d, 0.111d, 0.091d, 0.08d};
+
+		int timeslot;
+
+		for (int i = 0; i < numDays; i++)	{
+			timeslot = wetApplProbDistGenerator.nextInt();
+			d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=(washMach + washDry) *  Math.max(0, scale_washer_wkdays_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_wkdays_UR[timeslot])+const_washer_wkdays_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_washer_wkdays_UR[timeslot]));
+			d_dryer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=(tumbleDry + washDry) * Math.max(0, scale_dryer_wkdays_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dryer_wkdays_UR[timeslot])+const_dryer_wkdays_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_dryer_wkdays_UR[timeslot])) ;
+			timeslot = wetApplProbDistGenerator.nextInt();
+			d_dish_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=dishWash * Math.max(0, scale_dish_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dish_UR[timeslot])+const_dish_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_dish_UR[timeslot])) ;               
+
+		}
+
+		return ArrayUtils.add(d_washer_UR, d_dryer_UR, d_dish_UR);
+
+	}
 
 }

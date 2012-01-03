@@ -21,7 +21,10 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
+import org.jfree.ui.RefineryUtilities;
+
 import cern.jet.random.Empirical;
+import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.Normal;
 
 import repast.simphony.context.Context;
@@ -141,11 +144,16 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		String householdAttrFileName = (String)params.getValue("householdBaseAttributeFile");
 		String elecLayoutFilename = (String)params.getValue("electricalNetworkLayoutFile");
 		numProsumers = (Integer) params.getValue("defaultProsumersPerFeeder");
+		cascadeMainContext.setTotalNbOfProsumers(numProsumers);
 		cascadeMainContext.setNbOfTickPerDay((Integer) params.getValue("ticksPerDay"));
 		cascadeMainContext.verbose = (Boolean) params.getValue("verboseOutput");
 		cascadeMainContext.chartSnapshotOn = (Boolean) params.getValue("chartSnapshot");
 		cascadeMainContext.setChartSnapshotInterval((Integer) params.getValue("chartSnapshotInterval"));
+		
+		cascadeMainContext.setRandomSeedValue((Integer)params.getValue("randomSeed"));
 
+		
+		// RunEnvironment.getInstance().
 		Date startDate;
 		try {
 			startDate = (new SimpleDateFormat("dd/MM/yyyy")).parse((String) params.getValue("startDate"));
@@ -320,8 +328,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		}
 
-		if(cascadeMainContext.verbose)
-		{
+		//if(cascadeMainContext.verbose)
+		//{
 			System.out.println("Percentages:");
 			System.out.println("households with occupancy 1 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",1)).query()) / householdProsumers.size());
 			System.out.println("households with occupancy 2 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",2)).query()) / householdProsumers.size());
@@ -335,7 +343,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			System.out.println("Washer Dryer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWasherDryer",true)).query()) / householdProsumers.size());
 			System.out.println("Tumble Dryer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasTumbleDryer",true)).query()) / householdProsumers.size());
 			System.out.println("Dish Washer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
-		}
+		//}
 
 	}
 	private void setHHProsumersElecWaterHeatBasedOnFraction() {
@@ -407,6 +415,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			}
 
 			pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer && pAgent.hasChestFreezer));
+			
+			//System.out.println("coldApplianceProfile length: "+ pAgent.coldApplianceProfile.length);
+			//System.out.println(Arrays.toString(pAgent.coldApplianceProfile));
 		}
 	}
 
@@ -523,12 +534,18 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	private void initializeProbabilityDistributions() {
 
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
+		//System.out.println("  ArrayUtils.sum(drawOffDist)"+ ArrayUtils.sum(drawOffDist));
 		cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
+		//System.out.println("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+
 		cascadeMainContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
 		cascadeMainContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
 
 		cascadeMainContext.buildingLossRateGenerator = RandomHelper.createNormal(275,75);
 		cascadeMainContext.thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
+		
+		//cascadeMainContext.hhProsumerElasticityTest = RandomHelper.createBinomial(1, 0.005);
+		
 	}
 
 	/**
@@ -590,7 +607,16 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	}
 
 	private void populateContext_test() {
+		
 		createTestHHProsumersAndAddThemToContext();
+		
+		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
+		RECO firstRecoAggregator = aggregatorFactory.createRECO(cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(firstRecoAggregator);
+		
+		buildSocialNetwork(); 
+
+		buildOtherNetworks(firstRecoAggregator);
 	}
 
 
@@ -644,8 +670,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		populateContext();
 
-		cranfieldMarketModelIntegrationTest();
-
+		//cranfieldMarketModelIntegrationTest();
 
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());

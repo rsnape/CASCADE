@@ -38,10 +38,15 @@ public final class Consts {
 	public static boolean TAKE_SNAPSHOT_OF_CHART_8_Market = false;
 	
 	//Controlling HHProsumers electricity consumption/usage
-	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
-	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
+	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = false;
+	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = false;
 	public static boolean HHPRO_HAS_COLD_APPL = true;
-	public static boolean HHPRO_HAS_WET_APPL = true;
+	public static boolean HHPRO_HAS_WET_APPL = false;
+	
+	//Controlling REEA operation
+	public static boolean AGG_RECO_REEA_ON = false;
+	
+	//public static boolean WRITE_OUTPUTS_ON = false;
 
 
 	/*------------------------
@@ -110,11 +115,17 @@ public final class Consts {
 	 * This is the aggregator profile building period time in terms of day, assuming it is set manually
 	 * During this period, aggregator do not send any signal and simply get the the normal usage of
 	 * it customers baseline demand and at the end of this period, it will build an average usage
-	 * profile, which will used during training period. This period should at least take
-	 * sometimes about 3 to 7 days. 
+	 * profile, which will used during training period. 
+	 * The way it is currently used, it should basically correspond to the number of demand profiles
+	 * (e.g. days of weeks: Monday, Tuesday, etc., or two profiles: weekdays and weekend)
+	 * If the models continues to use them in its current way, it would be more proper to 
+	 * name this as NB_OF_DEMAND_PROFILES;
+	 * 
 	 * @see AGGREGATOR_TRAINING_PERIODE
 	 **/
-	public static final int AGGREGATOR_PROFILE_BUILDING_PERIODE = 7; // in terms of days
+	
+	public static final int AGGREGATOR_PROFILE_BUILDING_PERIODE = 7;
+	//public static final int AGGREGATOR_PROFILE_BUILDING_PERIODE = DAYS_PER_YEAR; // in terms of days
 
 	/**
 	 * This is the aggregator training period time in terms of day (assuming it is set manually)

@@ -30,7 +30,7 @@
       <seriesID>Sum of total demand</seriesID>
       <valueColumn>New Column</valueColumn>
       <hashCode>-1773597658</hashCode>
-      <proxy>false</proxy>
+      <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

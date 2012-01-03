@@ -30,7 +30,7 @@
       <seriesID>Wind Speed</seriesID>
       <valueColumn>Wind Speed</valueColumn>
       <hashCode>-777724445</hashCode>
-      <proxy>false</proxy>
+      <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
