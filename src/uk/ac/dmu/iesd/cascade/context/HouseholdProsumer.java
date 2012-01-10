@@ -196,8 +196,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 */
 	ISmartController mySmartController;
 	WeakHashMap currentSmartProfiles; 
-	public double[] coldApplianceProfile;
+	
+	private double[] coldApplianceProfile;
+	protected HashMap coldApplianceProfiles;
+	
 	public double[] wetApplianceProfile;
+	protected HashMap wetApplianceProfiles;
+	
 	private double[] baselineHotWaterVolumeProfile;
 	private double[] waterHeatProfile;
 
@@ -307,7 +312,23 @@ public class HouseholdProsumer extends ProsumerAgent{
 		
 		return hasWetAppliances;
 	}
-
+	
+	public boolean getHasRefrigerator() {
+		return this.hasRefrigerator;
+	}
+	
+	public boolean getHasFridgeFreezer() {
+		return this.hasFridgeFreezer;
+	}
+	
+	public boolean getHasUprightFreezer() {
+		return this.hasUprightFreezer;
+	}
+	
+	public boolean getHasChestFreezer() {
+		return this.hasChestFreezer;
+	}
+	
 	public boolean getHasColdAppliances() {
 		
 		boolean hasColdAppliances = false;
@@ -316,6 +337,22 @@ public class HouseholdProsumer extends ProsumerAgent{
 				|| hasUprightFreezer ||	hasChestFreezer);
 
 		return hasColdAppliances;
+	}
+	
+	public void setColdAppliancesProfiles(HashMap coldProfile) {
+		this.coldApplianceProfiles = coldProfile;
+	}
+	
+	public HashMap getColdAppliancesProfiles() {
+		return this.coldApplianceProfiles;
+	}
+	
+	public void setWetAppliancesProfiles(HashMap wetProfile) {
+		this.wetApplianceProfiles = wetProfile;
+	}
+	
+	public HashMap getWetAppliancesProfiles() {
+		return this.wetApplianceProfiles;
 	}
 
 	public int getNumOccupants() {
@@ -413,8 +450,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return str;
 
 	}
-
-
 
 	public double getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
@@ -570,8 +605,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// Currently incorporated into the base demand
 		return 0;
 	}
-
-
 
 	/**
 	 * @return
@@ -789,6 +822,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		double currentBase = evaluateElasticBehaviour(time);
 
 		double currentCold = coldApplianceDemand();
+		
+		System.out.println("currentColdDemand is: "+currentCold);
 
 		double currentWet = wetApplianceDemand();
 
@@ -1028,7 +1063,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	} */
 
 
-	
 	public void initializeRandomlyDailyElasticityArray(double from, double to) {
 		for (int i = 0; i < dailyElasticity.length; i++)  {
 			dailyElasticity[i] = RandomHelper.nextDoubleFromTo(from, to);
@@ -1118,6 +1152,20 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.mySmartController = new WattboxController(this);
 	}
 	
+	public double[] calculateCombinedColdAppliancesProfile(HashMap coldProfiles) {
+		double [] fridge_loads = (double []) coldProfiles.get(Consts.COLD_APP_FRIDGE);
+		double [] freezer_loads = (double []) coldProfiles.get(Consts.COLD_APP_FREEZER);
+		double [] fridge_freezer_loads = (double []) coldProfiles.get(Consts.COLD_APP_FRIDGEFREEZER);
+		return ArrayUtils.add(fridge_loads, freezer_loads, fridge_freezer_loads);		
+	}
+	
+	public double[] calculateCombinedWetAppliancesProfile(HashMap wetProfiles) {
+		double [] washer_loads = (double []) wetProfiles.get(Consts.WET_APP_WASHER);
+		double [] dryer_loads = (double []) wetProfiles.get(Consts.WET_APP_DRYER);
+		double [] dishwasher_loads = (double []) wetProfiles.get(Consts.WET_APP_DISHWASHER);
+		return ArrayUtils.add(washer_loads, dryer_loads, dishwasher_loads);		
+	}
+	
 	/**
 	 * This method is used to check whether the 'profile building' period has completed.
 	 * the 'profile building' period (the initial part of the training period, usually 4-7 days) is 
@@ -1150,7 +1198,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		
 		if (Consts.DEBUG)
 		{
-		System.out.println("    -------- HouseholdProsumer: step() ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		System.out.println("  -------- HouseholdProsumer(" +this.getAgentID()+") step() ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		}
 
 		time = (int) RepastEssentials.GetTickCount();
@@ -1161,8 +1209,16 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		//Do all the "once-per-day" things here
 		
-		if (timeOfDay == 0 && isAggregateDemandProfileBuildingPeriodCompleted())
-		//if (timeOfDay == 0)
+		if ((timeOfDay == 0) && getHasColdAppliances()) {
+			this.coldApplianceProfile = calculateCombinedColdAppliancesProfile(this.coldApplianceProfiles);
+		}
+		
+		if ((timeOfDay == 0) && getHasWetAppliances()) {
+			this.wetApplianceProfile = calculateCombinedWetAppliancesProfile(this.wetApplianceProfiles);
+		}
+
+		//if (timeOfDay == 0 && isAggregateDemandProfileBuildingPeriodCompleted())
+		if (timeOfDay == 0)
 		{
 			//TODO: decide whether the inelastic day demand is something that needs
 			// calculating here
@@ -1170,17 +1226,34 @@ public class HouseholdProsumer extends ProsumerAgent{
 			System.out.println("  HHpro: inelasticTotalDayDemand: "+ inelasticTotalDayDemand);
 			
 			if (hasSmartControl){
-				mySmartController.update(time);
-				currentSmartProfiles = mySmartController.getCurrentProfiles();
+				
+				System.out.println("--beforCallToUpdate; time: "+time);
+				//double [] cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + ticksPerDay);
+				//System.out.println("BEFORE cold_1day: "+ Arrays.toString(cold_1day));
 
+				mySmartController.update(time);
+				
 				if (this.getHasColdAppliances())
-					ArrayUtils.replaceRange(this.coldApplianceProfile, (double[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
+					this.coldApplianceProfile = calculateCombinedColdAppliancesProfile(this.coldApplianceProfiles);
+				
+				if (this.getHasWetAppliances())
+					this.wetApplianceProfile = calculateCombinedWetAppliancesProfile(this.wetApplianceProfiles);
+
+				//cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + ticksPerDay);
+				//System.out.println("AFTER cold_1day: "+ Arrays.toString(cold_1day));
+
+				currentSmartProfiles = mySmartController.getCurrentProfiles();
+				
+				//this.coldApplianceProfile = calculateCombinedColdAppliancesProfile(this.coldApplianceProfiles);
+
+				//if (this.getHasColdAppliances())
+					//ArrayUtils.replaceRange(this.coldApplianceProfile, (double[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
 				
 				//System.out.println("  New Cold Prof: "+ Arrays.toString((double []) currentSmartProfiles.get("ColdApps")));
 				
 				//System.out.println("  HHpro: SizeOfWeAppProf: "+ wetApplianceProfile.length);
-				if (this.getHasWetAppliances())
-					ArrayUtils.replaceRange(this.wetApplianceProfile, (double[]) currentSmartProfiles.get("WetApps"),time % this.wetApplianceProfile.length);
+				//if (this.getHasWetAppliances())
+					//ArrayUtils.replaceRange(this.wetApplianceProfile, (double[]) currentSmartProfiles.get("WetApps"),time % this.wetApplianceProfile.length);
 				
 				this.optimisedSetPointProfile = (double[]) currentSmartProfiles.get("HeatPump");
 				this.setWaterHeatProfile((double[]) currentSmartProfiles.get("WaterHeat"));
@@ -1209,7 +1282,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 				if (this.getHasWetAppliances())
 					outputBuilder[2] = ArrayUtils.convertDoubleArrayToString(wetApplianceProfile);
 				if (this.getHasColdAppliances())
-					outputBuilder[3] = ArrayUtils.convertDoubleArrayToString(coldApplianceProfile);
+					outputBuilder[3] = ArrayUtils.convertDoubleArrayToString(calculateCombinedColdAppliancesProfile(this.coldApplianceProfiles));
 				sampleOutput.appendCols(outputBuilder);
 			}
 
@@ -1224,7 +1297,6 @@ public class HouseholdProsumer extends ProsumerAgent{
        
 		if (hasSmartControl){
 			setNetDemand(smartDemand(time));
-
 		}
 		
 		else if (hasSmartMeter && exercisesBehaviourChange) {
@@ -1292,6 +1364,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.historicalIntTemp = new double[ticksPerDay];
 		this.historicalExtTemp = new double[ticksPerDay];
 		this.recordedHeatPumpDemand = new double[ticksPerDay];
+		
+		this.coldApplianceProfiles = new HashMap();
 		
 		
 		//Richard test - just to monitor evolution of one agent

@@ -1,5 +1,5 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>e</name>
+  <name>e vs s</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
@@ -27,15 +27,15 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>AggName</seriesID>
-      <valueColumn>CurrentPriceElasticityFactor_e</valueColumn>
-      <hashCode>-1318007421</hashCode>
-      <proxy>false</proxy>
-    </repast.simphony.chart.Series>
-    <repast.simphony.chart.Series>
       <seriesID>CurrentPriceSignalSeriesName</seriesID>
       <valueColumn>CurrentPriceSignal</valueColumn>
       <hashCode>1586787907</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>CurrentPriceElasticityFactor_e_seriesName</seriesID>
+      <valueColumn>CurrentPriceElasticityFactor_e</valueColumn>
+      <hashCode>1249874518</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

@@ -152,7 +152,6 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		cascadeMainContext.setRandomSeedValue((Integer)params.getValue("randomSeed"));
 
-		
 		// RunEnvironment.getInstance().
 		Date startDate;
 		try {
@@ -226,7 +225,6 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				System.err.println("Please check file " + householdAttrFile.getAbsolutePath());
 				System.exit(1);
 			}
-
 
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not find file with name " + householdAttrFileName);
@@ -324,12 +322,14 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			}
 
 			//populate the initial heating profile from the above baseline demand for hot water
-			thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
+			//thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
+			
+			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
 
 		}
 
-		//if(cascadeMainContext.verbose)
-		//{
+		if(cascadeMainContext.verbose)
+		{
 			System.out.println("Percentages:");
 			System.out.println("households with occupancy 1 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",1)).query()) / householdProsumers.size());
 			System.out.println("households with occupancy 2 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",2)).query()) / householdProsumers.size());
@@ -343,9 +343,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			System.out.println("Washer Dryer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWasherDryer",true)).query()) / householdProsumers.size());
 			System.out.println("Tumble Dryer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasTumbleDryer",true)).query()) / householdProsumers.size());
 			System.out.println("Dish Washer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
-		//}
-
+		}
 	}
+	
 	private void setHHProsumersElecWaterHeatBasedOnFraction() {
 
 		Iterable waterHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecWaterFraction")));
@@ -413,11 +413,24 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			{
 				pAgent.hasChestFreezer = true;
 			}
-
-			pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer && pAgent.hasChestFreezer));
 			
-			//System.out.println("coldApplianceProfile length: "+ pAgent.coldApplianceProfile.length);
-			//System.out.println(Arrays.toString(pAgent.coldApplianceProfile));
+			System.out.println("Fridge; FridgeFreezer; Freezer: "+  pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+ (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)); 
+
+			//pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer && pAgent.hasChestFreezer));
+			pAgent.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)));
+		}
+		
+		if(cascadeMainContext.verbose)
+		{
+			System.out.println("HHs with Fridge: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasRefrigerator",true)).query()));
+			System.out.println("HHs with FridgeFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasFridgeFreezer",true)).query()));
+			System.out.println("HHs with UprightFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasUprightFreezer",true)).query()));
+			System.out.println("HHs with ChestFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasChestFreezer",true)).query()));
+
+			System.out.println("HHs with Fridge %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasRefrigerator",true)).query()) / householdProsumers.size());
+			System.out.println("HHs with FridgeFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasFridgeFreezer",true)).query()) / householdProsumers.size());
+			System.out.println("HHs with UprightFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasUprightFreezer",true)).query()) / householdProsumers.size());
+			System.out.println("HHs with ChestFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasChestFreezer",true)).query()) / householdProsumers.size());
 		}
 	}
 

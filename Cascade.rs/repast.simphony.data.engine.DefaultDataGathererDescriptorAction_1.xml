@@ -22,6 +22,13 @@
         </repast.simphony.data.logging.BSFMapping>
       </entry>
       <entry>
+        <string>CurrentPriceElasticityFactor_e_seriesName</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = &quot;e&quot;;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
+      </entry>
+      <entry>
         <string>CurrentCost_C</string>
         <repast.simphony.data.logging.gather.MethodMapping>
           <method>
@@ -132,7 +139,7 @@
       <entry>
         <string>CurrentPriceSignalSeriesName</string>
         <repast.simphony.data.logging.BSFMapping>
-          <bsfExpression>value = &quot;Signal&quot;;</bsfExpression>
+          <bsfExpression>value = &quot;Smart Signals&quot;;</bsfExpression>
           <bsfLanguage>beanshell</bsfLanguage>
         </repast.simphony.data.logging.BSFMapping>
       </entry>
@@ -165,87 +172,80 @@
       </entry>
     </nameMappingTable>
     <mappingNameTable>
-   
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[18]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CurrentBaseline_B</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.BSFMapping"/>
-        <string>CostDifferenceSeriesName</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[9]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CumulativeCostSaving</string>
-      </entry>
-
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[6]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CurrentNormalizedCost_C</string>
-      </entry>
-
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[17]/repast.simphony.data.logging.BSFMapping"/>
-        <string>NetDemandSeriesName</string>
-      </entry>
-
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[12]/repast.simphony.data.logging.BSFMapping"/>
-        <string>CurrentBaseline_B_SeriesName</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CurrentCost_C</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[10]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>NetDemand</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[11]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CurrentPriceSignal</string>
-      </entry>
- 
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[14]/repast.simphony.data.logging.BSFMapping"/>
-        <string>AggName</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
-        <string>Tick</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[7]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CostDifference</string>
-      </entry>
-
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[13]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>DayCount</string>
-      </entry>
-
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[16]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CurrentPriceElasticityFactor_e</string>
-      </entry>
-  
-  
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[8]/repast.simphony.data.logging.BSFMapping"/>
-        <string>CurrentNormalizedCost_C_SeriesName</string>
-      </entry>
-
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
         <string>AgentID</string>
       </entry>
-   
       <entry>
         <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.BSFMapping"/>
         <string>CumulativeCostSavingSeriesName</string>
       </entry>
       <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[12]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentPriceSignal</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentCost_C</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[6]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CostDifferenceSeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[13]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CurrentBaseline_B_SeriesName</string>
+      </entry>
+      <entry>
         <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[15]/repast.simphony.data.logging.BSFMapping"/>
+        <string>AggName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[17]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentPriceElasticityFactor_e</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[8]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CostDifference</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[10]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CumulativeCostSaving</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[9]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CurrentNormalizedCost_C_SeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[19]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentBaseline_B</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[18]/repast.simphony.data.logging.BSFMapping"/>
+        <string>NetDemandSeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[14]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>DayCount</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[11]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>NetDemand</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CurrentPriceElasticityFactor_e_seriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[7]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentNormalizedCost_C</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[16]/repast.simphony.data.logging.BSFMapping"/>
         <string>CurrentPriceSignalSeriesName</string>
       </entry>
     </mappingNameTable>
@@ -271,11 +271,14 @@
       </entry>
     </nameMappingTable>
     <mappingNameTable>
-          <entry>
+      <entry>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
+      </entry>
+      <entry>
         <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
         <string>New Column</string>
       </entry>
-
     </mappingNameTable>
     <alternatedNameTable/>
     <nameAlternatedTable/>

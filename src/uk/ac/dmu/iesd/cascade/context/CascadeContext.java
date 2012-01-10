@@ -104,7 +104,6 @@ public class CascadeContext extends DefaultContext{
 	public EmpiricalWalker occupancyGenerator;
 	public Normal waterUsageGenerator;
 	
-	
 	public Normal buildingLossRateGenerator;
 	public Normal thermalMassGenerator;
 	
@@ -544,7 +543,7 @@ public class CascadeContext extends DefaultContext{
 		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
 		//System.out.println("chartCompCol: null?: "+getChartCompCollection());
 		//if ((chartSnapshotOn) && (getChartCompCollection() != null)){
-		ScheduleParameters params = ScheduleParameters.createRepeating(0, getChartSnapshotInterval());
+		ScheduleParameters params = ScheduleParameters.createRepeating(0, getChartSnapshotInterval(),ScheduleParameters.LAST_PRIORITY);
 		schedule.schedule(params, this, "takeSnapshot"); 
 
 	}

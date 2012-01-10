@@ -38,10 +38,10 @@ public final class Consts {
 	public static boolean TAKE_SNAPSHOT_OF_CHART_8_Market = false;
 	
 	//Controlling HHProsumers electricity consumption/usage
-	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = false;
-	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = false;
+	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
+	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
 	public static boolean HHPRO_HAS_COLD_APPL = true;
-	public static boolean HHPRO_HAS_WET_APPL = false;
+	public static boolean HHPRO_HAS_WET_APPL = true;
 	
 	//Controlling REEA operation
 	public static boolean AGG_RECO_REEA_ON = false;
@@ -83,8 +83,6 @@ public final class Consts {
 
 	//factor to convert energy expressed in kWh to Joules.
 	public static final double KWH_TO_JOULE_CONVERSION_FACTOR = 3600000;
-
-
 
 	/*------------------------
 	 * Scheduling Priorities  
@@ -164,6 +162,14 @@ public final class Consts {
 	/*---------------------
 	 * Household Prosumers
 	 *---------------------*/
+	
+	public static final String COLD_APP_FRIDGE = "Fridge";
+	public static final String COLD_APP_FREEZER = "Freezer";
+	public static final String COLD_APP_FRIDGEFREEZER = "FridgeFreezer";
+	
+	public static final String WET_APP_WASHER = "Washer";
+	public static final String WET_APP_DRYER = "Dryer";
+	public static final String WET_APP_DISHWASHER = "Dishwasher";
 	
 	//Defines is the maximum fraction of any domestic load that is moveable
 	public static final double MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION = 0.5d;

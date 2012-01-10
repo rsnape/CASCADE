@@ -1607,6 +1607,8 @@ public class RECO extends AggregatorAgent{
 					//this.hist_week_arr_D[dayOfWeek] = hist_day_arr_D;
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
+					
+					double [] priceSignalTest = {-0.050175966,-0.057895417,-0.061784662,-0.065208969,-0.069459832,-0.072087102,-0.072957939,-0.073762356,-0.074522493,-0.079503974,-0.0777623,-0.07263322,-0.054729409,-0.03354889,-0.007357371,0.010029843,0.022435575,0.028472392,0.035785944,0.038582953,0.040154887,0.043564434,0.045438947,0.045948165,0.046730442,0.045254448,0.045350387,0.044066272,0.041741581,0.040664105,0.040420566,0.042907617,0.04468619,0.047040401,0.046730442,0.041778481,0.035321006,0.030568304,0.024295328,0.019601666,0.014900624,0.010568581,0.01084902,0.010384081,0.005727319,-0.009194983,-0.026139398,-0.04127572};
 
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
@@ -1620,6 +1622,7 @@ public class RECO extends AggregatorAgent{
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 
 					broadcastSignalToCustomers(arr_i_S, customers);
+					//broadcastSignalToCustomers(priceSignalTest, customers);
 
 					if (Consts.DEBUG) 							
 						writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
@@ -1731,7 +1734,6 @@ public class RECO extends AggregatorAgent{
 		//Arrays.fill(priceSignal,125f);
 		Arrays.fill(priceSignal,0f);
 
-
 		// Very basic configuration of predicted customer demand as 
 		// a Constant.  We could be more sophisticated than this or 
 		// possibly this gives us an aspirational target...
@@ -1748,7 +1750,6 @@ public class RECO extends AggregatorAgent{
 		hist_week_arr_D = new double[7][ticksPerDay];
 		this.dailyPredictedCost = new ArrayList<Double>();
 		this.dailyActualCost = new ArrayList<Double>();
-		
 
 		///+++++++++++++++++++++++++++++++++++++++
 		this.arr_i_B = new double [ticksPerDay];
@@ -1758,15 +1759,12 @@ public class RECO extends AggregatorAgent{
 		this.arr_i_norm_C = new double [ticksPerDay];
 		this.arr_ij_k = new double [ticksPerDay][ticksPerDay];
 		this.hist_arr_ij_D = new double [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
-		
 				
 		arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand),100); //all costs (equivalent to size of baseDemand, usually 1 week)
 		
-
 		//Set up basic learning factor
 		this.alpha = 0.1d;
 		//this.alpha = 1d;
-
 
 		//+++++++++++++++++++++++++++++++++++++++++++
 	}
