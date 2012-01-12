@@ -1,17 +1,17 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Insolation</name>
+  <name>TestAggChart</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>weather</string>
+      <string>TestAggregatorData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">weather</dataSetId>
-  <showLegend>false</showLegend>
+  <dataSetId class="string">TestAggregatorData</dataSetId>
+  <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
@@ -22,14 +22,20 @@
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
-  <precisionValue>0</precisionValue>
-  <maxHistory>1500</maxHistory>
+  <precisionValue>3</precisionValue>
+  <maxHistory>500</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Insolation</seriesID>
-      <valueColumn>Insolation</valueColumn>
-      <hashCode>177755685</hashCode>
+      <seriesID>DemandSeriesName</seriesID>
+      <valueColumn>Demand</valueColumn>
+      <hashCode>-1887352043</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>GenerationSeriesName</seriesID>
+      <valueColumn>Generation</valueColumn>
+      <hashCode>-894703549</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

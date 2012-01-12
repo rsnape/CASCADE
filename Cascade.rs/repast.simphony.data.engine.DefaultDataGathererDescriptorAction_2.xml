@@ -1,8 +1,8 @@
 <repast.simphony.data.engine.DefaultDataGathererDescriptor>
-  <name>Signal data set</name>
-  <dataSetId class="string">sigDataSet</dataSetId>
+  <name>AggregatorData</name>
+  <dataSetId class="string">AggregatorData</dataSetId>
   <scheduleParameters>
-    <start>1.0</start>
+    <start>0.0</start>
     <interval>1.0</interval>
     <priority>-Infinity</priority>
     <duration>-1.0</duration>
@@ -11,50 +11,241 @@
   <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
     <nameMappingTable>
       <entry>
+        <string>CostDifference</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>getCostDifference</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>CurrentPriceSignalSeriesName</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = &quot;Signal&quot;;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
+      </entry>
+      <entry>
+        <string>CurrentCost_C</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>getCurrentCost_C</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>AgentID</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>toString</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>CurrentPriceSignal</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>getCurrentPriceSignal</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>CurrentBaseline_B</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>getCurrentBaseline_B</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>NetDemandSeriesName</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = &quot;NetDemand (D)&quot;;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
+      </entry>
+      <entry>
+        <string>CurrentNormalizedCost_C_SeriesName</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = &quot;Cost (normalized)&quot;;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
+      </entry>
+      <entry>
+        <string>CumulativeCostSaving</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>getCumulativeCostSaving</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>NetDemand</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>getNetDemand</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>CurrentNormalizedCost_C</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>getCurrentNormalizedCost_C</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>DayCount</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+            <name>getDayCount</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
         <string>Tick</string>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
       </entry>
       <entry>
-        <string>AgentID</string>
-        <repast.simphony.data.logging.gather.MethodMapping>
-          <method>
-            <class>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</class>
-            <name>getAgentID</name>
-            <parameter-types/>
-          </method>
-        </repast.simphony.data.logging.gather.MethodMapping>
+        <string>CurrentBaseline_B_SeriesName</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = &quot;Baseline (B)&quot;;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
       </entry>
       <entry>
-        <string>CurrentPrediction</string>
-        <repast.simphony.data.logging.gather.MethodMapping>
-          <method>
-            <class>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</class>
-            <name>getCurrentPrediction</name>
-            <parameter-types/>
-          </method>
-        </repast.simphony.data.logging.gather.MethodMapping>
+        <string>CostDifferenceSeriesName</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = &quot;Cost Diff (Predicted - Actual)&quot;;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
+      </entry>
+      <entry>
+        <string>CumulativeCostSavingSeriesName</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = &quot;Cumulative Cost Saving&quot;;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
       </entry>
     </nameMappingTable>
     <mappingNameTable>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[9]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CumulativeCostSaving</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[6]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentBaseline_B</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CostDifference</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[8]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CurrentNormalizedCost_C_SeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[12]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>DayCount</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentPriceSignal</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[11]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentNormalizedCost_C</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry[13]/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[7]/repast.simphony.data.logging.BSFMapping"/>
+        <string>NetDemandSeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[10]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>NetDemand</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrentCost_C</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.MethodMapping"/>
         <string>AgentID</string>
       </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[16]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CumulativeCostSavingSeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[14]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CurrentBaseline_B_SeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CurrentPriceSignalSeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[15]/repast.simphony.data.logging.BSFMapping"/>
+        <string>CostDifferenceSeriesName</string>
+      </entry>
+    </mappingNameTable>
+  </dataMappingContainer>
+  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
+    <nameMappingTable>
+      <entry>
+        <string>Tick</string>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
+      </entry>
+      <entry>
+        <string>New Column</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping>
+          <type>Sum</type>
+          <decorated class="repast.simphony.data.logging.gather.MethodMapping">
+            <method>
+              <class>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</class>
+              <name>getNetDemand</name>
+              <parameter-types/>
+            </method>
+          </decorated>
+        </repast.simphony.data.logging.gather.aggregate.SumMapping>
+      </entry>
+    </nameMappingTable>
+    <mappingNameTable>
       <entry>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>CurrentPrediction</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
+        <string>New Column</string>
       </entry>
     </mappingNameTable>
-  </dataMappingContainer>
-  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
-    <nameMappingTable/>
-    <mappingNameTable/>
     <alternatedNameTable/>
     <nameAlternatedTable/>
   </aggregateContainer>
-  <agentClass>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</agentClass>
+  <agentClass>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</agentClass>
 </repast.simphony.data.engine.DefaultDataGathererDescriptor>

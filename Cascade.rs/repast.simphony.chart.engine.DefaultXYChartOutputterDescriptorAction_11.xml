@@ -1,18 +1,17 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Smart Adoption</name>
+  <name>Signal vs WS Cost</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>SmartControlAdoption</string>
-      <string>TotalDemand</string>
+      <string>AggregatorData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">SmartControlAdoption</dataSetId>
-  <showLegend>false</showLegend>
+  <dataSetId class="string">AggregatorData</dataSetId>
+  <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
@@ -24,13 +23,19 @@
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
   <precisionValue>0</precisionValue>
-  <maxHistory>500</maxHistory>
+  <maxHistory>1500</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Adopters</seriesID>
-      <valueColumn>New Column</valueColumn>
-      <hashCode>246820589</hashCode>
+      <seriesID>CurrentPriceSignalSeriesName</seriesID>
+      <valueColumn>CurrentPriceSignal</valueColumn>
+      <hashCode>1586787907</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>CurrentNormalizedCost_C_SeriesName</seriesID>
+      <valueColumn>CurrentNormalizedCost_C</valueColumn>
+      <hashCode>-2145359830</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

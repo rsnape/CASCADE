@@ -13,9 +13,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 
+import repast.simphony.query.PropertyEquals;
+import repast.simphony.query.Query;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.util.collections.FilteredIterator;
 import repast.simphony.util.collections.IndexedIterable;
+import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
 import cern.jet.random.Empirical;
 
 /**
@@ -262,7 +266,6 @@ public class AgentUtils {
 			}
 		}
 	}
-
 }
 
 

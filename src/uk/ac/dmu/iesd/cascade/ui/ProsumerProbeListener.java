@@ -135,15 +135,15 @@ public class ProsumerProbeListener implements ProbeListener {
 	private  DefaultCategoryDataset createTemperatureDataset(HouseholdProsumer thisAgent) {
 		DefaultCategoryDataset result = new DefaultCategoryDataset();
 
-		double[] arr1 = thisAgent.getSetPointProfile();
-		double[] arr2 = thisAgent.getOptimisedSetPointProfile();
+		//double[] arr1 = thisAgent.getSetPointProfile();
+		//double[] arr2 = thisAgent.getOptimisedSetPointProfile();
 		double[] arr3 = thisAgent.getHistoricalExtTemp();
 		double[] arr4 = thisAgent.getHistoricalIntTemp();
 
 		for (int i = 0; i < 48 ; i++)
 		{
-			result.addValue((Number)arr1[i], "Set Point", i);
-			result.addValue((Number)arr2[i], "Optimised Set Point", i);
+			//result.addValue((Number)arr1[i], "Set Point", i);
+			//result.addValue((Number)arr2[i], "Optimised Set Point", i);
 			result.addValue((Number)arr3[i], "External Temp", i);
 			result.addValue((Number)arr4[i], "Internal Temp", i);
 		}

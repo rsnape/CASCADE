@@ -1,5 +1,5 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Wind Speed</name>
+  <name>Air Temperature</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
@@ -27,10 +27,10 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Wind Speed</seriesID>
-      <valueColumn>Wind Speed</valueColumn>
-      <hashCode>-777724445</hashCode>
-      <proxy>false</proxy>
+      <seriesID>Air Temperature</seriesID>
+      <valueColumn>Air Temperature</valueColumn>
+      <hashCode>-1994405155</hashCode>
+      <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

@@ -1,82 +1,49 @@
 <repast.simphony.data.engine.DefaultDataGathererDescriptor>
-  <name>TestAggregatorData</name>
-  <dataSetId class="string">TestAggregatorData</dataSetId>
+  <name>SmartControlAdoption</name>
+  <dataSetId class="string">SmartControlAdoption</dataSetId>
   <scheduleParameters>
-    <start>1.0</start>
+    <start>0.0</start>
     <interval>1.0</interval>
     <priority>-Infinity</priority>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
   </scheduleParameters>
   <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
+    <nameMappingTable/>
+    <mappingNameTable/>
+  </dataMappingContainer>
+  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
     <nameMappingTable>
       <entry>
         <string>Tick</string>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
       </entry>
       <entry>
-        <string>GenerationSeriesName</string>
-        <repast.simphony.data.logging.BSFMapping>
-          <bsfExpression>value = agent.getAgentName() + &quot;Supply&quot;;</bsfExpression>
-          <bsfLanguage>beanshell</bsfLanguage>
-        </repast.simphony.data.logging.BSFMapping>
-      </entry>
-      <entry>
-        <string>Generation</string>
-        <repast.simphony.data.logging.gather.MethodMapping>
-          <method>
-            <class>uk.ac.cranfield.market.Aggregator</class>
-            <name>getGeneration</name>
-            <parameter-types/>
-          </method>
-        </repast.simphony.data.logging.gather.MethodMapping>
-      </entry>
-      <entry>
-        <string>DemandSeriesName</string>
-        <repast.simphony.data.logging.BSFMapping>
-          <bsfExpression>value = agent.getAgentName() + &quot;Demand&quot;;</bsfExpression>
-          <bsfLanguage>beanshell</bsfLanguage>
-        </repast.simphony.data.logging.BSFMapping>
-      </entry>
-      <entry>
-        <string>Demand</string>
-        <repast.simphony.data.logging.gather.MethodMapping>
-          <method>
-            <class>uk.ac.cranfield.market.Aggregator</class>
-            <name>getDemand</name>
-            <parameter-types/>
-          </method>
-        </repast.simphony.data.logging.gather.MethodMapping>
+        <string>New Column</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping>
+          <type>Sum</type>
+          <decorated class="repast.simphony.data.logging.gather.MethodMapping">
+            <method>
+              <class>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</class>
+              <name>getHasSmartControlAsDouble</name>
+              <parameter-types/>
+            </method>
+          </decorated>
+        </repast.simphony.data.logging.gather.aggregate.SumMapping>
       </entry>
     </nameMappingTable>
     <mappingNameTable>
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>Generation</string>
-      </entry>
       <entry>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>Demand</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.BSFMapping"/>
-        <string>GenerationSeriesName</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.BSFMapping"/>
-        <string>DemandSeriesName</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
+        <string>New Column</string>
       </entry>
     </mappingNameTable>
-  </dataMappingContainer>
-  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
-    <nameMappingTable/>
-    <mappingNameTable/>
     <alternatedNameTable/>
     <nameAlternatedTable/>
   </aggregateContainer>
-  <agentClass>uk.ac.cranfield.market.Aggregator</agentClass>
+  <agentClass>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</agentClass>
 </repast.simphony.data.engine.DefaultDataGathererDescriptor>

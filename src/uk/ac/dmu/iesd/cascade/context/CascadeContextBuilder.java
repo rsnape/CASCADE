@@ -928,6 +928,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		populateContext();
 		
+		PopulationUtils.testAndPrintHouseholdApplianceProportions(cascadeMainContext);
+		
 		cranfieldMarketModelIntegrationTest();
 		
 		
@@ -936,6 +938,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		return cascadeMainContext;
 	}
+
+
+
 
 }
 

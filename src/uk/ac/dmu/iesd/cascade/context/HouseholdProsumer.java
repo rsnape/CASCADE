@@ -313,6 +313,19 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return hasWetAppliances;
 	}
 
+	public boolean getHasFridgeFreezer() {
+		return hasFridgeFreezer;
+	}
+	public boolean getHasRefrigerator() {
+		return hasRefrigerator;
+	}
+	public boolean getHasUprightFreezer() {
+		return hasUprightFreezer;
+	}
+	public boolean getHasChestFreezer() {
+		return hasChestFreezer;
+	}
+	
 	public boolean getHasColdAppliances() {
 		
 		boolean hasColdAppliances = false;
@@ -785,7 +798,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		historicalWetDemand[time % ticksPerDay] = currentWet;
 		historicalColdDemand[time % ticksPerDay] = currentCold;
 
-		if (this.getHasElectricalWaterHeat())
+		if (this.getHasElectricalSpaceHeat())
 			historicalSpaceHeatDemand[time % ticksPerDay] = currentHeat - getWaterHeatProfile()[time % ticksPerDay];
 
 		//if (this.getHasElectricalWaterHeat())	

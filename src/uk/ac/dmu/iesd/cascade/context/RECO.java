@@ -732,6 +732,8 @@ public class RECO extends AggregatorAgent{
 			break;
 		}
 
+		// MUST REMOVE THIS - TEST TO GIVE ZERO SIGNAL AFTER TRAINING
+		//Arrays.fill(sArr,0d);
 		return sArr;
 	}
 
@@ -1632,13 +1634,9 @@ public class RECO extends AggregatorAgent{
 		arr_i_C = Arrays.copyOfRange(arr_i_C_all, timeTick % arr_i_C_all.length, (timeTick % arr_i_C_all.length) + ticksPerDay);
 	    customers = getCustomersList();
 
-		calculateAndSetNetDemand(customers);
 
-		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
-			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
-		}
-		else 
-		{ //End of history profile building period 
+		if (isAggregateDemandProfileBuildingPeriodCompleted())  
+ 		{ //End of history profile building period 
 			//Set the Baseline demand on the first time through after building period
 			if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) {
 				System.out.println("RECO: history array before calculating B " + ArrayUtils.toString(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));
@@ -1658,6 +1656,7 @@ public class RECO extends AggregatorAgent{
 					System.out.println("RECO: Signal Sent");
 					broadcastSignalToCustomers(arr_i_S, customers);
 					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
+			
 				}
 			} //training period completed 
 			else 
@@ -1717,6 +1716,10 @@ public class RECO extends AggregatorAgent{
 
 		calculateAndSetNetDemand(customers);
 
+		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
+			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
+		}
+		
 		if (isAggregateDemandProfileBuildingPeriodCompleted() && !isTrainingPeriodCompleted()) 
 		{  
 			//signal already sent with pre_step, now to process and update history
@@ -1729,12 +1732,25 @@ public class RECO extends AggregatorAgent{
 				System.out.println(" timetick: "+mainContext.getTickCount());
 				double[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
 				double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
-				System.out.println("RECO: e: "+e);
+				//System.out.println("RECO: e: "+e);
 				System.out.println("RECO: e_arr: "+ Arrays.toString(arr_i_e));
 				System.out.println("RECO: arr_last_training_D: "+ Arrays.toString(arr_last_training_D));
 
 				calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
+/* TEST ONLY - REMOVE !!
+ * 
+ */
+/*				if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + 7)
+				{
+				double[] comparison_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + 7));
+				System.err.println(Arrays.toString(ArrayUtils.add(arr_i_B, ArrayUtils.negate(comparison_B))));
 
+				System.err.println(Arrays.toString(arr_i_B));
+
+				System.err.println(Arrays.toString(comparison_B));
+				}
+				*/
+				
 				if (mainContext.getDayCount() > 53) 
 					writeOutput("output1_TrainingPhase_day_",arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 
