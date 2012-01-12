@@ -388,7 +388,6 @@ public abstract class Aggregator {
 			
 			int currentTick = (int) RunEnvironment.getInstance().getCurrentSchedule().getTickCount();	
 			return new offer(minOfferTimeStamp + currentTick, maxOfferTimeStamp+currentTick,offerSize,this);
-			
 		}
 		
 		return null;
@@ -420,7 +419,6 @@ public abstract class Aggregator {
 			{
 				localSupplyPrediction.add(new SupplyPrediction(i,before.dValue, before.dDeviation,
 																 before.sValue, before.sDeviation));
-				
 			}
 			else
 			{

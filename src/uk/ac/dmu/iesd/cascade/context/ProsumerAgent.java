@@ -354,8 +354,6 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();
-		//System.out.println(validTime+ " HHProsumer recive signal at ticktime "+ RepastEssentials.GetTickCount());
-		//System.out.println("This prosumer hasSmartMeter = " + hasSmartMeter + " and receives signal " + Arrays.toString(signal));
 		
 		if (hasSmartMeter)
 		{

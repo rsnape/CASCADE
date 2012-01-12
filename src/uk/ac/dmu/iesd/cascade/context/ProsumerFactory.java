@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package uk.ac.dmu.iesd.cascade.context;
 
@@ -23,10 +23,10 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 /**
  * This class is a factory for creating instances of <tt>ProsumerAgent</tt> concrete subclasses
  * Its public creator method's signatures are defined by {@link IProsumerFactory} interface.
- *   
+ *
  * @author Babak Mahdavi
  * @author Richard Snape
- * @version $Revision: 1.0 $ $Date: 2011/05/16 14:00:00 $ 
+ * @version $Revision: 1.0 $ $Date: 2011/05/16 14:00:00 $
  */
 public class ProsumerFactory implements IProsumerFactory {
 	//Parameters params;
@@ -38,7 +38,7 @@ public class ProsumerFactory implements IProsumerFactory {
 		this.cascadeMainContext= context;
 
 	}
-	
+
 	public HouseholdProsumer createHouseholdProsumer(double[] miscDemandProfileArray, boolean addNoise) {
 		return createHouseholdProsumer(miscDemandProfileArray, addNoise, Consts.RANDOM);
 	}
@@ -47,12 +47,13 @@ public class ProsumerFactory implements IProsumerFactory {
 	/**
 	 * Creates a household prosumer with a basic consumption profile as supplied
 	 * with or without added noise
-	 * 
+	 *
 	 * NOTE: The addNoise option is unsafe as implemented - under a certain combination of random factors, it can give negative
 	 * demands!! DO NOT USE
-	 * 
+	 *
 	 * @param baseProfile - an array of the basic consumption profile for this prosumer (kWh per tick)
 	 * @param addNoise - boolean specifying whether or not to add noise to the profile
+	 * @param occupancyNb - number of occupancy per household, if Consts.RANDOM is passed, it will done randomly  
 	 */
 
 	public HouseholdProsumer createHouseholdProsumer(double[] miscDemandProfileArray, boolean addNoise, int occupancyNb) {
@@ -64,7 +65,7 @@ public class ProsumerFactory implements IProsumerFactory {
 			System.err.println("ProsumerFactory: May cause unexpected behaviour");
 		}
 
-		if (addNoise) 
+		if (addNoise)
 		{
 			pAgent = new HouseholdProsumer(cascadeMainContext, createRandomHouseholdDemand(miscDemandProfileArray));
 		}
@@ -73,37 +74,38 @@ public class ProsumerFactory implements IProsumerFactory {
 			pAgent = new HouseholdProsumer(cascadeMainContext, miscDemandProfileArray);
 		}
 		
-		pAgent.exercisesBehaviourChange = true;
-		pAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WILLING_TO_CHANGE_BEHAVIOUR));
-		//pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
-		
+		// set the occupancy 
+		if (occupancyNb == Consts.RANDOM)
+			pAgent.setNumOccupants(cascadeMainContext.occupancyGenerator.nextInt() + 1);
+		else
+			pAgent.setNumOccupants(occupancyNb);
+
+
 		pAgent.costThreshold = Consts.HOUSEHOLD_COST_THRESHOLD;
 		pAgent.setPredictedCostSignal(Consts.ZERO_COST_SIGNAL);
 
-		//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
-		pAgent.hasSmartMeter = true;
-		pAgent.hasSmartControl = true;  
 		pAgent.transmitPropensitySmartControl = (double) RandomHelper.nextDouble();
-			
+
 		pAgent.initializeRandomlyDailyElasticityArray(0, 0.1);
 		
+		//pAgent.initializeSimilarlyDailyElasticityArray(0.1d);
 		pAgent.setRandomlyPercentageMoveableDemand(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
+		
+		pAgent.exercisesBehaviourChange = true;
+		//pAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WILLING_TO_CHANGE_BEHAVIOUR));
+		
+		//TODO: We just set smart meter true here - need more sophisticated way to set for different scenarios
+		pAgent.hasSmartMeter = true;
 
-		/*==========ENERGY CONSUMPTION FUNCTION=====================
-		 *               2-  OCCUPANCY                             */
-		if (occupancyNb == Consts.RANDOM)
-			pAgent.setNumOccupants(cascadeMainContext.occupancyGenerator.nextInt() + 1);
-		else 
-			pAgent.setNumOccupants(occupancyNb);
-		//System.out.println("HHProsumer:: Nb of occupant: "+getNumOccupants());
-		 //========================================================*/
-							
+		//pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
+		pAgent.hasSmartControl = true;
+	
 		if (pAgent.hasSmartControl)
 			pAgent.setWattboxController();
-	
+
 		return pAgent;
 	}
-	
+
 	public HouseholdProsumer createHouseholdProsumer_Test(double[] baseProfileArray, boolean addNoise) {
 		HouseholdProsumer pAgent;
 		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
@@ -113,7 +115,7 @@ public class ProsumerFactory implements IProsumerFactory {
 			System.err.println("ProsumerFactory: May cause unexpected behaviour");
 		}
 
-		if (addNoise) 
+		if (addNoise)
 		{
 			pAgent = new HouseholdProsumer(cascadeMainContext, createRandomHouseholdDemand(baseProfileArray));
 		}
@@ -122,10 +124,10 @@ public class ProsumerFactory implements IProsumerFactory {
 			pAgent = new HouseholdProsumer(cascadeMainContext, baseProfileArray);
 		}
 
-		
+
 		return pAgent;
 	}
-	
+
 	public HHProsumer createHHProsumer(double[] baseProfileArray, boolean addNoise) {
 		HHProsumer pAgent;
 		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
@@ -135,7 +137,7 @@ public class ProsumerFactory implements IProsumerFactory {
 			System.err.println("ProsumerFactory: May cause unexpected behaviour");
 		}
 
-		if (addNoise) 
+		if (addNoise)
 		{
 			pAgent = new HHProsumer(cascadeMainContext, createRandomHouseholdDemand(baseProfileArray));
 		}
@@ -144,7 +146,7 @@ public class ProsumerFactory implements IProsumerFactory {
 			pAgent = new HHProsumer(cascadeMainContext, baseProfileArray);
 		}
 
-		
+
 		return pAgent;
 	}
 
@@ -154,10 +156,10 @@ public class ProsumerFactory implements IProsumerFactory {
 	 * Adds a random noise to the base profile to create a household demand.
 	 * For amplitude multiplies each point on the base profile by a random double uniformly distributed between 0.7 and 1.3 (arbitrary)
 	 * then selects a uniformly distributed time based <code> jitterFactor </code> between -0.5 and + 0.5 and shifts the demand in time by <code> jitterFactor </code> timesteps
-	 * 
+	 *
 	 * NOTE: This is unsafe as implemented - under a certain combination of random factors, it can give negative
 	 * demands!! DO NOT USE
-	 * 
+	 *
 	 * TODO: It should be over-ridden in the future to use something better - for instance melody's model
 	 * or something which time-shifts demand somewhat, or select one of a number of typical profiles
 	 * based on occupancy.
@@ -173,7 +175,7 @@ public class ProsumerFactory implements IProsumerFactory {
 		}
 
 		//add time jitter
-		double jitterFactor =  RandomHelper.nextDouble() - 0.5d;
+		double jitterFactor = RandomHelper.nextDouble() - 0.5d;
 
 		if (Consts.DEBUG)
 		{
@@ -192,11 +194,11 @@ public class ProsumerFactory implements IProsumerFactory {
 
 
 	/*
-	 * Creates a prosumer to represent a pure generator.  Therefore zero
+	 * Creates a prosumer to represent a pure generator. Therefore zero
 	 * base demand, set the generator type and capacity.
-	 * 
+	 *
 	 * TODO: should the base demand be zero or null???
-	 * 
+	 *
 	 * @param Capacity - the generation capacity of this agent (kWh)
 	 * @param type - the type of this generator (from an enumerator of all types)
 	 */
@@ -205,17 +207,17 @@ public class ProsumerFactory implements IProsumerFactory {
 		GeneratorProsumer thisAgent = null;
 
 		// Create a prosumer with zero base demand
-		// TODO: Should this be null?  or zero as implemented?
+		// TODO: Should this be null? or zero as implemented?
 		double[] nilDemand = new double[1];
 		nilDemand[0] = 0;
 		switch (genType){
 		case WIND:
 			thisAgent = new WindGeneratorProsumer(cascadeMainContext, nilDemand, capacity);
-			break;			
+			break;
 		}
 
 		return thisAgent;
-	} 
+	}
 
 	public ArrayList<ProsumerAgent> createDEFRAHouseholds(int number, String categoryFile, String profileFile)
 	{
@@ -273,7 +275,7 @@ public class ProsumerFactory implements IProsumerFactory {
 
 			if (Consts.DEBUG)
 			{
-				System.out.println("DEFRA Customer segment is"  + custSegment);
+				System.out.println("DEFRA Customer segment is" + custSegment);
 			}
 
 			HouseholdProsumer prAgent = this.createHouseholdProsumer(ArrayUtils.convertStringArrayToDoubleArray(defraProfiles.getColumn("demand" + (custSegment - 1))), true);
@@ -286,7 +288,7 @@ public class ProsumerFactory implements IProsumerFactory {
 			prAgent.habit = Double.parseDouble(defraCategories.getColumn("Habit_factor")[custSegment - 1]);
 
 			prAgent.hasSmartControl = true; //(RandomHelper.nextDouble() < prAgent.HEMSPropensity);
-			prAgent.hasElectricVehicle =  (RandomHelper.nextDouble() < prAgent.EVPropensity);
+			prAgent.hasElectricVehicle = (RandomHelper.nextDouble() < prAgent.EVPropensity);
 
 			returnList.add(prAgent);
 		}
@@ -295,3 +297,4 @@ public class ProsumerFactory implements IProsumerFactory {
 	}
 
 }
+

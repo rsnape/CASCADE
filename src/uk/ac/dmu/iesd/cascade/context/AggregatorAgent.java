@@ -82,6 +82,29 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	double[] arr_i_norm_C; // normalized costs
 	
 	double[] arr_i_B; // (B) baseline at timeslot i
+	
+	
+
+	/**
+	 * This field (e) is "price elasticity factor" at timeslot i
+	 * It is extend to which total demand in the day is reduced or increased by the value of S
+	 * (given S*e) 
+	 * there are 48 of them (day divided into 48 timeslots)
+	 * When a single no zero value of S is broadcast by the aggregator in the ith timeslot, 
+	 * the total aggregated response from the prosumers will involve changes to demand form 
+	 * baseline in some or all timeslots. If those changes are added up for the day, the 
+	 * net value which may be + or - tells us the value of S*e. 
+	 * Since we know S, we can get the e for the ith timeslot in which the S was broadcast. 
+	 **/
+	double[] arr_i_e; 
+
+	/**
+	 * This field (k) is "displacement factor" at timeslot ij
+	 * There are 48^2 of them (48 values at each timeslot; a day divided into 48 timeslots)
+	 * It is calculated in the training process. 
+	 **/
+	double[][] arr_ij_k; 
+
 
 	/**
 	 * A boolen to determine whether the name has
@@ -201,6 +224,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	public double getCurrentPriceSignal()
 	{
 		double time = RepastEssentials.GetTickCount();
+		//System.out.println( time+" getCurrentPriceSignal: "+priceSignal[(int) time % priceSignal.length]);
 		return priceSignal[(int) time % priceSignal.length];
 	}
 
@@ -265,6 +289,13 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 		return mainContext.getDayCount();
 	}
 	
+	
+	public double getCurrentPriceElasticityFactor_e()	{
+		//System.out.println( RepastEssentials.GetTickCount()+" getCurrentPriceElasticityFactor_e: "+arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay]);
+		
+		return arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+	}
+
 
 	
 
@@ -359,7 +390,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	{
 		double price;
 		double x;
-
+		System.out.println(" setPriceSignalRoscoeAndAult ");
 		for (int i = 0; i < priceSignal.length; i++)
 		{	
 			//Note that the division by 10 is to convert the units of predicted customer demand

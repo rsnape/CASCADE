@@ -267,26 +267,6 @@ public class RECO extends AggregatorAgent{
 
 
 	/**
-	 * This field (e) is "price elasticity factor" at timeslot i
-	 * It is extend to which total demand in the day is reduced or increased by the value of S
-	 * (given S*e) 
-	 * there are 48 of them (day divided into 48 timeslots)
-	 * When a single no zero value of S is broadcast by the aggregator in the ith timeslot, 
-	 * the total aggregated response from the prosumers will involve changes to demand form 
-	 * baseline in some or all timeslots. If those changes are added up for the day, the 
-	 * net value which may be + or - tells us the value of S*e. 
-	 * Since we know S, we can get the e for the ith timeslot in which the S was broadcast. 
-	 **/
-	double[] arr_i_e; 
-
-	/**
-	 * This field (k) is "displacement factor" at timeslot ij
-	 * There are 48^2 of them (48 values at each timeslot; a day divided into 48 timeslots)
-	 * It is calculated in the training process. 
-	 **/
-	double[][] arr_ij_k; 
-
-	/**
 	 * This field (S) is "signal" at timeslot i sent to customer's (prosumers)
 	 * so that they response to it accordingly. For example, if S=0, the aggregator can 
 	 * assume that the prosumers respond with their default behavior, so there is 
@@ -326,7 +306,6 @@ public class RECO extends AggregatorAgent{
 	 **/
 	double[][] hist_arr_ij_D;
 	
-	//double[] arr_i_D; 
 
 	private boolean firstTimeMinimisation = true;
 
@@ -348,20 +327,6 @@ public class RECO extends AggregatorAgent{
 	
 
 
-	//private double[] dailyActualCostArr;
-
-	
-	
-	/**
-	 * This array is used to keep the average (i.e. baseline) of aggregate demands (D)
-	 * (usually kept in the 2D history D array (hist_D_ij_arr))  
-	 * TODO: if all the aggregator have this default behavior (e.g. building profile in the same way)
-	 * this field may stay here otherwise, it will need to move to the appropriate implementor (e.g. RECO) 
-	 **/
-	//double[] histAvg_B_i_arr; 
-	
-	
-
 	/**
 	 * This method calculates and returns the price (Pi) per kWh 
 	 * at given time-slot.
@@ -382,6 +347,7 @@ public class RECO extends AggregatorAgent{
 
 		return Pi;
 	}
+	
 
 
 	/**
@@ -395,25 +361,16 @@ public class RECO extends AggregatorAgent{
 	 */
 
 	private double calculate_deltaB(int timeslot_i) {	
-		//System.out.println(" calculate_deltaB, timslot: "+timeslot_i);
 		double sumOf_SjKijBi=0d;
 		for (int j = 0; j < ticksPerDay; j++) {
 			if (j != timeslot_i) { // i!=j
 				sumOf_SjKijBi += arr_i_S[j]*arr_ij_k[timeslot_i][j]*arr_i_B[timeslot_i];
 				//sumOf_SjKijBi += arr_i_S[j]*arr_ij_k[j][timeslot_i]*arr_i_B[timeslot_i];
-				//System.out.println(arr_i_S[j]+"* "+arr_ij_k[timeslot_i][j]+" = "+(arr_i_S[j]*arr_ij_k[timeslot_i][j]*arr_i_B[timeslot_i] +" acc: "+sumOf_SjKijBi));
-				//System.out.println(arr_i_S[j]+"* "+arr_ij_k[j][timeslot_i]+" = "+(arr_i_S[j]*arr_ij_k[j][timeslot_i]*arr_i_B[timeslot_i] +" acc: "+sumOf_SjKijBi));
 
-				//System.out.println();
-				//System.out.println(", "+arr_ij_k[j][timeslot_i]);
 			}
 		}
 		double leftSideEq = this.arr_i_S[timeslot_i]*this.arr_ij_k[timeslot_i][timeslot_i]*this.arr_i_B[timeslot_i];
-		/*System.out.println(" S[i]: "+arr_i_S[timeslot_i]);
-		System.out.println(" k[i][i]: "+arr_ij_k[timeslot_i][timeslot_i]);
-		System.out.println(" B[i]: "+arr_i_B[timeslot_i]);
-		System.out.println(" leftSideEq "+leftSideEq);
-		System.out.println(" sumOf_SjKijBi "+sumOf_SjKijBi);*/
+	
 		double deltaBi = leftSideEq + sumOf_SjKijBi; 
 		return deltaBi;
 	}
@@ -431,19 +388,10 @@ public class RECO extends AggregatorAgent{
 		double Si = this.arr_i_S[timeslot];
 		double ei = this.arr_i_e[timeslot];
 		
-		/*System.out.println(" calculate_PredictedDemand_D : ");
-		System.out.println(" Bi: "+Bi);
-		System.out.println(" Si: "+Si);
-		System.out.println(" ei: "+ei);
-		System.out.println(" (Si*ei*Bi): "+ (Si*ei*Bi)); */
-		
 		double delta_Bi = calculate_deltaB(timeslot);
-		//System.out.println(" delta_Bi "+delta_Bi);
 
 		double Di= Bi + (Si*ei*Bi) + delta_Bi;
 		
-		//System.out.println(" Di: "+Di);
-
 		return Di;
 	}
 
@@ -528,26 +476,6 @@ public class RECO extends AggregatorAgent{
 			this.arr_i_e[time]= sum_e;
 	}
 
-	/**
-	 * This method returns the cost of buying wholesale electricity for this aggregator
-	 * at the current tick
-	 * 
-	 * TODO: RS - I think this is so generic it should go in the AggregatorAgent super-class
-	 */
-	
-	/*public double getCurrentCost_C()
-	{
-		return arr_i_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
-	}
-	
-	public double getCurentBaseline_B() {
-		
-		return arr_i_B[(int) RepastEssentials.GetTickCount() % ticksPerDay];
-	
-	} */
-	
-	
-
 
 	/**
 	 * This method returns the list of customers (prosusmers) 
@@ -587,6 +515,7 @@ public class RECO extends AggregatorAgent{
 	private boolean isAggregateDemandProfileBuildingPeriodCompleted() {
 		boolean isEndOfProfilBuilding = true;
 		int daysSoFar = mainContext.getDayCount();
+		//System.out.println("ADPBPC: daySoFar: "+daysSoFar +" < 7?");
 
 		if (daysSoFar < Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
 			isEndOfProfilBuilding = false;
@@ -607,6 +536,7 @@ public class RECO extends AggregatorAgent{
 		boolean isEndOfTraining = true;
 		int daysSoFar = mainContext.getDayCount();
 		//System.out.println("days so far: "+daysSoFar);
+		//System.out.println("TrainingPeriodC: daySoFar: "+daysSoFar +" < 55?");
 		if (daysSoFar < (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
 			isEndOfTraining = false;
 		return isEndOfTraining;		
@@ -637,8 +567,6 @@ public class RECO extends AggregatorAgent{
 			}
 		}
 
-	
-
 		int dayCount = mainContext.getDayCount();
 
 		if (dayCount < hist_arr_B.length)
@@ -668,7 +596,6 @@ public class RECO extends AggregatorAgent{
 		return ArrayUtils.avgCols2DDoubleArray(hist_arr_2D);	
 	}
 	
-	
 
 	private double calculateAndSetNetDemand(List customersList) {	
 
@@ -684,11 +611,9 @@ public class RECO extends AggregatorAgent{
 
 		setNetDemand(sumDemand);
 		System.out.println("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
-
 		
 		return sumDemand;
 	}
-
 
 
 	/**
@@ -890,8 +815,6 @@ public class RECO extends AggregatorAgent{
 				System.out.println(" where b_j="+b_j +", arr_D[j]= "+arr_D[j]+", deltaB_j="+deltaB_j);
 				System.out.println(", and s="+s +", b= "+b+", s*b= "+(s*b)); */
 			}
-
-			
 		}
 
 		for(int j = i-1; j >= 0; --j) {
@@ -1167,7 +1090,6 @@ public class RECO extends AggregatorAgent{
 		}
 		
 		/*
-
 		minValue.getValue();
 		minValue.getPoint();
 		minValue.getPointRef(); */
@@ -1364,7 +1286,6 @@ public class RECO extends AggregatorAgent{
 			sumDemand = sumDemand + a.getNetDemand();
 		}
 
-	
 		return sumDemand;
 	}
 
@@ -1382,7 +1303,6 @@ public class RECO extends AggregatorAgent{
 	protected String paramStringReport(){
 		String str="";
 		return str;
-
 	}
 
 	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength) {
@@ -1439,7 +1359,7 @@ public class RECO extends AggregatorAgent{
 	 * @param e
 	 * @param k
 	 */
-	private void writeOutput(String fileName,  double[] C, double[] NC, double[] B, double[] D, double[] S, double[] e, double[][] k) {
+	private void writeOutput(String fileName, boolean addInfoHeader, double[] C, double[] NC, double[] B, double[] D, double[] S, double[] e, double[][] k) {
 		int [] ts_arr = new int[ticksPerDay];
 
 		for (int i=0; i<ts_arr.length; i++){
@@ -1449,7 +1369,20 @@ public class RECO extends AggregatorAgent{
 
 		CSVWriter res = new CSVWriter(resFileName, false);
 
-	
+		if (addInfoHeader) {
+			
+			res.appendText("Random seed= "+mainContext.getRandomSeedValue());
+			res.appendText("Number of Prosumers= "+mainContext.getTotalNbOfProsumers());
+			res.appendText("ProfileBuildingPeriod= "+Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE);
+			res.appendText("TrainingPeriod= "+Consts.AGGREGATOR_TRAINING_PERIODE);
+			res.appendText("REEA on?= "+Consts.AGG_RECO_REEA_ON);
+			res.appendText("ColdAppliances on?= "+Consts.HHPRO_HAS_COLD_APPL);
+			res.appendText("WetAppliances on?= "+Consts.HHPRO_HAS_WET_APPL);
+			res.appendText("ElectSpaceHeat on?= "+Consts.HHPRO_HAS_ELEC_SPACE_HEAT);
+			res.appendText("ElectWaterHeat on?= "+Consts.HHPRO_HAS_ELEC_WATER_HEAT);
+			res.appendText("");
+		}
+				
 		res.appendText("Timeslots:");
 		res.appendRow(ts_arr);
 		if (C != null) {
@@ -1518,15 +1451,15 @@ public class RECO extends AggregatorAgent{
 		
 		double[] predictedShift= ArrayUtils.add(ArrayUtils.mtimes(arr_i_S,arr_i_e, arr_i_B), (Matrix.times(bs_mat, k).getRowCopy(0)));
 		
-        //--RRR---initial R estimation based on paper: 
+        //----initial R estimation based on paper: 
 		//double[] arr_errorEstim_R = ArrayUtils.mtimes(actualShift, ArrayUtils.pow(predictedShift,-1));
-		//--RRR --End------
 		
-		///--sss--Richard suggestion
+		
+		///----Richard suggestion
 		predictedShift = ArrayUtils.add(predictedShift, arr_i_B);
 		double[] arr_errorEstim_R = ArrayUtils.add(predictedShift, ArrayUtils.negate(hist_day_arr_D));
 		arr_errorEstim_R = ArrayUtils.mtimes(arr_errorEstim_R, ArrayUtils.pow(arr_i_B,-1));
-		///--sss--End-------
+		///----End-------
 		
 		System.out.println("RECO:: predicatedShift " + Arrays.toString(predictedShift));
 
@@ -1570,100 +1503,93 @@ public class RECO extends AggregatorAgent{
 
 		for (int i = 0; i < ticksPerDay; i++) {
 			//predCost += arr_i_C[i] * calculate_PredictedDemand_D(i);
-			day_predicted_arr_D[i]= calculate_PredictedDemand_D(i);
+			day_predicted_arr_D[i]= calculate_PredictedDemand_D(i); //this was previously used instead of B for calculation of predicated cost, can be deleted later
 		}
-		
+		//System.out.println(" predCost may use day_predicted_arr_D: "+ Arrays.toString(day_predicted_arr_D));
 
-		System.out.println("getDemand: "+getNetDemand());
+		//System.out.println("getDemand: "+getNetDemand());
 		//System.out.println("^RECO: predictTimeslotDemand("+(timeslotOfDay+1)+ "): "+ calculate_PredictedDemand_D(timeslotOfDay));
 		
-		//System.out.println(" predicteDemand using B: "+ Arrays.toString(arr_i_B));
-		System.out.println(" predicteDemand using S: "+ Arrays.toString(arr_i_S));
-		System.out.println(" predicteDemand using e: "+ Arrays.toString(arr_i_e));
-		
-		
-		System.out.println(" arr_i_C: "+ Arrays.toString(arr_i_C));
+		//System.out.println(" predicteDemand using S: "+ Arrays.toString(arr_i_S));
+		//System.out.println(" predicteDemand using e: "+ Arrays.toString(arr_i_e));
+		//System.out.println(" arr_i_C: "+ Arrays.toString(arr_i_C));
 
 		//System.out.println(" predicteDemand using k: "+ ArrayUtils.toString(arr_ij_k));
-				
-		System.out.println(" acttualCost calcuated using hist_day_arr_D: "+ Arrays.toString(hist_day_arr_D));
-		System.out.println(" predCost may use day_predicted_arr_D: "+ Arrays.toString(day_predicted_arr_D));
-		System.out.println(" predCost may use arr_i_B: "+ Arrays.toString(arr_i_B));
+		//System.out.println(" acttualCost calcuated using hist_day_arr_D: "+ Arrays.toString(hist_day_arr_D));
+		//System.out.println(" predCost used arr_i_B: "+ Arrays.toString(arr_i_B));
 
-
-		int indexOfMin = ArrayUtils.indexOfMin(hist_day_arr_D);
-		System.out.println("lowest D demand index: "+indexOfMin);
-		System.out.println("valueOfMinIndex: "+hist_day_arr_D[indexOfMin]);
-
-		
-		//double[] test_C = new double[ticksPerDay];
-		//Arrays.fill(test_C, 10);
+		//int indexOfMin = ArrayUtils.indexOfMin(hist_day_arr_D);
+		//System.out.println("lowest D demand index: "+indexOfMin);
+		//System.out.println("valueOfMinIndex: "+hist_day_arr_D[indexOfMin]);
 		
 		//predCost = ArrayUtils.sum(ArrayUtils.mtimes(day_predicted_arr_D, arr_i_C));
-		predCost = ArrayUtils.sum(ArrayUtils.mtimes(arr_i_B, arr_i_C));
-		//predCost = ArrayUtils.sum(ArrayUtils.mtimes(arr_i_B, test_C));
-
-
-		dailyPredictedCost.add(predCost);
-		//this.dailyActualCost.add(ArrayUtils.sum(ArrayUtils.mtimes(daysDemandHistory, costs)));
-		actualCost = ArrayUtils.sum(ArrayUtils.mtimes(hist_day_arr_D, arr_i_C));
-		//actualCost = ArrayUtils.sum(ArrayUtils.mtimes(hist_day_arr_D, test_C));
-
 		
-		//this.dailyActualCost.add(ArrayUtils.sum(ArrayUtils.mtimes(hist_day_arr_D, arr_i_C)));
+		predCost = ArrayUtils.sum(ArrayUtils.mtimes(arr_i_B, arr_i_C));
+		dailyPredictedCost.add(predCost);
+		
+		actualCost = ArrayUtils.sum(ArrayUtils.mtimes(hist_day_arr_D, arr_i_C));		
 		dailyActualCost.add(actualCost);
-		System.out.println(" predCost: "+ predCost);
-		System.out.println(" acutalCost: "+ actualCost);
-		System.out.println(" predCost - acutalCost: "+ (predCost - actualCost));
-
+		
 		updateCumulativeSaving(predCost - actualCost);
-		if(Consts.DEBUG)	{
-			for (int j = 0; j<this.dailyActualCost.size(); j++)		{
+		
+		if(mainContext.getDayCount() > Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_TRAINING_PERIODE)	{
+			for (int j = Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_TRAINING_PERIODE; j<this.dailyActualCost.size(); j++)		{
 				System.out.print("Day " + j + " pred-cost: " + this.dailyPredictedCost.get(j)+ " actual-cost: " + this.dailyActualCost.get(j));
 				System.out.println(" saving: " + (dailyPredictedCost.get(j) -dailyActualCost.get(j)));
+			}
+			
+			for (int j = 0; j<arr_i_B.length; j++)		{
+				System.out.print("timeslot " + j + " C: "+arr_i_C[j]+" B: " + arr_i_B[j]+ " D: " + hist_day_arr_D[j]);
+				System.out.println(" (B-D): " +(arr_i_B[j]- hist_day_arr_D[j])+ " S/L: "+ (arr_i_C[j]*(arr_i_B[j]- hist_day_arr_D[j])));
 			}
 		}
 	}
 
+	
 	public void step_pre() {
 
 		System.out.println(" ============ RECO pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		timeTick = mainContext.getTickCount();	
 		timeslotOfDay = mainContext.getTimeslotOfDay();
-		dayOfWeek = ((CascadeContext) ContextUtils.getContext(this)).simulationCalendar.getTime().getDay();
-		arr_i_C = Arrays.copyOfRange(arr_i_C_all, timeTick % arr_i_C_all.length, (timeTick % arr_i_C_all.length) + ticksPerDay);
-	    customers = getCustomersList();
+		customers = getCustomersList();
 
 
 		if (isAggregateDemandProfileBuildingPeriodCompleted())  
  		{ //End of history profile building period 
 			//Set the Baseline demand on the first time through after building period
+			System.out.println(" ProfileBuildingPeriod is completed");
+
 			if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) {
 				System.out.println("RECO: history array before calculating B " + ArrayUtils.toString(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)));
 				arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
 			}
-			if (Consts.DEBUG)
-				System.out.println("RECO: Baseline demand set to " + Arrays.toString(arr_i_B));
-			
+			System.out.println("RECO: Baseline demand set to " + Arrays.toString(arr_i_B));
+
 			if (!isTrainingPeriodCompleted()) 
 			{  //training period, signals should be send S=1 for 48 days
-				System.out.println("--RECO: Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
+				System.out.println(" *Training period-----day: "+ mainContext.getDayCount() + " timeslot: "+mainContext.getTimeslotOfDay());
 				if (mainContext.isBeginningOfDay(timeslotOfDay)) 
 				{	
-					System.out.println("RECO: TrainingPeriod/BeginingOfDay - ND BEFORE sending training signal is:"+this.getNetDemand());
+					System.out.println("NetDemand BEFORE sending training signal is:"+this.getNetDemand());
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
 
 					System.out.println("RECO: Signal Sent");
+					int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
+					//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
+					System.out.println(" oneIndex: "+ oneIndex);
 					broadcastSignalToCustomers(arr_i_S, customers);
+<<<<<<< HEAD
 					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
 			
+=======
+>>>>>>> origin/master
 				}
 			} //training period completed 
 			else 
 			{ // Begining of the normal operation- both baseline establishing & training periods are complete
 
 				if(Consts.DEBUG){
-					System.out.println("---End of training reached ----day: "+ mainContext.getDayCount());
+					System.out.println("**RECOPre: End of training reached ----day: "+ mainContext.getDayCount());
 					System.out.print("day: "+mainContext.getDayCount());
 					System.out.println("  timetick: "+mainContext.getTickCount());
 				}
@@ -1674,37 +1600,47 @@ public class RECO extends AggregatorAgent{
 					// The section below implements Peter B's very simplistic Routine error estimation and adjustment" learning
 					//TODO: Is this the learning / adaptation mechanism we want to run with?
 					
-					errorEstimationAndAdjustment(arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
+					arr_i_C = Arrays.copyOfRange(arr_i_C_all, timeTick % arr_i_C_all.length, (timeTick % arr_i_C_all.length) + ticksPerDay);
+					System.out.println(" arr_i_C_all.length: "+ arr_i_C_all.length);
+					System.out.println(" From (timeTick % arr_i_C_all.length): "+ (timeTick % arr_i_C_all.length) + " To: "+ ((timeTick % arr_i_C_all.length) + ticksPerDay)); 
+
+					if (Consts.AGG_RECO_REEA_ON)
+						errorEstimationAndAdjustment(arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
 
 					//Replace the historical demand for the day of the week before this with the demand of yesterday
 					// TODO: Could be more sophisticated and have a rolling or weighted average
-					this.hist_week_arr_D[dayOfWeek] = hist_day_arr_D;
+					//this.hist_week_arr_D[dayOfWeek] = hist_day_arr_D;
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
-				
+					
+					double [] priceSignalTest = {-0.050175966,-0.057895417,-0.061784662,-0.065208969,-0.069459832,-0.072087102,-0.072957939,-0.073762356,-0.074522493,-0.079503974,-0.0777623,-0.07263322,-0.054729409,-0.03354889,-0.007357371,0.010029843,0.022435575,0.028472392,0.035785944,0.038582953,0.040154887,0.043564434,0.045438947,0.045948165,0.046730442,0.045254448,0.045350387,0.044066272,0.041741581,0.040664105,0.040420566,0.042907617,0.04468619,0.047040401,0.046730442,0.041778481,0.035321006,0.030568304,0.024295328,0.019601666,0.014900624,0.010568581,0.01084902,0.010384081,0.005727319,-0.009194983,-0.026139398,-0.04127572};
+
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-
+					
+					//Arrays.fill(arr_i_S, 0);
+					
 					arr_i_S = minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+
 					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 
 					broadcastSignalToCustomers(arr_i_S, customers);
-					
-					
+					//broadcastSignalToCustomers(priceSignalTest, customers);
+
 					if (Consts.DEBUG) 							
-						writeOutput("output2_NormalBiz_day_",arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
+						writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
 
 				}
 
 			} //end of begining of normal operation
 
 		} //end of else (history profile building) 
-		System.out.println("    ========== RECO: pre_step END =========== DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		
-	}
-	
+		System.out.println(" ========== RECO: pre_step END =========== DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+
+	} 
+
 
 	/**
 	 * This method defines how this object behaves (what it does)
@@ -1713,7 +1649,15 @@ public class RECO extends AggregatorAgent{
 	public void step() {
 
 		System.out.println(" ++++++++++++++ RECO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		
+		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
+			System.out.println(" *ProfileBuilding NOT complected ");
+			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
+		}
+		else if (!isTrainingPeriodCompleted()) {
+			System.out.println(" *ProfileBuilding IS completed: Traning NOT ");
 
+<<<<<<< HEAD
 		calculateAndSetNetDemand(customers);
 
 		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
@@ -1723,6 +1667,8 @@ public class RECO extends AggregatorAgent{
 		if (isAggregateDemandProfileBuildingPeriodCompleted() && !isTrainingPeriodCompleted()) 
 		{  
 			//signal already sent with pre_step, now to process and update history
+=======
+>>>>>>> origin/master
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D);
 
 			if (mainContext.isEndOfDay(timeslotOfDay)) 
@@ -1747,6 +1693,7 @@ public class RECO extends AggregatorAgent{
 
 				System.err.println(Arrays.toString(arr_i_B));
 
+<<<<<<< HEAD
 				System.err.println(Arrays.toString(comparison_B));
 				}
 				*/
@@ -1754,31 +1701,40 @@ public class RECO extends AggregatorAgent{
 				if (mainContext.getDayCount() > 53) 
 					writeOutput("output1_TrainingPhase_day_",arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 
+=======
+				if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2) 
+					writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
+>>>>>>> origin/master
 			}
-		} 
+		}
+
 
 		//if (isAggregateDemandProfileBuildingPeriodCompleted() && isTrainingPeriodCompleted()) {
 
 		//Things to do at the end of step
 
 		///////////////To be removed!//////////
+		/*
 		if(hist_week_arr_D[(dayOfWeek + 1) % 7] != null){
 			predictedCustomerDemand[timeslotOfDay] = hist_week_arr_D[(dayOfWeek + 1) % 7][timeslotOfDay];
 		}
 		else	{
 			predictedCustomerDemand[timeslotOfDay] = getNetDemand();
-		}
+		} */
 		///////////////////end of to be removed //////////
+		
+		calculateAndSetNetDemand(customers);
 
 		hist_day_arr_D[timeslotOfDay] = getNetDemand();
 		
 		if (mainContext.isEndOfDay(timeslotOfDay)) 	{
-
+			
 			costSavingCalculation(arr_i_C, hist_day_arr_D, arr_i_B, arr_i_S, arr_i_e);
 		}
 		
-		System.out.println("    ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		System.out.println(" ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 	}
+	
 
 	/**
 	 * Constructs a RECO agent with the context in which is created and its
@@ -1814,7 +1770,6 @@ public class RECO extends AggregatorAgent{
 		//Arrays.fill(priceSignal,125f);
 		Arrays.fill(priceSignal,0f);
 
-
 		// Very basic configuration of predicted customer demand as 
 		// a Constant.  We could be more sophisticated than this or 
 		// possibly this gives us an aspirational target...
@@ -1831,9 +1786,6 @@ public class RECO extends AggregatorAgent{
 		hist_week_arr_D = new double[7][ticksPerDay];
 		this.dailyPredictedCost = new ArrayList<Double>();
 		this.dailyActualCost = new ArrayList<Double>();
-		
-		//this.dailyPredictedCostArr = new double [ticksPerDay];
-		//this.dailyActualCostArr = new double [ticksPerDay];
 
 		///+++++++++++++++++++++++++++++++++++++++
 		this.arr_i_B = new double [ticksPerDay];
@@ -1843,17 +1795,12 @@ public class RECO extends AggregatorAgent{
 		this.arr_i_norm_C = new double [ticksPerDay];
 		this.arr_ij_k = new double [ticksPerDay][ticksPerDay];
 		this.hist_arr_ij_D = new double [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
-		
-		//this.arr_i_D = new double [ticksPerDay];
-	
 				
 		arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand),100); //all costs (equivalent to size of baseDemand, usually 1 week)
 		
-
-		//this.arr_i_B = baseDemand; 
-
 		//Set up basic learning factor
 		this.alpha = 0.1d;
+		//this.alpha = 1d;
 
 		//+++++++++++++++++++++++++++++++++++++++++++
 	}

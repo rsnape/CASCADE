@@ -15,6 +15,7 @@ import org.jfree.chart.ChartPanel;
 import cern.jet.random.Empirical;
 import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.Normal;
+import cern.jet.random.Binomial;
 
 import java.io.File;
 
@@ -82,6 +83,10 @@ public class CascadeContext extends DefaultContext{
 	double[] airTemperatureArray; // instantaneous value
 	double[] systemPriceSignalDataArray;
 	int systemPriceSignalDataLength;
+	
+	int totalNbOfProsumers;
+	int randomSeed;
+	
 	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
 	protected static boolean chartSnapshotOn = false;  // use
 	protected int ticksPerDay;
@@ -101,6 +106,8 @@ public class CascadeContext extends DefaultContext{
 	
 	public Normal buildingLossRateGenerator;
 	public Normal thermalMassGenerator;
+	
+	//public Binomial hhProsumerElasticityTest;
 
 	
 	/**
@@ -139,8 +146,6 @@ public class CascadeContext extends DefaultContext{
 	public void setEconomicNetwork(Network n){
 		this.economicNetwork = n;
 	}
-
-
 	
 	/**
 	 * This method returns the tick time. 
@@ -163,7 +168,6 @@ public class CascadeContext extends DefaultContext{
 		return this.ticksPerDay;
 	}
 	
-	
 	public void setNbOfTickPerDay(int tick) {
 		this.ticksPerDay = tick;
 	}
@@ -176,7 +180,22 @@ public class CascadeContext extends DefaultContext{
 		return this.chartSnapshotInterval;
 	}
 	
-
+	public void setTotalNbOfProsumers(int nbOfPros) {
+		this.totalNbOfProsumers = nbOfPros;
+	}
+	
+	public int getTotalNbOfProsumers() {
+		return this.totalNbOfProsumers;
+	}
+	
+	public void setRandomSeedValue(int rs) {
+		this.randomSeed = rs;
+	}
+	
+	public int getRandomSeedValue() {
+		return this.randomSeed;
+	}
+	
 	
 	/**
 	 * This method returns the elapse of time in number of days.
@@ -422,6 +441,8 @@ public class CascadeContext extends DefaultContext{
 	
 	private String getFileNameForChart(int chartNb) {
 		String chartName; 
+		String addInfo = "_d"+this.getDayCount()+"_t"+getTickCount()+"_";
+		String extension = Consts.FILE_CHART_FORMAT_EXT;
 
 		switch (chartNb) {
 		 case 0:  
@@ -469,24 +490,28 @@ public class CascadeContext extends DefaultContext{
 
 	public void takeSnapshot() {
 
-		Iterator<SnapshotTaker> snapshotTakerIter = snapshotTakerArrList.iterator();
-		//String path =System.getProperty("user.dir");
-		//String path = new java.io.File(".").getCanonicalPath();
-		try {
-			for (int i=0; i<snapshotTakerArrList.size();i++) {
-				SnapshotTaker snapshotTaker = (SnapshotTaker)snapshotTakerArrList.get(i);
-				String fileName = getFileNameForChart(i);
-				if (fileName != "") {
-					//System.out.println("takeSnapshot: fileName is empty");
-					File file = new File(fileName);
-					snapshotTaker.save(file, "png");
-				}
-			}
+		if (this.getDayCount()> Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE - 2) {
 
-		} catch (IOException e) {
-			// Print out the exception that occurred
-			System.out.println("CascadeContext: Unable to takeSnapshot "+e.getMessage());
+			Iterator<SnapshotTaker> snapshotTakerIter = snapshotTakerArrList.iterator();
+			//String path =System.getProperty("user.dir");
+			//String path = new java.io.File(".").getCanonicalPath();
+			try {
+				for (int i=0; i<snapshotTakerArrList.size();i++) {
+					SnapshotTaker snapshotTaker = (SnapshotTaker)snapshotTakerArrList.get(i);
+					String fileName = getFileNameForChart(i);
+					if (fileName != "") {
+						//System.out.println("takeSnapshot: fileName is empty");
+						File file = new File(fileName);
+						snapshotTaker.save(file, "png");
+					}
+				}
+
+			} catch (IOException e) {
+				// Print out the exception that occurred
+				System.out.println("CascadeContext: Unable to takeSnapshot "+e.getMessage());
+			}
 		}
+
 	}
 
 	public void setChartCompCollection(Collection c) {
@@ -518,7 +543,7 @@ public class CascadeContext extends DefaultContext{
 		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
 		//System.out.println("chartCompCol: null?: "+getChartCompCollection());
 		//if ((chartSnapshotOn) && (getChartCompCollection() != null)){
-		ScheduleParameters params = ScheduleParameters.createRepeating(0, getChartSnapshotInterval());
+		ScheduleParameters params = ScheduleParameters.createRepeating(0, getChartSnapshotInterval(),ScheduleParameters.LAST_PRIORITY);
 		schedule.schedule(params, this, "takeSnapshot"); 
 
 	}

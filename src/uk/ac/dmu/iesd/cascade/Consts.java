@@ -38,10 +38,15 @@ public final class Consts {
 	public static boolean TAKE_SNAPSHOT_OF_CHART_8_Market = false;
 	
 	//Controlling HHProsumers electricity consumption/usage
-	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = false;
-	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = false;
-	public static boolean HHPRO_HAS_COLD_APPL = false;
-	public static boolean HHPRO_HAS_WET_APPL = false;
+	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
+	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
+	public static boolean HHPRO_HAS_COLD_APPL = true;
+	public static boolean HHPRO_HAS_WET_APPL = true;
+	
+	//Controlling REEA operation
+	public static boolean AGG_RECO_REEA_ON = false;
+	
+	//public static boolean WRITE_OUTPUTS_ON = false;
 
 
 	/*------------------------
@@ -60,6 +65,12 @@ public final class Consts {
 	public static enum AGENT_TYPE {
 		PROSUMER,AGGREGATOR
 	}
+	
+	/*--------------------------------------
+	 * System exit error codes for different types of error
+	 *---------------------------------------*/
+	public static final int BAD_FILE_ERR_CODE = 1;
+
 
 	/*-----------------------------
 	 * Units of Measurement Constants
@@ -72,13 +83,6 @@ public final class Consts {
 
 	//factor to convert energy expressed in kWh to Joules.
 	public static final double KWH_TO_JOULE_CONVERSION_FACTOR = 3600000;
-
-
-	/*--------------------------------------
-	 * System exit error codes for different types of error
-	 *---------------------------------------*/
-	public static final int BAD_FILE_ERR_CODE = 1;
-
 
 	/*------------------------
 	 * Scheduling Priorities  
@@ -109,11 +113,17 @@ public final class Consts {
 	 * This is the aggregator profile building period time in terms of day, assuming it is set manually
 	 * During this period, aggregator do not send any signal and simply get the the normal usage of
 	 * it customers baseline demand and at the end of this period, it will build an average usage
-	 * profile, which will used during training period. This period should at least take
-	 * sometimes about 3 to 7 days. 
+	 * profile, which will used during training period. 
+	 * The way it is currently used, it should basically correspond to the number of demand profiles
+	 * (e.g. days of weeks: Monday, Tuesday, etc., or two profiles: weekdays and weekend)
+	 * If the models continues to use them in its current way, it would be more proper to 
+	 * name this as NB_OF_DEMAND_PROFILES;
+	 * 
 	 * @see AGGREGATOR_TRAINING_PERIODE
 	 **/
-	public static final int AGGREGATOR_PROFILE_BUILDING_PERIODE = 7; // in terms of days
+	
+	public static final int AGGREGATOR_PROFILE_BUILDING_PERIODE = 7;
+	//public static final int AGGREGATOR_PROFILE_BUILDING_PERIODE = DAYS_PER_YEAR; // in terms of days
 
 	/**
 	 * This is the aggregator training period time in terms of day (assuming it is set manually)
@@ -153,6 +163,14 @@ public final class Consts {
 	 * Household Prosumers
 	 *---------------------*/
 	
+	public static final String COLD_APP_FRIDGE = "Fridge";
+	public static final String COLD_APP_FREEZER = "Freezer";
+	public static final String COLD_APP_FRIDGEFREEZER = "FridgeFreezer";
+	
+	public static final String WET_APP_WASHER = "Washer";
+	public static final String WET_APP_DRYER = "Dryer";
+	public static final String WET_APP_DISHWASHER = "Dishwasher";
+	
 	//Defines is the maximum fraction of any domestic load that is moveable
 	public static final double MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION = 0.5d;
 
@@ -176,9 +194,9 @@ public final class Consts {
 	// Babak: used for behavioral change purpose (not Space Heating), although currently does nothing!
 	public static final double HOUSEHOLD_MAX_SETPOINT = 28;
 	
-	/**+++++++++++++
-	 * Space Heating
-	 *+++++++++++++++*/
+	/**++++++++++++++++++++++
+	 * Electrical Space Heat
+	 *+++++++++++++++++++++++*/
 
 	//The typical heat pump coefficient of performance for space heating a domestic dwelling
 	public static final double DOMESTIC_HEAT_PUMP_SPACE_COP = 2.4d;
@@ -215,9 +233,9 @@ public final class Consts {
 	public static final double COST_DECISION_THRESHOLD = 1e-3d; //used by Wattbox
 
 
-	/**+++++++++++
-	 * Hot Water
-	 *++++++++++++*/
+	/**++++++++++++++++++++++++++++++++
+	 * Hot Water/ Electrical Water Heat
+	 *+++++++++++++++++++++++++++++++++*/
 
 	//Maximum domestic hot water storage capacity (litres)
 	public static final int MAX_HOUSHOLD_HOT_WATER_USE = 50;
