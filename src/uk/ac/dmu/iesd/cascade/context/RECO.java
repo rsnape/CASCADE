@@ -1578,11 +1578,9 @@ public class RECO extends AggregatorAgent{
 					//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
 					System.out.println(" oneIndex: "+ oneIndex);
 					broadcastSignalToCustomers(arr_i_S, customers);
-<<<<<<< HEAD
+
 					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
-			
-=======
->>>>>>> origin/master
+
 				}
 			} //training period completed 
 			else 
@@ -1657,18 +1655,6 @@ public class RECO extends AggregatorAgent{
 		else if (!isTrainingPeriodCompleted()) {
 			System.out.println(" *ProfileBuilding IS completed: Traning NOT ");
 
-<<<<<<< HEAD
-		calculateAndSetNetDemand(customers);
-
-		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
-			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
-		}
-		
-		if (isAggregateDemandProfileBuildingPeriodCompleted() && !isTrainingPeriodCompleted()) 
-		{  
-			//signal already sent with pre_step, now to process and update history
-=======
->>>>>>> origin/master
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D);
 
 			if (mainContext.isEndOfDay(timeslotOfDay)) 
@@ -1693,18 +1679,14 @@ public class RECO extends AggregatorAgent{
 
 				System.err.println(Arrays.toString(arr_i_B));
 
-<<<<<<< HEAD
+
 				System.err.println(Arrays.toString(comparison_B));
 				}
 				*/
-				
-				if (mainContext.getDayCount() > 53) 
-					writeOutput("output1_TrainingPhase_day_",arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 
-=======
 				if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2) 
 					writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
->>>>>>> origin/master
+
 			}
 		}
 
