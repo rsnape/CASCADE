@@ -324,7 +324,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			//populate the initial heating profile from the above baseline demand for hot water
 			//thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
 			
-			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
+			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
 
 		}
 
@@ -557,6 +557,12 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		cascadeMainContext.buildingLossRateGenerator = RandomHelper.createNormal(275,75);
 		cascadeMainContext.thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
 		
+		cascadeMainContext.coldAndWetApplTimeslotDelayRandDist = RandomHelper.createUniform(); 
+		
+		cascadeMainContext.wetApplProbDistGenerator = RandomHelper.createEmpiricalWalker(Consts.WET_APPLIANCE_PDF, Empirical.NO_INTERPOLATION);
+		
+		//ChartUtils.testProbabilityDistAndShowHistogram(cascadeMainContext.wetApplProbDistGenerator, 10000, 48);  //test to make sure the prob dist generate desired outcomes
+
 		//cascadeMainContext.hhProsumerElasticityTest = RandomHelper.createBinomial(1, 0.005);
 		
 	}

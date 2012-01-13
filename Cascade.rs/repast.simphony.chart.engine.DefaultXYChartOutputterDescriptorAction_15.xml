@@ -1,22 +1,22 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>e vs s</name>
+  <name>TestAggChart</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>AggregatorData</string>
+      <string>TestAggregatorData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">AggregatorData</dataSetId>
+  <dataSetId class="string">TestAggregatorData</dataSetId>
   <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>100.0</visibleXRange>
+  <visibleXRange>144.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
@@ -27,15 +27,15 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>CurrentPriceSignalSeriesName</seriesID>
-      <valueColumn>CurrentPriceSignal</valueColumn>
-      <hashCode>1586787907</hashCode>
+      <seriesID>DemandSeriesName</seriesID>
+      <valueColumn>Demand</valueColumn>
+      <hashCode>-1887352043</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
     <repast.simphony.chart.Series>
-      <seriesID>CurrentPriceElasticityFactor_e_seriesName</seriesID>
-      <valueColumn>CurrentPriceElasticityFactor_e</valueColumn>
-      <hashCode>1249874518</hashCode>
+      <seriesID>GenerationSeriesName</seriesID>
+      <valueColumn>Generation</valueColumn>
+      <hashCode>-894703549</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

@@ -6,7 +6,7 @@
 <repast.simphony.data.engine.DefaultDataGathererDescriptorAction context="CascadeContextMain" file="repast.simphony.data.engine.DefaultDataGathererDescriptorAction_3.xml" />
 <repast.simphony.data.engine.DefaultDataGathererDescriptorAction context="CascadeContextMain" file="repast.simphony.data.engine.DefaultDataGathererDescriptorAction_4.xml" />
 <repast.simphony.dataLoader.engine.ClassNameDataLoaderAction context="CascadeContextMain" file="repast.simphony.dataLoader.engine.ClassNameDataLoaderAction_5.xml" />
-<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_6.xml" />
+<repast.simphony.action.display context="CascadeContextMain" file="repast.simphony.action.display_6.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_7.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_8.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_9.xml" />
@@ -16,5 +16,6 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_13.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_14.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_15.xml" />
+<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_16.xml" />
 <model.initializer class="uk.ac.dmu.iesd.cascade.Initializer" />
 </Scenario>

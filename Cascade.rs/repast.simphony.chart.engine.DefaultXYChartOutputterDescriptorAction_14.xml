@@ -1,16 +1,16 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>TestAggChart</name>
+  <name>Aggregator B vs D</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>TestAggregatorData</string>
+      <string>AggregatorData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">TestAggregatorData</dataSetId>
+  <dataSetId class="string">AggregatorData</dataSetId>
   <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
@@ -23,19 +23,19 @@
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
   <precisionValue>3</precisionValue>
-  <maxHistory>500</maxHistory>
+  <maxHistory>1000</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>DemandSeriesName</seriesID>
-      <valueColumn>Demand</valueColumn>
-      <hashCode>-1887352043</hashCode>
+      <seriesID>NetDemandSeriesName</seriesID>
+      <valueColumn>NetDemand</valueColumn>
+      <hashCode>348819427</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
     <repast.simphony.chart.Series>
-      <seriesID>GenerationSeriesName</seriesID>
-      <valueColumn>Generation</valueColumn>
-      <hashCode>-894703549</hashCode>
+      <seriesID>CurrentBaseline_B_SeriesName</seriesID>
+      <valueColumn>CurrentBaseline_B</valueColumn>
+      <hashCode>-2095056214</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

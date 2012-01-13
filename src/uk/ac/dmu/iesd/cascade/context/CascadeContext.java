@@ -16,6 +16,7 @@ import cern.jet.random.Empirical;
 import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.Normal;
 import cern.jet.random.Binomial;
+import cern.jet.random.Uniform;
 
 import java.io.File;
 
@@ -107,7 +108,10 @@ public class CascadeContext extends DefaultContext{
 	public Normal buildingLossRateGenerator;
 	public Normal thermalMassGenerator;
 	
-	//public Binomial hhProsumerElasticityTest;
+	public Uniform coldAndWetApplTimeslotDelayRandDist;
+	public EmpiricalWalker wetApplProbDistGenerator;
+	
+	public Binomial hhProsumerElasticityTest;
 
 	
 	/**

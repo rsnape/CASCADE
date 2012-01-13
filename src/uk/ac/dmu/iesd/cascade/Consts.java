@@ -39,9 +39,9 @@ public final class Consts {
 	
 	//Controlling HHProsumers electricity consumption/usage
 	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
-	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
-	public static boolean HHPRO_HAS_COLD_APPL = true;
-	public static boolean HHPRO_HAS_WET_APPL = true;
+	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = false;
+	public static boolean HHPRO_HAS_COLD_APPL = false;
+	public static boolean HHPRO_HAS_WET_APPL = false;
 	
 	//Controlling REEA operation
 	public static boolean AGG_RECO_REEA_ON = false;
@@ -261,6 +261,12 @@ public final class Consts {
 	public static final double[] EST_DRAWOFF = {2.25d, 2.25d, 1.4d,1.4d,1.15d,1.15d,0.95d,0.95d,1.6d,1.6d,2.15d,2.15d,5.3d,5.3d,10.8d,10.8d,9.1d,9.1d,7.25d,7.25d,6.85d,6.85d,6d,6d,5.25d,5.25d,4.35d,4.35d,3.6d,3.6d,3.65d,3.65d,4.45d,4.45d,6.5d,6.5d,9d,9d,8.7d,8.7d,7.2d,7.2d,6.1d,6.1d,5d,5d,3d,3d};
 	
 	public static final double IMMERSION_HEATER_COP = 0.9d;  //Used by Wattbox
+	
+	/**++++++++++++++++
+	 * Wet Appliances
+	 *+++++++++++++++++*/	
+	
+	public static final double[] WET_APPLIANCE_PDF = {18.91,16.45,13.49,12.52,16.80,14.41,11.13,9.99,13.90,10.18,13.30,15.53,18.79,17.65,21.79,25.72,36.83,43.13,43.94,46.43,49.61,52.02,49.30,45.71,42.85,42.42,39.08,39.67,41.19,40.16,37.68,37.56,37.67,38.10,38.19,37.10,36.46,37.32,39.44,37.77,37.05,35.09,35.13,34.19,29.75,26.68,26.01,21.30};
 
 	
 	/**+++++++++++

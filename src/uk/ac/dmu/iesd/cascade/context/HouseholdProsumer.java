@@ -662,7 +662,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else
 		{
 			demand = maintenanceEnergy + heatingEnergy;
-			if (demand > ((this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * (double) 24 / ticksPerDay))
+			if (demand > ((this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) *(double) 24 / ticksPerDay))
 			{
 				demand = (this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * ((double) 24 / ticksPerDay);
 				this.currentInternalTemp = this.currentInternalTemp + ((demand - maintenanceEnergy) / this.buildingThermalMass);
@@ -765,7 +765,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else myDemand = baseDemandProfile[time % baseDemandProfile.length];  */
 		
 		myDemand = baseDemandProfile[time % baseDemandProfile.length];
-		System.out.println("myDemand: "+myDemand); 
+		//System.out.println("myDemand: "+myDemand); 
 
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
 		// Note, we can only moderate based on cost signal
@@ -782,22 +782,19 @@ public class HouseholdProsumer extends ProsumerAgent{
 			double myE = dailyElasticity[time % ticksPerDay];
 			//double eChange = mainContext.hhProsumerElasticityTest.nextDouble();
 			//System.out.println("eChange: "+ eChange);
-
 			//myE = myE + eChange;
-		
 			//myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay]));
 			
 			myDemand = myDemand * (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * myE));
 
 			if (Consts.DEBUG)
 			{
-				System.out.println("dailyElasticity: "+ Arrays.toString(dailyElasticity));
-				System.out.println("predictedCostSignal (all): "+ Arrays.toString(getPredictedCostSignal()));
-				System.out.println("predictedCostSignal: "+predictedCostSignal);
-				System.out.println("predictedCostNow * myE: "+predictedCostSignal * myE);
-				System.out.println("dailyElasticity[time % ticksPerDay]: "+dailyElasticity[time % ticksPerDay]);
-
-				System.out.println("HouseholdProsumer:: Based on predicted cost = " + predictedCostSignal + " demand set to " + (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) + " of initial " );
+				//System.out.println("dailyElasticity: "+ Arrays.toString(dailyElasticity));
+				//System.out.println("predictedCostSignal (all): "+ Arrays.toString(getPredictedCostSignal()));
+				//System.out.println("predictedCostSignal: "+predictedCostSignal);
+				//System.out.println("predictedCostNow * myE: "+predictedCostSignal * myE);
+				//System.out.println("dailyElasticity[time % ticksPerDay]: "+dailyElasticity[time % ticksPerDay]);
+				//System.out.println("HouseholdProsumer:: Based on predicted cost = " + predictedCostSignal + " demand set to " + (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) + " of initial " );
 			}
 		}
 
@@ -835,8 +832,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 		historicalWetDemand[time % ticksPerDay] = currentWet;
 		historicalColdDemand[time % ticksPerDay] = currentCold;
 
-		if (this.getHasElectricalSpaceHeat())
-			historicalSpaceHeatDemand[time % ticksPerDay] = currentHeat - getWaterHeatProfile()[time % ticksPerDay];
+		//if (this.getHasElectricalSpaceHeat())
+		if (this.getHasElectricalSpaceHeat() && this.getHasElectricalWaterHeat())
+			historicalSpaceHeatDemand[time % ticksPerDay] = currentHeat - getWaterHeatProfile()[time % ticksPerDay]; //Verify this!
+		else if (this.getHasElectricalSpaceHeat())
+			historicalSpaceHeatDemand[time % ticksPerDay] = currentHeat;
 
 		if (this.getHasElectricalWaterHeat())
 			historicalWaterHeatDemand[time % ticksPerDay] = getWaterHeatProfile()[time % ticksPerDay];
@@ -1149,7 +1149,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	
 	public void setWattboxController() {
 	
-		this.mySmartController = new WattboxController(this);
+		this.mySmartController = new WattboxController(this, this.mainContext);
 	}
 	
 	public double[] calculateCombinedColdAppliancesProfile(HashMap coldProfiles) {
@@ -1217,8 +1217,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 			this.wetApplianceProfile = calculateCombinedWetAppliancesProfile(this.wetApplianceProfiles);
 		}
 
-		//if (timeOfDay == 0 && isAggregateDemandProfileBuildingPeriodCompleted())
-		if (timeOfDay == 0)
+		if (timeOfDay == 0 && isAggregateDemandProfileBuildingPeriodCompleted())
+		//if (timeOfDay == 0)
 		{
 			//TODO: decide whether the inelastic day demand is something that needs
 			// calculating here

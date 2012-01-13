@@ -778,7 +778,9 @@ public class RECO extends AggregatorAgent{
 		double b =1;
 		double s=1;
 		double deltaB_i=0;
-		int i =  ArrayUtils.indexOf(arr_S, 1f);
+		//int i =  ArrayUtils.indexOf(arr_S, 1f);
+		int i =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+
 		if (i != -1 )	 {	
 			b = arr_B[i];
 			deltaB_i = arr_D[i] - b;
@@ -847,7 +849,10 @@ public class RECO extends AggregatorAgent{
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
 
-		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
+		//int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
+		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+		
+		
 		if (timeslotWhenSwas1 != -1 )	 {	
 			b = arr_B[timeslotWhenSwas1];
 		}
@@ -1572,11 +1577,13 @@ public class RECO extends AggregatorAgent{
 				{	
 					System.out.println("NetDemand BEFORE sending training signal is:"+this.getNetDemand());
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
+					
+					arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
 
-					System.out.println("RECO: Signal Sent");
-					int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
+					//System.out.println("RECO: Signal Sent");
+					//int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
 					//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
-					System.out.println(" oneIndex: "+ oneIndex);
+					//System.out.println(" oneIndex: "+ oneIndex);
 					broadcastSignalToCustomers(arr_i_S, customers);
 				}
 			} //training period completed 
@@ -1609,6 +1616,8 @@ public class RECO extends AggregatorAgent{
 					arr_i_norm_C = ArrayUtils.normalizeValues(arr_i_C);
 					
 					double [] priceSignalTest = {-0.050175966,-0.057895417,-0.061784662,-0.065208969,-0.069459832,-0.072087102,-0.072957939,-0.073762356,-0.074522493,-0.079503974,-0.0777623,-0.07263322,-0.054729409,-0.03354889,-0.007357371,0.010029843,0.022435575,0.028472392,0.035785944,0.038582953,0.040154887,0.043564434,0.045438947,0.045948165,0.046730442,0.045254448,0.045350387,0.044066272,0.041741581,0.040664105,0.040420566,0.042907617,0.04468619,0.047040401,0.046730442,0.041778481,0.035321006,0.030568304,0.024295328,0.019601666,0.014900624,0.010568581,0.01084902,0.010384081,0.005727319,-0.009194983,-0.026139398,-0.04127572};
+					
+					double [] priceSignalTestSq = {-0.05214123,-0.058519428,-0.061637587,-0.064330107,-0.067603658,-0.069588738,-0.070240282,-0.070839287,-0.071402807,-0.075035391,-0.073777246,-0.069997708,-0.055933952,-0.037548357,-0.012193205,0.006238673,0.020170176,0.027184535,0.035888531,0.039277016,0.041195863,0.045393732,0.047722565,0.048357764,0.04933571,0.047492691,0.047612207,0.046015744,0.043143309,0.041819699,0.041521206,0.044581234,0.046785581,0.049723912,0.04933571,0.043188725,0.035328476,0.029655829,0.022314676,0.016930452,0.011631015,0.006830171,0.007138559,0.006627465,0.001558774,-0.014066632,-0.030669314,-0.044475072};
 
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
@@ -1620,8 +1629,9 @@ public class RECO extends AggregatorAgent{
 
 					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
-
 					broadcastSignalToCustomers(arr_i_S, customers);
+					//broadcastSignalToCustomers(	ArrayUtils.multiply(arr_i_S, 5), customers);
+
 					//broadcastSignalToCustomers(priceSignalTest, customers);
 
 					if (Consts.DEBUG) 							

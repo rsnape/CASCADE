@@ -15,6 +15,13 @@
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
       </entry>
       <entry>
+        <string>GenerationSeriesName</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = agent.getAgentName() + &quot;Supply&quot;;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
+      </entry>
+      <entry>
         <string>Generation</string>
         <repast.simphony.data.logging.gather.MethodMapping>
           <method>
@@ -23,13 +30,6 @@
             <parameter-types/>
           </method>
         </repast.simphony.data.logging.gather.MethodMapping>
-      </entry>
-      <entry>
-        <string>GenerationSeriesName</string>
-        <repast.simphony.data.logging.BSFMapping>
-          <bsfExpression>value = agent.getAgentName() + &quot;Supply&quot;;</bsfExpression>
-          <bsfLanguage>beanshell</bsfLanguage>
-        </repast.simphony.data.logging.BSFMapping>
       </entry>
       <entry>
         <string>DemandSeriesName</string>
@@ -51,24 +51,24 @@
     </nameMappingTable>
     <mappingNameTable>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>Demand</string>
-      </entry>
-      <entry>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.BSFMapping"/>
+        <string>GenerationSeriesName</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>Demand</string>
       </entry>
       <entry>
         <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.BSFMapping"/>
         <string>DemandSeriesName</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
         <string>Generation</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.BSFMapping"/>
-        <string>GenerationSeriesName</string>
       </entry>
     </mappingNameTable>
   </dataMappingContainer>
