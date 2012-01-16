@@ -38,8 +38,8 @@ public final class Consts {
 	public static boolean TAKE_SNAPSHOT_OF_CHART_8_Market = false;
 	
 	//Controlling HHProsumers electricity consumption/usage
-	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
-	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = false;
+	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = false;
+	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
 	public static boolean HHPRO_HAS_COLD_APPL = false;
 	public static boolean HHPRO_HAS_WET_APPL = false;
 	

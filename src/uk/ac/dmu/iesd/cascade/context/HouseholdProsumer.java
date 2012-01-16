@@ -962,6 +962,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 */
 	public void setWaterHeatProfile(double[] waterHeatProfile) {
 		this.waterHeatProfile = waterHeatProfile;
+		//System.out.println("setWaterHeatProfile:    "+ Arrays.toString(waterHeatProfile));
 	}
 
 	/**
@@ -1107,6 +1108,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		double [] baselineHotWaterVolumeProfile = Arrays.copyOf(hotWaterNeededProfile, hotWaterNeededProfile.length);
 		this.setBaselineHotWaterVolumeProfile(baselineHotWaterVolumeProfile);
+		
+		System.out.println("setBaselineHotWaterVolumeProfile:    "+ Arrays.toString(baselineHotWaterVolumeProfile));
+
 
 		if(this.getHasElectricalWaterHeat())	{
 			this.setWaterHeatProfile(ArrayUtils.multiply(hotWaterNeededProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) ));
@@ -1217,8 +1221,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 			this.wetApplianceProfile = calculateCombinedWetAppliancesProfile(this.wetApplianceProfiles);
 		}
 
-		if (timeOfDay == 0 && isAggregateDemandProfileBuildingPeriodCompleted())
-		//if (timeOfDay == 0)
+		//if (timeOfDay == 0 && isAggregateDemandProfileBuildingPeriodCompleted())
+		if (timeOfDay == 0)
 		{
 			//TODO: decide whether the inelastic day demand is something that needs
 			// calculating here

@@ -232,14 +232,13 @@ public class WattboxController implements ISmartController{
 		System.out.println("==OptimiseWaterHeatProfil for a  "+ owner.getAgentID());
 
 		double[] baseArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
-		System.out.println("hotWaterVolumeDemandProfile: "+ Arrays.toString(baseArray));
-		System.out.println("baseArray: "+ Arrays.toString(hotWaterVolumeDemandProfile));
-
+		System.out.println("hotWaterVolumeDemandProfile: "+ Arrays.toString(hotWaterVolumeDemandProfile));
+		System.out.println("baseArray:              "+ Arrays.toString(baseArray)); //=waterHeatProfile
 
 		this.waterHeatDemandProfile = Arrays.copyOf(baseArray, baseArray.length);
 		System.out.println("waterHeatDemandProfile: "+ Arrays.toString(waterHeatDemandProfile));
 		
-		System.out.println("spreadWaterDemand(baseArray): "+ Arrays.toString(spreadWaterDemand(baseArray)));
+		System.out.println("spreadWaterDemand(baseArray) : "+ Arrays.toString(spreadWaterDemand(baseArray)));
 
 		System.out.println("spreadWaterDemand(baseArray)2: "+ Arrays.toString(spreadWaterDemand(baseArray)));
 
