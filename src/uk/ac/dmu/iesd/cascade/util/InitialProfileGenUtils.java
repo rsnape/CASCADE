@@ -11,6 +11,7 @@ import cern.jet.random.EmpiricalWalker;
 
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
  * @author jsnape
@@ -191,11 +192,11 @@ public abstract class InitialProfileGenUtils {
 	 * @param hasTumbleDryer
 	 * @return
 	 */
-	public static HashMap melodyStokesWetApplianceGen(int numDays,
+	public static HashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays,
 			boolean washMachine, boolean washerDryer,
 			boolean dishWasher, boolean tumbleDryer) {
 		// TODO Auto-generated method stub
-		return 	melodyStokesWetApplianceGen(numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
+		return 	melodyStokesWetApplianceGen(context, numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
 	}
 
 	/**
@@ -376,14 +377,14 @@ public abstract class InitialProfileGenUtils {
 	 * @param l
 	 * @return
 	 */
-	private static HashMap melodyStokesWetApplianceGen(int numDays, int washMach,
+	private static HashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
 		// Each day of week is treated the same way! 
 		//this sub-model is for half-hourly electricty demand for washing appliances
 		//it covers washers, dryers, washer-dryers combined and dishwashers
 
-		final double[] wet_pdf = {18.91,16.45,13.49,12.52,16.80,14.41,11.13,9.99,13.90,10.18,13.30,15.53,18.79,17.65,21.79,25.72,36.83,43.13,43.94,46.43,49.61,52.02,49.30,45.71,42.85,42.42,39.08,39.67,41.19,40.16,37.68,37.56,37.67,38.10,38.19,37.10,36.46,37.32,39.44,37.77,37.05,35.09,35.13,34.19,29.75,26.68,26.01,21.30};
-		EmpiricalWalker wetApplProbDistGenerator = RandomHelper.createEmpiricalWalker(wet_pdf, Empirical.NO_INTERPOLATION); 
+		//final double[] wet_pdf = {18.91,16.45,13.49,12.52,16.80,14.41,11.13,9.99,13.90,10.18,13.30,15.53,18.79,17.65,21.79,25.72,36.83,43.13,43.94,46.43,49.61,52.02,49.30,45.71,42.85,42.42,39.08,39.67,41.19,40.16,37.68,37.56,37.67,38.10,38.19,37.10,36.46,37.32,39.44,37.77,37.05,35.09,35.13,34.19,29.75,26.68,26.01,21.30};
+		//EmpiricalWalker wetApplProbDistGenerator = RandomHelper.createEmpiricalWalker(wet_pdf, Empirical.NO_INTERPOLATION); 
 
 		//ChartUtils.testProbabilityDistAndShowHistogram(wetApplProbDistGenerator, 10000, 48);  //test to make sure the prob dist generate desired outcomes
 
@@ -411,10 +412,10 @@ public abstract class InitialProfileGenUtils {
 		HashMap wetProfiles = new HashMap();
 
 		for (int i = 0; i < numDays; i++)	{
-			timeslot = wetApplProbDistGenerator.nextInt();
+			timeslot = context.wetApplProbDistGenerator.nextInt();
 			d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=(washMach + washDry) *  Math.max(0, scale_washer_wkdays_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_wkdays_UR[timeslot])+const_washer_wkdays_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_washer_wkdays_UR[timeslot]));
 			d_dryer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=(tumbleDry + washDry) * Math.max(0, scale_dryer_wkdays_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dryer_wkdays_UR[timeslot])+const_dryer_wkdays_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_dryer_wkdays_UR[timeslot])) ;
-			timeslot = wetApplProbDistGenerator.nextInt();
+			timeslot = context.wetApplProbDistGenerator.nextInt();
 			d_dish_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=dishWash * Math.max(0, scale_dish_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dish_UR[timeslot])+const_dish_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_dish_UR[timeslot])) ;               
 		}
 		

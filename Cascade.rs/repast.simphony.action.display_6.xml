@@ -3,35 +3,7 @@
   <type>TWO_D</type>
   <styles>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.Aggregator</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
-    </entry>
-    <entry>
       <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.test.HHProsumer</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.test.PAgent</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.MarketOperator</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.testAggregator</string>
       <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
     </entry>
     <entry>
@@ -41,35 +13,7 @@
   </styles>
   <editedStyles>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</string>
-      <null/>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.Aggregator</string>
-      <null/>
-    </entry>
-    <entry>
       <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
-      <null/>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.test.HHProsumer</string>
-      <null/>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</string>
-      <null/>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.test.PAgent</string>
-      <null/>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.MarketOperator</string>
-      <null/>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.testAggregator</string>
       <null/>
     </entry>
     <entry>
@@ -91,7 +35,7 @@
   </editedNetStyles>
   <frequency>ON_NEW</frequency>
   <schedParams>
-    <start>0.0</start>
+    <start>1.0</start>
     <interval>0.0</interval>
     <priority>-Infinity</priority>
     <duration>-1.0</duration>
@@ -102,35 +46,7 @@
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.ProsumerAgent</string>
-      <int>2</int>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.Aggregator</string>
-      <int>8</int>
-    </entry>
-    <entry>
       <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
-      <int>5</int>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.test.HHProsumer</string>
-      <int>6</int>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.AggregatorAgent</string>
-      <int>7</int>
-    </entry>
-    <entry>
-      <string>uk.ac.dmu.iesd.cascade.test.PAgent</string>
-      <int>3</int>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.MarketOperator</string>
-      <int>4</int>
-    </entry>
-    <entry>
-      <string>uk.ac.cranfield.market.testAggregator</string>
       <int>0</int>
     </entry>
     <entry>
