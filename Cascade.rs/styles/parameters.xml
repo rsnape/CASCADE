@@ -79,7 +79,7 @@
 									
 		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
-						defaultValue="C:\RepastSimphony-2.0-beta\workspace\Cascade\dataFiles" 
+						defaultValue="dataFiles" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									

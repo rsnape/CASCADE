@@ -5,6 +5,6 @@
 	<classpathentry kind="con" path="REPAST_SIMPHONY_SUPPORT"/>
 	<classpathentry kind="con" path="GROOVY_SUPPORT"/>
 	<classpathentry kind="lib" path="ExternalLib/flanagan.jar"/>
-	<classpathentry kind="lib" path="C:/RepastSimphony-2.0-beta/workspace/Cascade/ExternalLib/commons-mathforsimplex-2.2.jar"/>
+	<classpathentry kind="lib" path="ExternalLib/commons-mathforsimplex-2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
