@@ -60,7 +60,9 @@ import repast.simphony.ui.RSApplication;
 import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
 import repast.simphony.util.collections.Pair;
-import uk.ac.cranfield.market.*;
+import uk.ac.cranfield.cascade.aggregators.TestBattryConsumers;
+import uk.ac.cranfield.cascade.aggregators.TestConsumer;
+import uk.ac.cranfield.cascade.market.*;
 import uk.ac.dmu.iesd.cascade.Consts;
 //import uk.ac.dmu.iesd.cascade.Consts.GENERATOR_TYPE;
 //import uk.ac.dmu.iesd.cascade.Consts.STORAGE_TYPE;
@@ -589,40 +591,58 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 	private void cranfieldMarketModelIntegrationTest () {
 
-		// first integration attempt test with Cranfield market model
-		// to be arranged later
-		for(int i = 0; i < 4; i++)
-		{	
-			double minGen = RandomHelper.nextDoubleFromTo(20000,40000);
-			double maxGen = minGen + RandomHelper.nextDoubleFromTo(20000,40000);
-			double minGenPrice = RandomHelper.nextDoubleFromTo(0.1, 10);
-			double maxGenPrice = minGenPrice + RandomHelper.nextDoubleFromTo(10, 20);
+		double minD = RandomHelper.nextDoubleFromTo(40000,80000);
+		double maxD = minD + RandomHelper.nextDoubleFromTo(40000,80000);
+		double maxDPrice = 2;
+		double minDPrice = 30;
+		double minGen = RandomHelper.nextDoubleFromTo(400,800);
+		double maxGen = minGen + RandomHelper.nextDoubleFromTo(400,800);
+		double minGenPrice = RandomHelper.nextDoubleFromTo(0.1, 10);
+		double maxGenPrice = minGenPrice + RandomHelper.nextDoubleFromTo(10, 20);
+		
+			
+		
+		for(int i = 0; i < 0; i++)
+		{
+			TestConsumer ta = new TestConsumer(
+		              minDPrice,maxDPrice,
+		              minD, maxD);
+			cascadeMainContext.add(ta);
 
-			double minD = RandomHelper.nextDoubleFromTo(20000,40000);
-			double maxD = minD + RandomHelper.nextDoubleFromTo(20000,40000);
-			double maxDPrice = RandomHelper.nextDoubleFromTo(0.1, 10);
-			double minDPrice = maxDPrice+RandomHelper.nextDoubleFromTo(10, 20);
-
-
-			testAggregator ta = new testAggregator(minGenPrice,maxGenPrice,
-					maxGen,minGen,
-					maxD,maxDPrice,
-					minD,minDPrice);
-			ta.stDev =i;
-			//context.add(ta);
-			System.out.println("Graham: add to context");
-			//cascadeMainContext.add(ta);
-
-			ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,0);
+			ScheduleParameters params = ScheduleParameters.createRepeating(1,1,2);
 			RunEnvironment.getInstance().getCurrentSchedule().schedule(params, ta, "updateSupplyDemand");
-
+			
+			
 		}
+		
+		for(int i = 0; i < 2; i++)
+		{	
+			
 
-		MarketOperator Mo = new MarketOperator();
-		cascadeMainContext.add(Mo);
-		ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,0);
-		RunEnvironment.getInstance().getCurrentSchedule().schedule(params, Mo, "iterate");	
+				
+			testAggregator ta = new testAggregator(minGenPrice,maxGenPrice,
+		              minGen, maxGen,
+		              1000,1001,
+		              0, 1,0);
+			cascadeMainContext.add(ta);
+			ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,2);
+			RunEnvironment.getInstance().getCurrentSchedule().schedule(params, ta, "updateSupplyDemand");
+        }
+		
+		cascadeMainContext.add(Market.defaultM );
+		ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,ScheduleParameters.LAST_PRIORITY);
+		RunEnvironment.getInstance().getCurrentSchedule().schedule(params, Market.defaultM, "runMarket");
+		
+		
+		
+	/*    IndexedIterable <testAggregator> testAggIter = cascadeMainContext.getObjects(testAggregator.class);
 
+		for (testAggregator it : testAggIter ) {
+			System.out.println(it);
+		}*/
+		
+	
+		
 	}
 
 	private void populateContext_test() {
@@ -689,7 +709,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		populateContext();
 
-		//cranfieldMarketModelIntegrationTest();
+		cranfieldMarketModelIntegrationTest();
 
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());

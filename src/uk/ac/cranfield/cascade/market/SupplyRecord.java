@@ -1,4 +1,4 @@
-package uk.ac.cranfield.market;
+package uk.ac.cranfield.cascade.market;
 
 public class SupplyRecord {
 	public int modelTick;
