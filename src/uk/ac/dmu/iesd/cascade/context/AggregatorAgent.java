@@ -9,7 +9,7 @@ import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.*;
 import repast.simphony.ui.probe.*;
-import uk.ac.cranfield.market.Aggregator;
+import uk.ac.cranfield.cascade.market.Aggregator;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.IObservable;
@@ -528,6 +528,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	 * @param context the context in which this agent is situated 
 	 */
 	public AggregatorAgent(CascadeContext context) {
+		super(0);
 		this.agentID = agentIDCounter++;
 		this.mainContext = context;
 		observableProxy = new ObservableComponent();

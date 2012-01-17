@@ -408,8 +408,9 @@ public class WattboxController implements ISmartController{
 	
 	private void optimiseWetProfile(int timeStep) 
 	{
-		//System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
 		System.out.println("==OptimiseWetProfil for a  "+ owner.getAgentID()+"; timeStep: "+ timeStep);
+		System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
+
 		
 		HashMap wetApplianceProfiles = owner.getWetAppliancesProfiles();
 		double [] washer_loads = (double []) wetApplianceProfiles.get(Consts.WET_APP_WASHER);
@@ -425,23 +426,55 @@ public class WattboxController implements ISmartController{
 		System.out.println("BEFORE dishwasher_loads_day: "+ Arrays.toString(dishwasher_loads_day));
 		
 		double[] currentWasherCost = ArrayUtils.mtimes(washer_loads_day, dayPredictedCostSignal);
+		
+		System.out.println("currentWasherCost: "+ Arrays.toString(currentWasherCost));
+
 		int maxIndexForWasher = ArrayUtils.indexOfMax(currentWasherCost);
         double maxValForWasher = washer_loads_day[maxIndexForWasher];
         
         if ((maxValForWasher > 0) && (maxIndexForWasher < washer_loads_day.length-1)) {
         	
-        	washer_loads_day[maxIndexForWasher] = 0;
-
-        	System.out.println("max index for Wahser: "+ maxIndexForWasher + " val: "+maxValForWasher);
+           	System.out.println("max index for Wahser: "+ maxIndexForWasher + " val: "+maxValForWasher);
     		int newIndexForWasher = mainContext.coldAndWetApplTimeslotDelayRandDist.nextIntFromTo(maxIndexForWasher+1, washer_loads_day.length-1);
         	System.out.println("newIndexForWasher: "+ newIndexForWasher);
-
-        	washer_loads_day[newIndexForWasher] = washer_loads_day[newIndexForWasher] + maxValForWasher;
         	
-        	ArrayUtils.replaceRange(washer_loads, washer_loads_day,timeStep % washer_loads.length);
-        	wetApplianceProfiles.put(Consts.WET_APP_WASHER, washer_loads);
+        	double newValueForWahser = maxValForWasher* dayPredictedCostSignal[newIndexForWasher];
+        	
+        	if (newValueForWahser < maxValForWasher) {
+        		washer_loads_day[maxIndexForWasher] = 0;
+            	washer_loads_day[newIndexForWasher] = washer_loads_day[newIndexForWasher] + maxValForWasher;
+                  	
+            	ArrayUtils.replaceRange(washer_loads, washer_loads_day,timeStep % washer_loads.length);
+            	wetApplianceProfiles.put(Consts.WET_APP_WASHER, washer_loads);
+        		
+        	}
+        	else  {
+        		int ind=newIndexForWasher+1;
+        		boolean lowerCostFound = false;
+        		while ((ind < washer_loads_day.length-1) && (!lowerCostFound)) {
+        			newValueForWahser = maxValForWasher* dayPredictedCostSignal[ind];
+        			if (newValueForWahser < maxValForWasher) {
+        				lowerCostFound=true;
+        			}
+        			else {
+        				ind++;
+        			}	
+        		}
+        		
+        		if (lowerCostFound) {
+        			washer_loads_day[maxIndexForWasher] = 0;
+                	washer_loads_day[newIndexForWasher] = washer_loads_day[newIndexForWasher] + maxValForWasher;
+                      	
+                	ArrayUtils.replaceRange(washer_loads, washer_loads_day,timeStep % washer_loads.length);
+                	wetApplianceProfiles.put(Consts.WET_APP_WASHER, washer_loads);
+            		
+        		}
+        		
+        	}
+        
         }
-   		
+   
+        /*
 		double[] currentDryerCost = ArrayUtils.mtimes(dryer_loads_day, dayPredictedCostSignal);
 		int maxIndexForDryer = ArrayUtils.indexOfMax(currentDryerCost);
         double maxValForDryer = dryer_loads_day[maxIndexForDryer];
@@ -476,6 +509,8 @@ public class WattboxController implements ISmartController{
         	ArrayUtils.replaceRange(dishwasher_loads, dishwasher_loads_day,timeStep % dishwasher_loads.length);
         	wetApplianceProfiles.put(Consts.WET_APP_DISHWASHER, dishwasher_loads);
         }
+        
+        */
         
 		owner.setWetAppliancesProfiles(wetApplianceProfiles);
 		
@@ -818,7 +853,7 @@ public class WattboxController implements ISmartController{
 				heatPumpEnergyNeeded = 0;
 			}
 
-			if (heatPumpEnergyNeeded > (owner.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP))
+			if (heatPumpEnergyNeeded > (owner.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP * 24 / ticksPerDay))
 			{
 				//This profiel produces a value that exceeds the total capacity of the
 				//heat pump and is therefore unachievable.

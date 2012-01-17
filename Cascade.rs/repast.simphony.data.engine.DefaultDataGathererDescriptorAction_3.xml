@@ -1,8 +1,8 @@
 <repast.simphony.data.engine.DefaultDataGathererDescriptor>
-  <name>sigDataSet</name>
+  <name>Signal data set</name>
   <dataSetId class="string">sigDataSet</dataSetId>
   <scheduleParameters>
-    <start>0.0</start>
+    <start>1.0</start>
     <interval>1.0</interval>
     <priority>-Infinity</priority>
     <duration>-1.0</duration>
@@ -37,16 +37,16 @@
     </nameMappingTable>
     <mappingNameTable>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>AgentID</string>
-      </entry>
-      <entry>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
       </entry>
       <entry>
         <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
         <string>CurrentPrediction</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>AgentID</string>
       </entry>
     </mappingNameTable>
   </dataMappingContainer>

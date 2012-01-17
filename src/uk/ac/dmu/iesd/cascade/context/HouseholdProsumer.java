@@ -1222,8 +1222,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 			this.wetApplianceProfile = calculateCombinedWetAppliancesProfile(this.wetApplianceProfiles);
 		}
 
-		//if (timeOfDay == 0 && isAggregateDemandProfileBuildingPeriodCompleted())
-		if (timeOfDay == 0)
+		if (timeOfDay == 0 && isAggregateDemandProfileBuildingPeriodCompleted())
+		//if (timeOfDay == 0)
 		{
 			//TODO: decide whether the inelastic day demand is something that needs
 			// calculating here
