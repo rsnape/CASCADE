@@ -6,9 +6,9 @@
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.RECO"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.test.HHProsumer"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.test.PAgent"/>
-<agents path="../../Cascade/bin" filter="uk.ac.cranfield.market.MarketOperator"/>
-<agents path="../../Cascade/bin" filter="uk.ac.cranfield.market.testAggregator"/>
-<agents path="../../Cascade/bin" filter="uk.ac.cranfield.market.Aggregator"/>
+<agents path="../../Cascade/bin" filter="uk.ac.cranfield.cascade.market.Market"/>
+<agents path="../../Cascade/bin" filter="uk.ac.cranfield.cascade.market.testAggregator"/>
+<agents path="../../Cascade/bin" filter="uk.ac.cranfield.cascade.market.Aggregator"/>
 <entry path="../../Cascade/ExternalLib/commons-math-2.2.jar"/>
 </classpath>
 </model>

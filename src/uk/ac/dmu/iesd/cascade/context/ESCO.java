@@ -5,7 +5,8 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.util.ArrayList;
 
-import uk.ac.cranfield.market.SupplyPrediction;
+import uk.ac.cranfield.cascade.market.Prediction;
+//import uk.ac.cranfield.market.SupplyPrediction;
 
 /**
  * A <em>ESCO</em> or an Electricity Service Company is a concrete object that represents 
@@ -72,32 +73,39 @@ public class ESCO extends AggregatorAgent{
 		super(context);
 	}
 
+
+
 	/* (non-Javadoc)
 	 * @see uk.ac.cranfield.market.Aggregator#getGeneration()
 	 */
 	@Override
-	public double getGeneration() {
+	public double currentSupply() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 
 	/* (non-Javadoc)
 	 * @see uk.ac.cranfield.market.Aggregator#getDemand()
 	 */
 	@Override
-	public double getDemand() {
+	public double currentDemand() {
 		// TODO Auto-generated method stub
-		return 0;
+		return this.getNetDemand() * 50;
 	}
+
 
 	/* (non-Javadoc)
 	 * @see uk.ac.cranfield.market.Aggregator#getPrediction()
 	 */
 	@Override
-	public ArrayList<SupplyPrediction> getPrediction() {
+	public ArrayList<Prediction> getPrediction() {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Prediction> returnList = new ArrayList<Prediction>();
+		returnList.add(new Prediction(0,3500,0,0,0));
+		returnList.add(new Prediction(7000,3450,50,0,0));
+		return returnList;
 	}
-
+	
 
 }

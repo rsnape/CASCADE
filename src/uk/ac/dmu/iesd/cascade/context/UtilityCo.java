@@ -20,7 +20,8 @@ import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.util.ContextUtils;
-import uk.ac.cranfield.market.SupplyPrediction;
+import uk.ac.cranfield.cascade.market.Prediction;
+//import uk.ac.cranfield.market.SupplyPrediction;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
@@ -1736,11 +1737,12 @@ public class UtilityCo extends AggregatorAgent{
 	}
 
 
+
 	/* (non-Javadoc)
 	 * @see uk.ac.cranfield.market.Aggregator#getGeneration()
 	 */
 	@Override
-	public double getGeneration() {
+	public double currentSupply() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -1750,7 +1752,7 @@ public class UtilityCo extends AggregatorAgent{
 	 * @see uk.ac.cranfield.market.Aggregator#getDemand()
 	 */
 	@Override
-	public double getDemand() {
+	public double currentDemand() {
 		// TODO Auto-generated method stub
 		return this.getNetDemand() * 50;
 	}
@@ -1760,13 +1762,14 @@ public class UtilityCo extends AggregatorAgent{
 	 * @see uk.ac.cranfield.market.Aggregator#getPrediction()
 	 */
 	@Override
-	public ArrayList<SupplyPrediction> getPrediction() {
+	public ArrayList<Prediction> getPrediction() {
 		// TODO Auto-generated method stub
-		ArrayList<SupplyPrediction> returnList = new ArrayList<SupplyPrediction>();
-		returnList.add(new SupplyPrediction(0,3500,0,0,0));
-		returnList.add(new SupplyPrediction(7000,3450,50,0,0));
+		ArrayList<Prediction> returnList = new ArrayList<Prediction>();
+		returnList.add(new Prediction(0,3500,0,0,0));
+		returnList.add(new Prediction(7000,3450,50,0,0));
 		return returnList;
 	}
+	
 
 
 }

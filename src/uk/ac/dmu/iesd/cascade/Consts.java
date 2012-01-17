@@ -39,9 +39,9 @@ public final class Consts {
 	
 	//Controlling HHProsumers electricity consumption/usage
 	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = false;
-	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
+	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = false;
 	public static boolean HHPRO_HAS_COLD_APPL = false;
-	public static boolean HHPRO_HAS_WET_APPL = false;
+	public static boolean HHPRO_HAS_WET_APPL = true;
 	
 	//Controlling REEA operation
 	public static boolean AGG_RECO_REEA_ON = false;
