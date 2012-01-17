@@ -664,34 +664,36 @@ public class WattboxController implements ISmartController{
 			//Start each evaluation from the basepoint of the original (user specified) set point profile
 			localSetPointArray = Arrays.copyOf(setPointProfile, setPointProfile.length);
 			double totalTempLoss = 0;
-
+			double[] otherPrices = Arrays.copyOf(this.dayPredictedCostSignal, this.dayPredictedCostSignal.length);
+			
 			for ( int j = 0; (j < Consts.HEAT_PUMP_MAX_SWITCHOFF && (i+j < ticksPerDay)); j++)
 			{
 				double tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * Math.max(0,(localSetPointArray[i+j] - priorDayExternalTempProfile[i+j]))) / owner.buildingThermalMass);
 				//System.out.println("Temp loss in tick " + (i + j) + " = " + tempLoss);
-				totalTempLoss += tempLoss;
-				double availableHeatRecoveryTicks = 0;
-				for (int k = i+j/*+1*/; k < localSetPointArray.length; k++)
+				totalTempLoss += tempLoss;						
+				
+				for (int k = i+j; k < localSetPointArray.length; k++)
 				{
 					localSetPointArray[k] = this.setPointProfile[k] - totalTempLoss;
-					availableHeatRecoveryTicks++;
+					//availableHeatRecoveryTicks++;
 				}
-
-				availableHeatRecoveryTicks--;
+				double availableHeatRecoveryTicks = localSetPointArray.length - j;
 
 				//Sort out where to regain the temperature (if possible)
 				int n = (int) Math.ceil((totalTempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
-
+				// Take this slot out of the potential cheap slots to recover temp in.
+				otherPrices[i+j] = Double.POSITIVE_INFINITY;
 
 				if (n < availableHeatRecoveryTicks && n > 0)
 				{
 					double tempToRecover = (totalTempLoss / (double) n);
 					//It's possible to recover the temperature
-					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(Arrays.copyOfRange(this.dayPredictedCostSignal,i+j+1,ticksPerDay),n);
+					
+					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(otherPrices,n);
 
 					for (int l : recoveryIndices)
 					{
-						for (int m = i+j+l+1; m < ticksPerDay; m++)
+						for (int m = l; m < ticksPerDay; m++)
 						{
 							localSetPointArray[m] += tempToRecover;
 							//System.out.println("Adding " + tempToRecover + " at index " + m + " to counter temp loss at tick " + (i+j+1));
@@ -704,9 +706,13 @@ public class WattboxController implements ISmartController{
 						//System.out.println("With result " + Arrays.toString(localSetPointArray));
 					}
 
-					if (ArrayUtils.max(ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > Consts.FLOATING_POINT_TOLERANCE)
+					double[] tempDifference = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray));
+					
+					
+					
+					if (ArrayUtils.max(ArrayUtils.add(ArrayUtils.absoluteValues(tempDifference), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > Consts.FLOATING_POINT_TOLERANCE)
 					{
-						//if the temperature drop is too great, this profile is unfeasible and we return null
+						//if the temperature drop, or rise, is too great, this profile is unfeasible and we return null
 					}
 					else
 					{
@@ -725,11 +731,11 @@ public class WattboxController implements ISmartController{
 							//if (newCost < leastCost)
 							if((newCost - leastCost) < (0 - Consts.COST_DECISION_THRESHOLD))
 							{
-								if(ArrayUtils.max(localSetPointArray) - ArrayUtils.max(this.setPointProfile) > 0.005)
+/*								if(ArrayUtils.max(localSetPointArray) - ArrayUtils.max(this.setPointProfile) > 0.005)
 								{
 									System.err.println("WattboxController: Somehow got profile with significantly higher temp than baseline" + Arrays.toString(localSetPointArray));
 									System.err.println("WattboxController: Total temp loss is " + totalTempLoss + " to be recovered in " + n + "steps at " + tempToRecover + " per tick");
-								}
+								}*/
 
 								//System.out.println("Changing due to a cost difference of " + (newCost - leastCost));
 								//System.out.println(Arrays.toString(localSetPointArray));
