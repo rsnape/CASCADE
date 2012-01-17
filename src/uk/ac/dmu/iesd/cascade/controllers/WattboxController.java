@@ -812,7 +812,7 @@ public class WattboxController implements ISmartController{
 				heatPumpEnergyNeeded = 0;
 			}
 
-			if (heatPumpEnergyNeeded > (owner.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP))
+			if (heatPumpEnergyNeeded > (owner.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP * 24 / ticksPerDay))
 			{
 				//This profiel produces a value that exceeds the total capacity of the
 				//heat pump and is therefore unachievable.

@@ -45,7 +45,6 @@ import org.jgap.*;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 /**
  * A <em>RECO</em> or a Retail Company is a concrete object that represents 
