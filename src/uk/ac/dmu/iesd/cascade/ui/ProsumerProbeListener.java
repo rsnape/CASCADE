@@ -96,7 +96,6 @@ public class ProsumerProbeListener implements ProbeListener {
 				// default size
 				chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 
-
 				agentProbeFrame.getContentPane().add(chartPanel);
 
 				//Display the window.
