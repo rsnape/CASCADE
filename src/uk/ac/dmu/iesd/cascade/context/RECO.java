@@ -3,8 +3,6 @@
  */
 package uk.ac.dmu.iesd.cascade.context;
 
-import static repast.simphony.essentials.RepastEssentials.FindNetwork;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,14 +11,10 @@ import java.util.Vector;
 
 import cern.colt.list.DoubleArrayList;
 import bsh.This;
-import repast.simphony.engine.schedule.ScheduleParameters;
-import repast.simphony.engine.schedule.ScheduledMethod;
+
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.util.ContextUtils;
-//import uk.ac.cranfield.cascade.market.SupplyPrediction;
 import uk.ac.cranfield.cascade.market.Prediction;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
@@ -45,8 +39,6 @@ import org.apache.commons.mathforsimplex.optimization.linear.SimplexSolver;
 import org.jgap.*;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 /**
  * A <em>RECO</em> or a Retail Company is a concrete object that represents 
@@ -1557,9 +1549,6 @@ public class RECO extends AggregatorAgent{
 		timeslotOfDay = mainContext.getTimeslotOfDay();
 		customers = getCustomersList();
 
-		//dayOfWeek = ((CascadeContext) ContextUtils.getContext(this)).simulationCalendar.getTime().getDay();
-		//System.out.println(" dayOfWeek: "+ dayOfWeek);
-
 		if (isAggregateDemandProfileBuildingPeriodCompleted())  
 		{ //End of history profile building period 
 			//Set the Baseline demand on the first time through after building period
@@ -1581,10 +1570,6 @@ public class RECO extends AggregatorAgent{
 					
 					//arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
 
-					//System.out.println("RECO: Signal Sent");
-					//int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
-					//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
-					//System.out.println(" oneIndex: "+ oneIndex);
 					broadcastSignalToCustomers(arr_i_S, customers);
 				}
 			} //training period completed 
@@ -1626,14 +1611,14 @@ public class RECO extends AggregatorAgent{
 					
 					//Arrays.fill(arr_i_S, 0);
 					
-					arr_i_S = minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
+					//arr_i_S = minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 
 					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					broadcastSignalToCustomers(arr_i_S, customers);
 					//broadcastSignalToCustomers(	ArrayUtils.multiply(arr_i_S, 5), customers);
 
-					//broadcastSignalToCustomers(priceSignalTest, customers);
+					broadcastSignalToCustomers(priceSignalTest, customers);
 
 					if (Consts.DEBUG) 							
 						writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
@@ -1657,11 +1642,9 @@ public class RECO extends AggregatorAgent{
 		System.out.println(" ++++++++++++++ RECO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		
 		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
-			System.out.println(" *ProfileBuilding NOT complected ");
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
 		}
 		else if (!isTrainingPeriodCompleted()) {
-			System.out.println(" *ProfileBuilding IS completed: Traning NOT ");
 
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D);
 
@@ -1682,21 +1665,6 @@ public class RECO extends AggregatorAgent{
 					writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 			}
 		}
-
-
-		//if (isAggregateDemandProfileBuildingPeriodCompleted() && isTrainingPeriodCompleted()) {
-
-		//Things to do at the end of step
-
-		///////////////To be removed!//////////
-		/*
-		if(hist_week_arr_D[(dayOfWeek + 1) % 7] != null){
-			predictedCustomerDemand[timeslotOfDay] = hist_week_arr_D[(dayOfWeek + 1) % 7][timeslotOfDay];
-		}
-		else	{
-			predictedCustomerDemand[timeslotOfDay] = getNetDemand();
-		} */
-		///////////////////end of to be removed //////////
 		
 		calculateAndSetNetDemand(customers);
 
@@ -1814,7 +1782,5 @@ public class RECO extends AggregatorAgent{
 		return returnList;
 	}
 	
-	
-
 
 }
