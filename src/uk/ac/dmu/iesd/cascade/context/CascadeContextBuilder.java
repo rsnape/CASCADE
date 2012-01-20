@@ -711,7 +711,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		PopulationUtils.testAndPrintHouseholdApplianceProportions(cascadeMainContext);
 
-		cranfieldMarketModelIntegrationTest();
+		// (20/01/12) Comment to speed up space heat test
+		//cranfieldMarketModelIntegrationTest();
 
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());

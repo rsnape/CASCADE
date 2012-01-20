@@ -780,8 +780,8 @@ public class RECO extends AggregatorAgent{
 		double b =1;
 		double s=1;
 		double deltaB_i=0;
-		int i =  ArrayUtils.indexOf(arr_S, 1f);
-		//int i =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+		//int i =  ArrayUtils.indexOf(arr_S, 1f);
+		int i =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
 
 		if (i != -1 )	 {	
 			b = arr_B[i];
@@ -851,8 +851,8 @@ public class RECO extends AggregatorAgent{
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
 
-		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
-		//int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+		//int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
+		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
 		
 		
 		if (timeslotWhenSwas1 != -1 )	 {	
@@ -1578,7 +1578,7 @@ public class RECO extends AggregatorAgent{
 					System.out.println("NetDemand BEFORE sending training signal is:"+this.getNetDemand());
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
 					
-					//arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
+					arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
 
 					//System.out.println("RECO: Signal Sent");
 					//int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
@@ -1632,10 +1632,10 @@ public class RECO extends AggregatorAgent{
 
 					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
-					broadcastSignalToCustomers(arr_i_S, customers);
+					//broadcastSignalToCustomers(arr_i_S, customers);
 					//broadcastSignalToCustomers(	ArrayUtils.multiply(arr_i_S, 5), customers);
 
-					//broadcastSignalToCustomers(priceSignalTest, customers);
+					broadcastSignalToCustomers(priceSignalTest, customers);
 
 					if (Consts.DEBUG) 							
 						writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);

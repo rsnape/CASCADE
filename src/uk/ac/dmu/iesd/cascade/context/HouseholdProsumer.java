@@ -11,6 +11,8 @@ import org.jfree.util.ArrayUtilities;
 import org.jscience.mathematics.number.*;
 import org.jscience.mathematics.vector.*;
 import org.jscience.physics.amount.*;
+
+import com.sun.tools.internal.jxc.apt.Const;
 //import cern.colt.Arrays;
 import repast.simphony.adaptation.neural.*;
 import repast.simphony.adaptation.regression.*;
@@ -566,10 +568,14 @@ public class HouseholdProsumer extends ProsumerAgent{
 		{
 			//System.out.println(" ^^^hasElecSpaceheat ");
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
-			recordedHeatPumpDemand[timeOfDay] += calculateHeatPumpDemandAndInternalTemp(time);
+			recordedHeatPumpDemand[timeOfDay] += calculateHeatPumpDemandAndInternalTemp(time) / Consts.DOMESTIC_HEAT_PUMP_SPACE_COP;
 
 		}
 
+		// (20/01/12) Check if sum of <recordedHeatPumpDemand> is consistent at end day 
+		//if(timeOfDay == 47)
+		//	System.out.println("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
+		
 		if (hasElectricalWaterHeat)
 		{
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
@@ -645,7 +651,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		double heatingEnergy = requiredTempChange * this.buildingThermalMass;
 
-
+		
 		if(Consts.DEBUG)
 		{
 			System.out.println("HouseholdProsumer:: For agent " + this.getAgentName() + "at tick " + timeStep + " requiredTempChange = " + requiredTempChange + ", energy for temp maintenance = " + maintenanceEnergy + ", temp change energy = " + heatingEnergy);
@@ -684,7 +690,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 			}
 		}
 		//System.out.println("demand: "+ demand);
-
+		//System.out.println("buildingHeatLossRate: " + buildingHeatLossRate);
+		//System.out.println("buildingThermalMass: " + this.buildingThermalMass);
 
 		return demand;
 	}
