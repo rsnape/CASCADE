@@ -778,15 +778,20 @@ public class RECO extends AggregatorAgent{
 
 		double e=0;
 		double b =1;
-		double s=1;
+		double s = -1; /// Change this value to test for particular index!!!
 		double deltaB_i=0;
-		int i =  ArrayUtils.indexOf(arr_S, 1f);
-		//int i =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+		
+		int i =  ArrayUtils.indexOf(arr_S, s); 
 
 		if (i != -1 )	 {	
 			b = arr_B[i];
 			deltaB_i = arr_D[i] - b;
 			e = arr_e[i];
+
+		}
+		else
+		{
+			System.err.println("Looking for index of " + s + " to train for k values and didn't find it in signal");
 		}
 		
 		/*System.out.println(" D= "+ arr_D[i]);
@@ -845,14 +850,13 @@ public class RECO extends AggregatorAgent{
 
 		double e=0;
 		double b =1;
-		double s=1;
+		double s=-1; /// Change this value to test for particular index!!!
 		System.out.println(" £ RECO: Calculate e £");
 
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
 
-		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
-		//int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, s);
 		
 		
 		if (timeslotWhenSwas1 != -1 )	 {	
@@ -1578,7 +1582,7 @@ public class RECO extends AggregatorAgent{
 					System.out.println("NetDemand BEFORE sending training signal is:"+this.getNetDemand());
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
 					
-					//arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
+					arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
 
 					//System.out.println("RECO: Signal Sent");
 					//int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
