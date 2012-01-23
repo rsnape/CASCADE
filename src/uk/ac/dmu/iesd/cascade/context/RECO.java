@@ -780,7 +780,6 @@ public class RECO extends AggregatorAgent{
 		double b =1;
 		double s = -1; /// Change this value to test for particular index!!!
 		double deltaB_i=0;
-		
 		int i =  ArrayUtils.indexOf(arr_S, s); 
 
 		if (i != -1 )	 {	
@@ -1636,10 +1635,10 @@ public class RECO extends AggregatorAgent{
 
 					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
-					broadcastSignalToCustomers(arr_i_S, customers);
+					//broadcastSignalToCustomers(arr_i_S, customers);
 					//broadcastSignalToCustomers(	ArrayUtils.multiply(arr_i_S, 5), customers);
 
-					//broadcastSignalToCustomers(priceSignalTest, customers);
+					broadcastSignalToCustomers(priceSignalTest, customers);
 
 					if (Consts.DEBUG) 							
 						writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);

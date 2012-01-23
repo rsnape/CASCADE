@@ -108,7 +108,7 @@ public class WattboxController implements ISmartController{
 		//System.out.println("afterOffset dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
 
 		if (owner.getHasElectricalSpaceHeat()) {
-			this.setPointProfile = owner.getSetPointProfile();
+			this.setPointProfile = Arrays.copyOf(owner.getSetPointProfile(), owner.getSetPointProfile().length);
 			this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
 			this.currentTempProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
 		}
@@ -121,10 +121,12 @@ public class WattboxController implements ISmartController{
 
 		if (owner.getHasElectricalWaterHeat())
 			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(),(timeStep % owner.getBaselineHotWaterVolumeProfile().length), (timeStep % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
-
+		
 		if (owner.getHasElectricalSpaceHeat())
 		{
-			this.heatPumpDemandProfile = ArrayUtils.multiply(calculateSpaceHeatPumpDemand(this.setPointProfile), (1/Consts.DOMESTIC_HEAT_PUMP_SPACE_COP));
+			this.heatPumpDemandProfile = calculateSpaceHeatPumpDemand(this.setPointProfile);
+			// (20/01/12) Check if sum of <heatPumpDemandProfile> is consistent at end day
+			//System.out.println("Sum(Wattbox estimated heatPumpDemandProfile): "+ ArrayUtils.sum(this.heatPumpDemandProfile));
 		}
 		else
 		{
@@ -256,7 +258,7 @@ public class WattboxController implements ISmartController{
 				double extraHeatRequired = 0;
 				for (int j = i-1; j >= 0; j--)
 				{
-					extraHeatRequired += (Consts.WATER_TEMP_LOSS_PER_SECOND * ((double)Consts.SECONDS_PER_DAY / ticksPerDay)) * this.hotWaterVolumeDemandProfile[i] * (Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR);
+					extraHeatRequired += (Consts.WATER_TEMP_LOSS_PER_SECOND * ((double)Consts.SECONDS_PER_DAY / ticksPerDay)) * this.hotWaterVolumeDemandProfile[i] * (Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP;
 					tempArray[j] += baseArray[i] + extraHeatRequired;
 					tempArray[j+1] = 0;
 					totalHeatDemand = ArrayUtils.add(this.heatPumpDemandProfile, spreadWaterDemand(tempArray));
