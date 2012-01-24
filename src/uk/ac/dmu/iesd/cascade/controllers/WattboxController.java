@@ -126,7 +126,8 @@ public class WattboxController implements ISmartController{
 		{
 			this.heatPumpDemandProfile = calculateSpaceHeatPumpDemand(this.setPointProfile);
 			// (20/01/12) Check if sum of <heatPumpDemandProfile> is consistent at end day
-			//System.out.println("Sum(Wattbox estimated heatPumpDemandProfile): "+ ArrayUtils.sum(this.heatPumpDemandProfile));
+			if (Consts.DEBUG)
+				System.out.println("Sum(Wattbox estimated heatPumpDemandProfile): "+ ArrayUtils.sum(this.heatPumpDemandProfile));
 		}
 		else
 		{
@@ -753,7 +754,6 @@ public class WattboxController implements ISmartController{
 					}
 					else
 					{
-						//System.out.println("Calculate pump profile for this temp profile");
 						//calculate energy implications and cost for this candidate setPointProfile
 						localDemandProfile = calculateSpaceHeatPumpDemand(localSetPointArray);
 						if ((i+j) == 0 && Consts.DEBUG)
@@ -765,19 +765,18 @@ public class WattboxController implements ISmartController{
 						{
 							//in here if the set point profile is achievable
 							newCost = evaluateCost(localDemandProfile);
-							//if (newCost < leastCost)
-							if((newCost - leastCost) < (0 - Consts.COST_DECISION_THRESHOLD))
+							
+							//Decide whether to swap the new profile with the current best one
+							//based on cost.
+							//Many strategies are available - here we give two options
+							//Either the new cost must be better by an amount greater than some decision threshold
+							//held in Consts.COST_DECISION_THRESHOLD
+							// OR (currently used) the cost must simply be better, with a tie in cost
+							// being decided by a "coin toss".
+							
+							//if((newCost - leastCost) < (0 - Consts.COST_DECISION_THRESHOLD))
+							if (newCost < leastCost || (newCost == leastCost && RandomHelper.nextIntFromTo(0,1) == 1))
 							{
-/*								if(ArrayUtils.max(localSetPointArray) - ArrayUtils.max(this.setPointProfile) > 0.005)
-								{
-									System.err.println("WattboxController: Somehow got profile with significantly higher temp than baseline" + Arrays.toString(localSetPointArray));
-									System.err.println("WattboxController: Total temp loss is " + totalTempLoss + " to be recovered in " + n + "steps at " + tempToRecover + " per tick");
-								}*/
-
-								//System.out.println("Changing due to a cost difference of " + (newCost - leastCost));
-								//System.out.println(Arrays.toString(localSetPointArray));
-								//System.out.println(Arrays.toString(localDemandProfile));
-
 								leastCost = newCost;
 								this.optimisedSetPointProfile = Arrays.copyOf(localSetPointArray, localSetPointArray.length);
 								this.heatPumpDemandProfile = ArrayUtils.multiply(localDemandProfile, (1/Consts.DOMESTIC_HEAT_PUMP_SPACE_COP));
