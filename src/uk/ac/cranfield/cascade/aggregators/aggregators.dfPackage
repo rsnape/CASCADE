@@ -1,0 +1,41 @@
+package id4xzl6gxko69ykgxko92rx;
+
+/**
+@version 2.0
+@physicalPackage
+@__modelType diagram 
+*/
+class diagram {
+/**
+@__ref <oiref:java#Class#uk.ac.cranfield.cascade.aggregators.TestConsumer:oiref><oihard>
+@__modelType reference 
+*/
+class reference {
+}/**
+@__ref <oiref:java#Class#uk.ac.cranfield.cascade.aggregators.BattryOnly:oiref><oihard>
+@__modelType reference 
+*/
+class reference9 {
+}/**
+@__ref <oiref:java#Class#uk.ac.cranfield.cascade.aggregators.TestBattryConsumers:oiref><oihard>
+@__modelType reference 
+*/
+class reference10 {
+}}/**
+@__tags
+@shapeType ClassDiagram 
+*/
+class __tags {
+}/**
+@__options 
+*/
+class __options {
+}/**
+@__positions <oigroup:<oiref:java#Class#uk.ac.cranfield.cascade.aggregators.TestConsumer:oiref>=10,482,203,62,1:oigroup>
+<oigroup:<oiref:java#Extends#uk.ac.cranfield.cascade.aggregators.TestBattryConsumers#uk.ac.cranfield.cascade.aggregators.BattryOnly:oiref>=282,482,282,422:oigroup>
+<oigroup:<oiref:java#Class#uk.ac.cranfield.cascade.aggregators.BattryOnly:oiref>=113,10,219,412,1:oigroup>
+<oigroup:<oiref:java#Extends#uk.ac.cranfield.cascade.aggregators.TestConsumer#uk.ac.cranfield.cascade.aggregators.BattryOnly:oiref>=163,482,163,422:oigroup>
+<oigroup:<oiref:java#Class#uk.ac.cranfield.cascade.aggregators.TestBattryConsumers:oiref>=233,482,203,62,1:oigroup> 
+*/
+class __positions {
+}
