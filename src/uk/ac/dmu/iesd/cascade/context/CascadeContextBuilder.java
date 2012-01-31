@@ -711,7 +711,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		PopulationUtils.testAndPrintHouseholdApplianceProportions(cascadeMainContext);
 
+<<<<<<< HEAD
+=======
 		// (20/01/12) Comment to speed up space heat test
+>>>>>>> origin/master
 		//cranfieldMarketModelIntegrationTest();
 
 		if (cascadeMainContext.verbose)	

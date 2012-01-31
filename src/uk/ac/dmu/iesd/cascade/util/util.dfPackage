@@ -46,6 +46,11 @@ class reference28 {
 @__modelType reference 
 */
 class reference29 {
+}/**
+@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.util.ChartUtils:oiref><oihard>
+@__modelType reference 
+*/
+class reference23 {
 }}/**
 @__tags
 @shapeType ClassDiagram 

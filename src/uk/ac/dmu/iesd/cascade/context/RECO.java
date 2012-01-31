@@ -3,8 +3,6 @@
  */
 package uk.ac.dmu.iesd.cascade.context;
 
-import static repast.simphony.essentials.RepastEssentials.FindNetwork;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,14 +11,10 @@ import java.util.Vector;
 
 import cern.colt.list.DoubleArrayList;
 import bsh.This;
-import repast.simphony.engine.schedule.ScheduleParameters;
-import repast.simphony.engine.schedule.ScheduledMethod;
+
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.util.ContextUtils;
-//import uk.ac.cranfield.cascade.market.SupplyPrediction;
 import uk.ac.cranfield.cascade.market.Prediction;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
@@ -45,7 +39,6 @@ import org.apache.commons.mathforsimplex.optimization.linear.SimplexSolver;
 import org.jgap.*;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
-
 
 /**
  * A <em>RECO</em> or a Retail Company is a concrete object that represents 
@@ -657,8 +650,6 @@ public class RECO extends AggregatorAgent{
 			break;
 		}
 
-		// MUST REMOVE THIS - TEST TO GIVE ZERO SIGNAL AFTER TRAINING
-		//Arrays.fill(sArr,0d);
 		return sArr;
 	}
 
@@ -854,6 +845,7 @@ public class RECO extends AggregatorAgent{
 
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
+
 
 		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, s);
 		
@@ -1561,9 +1553,8 @@ public class RECO extends AggregatorAgent{
 		timeslotOfDay = mainContext.getTimeslotOfDay();
 		customers = getCustomersList();
 
-
 		if (isAggregateDemandProfileBuildingPeriodCompleted())  
- 		{ //End of history profile building period 
+		{ //End of history profile building period 
 			//Set the Baseline demand on the first time through after building period
 			System.out.println(" ProfileBuildingPeriod is completed");
 
@@ -1583,14 +1574,7 @@ public class RECO extends AggregatorAgent{
 					
 					//arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
 
-					//System.out.println("RECO: Signal Sent");
-					//int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
-					//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
-					//System.out.println(" oneIndex: "+ oneIndex);
 					broadcastSignalToCustomers(arr_i_S, customers);
-
-					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
-
 				}
 			} //training period completed 
 			else 
@@ -1635,10 +1619,10 @@ public class RECO extends AggregatorAgent{
 					
 					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
-					//broadcastSignalToCustomers(arr_i_S, customers);
+					broadcastSignalToCustomers(arr_i_S, customers);
 					//broadcastSignalToCustomers(	ArrayUtils.multiply(arr_i_S, 5), customers);
 
-					broadcastSignalToCustomers(priceSignalTest, customers);
+					//broadcastSignalToCustomers(priceSignalTest, customers);
 
 					if (Consts.DEBUG) 							
 						writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, hist_day_arr_D, arr_i_S, arr_i_e,  arr_ij_k);
@@ -1677,7 +1661,7 @@ public class RECO extends AggregatorAgent{
 				System.out.println(" timetick: "+mainContext.getTickCount());
 				double[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
 				double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
-				//System.out.println("RECO: e: "+e);
+				System.out.println("RECO: e: "+e);
 				System.out.println("RECO: e_arr: "+ Arrays.toString(arr_i_e));
 				System.out.println("RECO: arr_last_training_D: "+ Arrays.toString(arr_last_training_D));
 
@@ -1834,7 +1818,5 @@ public class RECO extends AggregatorAgent{
 		return returnList;
 	}
 	
-	
-
 
 }
