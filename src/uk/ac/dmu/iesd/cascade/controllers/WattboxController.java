@@ -724,11 +724,17 @@ public class WattboxController implements ISmartController{
 
 				if (n < availableHeatRecoveryTicks && n > 0)
 				{
+					//We know it's possible to recover the temperature lost
+					//in switch off period under the constraints set.
 					double tempToRecover = (totalTempLoss / (double) n);
-					//It's possible to recover the temperature
 					
+					//Find the cheapest timeslots in which to recover the temperature
+					//If this selection results in a tie, the slot is chosen
+					//randomly
 					int[] recoveryIndices = ArrayUtils.findNSmallestIndices(otherPrices,n);
 
+					//Add on temperature in each temperature recovery slot and
+					//all subsequent slots - thus building an optimised profile.
 					for (int l : recoveryIndices)
 					{
 						for (int m = l; m < ticksPerDay; m++)
@@ -747,7 +753,6 @@ public class WattboxController implements ISmartController{
 					double[] tempDifference = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray));
 					
 					
-					
 					if (ArrayUtils.max(ArrayUtils.add(ArrayUtils.absoluteValues(tempDifference), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > Consts.FLOATING_POINT_TOLERANCE)
 					{
 						//if the temperature drop, or rise, is too great, this profile is unfeasible and we return null
@@ -756,15 +761,21 @@ public class WattboxController implements ISmartController{
 					{
 						//calculate energy implications and cost for this candidate setPointProfile
 						localDemandProfile = calculateSpaceHeatPumpDemand(localSetPointArray);
-						if ((i+j) == 0 && Consts.DEBUG)
+						if (owner.getAgentID() == 0)//TESTTTESTTEST((i+j) == 0 && Consts.DEBUG)
 						{
-							System.out.println("Calculated demand for set point array = " + Arrays.toString(localSetPointArray));
+							System.out.println("Calculated demand for set point array turning off at tick " + i + " for " + (j+1) + " ticks " + Arrays.toString(localSetPointArray));
 							System.out.println("Demand = " + Arrays.toString(localDemandProfile));
 						}
 						if (localDemandProfile != null)
 						{
 							//in here if the set point profile is achievable
 							newCost = evaluateCost(localDemandProfile);
+							
+							if (owner.getAgentID() == 0)//TESTTTESTTEST
+							{
+								System.out.println(newCost + " vs. " + leastCost);
+	
+							}
 							
 							//Decide whether to swap the new profile with the current best one
 							//based on cost.

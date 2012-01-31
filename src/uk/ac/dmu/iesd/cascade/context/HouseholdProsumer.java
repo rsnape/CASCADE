@@ -12,8 +12,6 @@ import org.jscience.mathematics.number.*;
 import org.jscience.mathematics.vector.*;
 import org.jscience.physics.amount.*;
 
-import com.sun.tools.internal.jxc.apt.Const;
-//import cern.colt.Arrays;
 import repast.simphony.adaptation.neural.*;
 import repast.simphony.adaptation.regression.*;
 import repast.simphony.context.*;
@@ -573,8 +571,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 
 		// (20/01/12) Check if sum of <recordedHeatPumpDemand> is consistent at end day 
-		//if(timeOfDay == 47)
-		//	System.out.println("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
+		if(timeOfDay == 47 && Consts.DEBUG)
+			System.out.println("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
 		
 		if (hasElectricalWaterHeat)
 		{
@@ -649,7 +647,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		double maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((double)(Consts.SECONDS_PER_DAY / ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
 
-		double heatingEnergy = requiredTempChange * this.buildingThermalMass;
+		double heatingEnergy = requiredTempChange * this.buildingThermalMass / Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE;
 
 		
 		if(Consts.DEBUG)

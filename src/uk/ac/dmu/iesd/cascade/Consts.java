@@ -217,7 +217,9 @@ public final class Consts {
 	public static final int HEAT_PUMP_MIN_SWITCHOFF = 1;
 	public static final int HEAT_PUMP_MAX_SWITCHOFF = 8;
 
-	public static final double DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY = 2.0d;
+	//Don't use the constant below.  Rather, use DOMESTIC_HEAT_PUMP_SPACE_COP * DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE
+	//24/01/2012 This should be removed. TODO
+	//public static final double DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY = 2.0d;
 
 	//Typical domestic heat pump rating (electrical) in kW
 	public static final double TYPICAL_HEAT_PUMP_ELEC_RATING = 4d;

@@ -61,7 +61,7 @@
 									
 		/>
 				<parameter name="householdBaseAttributeFile" displayName="householdBaseAttributeFile" type="java.lang.String" 
-						defaultValue="miscDemand_1Day_Melody_Thursday.csv" 
+						defaultValue="miscDemand_1Day_zero.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
