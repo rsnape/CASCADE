@@ -708,7 +708,13 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		//populateContext_test();
 
 		populateContext();
+		
+		PopulationUtils.testAndPrintHouseholdApplianceProportions(cascadeMainContext);
 
+<<<<<<< HEAD
+=======
+		// (20/01/12) Comment to speed up space heat test
+>>>>>>> origin/master
 		//cranfieldMarketModelIntegrationTest();
 
 		if (cascadeMainContext.verbose)	
@@ -716,6 +722,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		return cascadeMainContext;
 	}
+
+
+
 
 }
 

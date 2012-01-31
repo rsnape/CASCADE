@@ -89,8 +89,6 @@ public class ProsumerFactory implements IProsumerFactory {
 		pAgent.initializeRandomlyDailyElasticityArray(0, 0.1);
 		
 		//pAgent.initializeSimilarlyDailyElasticityArray(0.1d);
-		
-		
 		pAgent.setRandomlyPercentageMoveableDemand(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
 		
 		pAgent.exercisesBehaviourChange = true;

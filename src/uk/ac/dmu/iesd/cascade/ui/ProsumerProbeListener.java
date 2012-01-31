@@ -39,22 +39,22 @@ public class ProsumerProbeListener implements ProbeListener {
 	 */
 	ArrayList<HouseholdProsumer> probedAgents = new ArrayList<HouseholdProsumer>();
 
-	  @NonModelAction
-	  static class ProbeUpdater implements IAction {
+	@NonModelAction
+	static class ProbeUpdater implements IAction {
 
-	    private ProsumerProbeListener probeListener;
+		private ProsumerProbeListener probeListener;
 
-	    public ProbeUpdater(ProsumerProbeListener display) {
-	      this.probeListener = display;
-	    }
+		public ProbeUpdater(ProsumerProbeListener display) {
+			this.probeListener = display;
+		}
 
-	    public void execute() {
-	    	probeListener.scheduledUpdate();
-	      
-	    }
-	  }
+		public void execute() {
+			probeListener.scheduledUpdate();
 
-	
+		}
+	}
+
+
 	@Override
 	public void objectProbed(ProbeEvent evt) {
 		// TODO Auto-generated method stub
@@ -70,19 +70,23 @@ public class ProsumerProbeListener implements ProbeListener {
 				Probe myProbe = newProbe.getProbe("TestProbe", true);
 				myProbe.addPropertyChangeListener(RSApplication.getRSApplicationInstance().getGui());
 				JFrame agentProbeFrame = new JFrame("Prosumer probe frame for " + thisAgent.toString());
-				agentProbeFrame.setAlwaysOnTop(true);
+				agentProbeFrame.setAlwaysOnTop(false);
 				agentProbeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				agentProbeFrame.getContentPane().setLayout(new GridLayout(2, 1));
 
-				DefaultCategoryDataset tempDataset = createTemperatureDataset(thisAgent);
-				// based on the dataset we create the chart
-				JFreeChart tempChart = createTemperatureChart(tempDataset, "Previous day temperatures - " + thisAgent.getAgentName());
-				charts.add(tempChart);
-				// we put the chart into a panel
-				ChartPanel tempChartPanel = new ChartPanel(tempChart);
-				// default size
-				tempChartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-				
+				if (thisAgent.getHasElectricalSpaceHeat())
+				{
+					DefaultCategoryDataset tempDataset = createTemperatureDataset(thisAgent);
+					// based on the dataset we create the chart
+					JFreeChart tempChart = createTemperatureChart(tempDataset, "Previous day temperatures - " + thisAgent.getAgentName());
+					charts.add(tempChart);
+					// we put the chart into a panel
+					ChartPanel tempChartPanel = new ChartPanel(tempChart);
+					// default size
+					tempChartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+					agentProbeFrame.getContentPane().add(tempChartPanel);
+				}
+
 				DefaultCategoryDataset dataset = createDataset(thisAgent);
 				// based on the dataset we create the chart
 				JFreeChart chart = createChart(dataset, "Previous day demand by type - " + thisAgent.getAgentName());
@@ -92,7 +96,6 @@ public class ProsumerProbeListener implements ProbeListener {
 				// default size
 				chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 
-				agentProbeFrame.getContentPane().add(tempChartPanel);
 				agentProbeFrame.getContentPane().add(chartPanel);
 
 				//Display the window.
@@ -124,11 +127,11 @@ public class ProsumerProbeListener implements ProbeListener {
 			result.addValue((Number)arr5[i], "Wet", i);
 
 		}
-		
+
 		return result;
 
 	}
-	
+
 	/**
 	 * Creates a sample dataset 
 	 */
@@ -147,7 +150,7 @@ public class ProsumerProbeListener implements ProbeListener {
 			result.addValue((Number)arr3[i], "External Temp", i);
 			result.addValue((Number)arr4[i], "Internal Temp", i);
 		}
-		
+
 		return result;
 	}
 
@@ -173,7 +176,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		return chart;
 
 	}
-	
+
 	/**
 	 * Creates a chart
 	 */
@@ -205,9 +208,19 @@ public class ProsumerProbeListener implements ProbeListener {
 		int i = 0;
 		for (HouseholdProsumer testProbed : probedAgents)
 		{
-			charts.get(i).getCategoryPlot().setDataset(createTemperatureDataset(testProbed));
-			charts.get(i+1).getCategoryPlot().setDataset(createDataset(testProbed));
-			i += 2;
+			if(testProbed.getHasElectricalSpaceHeat())
+			{
+				charts.get(i).getCategoryPlot().setDataset(createTemperatureDataset(testProbed));
+				charts.get(i+1).getCategoryPlot().setDataset(createDataset(testProbed));
+				i += 2;
+			}
+			else
+			{
+				charts.get(i).getCategoryPlot().setDataset(createDataset(testProbed));
+				i += 1;
+			}
+
+
 		}
 
 	}
@@ -216,7 +229,7 @@ public class ProsumerProbeListener implements ProbeListener {
 	{
 		super();
 		RunEnvironment.getInstance().getCurrentSchedule().schedule(ScheduleParameters.createRepeating(RepastEssentials.GetTickCount()+1, context.getNbOfTickPerDay(),
-                ScheduleParameters.END), new ProbeUpdater(this));
+				ScheduleParameters.END), new ProbeUpdater(this));
 	}
 
 
