@@ -39,9 +39,9 @@ public final class Consts {
 	
 	//Controlling HHProsumers electricity consumption/usage
 	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
-	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = false;
-	public static boolean HHPRO_HAS_COLD_APPL = false;
-	public static boolean HHPRO_HAS_WET_APPL = false;
+	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
+	public static boolean HHPRO_HAS_COLD_APPL = true;
+	public static boolean HHPRO_HAS_WET_APPL = true;
 	
 	//Controlling REEA operation
 	public static boolean AGG_RECO_REEA_ON = false;
@@ -75,6 +75,7 @@ public final class Consts {
 	/*-----------------------------
 	 * Units of Measurement Constants
 	 *------------------------------*/
+	public static final int HOURS_PER_DAY = 24;
 	public static final int DAYS_PER_WEEK = 7;
 	public static final int DAYS_PER_YEAR = 365;
 	public static final int MINUTES_PER_DAY = 1440;
