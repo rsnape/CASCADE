@@ -10,6 +10,21 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
+import cern.colt.list.DoubleArrayList;
+import bsh.This;
+
+import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.space.graph.Network;
+import repast.simphony.space.graph.RepastEdge;
+import uk.ac.cranfield.cascade.market.Prediction;
+import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.io.CSVWriter;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
+import flanagan.*;
+import flanagan.math.*;
+import flanagan.analysis.*;
+import flanagan.math.Matrix;
+
 import org.apache.commons.mathforsimplex.FunctionEvaluationException;
 import org.apache.commons.mathforsimplex.analysis.MultivariateRealFunction;
 import org.apache.commons.mathforsimplex.linear.ArrayRealVector;
@@ -29,7 +44,8 @@ import org.jgap.Genotype;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
-
+/*
+<<<<<<< HEAD
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
@@ -43,6 +59,10 @@ import flanagan.math.Fmath;
 import flanagan.math.Matrix;
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
+=======
+>>>>>>> origin/master
+*/
+
 /**
  * A <em>RECO</em> or a Retail Company is a concrete object that represents 
  * a commercial/business electricity/energy company involved in retail trade with
@@ -809,8 +829,6 @@ public class RECO extends AggregatorAgent{
 			break;
 		}
 
-		// MUST REMOVE THIS - TEST TO GIVE ZERO SIGNAL AFTER TRAINING
-		//Arrays.fill(sArr,0d);
 		return sArr;
 	}
 
@@ -1750,9 +1768,8 @@ public class RECO extends AggregatorAgent{
 		timeslotOfDay = mainContext.getTimeslotOfDay();
 		customers = getCustomersList();
 
-
 		if (isAggregateDemandProfileBuildingPeriodCompleted())  
- 		{ //End of history profile building period 
+		{ //End of history profile building period 
 			//Set the Baseline demand on the first time through after building period
 			System.out.println(" ProfileBuildingPeriod is completed");
 
@@ -1769,18 +1786,9 @@ public class RECO extends AggregatorAgent{
 				{	
 					System.out.println("NetDemand BEFORE sending training signal is:"+this.getNetDemand());
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
-					
-					arr_i_S = ArrayUtils.multiply(arr_i_S, 1);
 					//arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
 
-					//System.out.println("RECO: Signal Sent");
-					//int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
-					//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
-					//System.out.println(" oneIndex: "+ oneIndex);
 					broadcastSignalToCustomers(arr_i_S, customers);
-
-					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
-
 				}
 			} //training period completed 
 			else 
@@ -1823,11 +1831,14 @@ public class RECO extends AggregatorAgent{
 
 					System.out.println("RECO:: Flanagan : " + Arrays.toString(minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
 					System.out.println("RECO:: Apache : " + Arrays.toString(minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S)));
+
 					// Multiply the signal to test on the aggregator B vs D (for the purpose of magnifying the bandline values
 					// last use to test baseline flattening test
 					//broadcastSignalToCustomers(ArrayUtils.multiply(arr_i_S,100), customers);
-					
+
 					broadcastSignalToCustomers(arr_i_S, customers);
+					//broadcastSignalToCustomers(	ArrayUtils.multiply(arr_i_S, 5), customers);
+
 					//broadcastSignalToCustomers(priceSignalTest, customers);
 
 					if (Consts.DEBUG) 							
@@ -1852,11 +1863,9 @@ public class RECO extends AggregatorAgent{
 		System.out.println(" ++++++++++++++ RECO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		
 		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
-			System.out.println(" *ProfileBuilding NOT complected ");
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D); 
 		}
 		else if (!isTrainingPeriodCompleted()) {
-			System.out.println(" *ProfileBuilding IS completed: Traning NOT ");
 
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, hist_arr_ij_D);
 
@@ -1866,52 +1875,24 @@ public class RECO extends AggregatorAgent{
 				System.out.print("End of day: "+mainContext.getDayCount()+" timeOfDay: "+timeslotOfDay);
 				System.out.println(" timetick: "+mainContext.getTickCount());
 				double[] arr_last_training_D = ArrayUtils.rowCopy(hist_arr_ij_D, mainContext.getDayCount());
+
 				// (13/02/12) DF
 				// Revised eleasticity factor for new testing
 				// pls see Peter B' email on the week commencing 6th Feb 2012
 				//double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
 				double e = calculateElasticityFactors_e_new(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
-				
-				//System.out.println("RECO: e: "+e);
+
+				System.out.println("RECO: e: "+e);
+
 				System.out.println("RECO: e_arr: "+ Arrays.toString(arr_i_e));
 				System.out.println("RECO: arr_last_training_D: "+ Arrays.toString(arr_last_training_D));
 
 				calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
-/* TEST ONLY - REMOVE !!
- * 
- */
-/*				if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + 7)
-				{
-				double[] comparison_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(hist_arr_ij_D,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + 7));
-				System.err.println(Arrays.toString(ArrayUtils.add(arr_i_B, ArrayUtils.negate(comparison_B))));
-
-				System.err.println(Arrays.toString(arr_i_B));
-
-
-				System.err.println(Arrays.toString(comparison_B));
-				}
-				*/
 
 				if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2) 
 					writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
-
 			}
 		}
-
-
-		//if (isAggregateDemandProfileBuildingPeriodCompleted() && isTrainingPeriodCompleted()) {
-
-		//Things to do at the end of step
-
-		///////////////To be removed!//////////
-		/*
-		if(hist_week_arr_D[(dayOfWeek + 1) % 7] != null){
-			predictedCustomerDemand[timeslotOfDay] = hist_week_arr_D[(dayOfWeek + 1) % 7][timeslotOfDay];
-		}
-		else	{
-			predictedCustomerDemand[timeslotOfDay] = getNetDemand();
-		} */
-		///////////////////end of to be removed //////////
 		
 		calculateAndSetNetDemand(customers);
 

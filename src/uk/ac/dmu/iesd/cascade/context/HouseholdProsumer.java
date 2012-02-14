@@ -1135,7 +1135,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		double [] baselineHotWaterVolumeProfile = Arrays.copyOf(hotWaterNeededProfile, hotWaterNeededProfile.length);
 		this.setBaselineHotWaterVolumeProfile(baselineHotWaterVolumeProfile);
 		
-		System.out.println("setBaselineHotWaterVolumeProfile:    "+ Arrays.toString(baselineHotWaterVolumeProfile));
+		//System.out.println("setBaselineHotWaterVolumeProfile:    "+ Arrays.toString(baselineHotWaterVolumeProfile));
 
 
 		if(this.getHasElectricalWaterHeat())	{

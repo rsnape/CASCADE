@@ -27,11 +27,6 @@ class reference19 {
 */
 class reference21 {
 }/**
-@__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.controllers.CopyOfWattboxController:oiref><oihard>
-@__modelType reference 
-*/
-class reference22 {
-}/**
 @__ref <oiref:java#Class#uk.ac.dmu.iesd.cascade.controllers.ISmartController:oiref><oihard>
 @__modelType reference 
 */

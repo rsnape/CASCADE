@@ -21,7 +21,6 @@ import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.util.ContextUtils;
 import uk.ac.cranfield.cascade.market.Prediction;
-//import uk.ac.cranfield.market.SupplyPrediction;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
@@ -1508,9 +1507,6 @@ public class UtilityCo extends AggregatorAgent{
 					{
 						arr_ij_k[i] = ArrayUtils.mtimes(arr_ij_k[i], multiplier);
 					}
-
-
-
 
 					// end of REEA
 
