@@ -100,6 +100,9 @@ public class ProsumerFactory implements IProsumerFactory {
 		//pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
 		pAgent.hasSmartControl = true;
 	
+		
+		//TODO: we need to set up wattbox after appliances added.  This is all a bit
+		//non-object oriented.  Could do with a proper design methodology here.
 		if (pAgent.hasSmartControl)
 			pAgent.setWattboxController();
 
