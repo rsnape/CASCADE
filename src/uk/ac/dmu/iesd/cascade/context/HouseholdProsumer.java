@@ -573,9 +573,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 
 		// (20/01/12) Check if sum of <recordedHeatPumpDemand> is consistent at end day 
-		//if(timeOfDay == 47)
-		//	System.out.println("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
-		
+		if(timeOfDay == 47) {
+			//	System.out.println("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
+			System.out.println("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
+			/*
+			System.out.println("Physical Recorded heatPumpDemandProfile");
+			for(int i = 0; i<=47; i++) {
+				System.out.print(recordedHeatPumpDemand[i] + " ");
+			}
+			System.out.println("");
+			*/
+		}
+			
 		if (hasElectricalWaterHeat)
 		{
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
@@ -649,7 +658,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		double maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((double)(Consts.SECONDS_PER_DAY / ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
 
-		double heatingEnergy = requiredTempChange * this.buildingThermalMass;
+		double heatingEnergy = requiredTempChange * this.buildingThermalMass / Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE;	// refer to Peter's email (24/01/12)
 
 		
 		if(Consts.DEBUG)
@@ -1076,6 +1085,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 		for (int i = 0; i < dailyElasticity.length; i++)  {
 			dailyElasticity[i] = RandomHelper.nextDoubleFromTo(from, to);
 		}
+		/*
+		// (13/02/12) DF
+		// Print out elasticity factor for 1 prosumer for testing revising elasticity calculation
+		System.out.print("Prosumer Elasticity: ");
+		for(int i=0; i< dailyElasticity.length; i++) {
+			System.out.print(dailyElasticity[i] + ",");
+		}
+		System.out.println("");
+		*/
 	}
 
 	// this is temporary method for test (can be removed later)

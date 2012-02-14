@@ -127,6 +127,14 @@ public class WattboxController implements ISmartController{
 			this.heatPumpDemandProfile = calculateSpaceHeatPumpDemand(this.setPointProfile);
 			// (20/01/12) Check if sum of <heatPumpDemandProfile> is consistent at end day
 			//System.out.println("Sum(Wattbox estimated heatPumpDemandProfile): "+ ArrayUtils.sum(this.heatPumpDemandProfile));
+			System.out.println("Sum(Wattbox estimated heatPumpDemandProfile): "+ ArrayUtils.sum(calculateSpaceHeatPumpDemand(optimisedSetPointProfile)));
+			/*
+			System.out.println("Wattbox estimated heatPumpDemandProfile");
+			for(int i = 0; i<=47; i++) {
+				System.out.print(this.heatPumpDemandProfile[i] + " ");
+			}
+			System.out.println("");
+			*/
 		}
 		else
 		{

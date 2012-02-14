@@ -1,42 +1,37 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Aggregator Costs</name>
+  <name>Smart Adoption</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>AggregatorData</string>
+      <string>SmartControlAdoption</string>
+      <string>TotalDemand</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">AggregatorData</dataSetId>
-  <showLegend>true</showLegend>
+  <dataSetId class="string">SmartControlAdoption</dataSetId>
+  <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
-  <xColumnName>DayCount</xColumnName>
+  <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>48.0</visibleXRange>
+  <visibleXRange>144.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
-  <precisionValue>2</precisionValue>
-  <maxHistory>48000</maxHistory>
+  <precisionValue>0</precisionValue>
+  <maxHistory>500</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>CumulativeCostSavingSeriesName</seriesID>
-      <valueColumn>CumulativeCostSaving</valueColumn>
-      <hashCode>215101519</hashCode>
-      <proxy>false</proxy>
-    </repast.simphony.chart.Series>
-    <repast.simphony.chart.Series>
-      <seriesID>CostDifferenceSeriesName</seriesID>
-      <valueColumn>CostDifference</valueColumn>
-      <hashCode>-985825041</hashCode>
-      <proxy>false</proxy>
+      <seriesID>Adopters</seriesID>
+      <valueColumn>New Column</valueColumn>
+      <hashCode>246820589</hashCode>
+      <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
