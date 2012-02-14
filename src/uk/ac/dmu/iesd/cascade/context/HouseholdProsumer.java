@@ -1092,6 +1092,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		
 		double dailyHotWaterUsage = mainContext.waterUsageGenerator.nextDouble(Consts.EST_INTERCEPT + (this.getNumOccupants() * Consts.EST_SLOPE), Consts.EST_STD_DEV);
 		this.setDailyHotWaterUsage(dailyHotWaterUsage);
+		
+		this.ratedPowerHeatPump = Consts.TYPICAL_HEAT_PUMP_ELEC_RATING;
 
 		this.waterSetPoint = Consts.DOMESTIC_SAFE_WATER_TEMP;
 		//TODO: something more sophisticated to give the baseline water heat requirement
