@@ -56,7 +56,7 @@ public class WattboxController implements ISmartController{
 	double[] EVChargingProfile;
 
 	double[] heatPumpOnOffProfile;
-	
+
 	protected CascadeContext mainContext;
 
 	/**
@@ -77,7 +77,7 @@ public class WattboxController implements ISmartController{
 	private double expectedNextDaySpaceHeatCost;
 	private double maxImmersionHeatPerTick;
 	private double[] noElecHeatingDemand = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	
+
 	//Uniform coldAndWetApplTimeslotDelayRandDist;  //temp
 
 
@@ -96,15 +96,17 @@ public class WattboxController implements ISmartController{
 	 */
 	public void update(int timeStep)
 	{
+		checkForNewAppliancesAndUpdateConstants();
+
 		double[] ownersCostSignal = owner.getPredictedCostSignal();
 		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
-		
+
 		//System.out.println("update");
 
 		//System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
 
 		this.dayPredictedCostSignal = ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal, predictedCostToRealCostA),realCostOffsetb);
-		
+
 		//System.out.println("afterOffset dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
 
 		if (owner.getHasElectricalSpaceHeat()) {
@@ -112,16 +114,16 @@ public class WattboxController implements ISmartController{
 			this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
 			this.currentTempProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
 		}
-		
+
 		//if (owner.getHasColdAppliances())
-			//this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length) , (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
-		
+		//this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,(timeStep % owner.coldApplianceProfile.length) , (timeStep % owner.coldApplianceProfile.length) + ticksPerDay);
+
 		//if (owner.getHasWetAppliances())
-			//this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
+		//this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,(timeStep % owner.wetApplianceProfile.length), (timeStep % owner.wetApplianceProfile.length) + ticksPerDay);
 
 		if (owner.getHasElectricalWaterHeat())
 			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(),(timeStep % owner.getBaselineHotWaterVolumeProfile().length), (timeStep % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
-		
+
 		if (owner.getHasElectricalSpaceHeat())
 		{
 			this.heatPumpDemandProfile = calculateSpaceHeatPumpDemand(this.setPointProfile);
@@ -142,12 +144,12 @@ public class WattboxController implements ISmartController{
 		{
 			this.waterHeatDemandProfile = Arrays.copyOf(noElecHeatingDemand, noElecHeatingDemand.length);
 		}
-		
+
 		if (coldAppliancesControlled && owner.getHasColdAppliances())
 		{
 			optimiseColdProfile(timeStep);
 		}
-		
+
 
 		if (wetAppliancesControlled && owner.getHasWetAppliances())
 		{
@@ -181,6 +183,18 @@ public class WattboxController implements ISmartController{
 	}
 
 	/**
+	 * A method to allow Wattbox to be dynamic in the sense of monitoring its owner
+	 * for any new appliances and updating its state to accommodate.
+	 */
+	private void checkForNewAppliancesAndUpdateConstants() {
+		// This could be more sophisticated, but for now all this needs to do is make sure that
+		// the wattbox assigns load only according to the rated heat pump and immersion capacity
+		// of its owner
+		this.maxHeatPumpElecDemandPerTick = (owner.ratedPowerHeatPump * (double) 24 / ticksPerDay);
+		this.maxImmersionHeatPerTick = Consts.MAX_DOMESTIC_IMMERSION_POWER * (double) 24 / ticksPerDay;
+	}
+
+	/**
 	 * method to return all the optimised profiles currently held by this Wattbox
 	 */
 	public WeakHashMap getCurrentProfiles()
@@ -208,23 +222,19 @@ public class WattboxController implements ISmartController{
 	 */
 	private void optimiseWaterHeatProfileWithSpreading() 
 	{		
-		
-		//System.out.println("==OptimiseWaterHeatProfil for a  "+ owner.getAgentID());
+		System.out.println("== OptimiseWaterHeatProfile for a  "+ owner.getAgentID() + " ==");
 
-		double[] baseArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
-		//System.out.println("hotWaterVolumeDemandProfile: "+ Arrays.toString(hotWaterVolumeDemandProfile));
-		//System.out.println("baseArray:              "+ Arrays.toString(baseArray)); //=waterHeatProfile
+		double[] baseArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP);
+		System.out.println("hotWaterVolumeDemandProfile: "+ Arrays.toString(hotWaterVolumeDemandProfile));
 
 		this.waterHeatDemandProfile = Arrays.copyOf(baseArray, baseArray.length);
-		//System.out.println("waterHeatDemandProfile: "+ Arrays.toString(waterHeatDemandProfile));
-		
-		//System.out.println("spreadWaterDemand(baseArray) : "+ Arrays.toString(spreadWaterDemand(baseArray)));
+		System.out.println("waterHeatDemandProfile: "+ Arrays.toString(waterHeatDemandProfile));
 
-		//System.out.println("spreadWaterDemand(baseArray)2: "+ Arrays.toString(spreadWaterDemand(baseArray)));
+		System.out.println("spreadWaterDemand(baseArray) : "+ Arrays.toString(spreadWaterDemand(baseArray)));
 
 		double[] totalHeatDemand = ArrayUtils.add(this.heatPumpDemandProfile, spreadWaterDemand(baseArray));
-		
-		//System.out.println("totalHeatDemand: "+ Arrays.toString(totalHeatDemand));
+
+		System.out.println("totalHeatDemand: "+ Arrays.toString(totalHeatDemand));
 
 		double currCost = evaluateCost(totalHeatDemand);
 		double[] tempArray = Arrays.copyOf(baseArray, baseArray.length);
@@ -343,7 +353,7 @@ public class WattboxController implements ISmartController{
 		double[] currentCost = ArrayUtils.mtimes(wetApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
 		int minIndex = ArrayUtils.indexOfMin(currentCost);
-	
+
 		// First pass - simply swap the load in the max cost slot with that in the min cost slot
 		//TODO: very crude and will give nasty positive feedback in all likelihood
 		if (maxIndex < (wetApplianceProfile.length -1 ))
@@ -354,222 +364,227 @@ public class WattboxController implements ISmartController{
 		}
 
 	} */
-	
+
 	/*
 	private void optimiseWetProfile() 
 	{
-		
+
 		//System.out.println("WetProf length: "+ wetApplianceProfile.length);
 		//System.out.println("WetProf Before Optim: "+ Arrays.toString(wetApplianceProfile));
 		//System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
-    
+
 		double[] currentCost = ArrayUtils.mtimes(wetApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
-		
+
 		double maxVal = wetApplianceProfile[maxIndex];
-		
+
 		wetApplianceProfile[maxIndex] = 0;
-		
+
 		int timeShift = 8; //temporary test: delay 4 hours 
-		
+
 		int newIndex = maxIndex + timeShift;
 		//System.out.println("newIndex before: "+ newIndex);
 		if (newIndex >= wetApplianceProfile.length)
 			newIndex = wetApplianceProfile.length -1;
-		
+
 		//System.out.println("newIndex after: "+ newIndex);
 
 		wetApplianceProfile[newIndex] = wetApplianceProfile[newIndex] + maxVal;
-		
+
 		//System.out.println("Wet Prof AFTER Optim: "+ Arrays.toString(wetApplianceProfile));
 
 	} */
-	
-	
+
+
 	private void optimiseWetProfile(int timeStep) 
 	{
 		//System.out.println("==OptimiseWetProfil for a  "+ owner.getAgentID()+"; timeStep: "+ timeStep);
 		//System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
-		
+
 		HashMap wetApplianceProfiles = owner.getWetAppliancesProfiles();
 		double [] washer_loads = (double []) wetApplianceProfiles.get(Consts.WET_APP_WASHER);
 		double [] dryer_loads = (double []) wetApplianceProfiles.get(Consts.WET_APP_DRYER);
 		double [] dishwasher_loads = (double []) wetApplianceProfiles.get(Consts.WET_APP_DISHWASHER);
-	
+
 		double [] washer_loads_day = Arrays.copyOfRange(washer_loads,(timeStep % washer_loads.length) , (timeStep % washer_loads.length) + ticksPerDay);
 		double [] dryer_loads_day = Arrays.copyOfRange(dryer_loads,(timeStep % dryer_loads.length) , (timeStep % dryer_loads.length) + ticksPerDay);
 		double [] dishwasher_loads_day = Arrays.copyOfRange(dishwasher_loads,(timeStep % dishwasher_loads.length) , (timeStep % dishwasher_loads.length) + ticksPerDay);
-		
+
 		//System.out.println("BEFORE washer_loads_day: "+ Arrays.toString(washer_loads_day));
 		//System.out.println("BEFORE dryer_loads_day: "+ Arrays.toString(dryer_loads_day));
 		//System.out.println("BEFORE dishwasher_loads_day: "+ Arrays.toString(dishwasher_loads_day));
-		
+
 		double[] currentWasherCostArr = ArrayUtils.mtimes(washer_loads_day, dayPredictedCostSignal);
-		
+
 		//System.out.println("currentWasherCost: "+ Arrays.toString(currentWasherCostArr));
 
 		int maxIndexForWasher = ArrayUtils.indexOfMax(currentWasherCostArr);
-        double maxValForWasher = washer_loads_day[maxIndexForWasher];
+		double maxValForWasher = washer_loads_day[maxIndexForWasher];
 		double currentCostForWasher = currentWasherCostArr[maxIndexForWasher];
-        
-        if ((maxValForWasher > 0) && (maxIndexForWasher < washer_loads_day.length-1)) {
-        	
-           	//System.out.println("max index for Wahser: "+ maxIndexForWasher + " val: "+maxValForWasher + " current cost: "+ currentCostForWasher);
-    		int newIndexForWasher = mainContext.coldAndWetApplTimeslotDelayRandDist.nextIntFromTo(maxIndexForWasher+1, washer_loads_day.length-1);
-        	
-        	double newCostForWahser = maxValForWasher* dayPredictedCostSignal[newIndexForWasher];
-        	
-        	//System.out.println("newIndexForWasher (1st): "+ newIndexForWasher +" new cost: "+ newCostForWahser);
-        	if (dayPredictedCostSignal[maxIndexForWasher] != dayPredictedCostSignal[newIndexForWasher])
-        		//System.out.println("Signal: "+dayPredictedCostSignal[maxIndexForWasher] + " != (new) "  +dayPredictedCostSignal[newIndexForWasher]);
 
-        	if (newCostForWahser < currentCostForWasher) {
-        		//System.out.println(" newCostForWahser < currentCostForWasher ");
-     		
-        		washer_loads_day[maxIndexForWasher] = 0;
-            	washer_loads_day[newIndexForWasher] = washer_loads_day[newIndexForWasher] + maxValForWasher;
-                  	
-            	ArrayUtils.replaceRange(washer_loads, washer_loads_day,timeStep % washer_loads.length);
-            	wetApplianceProfiles.put(Consts.WET_APP_WASHER, washer_loads);
-        		
-        	}
-        	else  {
-        		//System.out.println(" newCostForWahser !< currentCostForWasher ");
+		if ((maxValForWasher > 0) && (maxIndexForWasher < washer_loads_day.length-1)) {
 
-        		int iWasher=newIndexForWasher+1;
-        		boolean lowerCostFound = false;
-        		while ((iWasher < washer_loads_day.length) && (!lowerCostFound)) {
-        			newCostForWahser = maxValForWasher* dayPredictedCostSignal[iWasher];
-        			//System.out.println(ind+" newCostForWahser to considered: "+newCostForWahser + "  "+ (newCostForWahser < currentCostForWasher));
-        			if (dayPredictedCostSignal[maxIndexForWasher] != dayPredictedCostSignal[iWasher])
-        				//System.out.println("Signal: "+dayPredictedCostSignal[maxIndexForWasher] + " != (new) "  +dayPredictedCostSignal[ind]);
+			//System.out.println("max index for Wahser: "+ maxIndexForWasher + " val: "+maxValForWasher + " current cost: "+ currentCostForWasher);
+			int newIndexForWasher = mainContext.coldAndWetApplTimeslotDelayRandDist.nextIntFromTo(maxIndexForWasher+1, washer_loads_day.length-1);
 
-        			if (newCostForWahser < currentCostForWasher) {
-        				lowerCostFound=true;
-        			}
-        			else {
-        				iWasher++;
-        			}	
-        		}
-        		
-        		if (lowerCostFound) {
-        			washer_loads_day[maxIndexForWasher] = 0;
-                	washer_loads_day[iWasher] = washer_loads_day[iWasher] + maxValForWasher;
-                      	
-                	ArrayUtils.replaceRange(washer_loads, washer_loads_day,timeStep % washer_loads.length);
-                	wetApplianceProfiles.put(Consts.WET_APP_WASHER, washer_loads);
-                	//System.out.println("lowerCostFound: newIndexForWasher (2nd found): "+ ind +" new cost (2): "+ newCostForWahser);		
-        		}	
-        	}
-        }
-        
-        //=============================================================
-           
+			double newCostForWahser = maxValForWasher* dayPredictedCostSignal[newIndexForWasher];
+
+			//System.out.println("newIndexForWasher (1st): "+ newIndexForWasher +" new cost: "+ newCostForWahser);
+			if (dayPredictedCostSignal[maxIndexForWasher] != dayPredictedCostSignal[newIndexForWasher])
+				//System.out.println("Signal: "+dayPredictedCostSignal[maxIndexForWasher] + " != (new) "  +dayPredictedCostSignal[newIndexForWasher]);
+
+				if (newCostForWahser < currentCostForWasher) {
+					//System.out.println(" newCostForWahser < currentCostForWasher ");
+
+					washer_loads_day[maxIndexForWasher] = 0;
+					washer_loads_day[newIndexForWasher] = washer_loads_day[newIndexForWasher] + maxValForWasher;
+
+					ArrayUtils.replaceRange(washer_loads, washer_loads_day,timeStep % washer_loads.length);
+					wetApplianceProfiles.put(Consts.WET_APP_WASHER, washer_loads);
+
+				}
+				else  {
+					//System.out.println(" newCostForWahser !< currentCostForWasher ");
+
+					int iWasher=newIndexForWasher+1;
+					boolean lowerCostFound = false;
+					while ((iWasher < washer_loads_day.length) && (!lowerCostFound)) {
+						newCostForWahser = maxValForWasher* dayPredictedCostSignal[iWasher];
+						//System.out.println(ind+" newCostForWahser to considered: "+newCostForWahser + "  "+ (newCostForWahser < currentCostForWasher));
+						if (dayPredictedCostSignal[maxIndexForWasher] != dayPredictedCostSignal[iWasher])
+						{
+							//System.out.println("Signal: "+dayPredictedCostSignal[maxIndexForWasher] + " != (new) "  +dayPredictedCostSignal[ind]);
+						}
+							
+							if (newCostForWahser < currentCostForWasher) {
+								lowerCostFound=true;
+							}
+							else {
+								iWasher++;
+							}	
+					}
+
+					if (lowerCostFound) {
+						washer_loads_day[maxIndexForWasher] = 0;
+						washer_loads_day[iWasher] = washer_loads_day[iWasher] + maxValForWasher;
+
+						ArrayUtils.replaceRange(washer_loads, washer_loads_day,timeStep % washer_loads.length);
+						wetApplianceProfiles.put(Consts.WET_APP_WASHER, washer_loads);
+						//System.out.println("lowerCostFound: newIndexForWasher (2nd found): "+ ind +" new cost (2): "+ newCostForWahser);		
+					}	
+				}
+		}
+
+		//=============================================================
+
 		double[] currentDryerCostArr = ArrayUtils.mtimes(dryer_loads_day, dayPredictedCostSignal);
 		int maxIndexForDryer = ArrayUtils.indexOfMax(currentDryerCostArr);
 		double maxValForDryer = dryer_loads_day[maxIndexForDryer];        
 		double currentCostForDryer = currentDryerCostArr[maxIndexForDryer];
 
-        if ((maxValForDryer > 0) && (maxIndexForDryer < dryer_loads_day.length-1)) {
-        	
-        	//System.out.println("max index for Dryer: "+ maxIndexForDryer + " val: "+maxValForDryer);
-    		int newIndexForDryer = mainContext.coldAndWetApplTimeslotDelayRandDist.nextIntFromTo(maxIndexForDryer+1, dryer_loads_day.length-1); 
-        	//System.out.println("newIndexForDryer: "+ newIndexForDryer);	
-        	double newCostForDryer = maxValForDryer* dayPredictedCostSignal[newIndexForDryer];
+		if ((maxValForDryer > 0) && (maxIndexForDryer < dryer_loads_day.length-1)) {
 
-        	if (newCostForDryer < currentCostForDryer) {
-        		//System.out.println(" newCostForDryer < currentCostForDryer ");
-        		
-        		dryer_loads_day[maxIndexForDryer] = 0;
-            	dryer_loads_day[maxIndexForDryer] = dryer_loads_day[maxIndexForDryer] + maxValForDryer;
-                  	
-            	ArrayUtils.replaceRange(dryer_loads, dryer_loads_day,timeStep % dryer_loads.length);
-            	wetApplianceProfiles.put(Consts.WET_APP_DRYER, dryer_loads);
-        		
-        	}
-        	else  {
-        		//System.out.println(" newCostForDryer !< currentCostForDryer ");
-        		int iDryer=newIndexForDryer+1;
-        		boolean lowerCostFoundForDryer = false;
-        		while ((iDryer < dryer_loads_day.length) && (!lowerCostFoundForDryer)) {
-        			newCostForDryer = maxValForDryer* dayPredictedCostSignal[iDryer];
-        			//System.out.println(iDryer+" newCostForDryer to considered: "+newCostForDryer + "  "+ (newCostForDryer < currentCostForDryer));
-        			if (dayPredictedCostSignal[maxIndexForDryer] != dayPredictedCostSignal[iDryer])
-        				//System.out.println("Signal: "+dayPredictedCostSignal[maxIndexForDryer] + " != (new) "  +dayPredictedCostSignal[iDryer]);
+			//System.out.println("max index for Dryer: "+ maxIndexForDryer + " val: "+maxValForDryer);
+			int newIndexForDryer = mainContext.coldAndWetApplTimeslotDelayRandDist.nextIntFromTo(maxIndexForDryer+1, dryer_loads_day.length-1); 
+			//System.out.println("newIndexForDryer: "+ newIndexForDryer);	
+			double newCostForDryer = maxValForDryer* dayPredictedCostSignal[newIndexForDryer];
 
-        			if (newCostForDryer < currentCostForDryer) {
-        				lowerCostFoundForDryer=true;
-        			}
-        			else {
-        				iDryer++;
-        			}	
-        		}
-        		
-        		if (lowerCostFoundForDryer) {
-        			dryer_loads_day[maxIndexForDryer] = 0;
-                	dryer_loads_day[iDryer] = dryer_loads_day[iDryer] + maxValForDryer;
-                      	
-                	ArrayUtils.replaceRange(dryer_loads, dryer_loads_day,timeStep % dryer_loads.length);
-                	wetApplianceProfiles.put(Consts.WET_APP_DRYER, dryer_loads);
-                	//System.out.println("lowerCostFoundForDryer: newIndexForDryer (2nd found): "+ iDryer +" new cost (2): "+ newCostForDryer);		
-        		}	
-        	}
-        }
-            	
-        double[] currentDishwasherCostArr = ArrayUtils.mtimes(dishwasher_loads_day, dayPredictedCostSignal);
+			if (newCostForDryer < currentCostForDryer) {
+				//System.out.println(" newCostForDryer < currentCostForDryer ");
+
+				dryer_loads_day[maxIndexForDryer] = 0;
+				dryer_loads_day[maxIndexForDryer] = dryer_loads_day[maxIndexForDryer] + maxValForDryer;
+
+				ArrayUtils.replaceRange(dryer_loads, dryer_loads_day,timeStep % dryer_loads.length);
+				wetApplianceProfiles.put(Consts.WET_APP_DRYER, dryer_loads);
+
+			}
+			else  {
+				//System.out.println(" newCostForDryer !< currentCostForDryer ");
+				int iDryer=newIndexForDryer+1;
+				boolean lowerCostFoundForDryer = false;
+				while ((iDryer < dryer_loads_day.length) && (!lowerCostFoundForDryer)) {
+					newCostForDryer = maxValForDryer* dayPredictedCostSignal[iDryer];
+					//System.out.println(iDryer+" newCostForDryer to considered: "+newCostForDryer + "  "+ (newCostForDryer < currentCostForDryer));
+					if (dayPredictedCostSignal[maxIndexForDryer] != dayPredictedCostSignal[iDryer])
+					{
+						//System.out.println("Signal: "+dayPredictedCostSignal[maxIndexForDryer] + " != (new) "  +dayPredictedCostSignal[iDryer]);
+					}
+
+					if (newCostForDryer < currentCostForDryer) {
+						lowerCostFoundForDryer=true;
+					}
+					else {
+						iDryer++;
+					}	
+				}
+
+				if (lowerCostFoundForDryer) {
+					dryer_loads_day[maxIndexForDryer] = 0;
+					dryer_loads_day[iDryer] = dryer_loads_day[iDryer] + maxValForDryer;
+
+					ArrayUtils.replaceRange(dryer_loads, dryer_loads_day,timeStep % dryer_loads.length);
+					wetApplianceProfiles.put(Consts.WET_APP_DRYER, dryer_loads);
+					//System.out.println("lowerCostFoundForDryer: newIndexForDryer (2nd found): "+ iDryer +" new cost (2): "+ newCostForDryer);		
+				}	
+			}
+		}
+
+		double[] currentDishwasherCostArr = ArrayUtils.mtimes(dishwasher_loads_day, dayPredictedCostSignal);
 		int maxIndexForDishwasher = ArrayUtils.indexOfMax(currentDishwasherCostArr);
-        double maxValForDishwasher = dishwasher_loads_day[maxIndexForDishwasher];        
-    	double currentCostForDishwasher = currentDishwasherCostArr[maxIndexForDishwasher];
-        
-        if ((maxValForDishwasher > 0) && (maxIndexForDishwasher < dishwasher_loads_day.length-1)) {
-        	
-        	//dishwasher_loads_day[maxIndexForDishwasher] = 0;
-        	//System.out.println("max index for Dishwasher: "+ maxIndexForDishwasher + " val: "+maxValForDishwasher);
-    		int newIndexForDishwasher = mainContext.coldAndWetApplTimeslotDelayRandDist.nextIntFromTo(maxIndexForDishwasher+1, dishwasher_loads_day.length-1); 
-        	//System.out.println("newIndexForDishwasher: "+ newIndexForDishwasher);
-        	double newCostForDishwasher = maxValForDishwasher* dayPredictedCostSignal[newIndexForDishwasher];
-        	
-        	if (newCostForDishwasher < currentCostForDishwasher) {
-        		//System.out.println(" newCostForDishwasher < currentCostForDishwasher ");
-        		
-        		dishwasher_loads_day[maxIndexForDishwasher] = 0;
-            	dishwasher_loads_day[newIndexForDishwasher] = dishwasher_loads_day[newIndexForDishwasher] + maxValForDishwasher;
-                  	
-            	ArrayUtils.replaceRange(dishwasher_loads, dishwasher_loads_day,timeStep % dishwasher_loads.length);
-            	wetApplianceProfiles.put(Consts.WET_APP_DISHWASHER, dishwasher_loads);
-        		
-        	}
-        	else  {
-        		//System.out.println(" newCostForDishWahser !< currentCostForDishwasher ");
-        		int iDish=newIndexForDishwasher+1;
-        		boolean lowerCostFoundForDishwasher = false;
-        		while ((iDish < dishwasher_loads_day.length) && (!lowerCostFoundForDishwasher)) {
-        			newCostForDishwasher = maxValForDishwasher* dayPredictedCostSignal[iDish];
-        			//System.out.println(iDish+" newCostForDishwahser to considered: "+newCostForDishwasher + "  "+ (newCostForDishwasher < currentCostForDishwasher));
-        			if (dayPredictedCostSignal[maxIndexForWasher] != dayPredictedCostSignal[iDish])
-        				//System.out.println("Signal: "+dayPredictedCostSignal[maxIndexForDishwasher] + " != (new) "  +dayPredictedCostSignal[iDish]);
+		double maxValForDishwasher = dishwasher_loads_day[maxIndexForDishwasher];        
+		double currentCostForDishwasher = currentDishwasherCostArr[maxIndexForDishwasher];
 
-        			if (newCostForDishwasher < currentCostForDishwasher) {
-        				lowerCostFoundForDishwasher=true;
-        			}
-        			else {
-        				iDish++;
-        			}	
-        		}
-        		
-        		if (lowerCostFoundForDishwasher) {
-        			dishwasher_loads_day[maxIndexForDishwasher] = 0;
-                	dishwasher_loads_day[iDish] = washer_loads_day[iDish] + maxValForDishwasher;
-                      	
-                	ArrayUtils.replaceRange(dishwasher_loads, dishwasher_loads_day,timeStep % dishwasher_loads.length);
-                	wetApplianceProfiles.put(Consts.WET_APP_DISHWASHER, dishwasher_loads);
-                	//System.out.println("lowerCostFound: newIndexForDishwasher (2nd found): "+ iDish +" new cost (2): "+ newCostForDishwasher);		
-        		}	
-        	}
-        }
-              
+		if ((maxValForDishwasher > 0) && (maxIndexForDishwasher < dishwasher_loads_day.length-1)) {
+
+			//dishwasher_loads_day[maxIndexForDishwasher] = 0;
+			//System.out.println("max index for Dishwasher: "+ maxIndexForDishwasher + " val: "+maxValForDishwasher);
+			int newIndexForDishwasher = mainContext.coldAndWetApplTimeslotDelayRandDist.nextIntFromTo(maxIndexForDishwasher+1, dishwasher_loads_day.length-1); 
+			//System.out.println("newIndexForDishwasher: "+ newIndexForDishwasher);
+			double newCostForDishwasher = maxValForDishwasher* dayPredictedCostSignal[newIndexForDishwasher];
+
+			if (newCostForDishwasher < currentCostForDishwasher) {
+				//System.out.println(" newCostForDishwasher < currentCostForDishwasher ");
+
+				dishwasher_loads_day[maxIndexForDishwasher] = 0;
+				dishwasher_loads_day[newIndexForDishwasher] = dishwasher_loads_day[newIndexForDishwasher] + maxValForDishwasher;
+
+				ArrayUtils.replaceRange(dishwasher_loads, dishwasher_loads_day,timeStep % dishwasher_loads.length);
+				wetApplianceProfiles.put(Consts.WET_APP_DISHWASHER, dishwasher_loads);
+
+			}
+			else  {
+				//System.out.println(" newCostForDishWahser !< currentCostForDishwasher ");
+				int iDish=newIndexForDishwasher+1;
+				boolean lowerCostFoundForDishwasher = false;
+				while ((iDish < dishwasher_loads_day.length) && (!lowerCostFoundForDishwasher)) {
+					newCostForDishwasher = maxValForDishwasher* dayPredictedCostSignal[iDish];
+					//System.out.println(iDish+" newCostForDishwahser to considered: "+newCostForDishwasher + "  "+ (newCostForDishwasher < currentCostForDishwasher));
+					if (dayPredictedCostSignal[maxIndexForWasher] != dayPredictedCostSignal[iDish])
+					{
+						//System.out.println("Signal: "+dayPredictedCostSignal[maxIndexForDishwasher] + " != (new) "  +dayPredictedCostSignal[iDish]);
+					}
+					if (newCostForDishwasher < currentCostForDishwasher) {
+						lowerCostFoundForDishwasher=true;
+					}
+					else {
+						iDish++;
+					}	
+				}
+
+				if (lowerCostFoundForDishwasher) {
+					dishwasher_loads_day[maxIndexForDishwasher] = 0;
+					dishwasher_loads_day[iDish] = washer_loads_day[iDish] + maxValForDishwasher;
+
+					ArrayUtils.replaceRange(dishwasher_loads, dishwasher_loads_day,timeStep % dishwasher_loads.length);
+					wetApplianceProfiles.put(Consts.WET_APP_DISHWASHER, dishwasher_loads);
+					//System.out.println("lowerCostFound: newIndexForDishwasher (2nd found): "+ iDish +" new cost (2): "+ newCostForDishwasher);		
+				}	
+			}
+		}
+
 		owner.setWetAppliancesProfiles(wetApplianceProfiles);
-		
+
 		//System.out.println("AFTER washer_loads_day: "+ Arrays.toString(washer_loads_day));
 		//System.out.println("AFTER dryer_loads_day: "+ Arrays.toString(dryer_loads_day));
 		//System.out.println("AFTER dishwasher_loads_day: "+ Arrays.toString(dishwasher_loads_day));
@@ -581,11 +596,11 @@ public class WattboxController implements ISmartController{
 	 * which owns this Wattbox.
 	 * 
 	 */
-	
+
 	/*
 	private void optimiseColdProfile_Old() 
 	{
-		
+
 		System.out.println("ColdProf.length: "+ coldApplianceProfile.length);
 		System.out.println("ColdProf Before Optim: "+ Arrays.toString(coldApplianceProfile));
 		System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
@@ -593,7 +608,7 @@ public class WattboxController implements ISmartController{
 		double[] currentCost = ArrayUtils.mtimes(coldApplianceProfile, dayPredictedCostSignal);
 		int maxIndex = ArrayUtils.indexOfMax(currentCost);
 		int minIndex = ArrayUtils.indexOfMin(currentCost);
-		
+
         System.out.println("minIndex: "+ minIndex + " minVal= "+ coldApplianceProfile[minIndex]);
 		System.out.println("maxIndex: "+ maxIndex + " maxVal= "+ coldApplianceProfile[maxIndex]);
 
@@ -607,7 +622,7 @@ public class WattboxController implements ISmartController{
 			coldApplianceProfile[maxIndex] = temp;
 		}
 	}  */
-	
+
 	/**
 	 * Optimise the Cold appliance usage profile for the household
 	 * which owns this Wattbox.
@@ -616,25 +631,25 @@ public class WattboxController implements ISmartController{
 	private void optimiseColdProfile(int timeStep) 
 	{	
 		//System.out.println("==OptimiseColdProfil for a  "+ owner.getAgentID()+"; timeStep: "+ timeStep);
-		
+
 		HashMap coldApplianceProfiles = owner.getColdAppliancesProfiles();
 		double [] fridge_loads = (double []) coldApplianceProfiles.get(Consts.COLD_APP_FRIDGE);
 		double [] freezer_loads = (double []) coldApplianceProfiles.get(Consts.COLD_APP_FREEZER);
 		double [] fridge_freezer_loads = (double []) coldApplianceProfiles.get(Consts.COLD_APP_FRIDGEFREEZER);
-	
+
 		double [] fridge_loads_day = Arrays.copyOfRange(fridge_loads,(timeStep % fridge_loads.length) , (timeStep % fridge_loads.length) + ticksPerDay);
 		double [] freezer_loads_day = Arrays.copyOfRange(freezer_loads,(timeStep % freezer_loads.length) , (timeStep % freezer_loads.length) + ticksPerDay);
 		double [] fridge_freezer_loads_day = Arrays.copyOfRange(fridge_freezer_loads,(timeStep % fridge_freezer_loads.length) , (timeStep % fridge_freezer_loads.length) + ticksPerDay);
-		
+
 		//System.out.println("BEFORE fridge_loads: "+ Arrays.toString(fridge_loads_day));
 		//System.out.println("BEFORE freezer_loads: "+ Arrays.toString(freezer_loads_day));
 		//System.out.println("BEFORE fridge_freezer_loads: "+ Arrays.toString(fridge_freezer_loads_day));
-		
+
 		double[] currentFridgeCost = ArrayUtils.mtimes(fridge_loads_day, dayPredictedCostSignal);
 		int maxIndexForFridge = ArrayUtils.indexOfMax(currentFridgeCost);
 		int minIndexForFridge = ArrayUtils.indexOfMin(currentFridgeCost);
-		
-        //System.out.println("minIndexForFridge: "+ minIndexForFridge + " minVal= "+ fridge_loads_day[minIndexForFridge]);
+
+		//System.out.println("minIndexForFridge: "+ minIndexForFridge + " minVal= "+ fridge_loads_day[minIndexForFridge]);
 		//System.out.println("maxIndexForFridge: "+ maxIndexForFridge + " maxVal= "+ fridge_loads_day[maxIndexForFridge]);
 
 		if (maxIndexForFridge < (fridge_loads_day.length -1 ))
@@ -643,65 +658,65 @@ public class WattboxController implements ISmartController{
 			fridge_loads_day[minIndexForFridge] = fridge_loads_day[maxIndexForFridge];
 			fridge_loads_day[maxIndexForFridge] = temp;
 		}
-		
+
 		ArrayUtils.replaceRange(fridge_loads, fridge_loads_day,timeStep % fridge_loads.length);
 		coldApplianceProfiles.put(Consts.COLD_APP_FRIDGE, fridge_loads);
-		
+
 		int timeShift = mainContext.coldAndWetApplTimeslotDelayRandDist.nextIntFromTo(1, 2); //Shift load by 1 or 2 timeslot
-		
+
 		double[] currentFreezerCost = ArrayUtils.mtimes(freezer_loads_day, dayPredictedCostSignal);
 		int maxIndexForFreezer = ArrayUtils.indexOfMax(currentFreezerCost);
-		
-        double maxValForFeezer = freezer_loads_day[maxIndexForFreezer];
-        
-        if ((maxValForFeezer >0)  && (maxIndexForFreezer < freezer_loads_day.length-1)) {
-        	freezer_loads_day[maxIndexForFreezer] = 0;
 
-        	//System.out.println("max index for freezer: "+ maxIndexForFreezer + " val: "+maxValForFeezer);
+		double maxValForFeezer = freezer_loads_day[maxIndexForFreezer];
 
-        	int newIndexForFreezer = maxIndexForFreezer + timeShift;
-        	//System.out.println("newIndex for Freezer before: "+ newIndexForFreezer);
-        	if (newIndexForFreezer >= freezer_loads_day.length)
-        		newIndexForFreezer = freezer_loads_day.length -1;
+		if ((maxValForFeezer >0)  && (maxIndexForFreezer < freezer_loads_day.length-1)) {
+			freezer_loads_day[maxIndexForFreezer] = 0;
 
-        	//System.out.println("newIndexForFeezer after: "+ newIndexForFreezer);
+			//System.out.println("max index for freezer: "+ maxIndexForFreezer + " val: "+maxValForFeezer);
 
-        	freezer_loads_day[newIndexForFreezer] = freezer_loads_day[newIndexForFreezer] + maxValForFeezer;
-        	
-    		ArrayUtils.replaceRange(freezer_loads, freezer_loads_day,timeStep % freezer_loads.length);
-    		
-    		coldApplianceProfiles.put(Consts.COLD_APP_FREEZER, freezer_loads);
+			int newIndexForFreezer = maxIndexForFreezer + timeShift;
+			//System.out.println("newIndex for Freezer before: "+ newIndexForFreezer);
+			if (newIndexForFreezer >= freezer_loads_day.length)
+				newIndexForFreezer = freezer_loads_day.length -1;
 
-        }
-				
+			//System.out.println("newIndexForFeezer after: "+ newIndexForFreezer);
+
+			freezer_loads_day[newIndexForFreezer] = freezer_loads_day[newIndexForFreezer] + maxValForFeezer;
+
+			ArrayUtils.replaceRange(freezer_loads, freezer_loads_day,timeStep % freezer_loads.length);
+
+			coldApplianceProfiles.put(Consts.COLD_APP_FREEZER, freezer_loads);
+
+		}
+
 		//-------------
-		
+
 		double[] currentFridgeFreezerCost = ArrayUtils.mtimes(fridge_freezer_loads_day, dayPredictedCostSignal);
 		int maxIndexForFridgeFreezer = ArrayUtils.indexOfMax(currentFridgeFreezerCost);
-		
-        double maxValForFridgeFeezer = fridge_freezer_loads_day[maxIndexForFridgeFreezer];
-        
-        if ((maxValForFridgeFeezer >0)  && (maxIndexForFridgeFreezer < fridge_freezer_loads_day.length -1) ) {
 
-        	fridge_freezer_loads_day[maxIndexForFridgeFreezer] = 0;
+		double maxValForFridgeFeezer = fridge_freezer_loads_day[maxIndexForFridgeFreezer];
 
-        	//System.out.println("max index for FridgeFreezer: "+ maxIndexForFridgeFreezer + " val: "+maxValForFridgeFeezer);
+		if ((maxValForFridgeFeezer >0)  && (maxIndexForFridgeFreezer < fridge_freezer_loads_day.length -1) ) {
 
-        	int newIndexForFridgeFreezer = maxIndexForFridgeFreezer + timeShift;
-        	//System.out.println("newIndexForFridgeFreezer before: "+ newIndexForFridgeFreezer);
-        	if (newIndexForFridgeFreezer >= fridge_freezer_loads_day.length)
-        		newIndexForFridgeFreezer = fridge_freezer_loads_day.length -1;
+			fridge_freezer_loads_day[maxIndexForFridgeFreezer] = 0;
 
-        	//System.out.println("newIndexForFridgeFreezer after: "+ newIndexForFridgeFreezer);
+			//System.out.println("max index for FridgeFreezer: "+ maxIndexForFridgeFreezer + " val: "+maxValForFridgeFeezer);
 
-        	fridge_freezer_loads_day[newIndexForFridgeFreezer] = fridge_freezer_loads_day[newIndexForFridgeFreezer] + maxValForFridgeFeezer;
-        	
-    		ArrayUtils.replaceRange(fridge_freezer_loads, fridge_freezer_loads_day,timeStep % fridge_freezer_loads.length);
-    		coldApplianceProfiles.put(Consts.COLD_APP_FRIDGEFREEZER, fridge_freezer_loads);
-        }
-									
+			int newIndexForFridgeFreezer = maxIndexForFridgeFreezer + timeShift;
+			//System.out.println("newIndexForFridgeFreezer before: "+ newIndexForFridgeFreezer);
+			if (newIndexForFridgeFreezer >= fridge_freezer_loads_day.length)
+				newIndexForFridgeFreezer = fridge_freezer_loads_day.length -1;
+
+			//System.out.println("newIndexForFridgeFreezer after: "+ newIndexForFridgeFreezer);
+
+			fridge_freezer_loads_day[newIndexForFridgeFreezer] = fridge_freezer_loads_day[newIndexForFridgeFreezer] + maxValForFridgeFeezer;
+
+			ArrayUtils.replaceRange(fridge_freezer_loads, fridge_freezer_loads_day,timeStep % fridge_freezer_loads.length);
+			coldApplianceProfiles.put(Consts.COLD_APP_FRIDGEFREEZER, fridge_freezer_loads);
+		}
+
 		owner.setColdAppliancesProfiles(coldApplianceProfiles);
-		
+
 		//System.out.println("AFTER fridge_loads: "+ Arrays.toString(fridge_loads_day));
 		//System.out.println("AFTER freezer_loads: "+ Arrays.toString(freezer_loads_day));
 		//System.out.println("AFTER fridge_freezer_loads: "+ Arrays.toString(fridge_freezer_loads_day));
@@ -755,13 +770,13 @@ public class WattboxController implements ISmartController{
 			localSetPointArray = Arrays.copyOf(setPointProfile, setPointProfile.length);
 			double totalTempLoss = 0;
 			double[] otherPrices = Arrays.copyOf(this.dayPredictedCostSignal, this.dayPredictedCostSignal.length);
-			
+
 			for ( int j = 0; (j < Consts.HEAT_PUMP_MAX_SWITCHOFF && (i+j < ticksPerDay)); j++)
 			{
 				double tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * Math.max(0,(localSetPointArray[i+j] - priorDayExternalTempProfile[i+j]))) / owner.buildingThermalMass);
 				//System.out.println("Temp loss in tick " + (i + j) + " = " + tempLoss);
 				totalTempLoss += tempLoss;						
-				
+
 				for (int k = i+j; k < localSetPointArray.length; k++)
 				{
 					localSetPointArray[k] = this.setPointProfile[k] - totalTempLoss;
@@ -779,7 +794,7 @@ public class WattboxController implements ISmartController{
 					//We know it's possible to recover the temperature lost
 					//in switch off period under the constraints set.
 					double tempToRecover = (totalTempLoss / (double) n);
-					
+
 					//Find the cheapest timeslots in which to recover the temperature
 					//If this selection results in a tie, the slot is chosen
 					//randomly
@@ -803,8 +818,8 @@ public class WattboxController implements ISmartController{
 					}
 
 					double[] tempDifference = ArrayUtils.add(this.setPointProfile, ArrayUtils.negate(localSetPointArray));
-					
-					
+
+
 					if (ArrayUtils.max(ArrayUtils.add(ArrayUtils.absoluteValues(tempDifference), ArrayUtils.negate(Consts.MAX_PERMITTED_TEMP_DROPS))) > Consts.FLOATING_POINT_TOLERANCE)
 					{
 						//if the temperature drop, or rise, is too great, this profile is unfeasible and we return null
@@ -822,13 +837,13 @@ public class WattboxController implements ISmartController{
 						{
 							//in here if the set point profile is achievable
 							newCost = evaluateCost(localDemandProfile);
-							
+
 							if (owner.getAgentID() == 0)//TESTTTESTTEST
 							{
 								System.out.println(newCost + " vs. " + leastCost);
-	
+
 							}
-							
+
 							//Decide whether to swap the new profile with the current best one
 							//based on cost.
 							//Many strategies are available - here we give two options
@@ -836,7 +851,7 @@ public class WattboxController implements ISmartController{
 							//held in Consts.COST_DECISION_THRESHOLD
 							// OR (currently used) the cost must simply be better, with a tie in cost
 							// being decided by a "coin toss".
-							
+
 							//if((newCost - leastCost) < (0 - Consts.COST_DECISION_THRESHOLD))
 							if (newCost < leastCost || (newCost == leastCost && RandomHelper.nextIntFromTo(0,1) == 1))
 							{
@@ -949,18 +964,20 @@ public class WattboxController implements ISmartController{
 	 */
 	public WattboxController(HouseholdProsumer owner) 
 	{
+		super();
+
 		this.owner = owner;
 		ticksPerDay = owner.getContext().getNbOfTickPerDay();
 		//this.priorDayExternalTempProfile = Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
 		//Initialise with a flat external temperature - thus no incentive to move demand on first day of use.
 		this.priorDayExternalTempProfile = new double[ticksPerDay];
 		Arrays.fill(priorDayExternalTempProfile, Double.parseDouble("7"));  //TODO: Richard will declare this number as Const.
-		
+
 		if (owner.getHasElectricalSpaceHeat())
 			this.heatPumpOnOffProfile = Arrays.copyOf(owner.spaceHeatPumpOn,owner.spaceHeatPumpOn.length);
 		//this.heatPumpDemandProfile = new double[ticksPerDay];
 		//double [] prosumerBaselineHotwaterVolProfile = owner.getBaselineHotWaterVolumeProfile();
-		
+
 		if (owner.getHasElectricalWaterHeat())
 			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(),((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
 		//this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(prosumerBaselineHotwaterVolProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % prosumerBaselineHotwaterVolProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % prosumerBaselineHotwaterVolProfile.length) + ticksPerDay);
@@ -968,25 +985,25 @@ public class WattboxController implements ISmartController{
 
 		//if(owner.coldApplianceProfile != null)
 		//{
-			//this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.coldApplianceProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.coldApplianceProfile.length) + ticksPerDay);
+		//this.coldApplianceProfile = Arrays.copyOfRange(owner.coldApplianceProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.coldApplianceProfile.length) , ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.coldApplianceProfile.length) + ticksPerDay);
 		//}
-		
+
 		//if (owner.wetApplianceProfile != null)
 		//{
-			//this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.wetApplianceProfile.length), ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.wetApplianceProfile.length) + ticksPerDay);
+		//this.wetApplianceProfile = Arrays.copyOfRange(owner.wetApplianceProfile,((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.wetApplianceProfile.length), ((Math.max(0, (int)RepastEssentials.GetTickCount())) % owner.wetApplianceProfile.length) + ticksPerDay);
 		//}
 
 		this.maxHeatPumpElecDemandPerTick = (owner.ratedPowerHeatPump * (double) 24 / ticksPerDay);
 		this.maxImmersionHeatPerTick = Consts.MAX_DOMESTIC_IMMERSION_POWER * (double) 24 / ticksPerDay;
-		
-        //coldAndWetApplTimeslotDelayRandDist = RandomHelper.createUniform();  //temp
-		
+
+		//coldAndWetApplTimeslotDelayRandDist = RandomHelper.createUniform();  //temp
+
 	}
-	
+
 	public WattboxController(HouseholdProsumer owner, CascadeContext context) {
 		this(owner);
 		this.mainContext = context;
-		
+
 	}
 
 	/**
@@ -1001,10 +1018,9 @@ public class WattboxController implements ISmartController{
 	public WattboxController(HouseholdProsumer owner,
 			WattboxUserProfile userProfile, WattboxLifestyle userLifestyle) 
 	{
-		super();
-		this.owner = owner;
+		this(owner);
 		this.userProfile = userProfile;
 		this.userLifestyle = userLifestyle;
-		
+
 	}
 }
