@@ -198,10 +198,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 	WeakHashMap currentSmartProfiles; 
 	
 	private double[] coldApplianceProfile;
-	protected HashMap coldApplianceProfiles;
+	protected WeakHashMap coldApplianceProfiles;
 	
 	public double[] wetApplianceProfile;
-	protected HashMap wetApplianceProfiles;
+	protected WeakHashMap wetApplianceProfiles;
 	
 	private double[] baselineHotWaterVolumeProfile;
 	private double[] waterHeatProfile;
@@ -340,19 +340,19 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return hasColdAppliances;
 	}
 	
-	public void setColdAppliancesProfiles(HashMap coldProfile) {
+	public void setColdAppliancesProfiles(WeakHashMap coldProfile) {
 		this.coldApplianceProfiles = coldProfile;
 	}
 	
-	public HashMap getColdAppliancesProfiles() {
+	public WeakHashMap getColdAppliancesProfiles() {
 		return this.coldApplianceProfiles;
 	}
 	
-	public void setWetAppliancesProfiles(HashMap wetProfile) {
+	public void setWetAppliancesProfiles(WeakHashMap wetProfile) {
 		this.wetApplianceProfiles = wetProfile;
 	}
 	
-	public HashMap getWetAppliancesProfiles() {
+	public WeakHashMap getWetAppliancesProfiles() {
 		return this.wetApplianceProfiles;
 	}
 
@@ -1164,17 +1164,17 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.mySmartController = new WattboxController(this, this.mainContext);
 	}
 	
-	public double[] calculateCombinedColdAppliancesProfile(HashMap coldProfiles) {
+	public double[] calculateCombinedColdAppliancesProfile(WeakHashMap coldProfiles) {
 		double [] fridge_loads = (double []) coldProfiles.get(Consts.COLD_APP_FRIDGE);
 		double [] freezer_loads = (double []) coldProfiles.get(Consts.COLD_APP_FREEZER);
 		double [] fridge_freezer_loads = (double []) coldProfiles.get(Consts.COLD_APP_FRIDGEFREEZER);
 		return ArrayUtils.add(fridge_loads, freezer_loads, fridge_freezer_loads);		
 	}
 	
-	public double[] calculateCombinedWetAppliancesProfile(HashMap wetProfiles) {
-		double [] washer_loads = (double []) wetProfiles.get(Consts.WET_APP_WASHER);
-		double [] dryer_loads = (double []) wetProfiles.get(Consts.WET_APP_DRYER);
-		double [] dishwasher_loads = (double []) wetProfiles.get(Consts.WET_APP_DISHWASHER);
+	public double[] calculateCombinedWetAppliancesProfile(WeakHashMap wetApplianceProfiles2) {
+		double [] washer_loads = (double []) wetApplianceProfiles2.get(Consts.WET_APP_WASHER);
+		double [] dryer_loads = (double []) wetApplianceProfiles2.get(Consts.WET_APP_DRYER);
+		double [] dishwasher_loads = (double []) wetApplianceProfiles2.get(Consts.WET_APP_DISHWASHER);
 		return ArrayUtils.add(washer_loads, dryer_loads, dishwasher_loads);		
 	}
 	
@@ -1377,7 +1377,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.historicalExtTemp = new double[ticksPerDay];
 		this.recordedHeatPumpDemand = new double[ticksPerDay];
 		
-		this.coldApplianceProfiles = new HashMap();
+		this.coldApplianceProfiles = new WeakHashMap();
 		
 		
 		//Richard test - just to monitor evolution of one agent
