@@ -14,6 +14,13 @@ import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
+ * A suite of profile generating methods for various appliance types.
+ * 
+ * Based on the work of Melody Stokes, in her 2004 thesis
+ * 
+ * NOTE: Values for this are given in kW.  Depending on your end use, these may require
+	 * conversion to kWh.
+ * 
  * @author jsnape
  *
  */
@@ -62,6 +69,9 @@ public abstract class InitialProfileGenUtils {
 	 * In effect, it assumes a 1st January start.
 	 * 
 	 * TODO: If this is to be used extensively, need to make it sensitive to start date etc.
+	 * 
+	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
+	 * conversion to kWh.
 	 */
 	public static double[] melodyStokesColdApplianceGen_Old(int numDays, int fridges, int fridgeFreezers, int freezers)
 	{
@@ -115,6 +125,9 @@ public abstract class InitialProfileGenUtils {
 	 * In effect, it assumes a 1st January start.
 	 * 
 	 * TODO: If this is to be used extensively, need to make it sensitive to start date etc.
+	 * 
+	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
+	 * conversion to kWh.
 	 */
 	public static HashMap melodyStokesColdApplianceGen(int numDays, int fridges, int fridgeFreezers, int freezers)
 	{
@@ -158,6 +171,13 @@ public abstract class InitialProfileGenUtils {
 
 			}
 		}
+		
+		//Convert kW to kWh
+		//TODO: Hard - coded constant!!! Shouldn't do this - fix.
+		d_fridge = ArrayUtils.multiply(d_fridge, 0.5);
+		d_freezer = ArrayUtils.multiply(d_freezer, 0.5);
+		d_fridge_freezer = ArrayUtils.multiply(d_fridge_freezer, 0.5);
+		
 		coldProfiles.put(Consts.COLD_APP_FRIDGE, d_fridge);
 		coldProfiles.put(Consts.COLD_APP_FREEZER, d_freezer);
 		coldProfiles.put(Consts.COLD_APP_FRIDGEFREEZER, d_fridge_freezer);
@@ -176,6 +196,9 @@ public abstract class InitialProfileGenUtils {
 	 * @param hasDishWasher
 	 * @param hasTumbleDryer
 	 * @return
+	 * 
+	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
+	 * conversion to kWh.
 	 */
 	public static double[] melodyStokesWetApplianceGen_old(int numDays,
 			boolean washMachine, boolean washerDryer,
@@ -191,6 +214,9 @@ public abstract class InitialProfileGenUtils {
 	 * @param hasDishWasher
 	 * @param hasTumbleDryer
 	 * @return
+	 * 
+	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
+	 * conversion to kWh.
 	 */
 	public static HashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays,
 			boolean washMachine, boolean washerDryer,
@@ -206,6 +232,9 @@ public abstract class InitialProfileGenUtils {
 	 * @param k
 	 * @param l
 	 * @return
+	 * 
+	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
+	 * conversion to kWh.
 	 */
 	private static double[] melodyStokesWetApplianceGen_old(int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
@@ -323,6 +352,9 @@ public abstract class InitialProfileGenUtils {
 	 * @param k
 	 * @param l
 	 * @return
+	 * 
+	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
+	 * conversion to kWh.
 	 */
 	private static double[] melodyStokesWetApplianceGen_old2(int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
@@ -376,6 +408,9 @@ public abstract class InitialProfileGenUtils {
 	 * @param k
 	 * @param l
 	 * @return
+	 * 
+	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
+	 * conversion to kWh.
 	 */
 	private static HashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
@@ -418,6 +453,12 @@ public abstract class InitialProfileGenUtils {
 			timeslot = context.wetApplProbDistGenerator.nextInt();
 			d_dish_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=dishWash * Math.max(0, scale_dish_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dish_UR[timeslot])+const_dish_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_dish_UR[timeslot])) ;               
 		}
+		
+		
+		//Convert kW to kWh
+		d_washer_UR = ArrayUtils.multiply(d_washer_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
+		d_dryer_UR = ArrayUtils.multiply(d_dryer_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
+		d_dish_UR = ArrayUtils.multiply(d_dish_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
 		
 		wetProfiles.put(Consts.WET_APP_WASHER, d_washer_UR);
 		wetProfiles.put(Consts.WET_APP_DRYER, d_dryer_UR);
