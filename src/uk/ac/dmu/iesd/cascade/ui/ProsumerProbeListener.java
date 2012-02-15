@@ -1,12 +1,19 @@
 package uk.ac.dmu.iesd.cascade.ui;
 
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.LayoutManager;
+import java.awt.Panel;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -72,13 +79,32 @@ public class ProsumerProbeListener implements ProbeListener {
 				JFrame agentProbeFrame = new JFrame("Prosumer probe frame for " + thisAgent.toString());
 				agentProbeFrame.setAlwaysOnTop(false);
 				agentProbeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				agentProbeFrame.getContentPane().setLayout(new GridLayout(2, 1));
+				agentProbeFrame.getContentPane().setLayout(new BoxLayout(agentProbeFrame.getContentPane(), BoxLayout.PAGE_AXIS));
 
+				JPanel propertiesPanel = new JPanel(new BorderLayout());
+				propertiesPanel.setSize(500,100);
+				Label title = new Label(thisAgent.getAgentName() + " properties");
+				title.setFont(new Font("Arial", Font.BOLD,32));
+				title.setAlignment(Label.CENTER);
+				//propertiesPanel.setLayout(new GridLayout(2,1));
+				propertiesPanel.add(title, BorderLayout.PAGE_START);
+				JPanel variablesBox = new JPanel();
+				variablesBox.setFont(new Font("Arial", Font.BOLD,10));
+				variablesBox.setLayout(new BoxLayout(variablesBox, BoxLayout.PAGE_AXIS));
+				variablesBox.setBorder(new EmptyBorder(10,10,10,10));
+				variablesBox.setBackground(Color.WHITE);
+				variablesBox.add(new JLabel("Tau (secs) = " + thisAgent.tau));
+				variablesBox.add(new JLabel("M (kWh / deg C) = " + thisAgent.buildingThermalMass));
+				variablesBox.add(new JLabel("L (W / deg C) = " + thisAgent.buildingHeatLossRate));
+				propertiesPanel.add(variablesBox,BorderLayout.CENTER);
+				propertiesPanel.setBackground(Color.WHITE);
+				agentProbeFrame.getContentPane().add(propertiesPanel);
+				
 				if (thisAgent.getHasElectricalSpaceHeat())
 				{
 					DefaultCategoryDataset tempDataset = createTemperatureDataset(thisAgent);
 					// based on the dataset we create the chart
-					JFreeChart tempChart = createTemperatureChart(tempDataset, "Previous day temperatures - " + thisAgent.getAgentName());
+					JFreeChart tempChart = createTemperatureChart(tempDataset, "Previous day temperatures");
 					charts.add(tempChart);
 					// we put the chart into a panel
 					ChartPanel tempChartPanel = new ChartPanel(tempChart);
@@ -89,7 +115,8 @@ public class ProsumerProbeListener implements ProbeListener {
 
 				DefaultCategoryDataset dataset = createDataset(thisAgent);
 				// based on the dataset we create the chart
-				JFreeChart chart = createChart(dataset, "Previous day demand by type - " + thisAgent.getAgentName());
+				JFreeChart chart = createChart(dataset, "Previous day demand by type");
+				chart.getCategoryPlot().getRangeAxis().setRange(0, 4.5);
 				charts.add(chart);
 				// we put the chart into a panel
 				ChartPanel chartPanel = new ChartPanel(chart);
