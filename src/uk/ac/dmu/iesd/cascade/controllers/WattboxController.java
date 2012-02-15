@@ -178,7 +178,8 @@ public class WattboxController implements ISmartController{
 			optimiseEVProfile();
 		}
 
-		//TODO: I don't like this - getting the predicted temperatures.  Can we do something better - use yesterday's?
+		//At the end of the step, set the temperature profile for today's 
+		//(which will be yesterday's when it used)
 		this.priorDayExternalTempProfile = owner.getContext().getAirTemperature(timeStep, ticksPerDay);
 	}
 
@@ -401,7 +402,7 @@ public class WattboxController implements ISmartController{
 		//System.out.println("==OptimiseWetProfil for a  "+ owner.getAgentID()+"; timeStep: "+ timeStep);
 		//System.out.println("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
 
-		HashMap wetApplianceProfiles = owner.getWetAppliancesProfiles();
+		WeakHashMap wetApplianceProfiles = owner.getWetAppliancesProfiles();
 		double [] washer_loads = (double []) wetApplianceProfiles.get(Consts.WET_APP_WASHER);
 		double [] dryer_loads = (double []) wetApplianceProfiles.get(Consts.WET_APP_DRYER);
 		double [] dishwasher_loads = (double []) wetApplianceProfiles.get(Consts.WET_APP_DISHWASHER);
@@ -632,7 +633,7 @@ public class WattboxController implements ISmartController{
 	{	
 		//System.out.println("==OptimiseColdProfil for a  "+ owner.getAgentID()+"; timeStep: "+ timeStep);
 
-		HashMap coldApplianceProfiles = owner.getColdAppliancesProfiles();
+		WeakHashMap coldApplianceProfiles = owner.getColdAppliancesProfiles();
 		double [] fridge_loads = (double []) coldApplianceProfiles.get(Consts.COLD_APP_FRIDGE);
 		double [] freezer_loads = (double []) coldApplianceProfiles.get(Consts.COLD_APP_FREEZER);
 		double [] fridge_freezer_loads = (double []) coldApplianceProfiles.get(Consts.COLD_APP_FRIDGEFREEZER);
