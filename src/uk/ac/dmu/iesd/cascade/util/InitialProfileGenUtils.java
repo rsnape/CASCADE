@@ -5,6 +5,7 @@ package uk.ac.dmu.iesd.cascade.util;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.WeakHashMap;
 
 import cern.jet.random.Empirical;
 import cern.jet.random.EmpiricalWalker;
@@ -19,7 +20,7 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
  * Based almost wholly on the work of Melody Stokes, see her thesis (2004-ish?)
  * 
  * NOTE: Values for this are given in kW.  Depending on your end use, these may require
-	 * conversion to kWh.
+ * conversion to kWh.
  * 
  * @author jsnape
  */
@@ -35,7 +36,7 @@ public abstract class InitialProfileGenUtils {
 	 * @param freezers
 	 * @return
 	 */
-	public static HashMap melodyStokesColdApplianceGen(int numDays, boolean fridges, boolean fridgeFreezers, boolean freezers)
+	public static WeakHashMap melodyStokesColdApplianceGen(int numDays, boolean fridges, boolean fridgeFreezers, boolean freezers)
 	{
 		//System.out.println("Fridge; FridgeFreezer; Freezer"+ fridges  +" "+ fridgeFreezers + " "+ freezers); 
 
@@ -101,7 +102,7 @@ public abstract class InitialProfileGenUtils {
 		return ArrayUtils.add(d_fridge, d_freezer, d_fridge_freezer);
 
 	}
-	
+
 	/**
 	 * Java implementation of the matlab code from Melody Stokes' model of
 	 * cold appliance demand.  Note that this implementation does not account for leap years and 
@@ -113,7 +114,7 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	public static HashMap melodyStokesColdApplianceGen(int numDays, int fridges, int fridgeFreezers, int freezers)
+	public static WeakHashMap melodyStokesColdApplianceGen(int numDays, int fridges, int fridgeFreezers, int freezers)
 	{
 		double[]  d_fridge = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
 		double[]  d_freezer = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
@@ -141,7 +142,7 @@ public abstract class InitialProfileGenUtils {
 		//Initialise a normal distribution for selection
 		RandomHelper.createNormal(0, 1);
 
-		HashMap coldProfiles = new HashMap();
+		WeakHashMap coldProfiles = new WeakHashMap();
 
 		for (int i=0; i < numDays; i++)
 		{
@@ -155,13 +156,13 @@ public abstract class InitialProfileGenUtils {
 
 			}
 		}
-		
+
 		//Convert kW to kWh
 		//TODO: Hard - coded constant!!! Shouldn't do this - fix.
 		d_fridge = ArrayUtils.multiply(d_fridge, 0.5);
 		d_freezer = ArrayUtils.multiply(d_freezer, 0.5);
 		d_fridge_freezer = ArrayUtils.multiply(d_fridge_freezer, 0.5);
-		
+
 		coldProfiles.put(Consts.COLD_APP_FRIDGE, d_fridge);
 		coldProfiles.put(Consts.COLD_APP_FREEZER, d_freezer);
 		coldProfiles.put(Consts.COLD_APP_FRIDGEFREEZER, d_fridge_freezer);
@@ -173,7 +174,7 @@ public abstract class InitialProfileGenUtils {
 
 
 
-		/**
+	/**
 	 * @param daysPerYear
 	 * @param hasWashingMachine
 	 * @param hasWasherDryer
@@ -190,8 +191,8 @@ public abstract class InitialProfileGenUtils {
 		// TODO Auto-generated method stub
 		return 	melodyStokesWetApplianceGenWithWeekends(numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
 	}
-	
-/**
+
+	/**
 	 * @param daysPerYear
 	 * @param hasWashingMachine
 	 * @param hasWasherDryer
@@ -202,14 +203,14 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	public static HashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays,
+	public static WeakHashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays,
 			boolean washMachine, boolean washerDryer,
 			boolean dishWasher, boolean tumbleDryer) {
 		// TODO Auto-generated method stub
 		return 	melodyStokesWetApplianceGen(context, numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
 	}
 
-	
+
 	/**
 	 * @param numDays
 	 * @param i
@@ -341,7 +342,7 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	private static HashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays, int washMach,
+	private static WeakHashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
 		// Each day of week is treated the same way! 
 		//this sub-model is for half-hourly electricty demand for washing appliances
@@ -373,7 +374,7 @@ public abstract class InitialProfileGenUtils {
 
 		int timeslot;
 
-		HashMap wetProfiles = new HashMap();
+		WeakHashMap wetProfiles = new WeakHashMap();
 
 		for (int i = 0; i < numDays; i++)	{
 			timeslot = context.wetApplProbDistGenerator.nextInt();
@@ -383,12 +384,12 @@ public abstract class InitialProfileGenUtils {
 			d_dish_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=dishWash * Math.max(0, scale_dish_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dish_UR[timeslot])+const_dish_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_dish_UR[timeslot])) ;               
 		}
 
-		
+
 		//Convert kW to kWh
 		d_washer_UR = ArrayUtils.multiply(d_washer_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
 		d_dryer_UR = ArrayUtils.multiply(d_dryer_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
 		d_dish_UR = ArrayUtils.multiply(d_dish_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
-		
+
 		wetProfiles.put(Consts.WET_APP_WASHER, d_washer_UR);
 		wetProfiles.put(Consts.WET_APP_DRYER, d_dryer_UR);
 		wetProfiles.put(Consts.WET_APP_DISHWASHER, d_dish_UR);
@@ -396,7 +397,7 @@ public abstract class InitialProfileGenUtils {
 		return wetProfiles;
 
 	}
-/**
+	/**
 	 * Translation from Matlab - Melody Stokes' cooking demand model (domestic section only)
 	 * 
 	 * 	 This sub-model calculates the half-hourly group average domestic electricity demand
@@ -481,9 +482,16 @@ public abstract class InitialProfileGenUtils {
 	 * 
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
+	 * 
+	 * NOTE TOO: Ignores the BST / GMT issue - this should be addressed if used in anger.
 	 */
 	private static double[]  melodyStokesDomesticLightingLoadGen(int numDays)
 	{
+		// Some sample values for the change from BST to GMT and back again
+		// To make this generic, we need to change depending on the year properly.
+		int BST_GMT = 84;
+		int GMT_BST = 301;
+
 		double[]  d_lights = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
 		double[]  d_lights_sine = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
 		double[]  d_lights_sine1 = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
@@ -539,15 +547,16 @@ public abstract class InitialProfileGenUtils {
 			if (i%Consts.DAYS_PER_WEEK != 0) 
 			{
 				// Not Sunday
-				if (weekday(N_serial(i)) == 1 )
+				if (i%Consts.DAYS_PER_WEEK != 6)
 				{
-					BST=0;
-					if (N_serial(i) > BST_GMT ) 
+					// Not Saturday either, so this is a weekday
+					int BST=0;
+					if (i > BST_GMT ) 
 					{
 
 						BST=34;
 					}
-					if (N_serial(i) < GMT_BST ) 
+					if (i < GMT_BST ) 
 					{
 						BST=34;
 					}
@@ -555,22 +564,22 @@ public abstract class InitialProfileGenUtils {
 					for ( int HH= 0; HH < 48; HH++) 
 					{
 						int n=0;
-						d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale1_sun(HH)*sin((2*pi*((N(i)+BST)/Ndays(1))-sinephase1_sun(HH)));
-						d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale2_sun(HH)*sin((2*pi*((N(i)-BST)/Ndays(1))-sinephase2_sun(HH)))+const_sun(HH);
+						d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale1_sun[HH]*Math.sin((2*Math.PI*((i+BST)/Consts.DAYS_PER_YEAR)-sinephase1_sun[HH]));
+						d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale2_sun[HH]*Math.sin((2*Math.PI*((i-BST)/Consts.DAYS_PER_YEAR)-sinephase2_sun[HH]))+const_sun[HH];
 						d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH];
-						if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]<= min_sun(HH))
+						if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]<= min_sun[HH])
 						{
-							d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= min_sun(HH)+ (randn*stddev_min_sun(HH));
+							d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= min_sun[HH]+ (RandomHelper.getNormal().nextDouble()*stddev_min_sun[HH]);
 							n=1;
 						}
-						if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]>= max_sun(HH))
+						if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]>= max_sun[HH])
 						{
-							d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= max_sun(HH)+(randn*stddev_max_sun(HH));
+							d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= max_sun[HH]+(RandomHelper.getNormal().nextDouble()*stddev_max_sun[HH]);
 							n=1;
 						}
 						if (n==0)
 						{
-							d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+(randn*stddev_sine_sun(HH));
+							d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+(RandomHelper.getNormal().nextDouble()*stddev_sine_sun[HH]);
 						}
 
 						if ((d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH] < 0))
@@ -582,32 +591,32 @@ public abstract class InitialProfileGenUtils {
 					}
 				}
 
-				BST=0;
-				if (N_serial(i) > BST_GMT){
+				int BST=0;
+				if (i > BST_GMT){
 					BST=34;
 				}
-				if (N_serial(i) <GMT_BST){
+				if (i <GMT_BST){
 					BST=34;
 				}
 				for ( int HH= 0; HH < 48; HH++) 
 				{
 					int n=0;
-					d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale1_wkdays(HH)*sin((2*pi*((N(i)+BST)/Ndays(1))-sinephase1_wkdays(HH)));
-					d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale2_wkdays(HH)*sin((2*pi*((N(i)-BST)/Ndays(1))-sinephase2_wkdays(HH)))+const_wkdays(HH);
+					d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale1_wkdays[HH]*Math.sin((2*Math.PI*((i+BST)/Consts.DAYS_PER_YEAR)-sinephase1_wkdays[HH]));
+					d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale2_wkdays[HH]*Math.sin((2*Math.PI*((i-BST)/Consts.DAYS_PER_YEAR)-sinephase2_wkdays[HH]))+const_wkdays[HH];
 					d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH];
-					if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]<= min_wkdays(HH))
+					if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]<= min_wkdays[HH])
 					{
-						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= min_wkdays(HH)+ (randn*stddev_min_wkdays(HH));
+						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= min_wkdays[HH]+ (RandomHelper.getNormal().nextDouble()*stddev_min_wkdays[HH]);
 						n=1;
 					}
-					if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]>= max_wkdays(HH))
+					if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]>= max_wkdays[HH])
 					{
-						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= max_wkdays(HH)+(randn*stddev_max_wkdays(HH));
+						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= max_wkdays[HH]+(RandomHelper.getNormal().nextDouble()*stddev_max_wkdays[HH]);
 						n=1;
 					}
 					if (n==0)
 					{
-						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+(randn*stddev_sine_wkdays(HH));
+						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+(RandomHelper.getNormal().nextDouble()*stddev_sine_wkdays[HH]);
 					}
 					if (d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH] < 0)
 					{
@@ -622,28 +631,29 @@ public abstract class InitialProfileGenUtils {
 				// Sunday
 
 
-				BST=0;
-				if (N_serial(i) > BST_GMT){
+				int BST=0;
+				if (i > BST_GMT){
 					BST=34;
 				}
-				if (N_serial(i) < GMT_BST){
+				if (i < GMT_BST){
 					BST=34;
 				}
 				for ( int HH= 0; HH < 48; HH++) {
 					int n=0;
-					d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale1_sat(HH)*sin((2*pi*((N(i)+BST)/Ndays(1))-sinephase1_sat(HH)));
-					d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale2_sat(HH)*sin((2*pi*((N(i)-BST)/Ndays(1))-sinephase2_sat(HH)))+const_sat(HH);
+					d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale1_sat[HH]*Math.sin((2*Math.PI*((i+BST)/Consts.DAYS_PER_YEAR)-sinephase1_sat[HH]));
+					d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=sinescale2_sat[HH]*Math.sin((2*Math.PI*((i-BST)/Consts.DAYS_PER_YEAR)-sinephase2_sat[HH]))+const_sat[HH];
 					d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine1[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+d_lights_sine2[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH];
-					if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]<= min_sat(HH)
-							d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= min_sat(HH)+ (randn*stddev_min_sat(HH));
-					n=1;
+					if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]<= min_sat[HH]) {
+						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= min_sat[HH]+ (RandomHelper.getNormal().nextDouble()*stddev_min_sat[HH]);
+						n=1;
+					}
 
-					if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]>= max_sat(HH)){
-						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= max_sat(HH)+(randn*stddev_max_sat(HH));
+					if (d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]>= max_sat[HH]){
+						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= max_sat[HH]+(RandomHelper.getNormal().nextDouble()*stddev_max_sat[HH]);
 						n=1;
 					}
 					if (n==0){
-						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+(randn*stddev_sine_sat(HH));
+						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=d_lights_sine[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]+(RandomHelper.getNormal().nextDouble()*stddev_sine_sat[HH]);
 					}
 					if (d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH] < 0){
 						d_lights[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH] = 0;
@@ -651,6 +661,7 @@ public abstract class InitialProfileGenUtils {
 				}
 			}
 		}
+		return d_lights;
 	}
 }
 
