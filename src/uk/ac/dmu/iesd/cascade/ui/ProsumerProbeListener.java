@@ -1,18 +1,15 @@
 package uk.ac.dmu.iesd.cascade.ui;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Label;
-import java.awt.LayoutManager;
-import java.awt.Panel;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import org.jfree.chart.ChartFactory;
@@ -20,18 +17,18 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.IAction;
 import repast.simphony.engine.schedule.NonModelAction;
 import repast.simphony.engine.schedule.ScheduleParameters;
-import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.ui.RSApplication;
 import repast.simphony.ui.probe.Probe;
 import repast.simphony.ui.probe.ProbePanelCreator;
 import repast.simphony.visualization.ProbeEvent;
 import repast.simphony.visualization.ProbeListener;
-import uk.ac.dmu.iesd.cascade.Consts;
+
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
 
@@ -90,12 +87,14 @@ public class ProsumerProbeListener implements ProbeListener {
 				propertiesPanel.add(title, BorderLayout.PAGE_START);
 				JPanel variablesBox = new JPanel();
 				variablesBox.setFont(new Font("Arial", Font.BOLD,10));
-				variablesBox.setLayout(new BoxLayout(variablesBox, BoxLayout.PAGE_AXIS));
+				//variablesBox.setLayout(new BoxLayout(variablesBox, BoxLayout.PAGE_AXIS));
+				variablesBox.setLayout(new GridLayout(3,2));
 				variablesBox.setBorder(new EmptyBorder(10,10,10,10));
 				variablesBox.setBackground(Color.WHITE);
-				variablesBox.add(new JLabel("Tau (secs) = " + thisAgent.tau));
-				variablesBox.add(new JLabel("M (kWh / deg C) = " + thisAgent.buildingThermalMass));
-				variablesBox.add(new JLabel("L (W / deg C) = " + thisAgent.buildingHeatLossRate));
+				variablesBox.add(new JLabel("Tau (secs) = " + String.format("%.2f", thisAgent.tau)));
+				variablesBox.add(new JLabel("M (kWh / deg C) = " + String.format("%.2f", thisAgent.buildingThermalMass)));
+				variablesBox.add(new JLabel("L (W / deg C) = " + String.format("%.2f", thisAgent.buildingHeatLossRate)));
+				variablesBox.add(new JLabel("Occupants = " + thisAgent.getNumOccupants()));
 				propertiesPanel.add(variablesBox,BorderLayout.CENTER);
 				propertiesPanel.setBackground(Color.WHITE);
 				agentProbeFrame.getContentPane().add(propertiesPanel);
