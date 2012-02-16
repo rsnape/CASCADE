@@ -1,40 +1,15 @@
 package uk.ac.dmu.iesd.cascade.context;
 
-import java.io.*;
-import java.math.*;
 import java.util.*;
 
-import javax.measure.unit.*;
-import org.apache.tools.ant.taskdefs.Sync.MyCopy;
-import org.hsqldb.lib.ArrayUtil;
-import org.jfree.util.ArrayUtilities;
-import org.jscience.mathematics.number.*;
-import org.jscience.mathematics.vector.*;
-import org.jscience.physics.amount.*;
-
-import repast.simphony.adaptation.neural.*;
-import repast.simphony.adaptation.regression.*;
-import repast.simphony.context.*;
-import repast.simphony.context.space.continuous.*;
-import repast.simphony.context.space.gis.*;
-import repast.simphony.context.space.graph.*;
-import repast.simphony.context.space.grid.*;
-import repast.simphony.engine.environment.*;
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.*;
 import repast.simphony.space.graph.*;
-import repast.simphony.ui.RSApplication;
-import repast.simphony.ui.RSGui;
-import repast.simphony.visualization.ProbeEvent;
-import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.controllers.*;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
-import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
-import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
-import static java.lang.Math.*;
 import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
@@ -195,13 +170,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * Available smart devices
 	 */
 	ISmartController mySmartController;
-	WeakHashMap currentSmartProfiles; 
+	WeakHashMap<String,double[]> currentSmartProfiles; 
 	
 	private double[] coldApplianceProfile;
-	protected WeakHashMap coldApplianceProfiles;
+	protected WeakHashMap<String,double[]> coldApplianceProfiles;
 	
 	public double[] wetApplianceProfile;
-	protected WeakHashMap wetApplianceProfiles;
+	protected WeakHashMap<String,double[]> wetApplianceProfiles;
 	
 	private double[] baselineHotWaterVolumeProfile;
 	private double[] waterHeatProfile;
@@ -220,19 +195,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * Building heat flow time constant (thermal mass or specific heat capacity / heat loss rate)
 	 */
 	public double tau;
-	private double timeSinceHeating = 0;
 	private double[] historicalIntTemp;
 	private double[] historicalExtTemp;
 	private double[] historicalWaterHeatDemand;
 	public double freeRunningTemperatureLossPerTickMultiplier;
 
-
-
 	/**
 	 * Accessor functions (NetBeans style)
 	 * TODO: May make some of these private to respect agent conventions of autonomy / realistic simulation of humans
 	 */
-
 	public double getCurrentInternalTemp() {
 		return currentInternalTemp;
 	}
@@ -340,19 +311,19 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return hasColdAppliances;
 	}
 	
-	public void setColdAppliancesProfiles(WeakHashMap coldProfile) {
+	public void setColdAppliancesProfiles(WeakHashMap<String,double[]> coldProfile) {
 		this.coldApplianceProfiles = coldProfile;
 	}
 	
-	public WeakHashMap getColdAppliancesProfiles() {
+	public WeakHashMap<String,double[]> getColdAppliancesProfiles() {
 		return this.coldApplianceProfiles;
 	}
 	
-	public void setWetAppliancesProfiles(WeakHashMap wetProfile) {
+	public void setWetAppliancesProfiles(WeakHashMap<String,double[]> wetProfile) {
 		this.wetApplianceProfiles = wetProfile;
 	}
 	
-	public WeakHashMap getWetAppliancesProfiles() {
+	public WeakHashMap<String,double[]> getWetAppliancesProfiles() {
 		return this.wetApplianceProfiles;
 	}
 
@@ -928,7 +899,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// Could be a TpB based model.
 		double inwardInfluence = 0;
 		double internalInfluence = this.HEMSPropensity;
-		Iterable socialConnections = FindNetwork("socialNetwork").getInEdges(this);
+		Iterable<?> socialConnections = FindNetwork("socialNetwork").getInEdges(this);
 		// Get social influence - note communication is not every tick
 		// hence the if clause
 		if ((time % (21 * ticksPerDay)) == 0)
@@ -936,7 +907,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 			for (Object thisConn: socialConnections)
 			{
-				RepastEdge myConn = ((RepastEdge) thisConn);
+				RepastEdge<?> myConn = ((RepastEdge<?>) thisConn);
 				if (((HouseholdProsumer) myConn.getSource()).hasSmartControl)
 				{
 
@@ -1090,6 +1061,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 	
 	public void initializeElectWaterHeatPar() {
 		
+		// Estimate the daily hot water usage in accordance with the model found and described
+		// in Energy Saving Trust Paper - Measurement of Domestic Hot Water
+		// Consumption in Dwellings (2008) prepared for DEFRA.
 		double dailyHotWaterUsage = mainContext.waterUsageGenerator.nextDouble(Consts.EST_INTERCEPT + (this.getNumOccupants() * Consts.EST_SLOPE), Consts.EST_STD_DEV);
 		this.setDailyHotWaterUsage(dailyHotWaterUsage);
 		
@@ -1098,18 +1072,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.waterSetPoint = Consts.DOMESTIC_SAFE_WATER_TEMP;
 		//TODO: something more sophisticated to give the baseline water heat requirement
 		double[] hotWaterNeededProfile = new double[mainContext.ticksPerDay];
+		
+		//share the needed water equally between occupants
 		double drawOffPerOccupant = dailyHotWaterUsage / this.getNumOccupants();
 
 		//System.out.println("hotWaterNeededProfile: "+ Arrays.toString(hotWaterNeededProfile));
 
-		for (int i = 0; i < this.getNumOccupants(); i++)  {
+		// Assign one draw off per occupant, at a time generated from the statistics gathered
+		// in the EST paper referenced above.
+		for (int i = 0; i < this.getNumOccupants(); i++)  
+		{
 			hotWaterNeededProfile[mainContext.drawOffGenerator.nextInt()] = drawOffPerOccupant;	
 		}
-		
-		//System.out.println("drawOffGenerator x 100times");
-		//for (int i = 0; i < 100; i++)  {
-		//	System.out.println(mainContext.drawOffGenerator.nextInt());
-		//}
 		
 		//System.out.println("AFTER drawOffGen");
 		//System.out.println("hotWaterNeededProfile: "+ Arrays.toString(hotWaterNeededProfile));
@@ -1164,14 +1138,14 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.mySmartController = new WattboxController(this, this.mainContext);
 	}
 	
-	public double[] calculateCombinedColdAppliancesProfile(WeakHashMap coldProfiles) {
+	public double[] calculateCombinedColdAppliancesProfile(WeakHashMap<String,double[]> coldProfiles) {
 		double [] fridge_loads = (double []) coldProfiles.get(Consts.COLD_APP_FRIDGE);
 		double [] freezer_loads = (double []) coldProfiles.get(Consts.COLD_APP_FREEZER);
 		double [] fridge_freezer_loads = (double []) coldProfiles.get(Consts.COLD_APP_FRIDGEFREEZER);
 		return ArrayUtils.add(fridge_loads, freezer_loads, fridge_freezer_loads);		
 	}
 	
-	public double[] calculateCombinedWetAppliancesProfile(WeakHashMap wetApplianceProfiles2) {
+	public double[] calculateCombinedWetAppliancesProfile(WeakHashMap<String,double[]> wetApplianceProfiles2) {
 		double [] washer_loads = (double []) wetApplianceProfiles2.get(Consts.WET_APP_WASHER);
 		double [] dryer_loads = (double []) wetApplianceProfiles2.get(Consts.WET_APP_DRYER);
 		double [] dishwasher_loads = (double []) wetApplianceProfiles2.get(Consts.WET_APP_DISHWASHER);
@@ -1377,7 +1351,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.historicalExtTemp = new double[ticksPerDay];
 		this.recordedHeatPumpDemand = new double[ticksPerDay];
 		
-		this.coldApplianceProfiles = new WeakHashMap();
+		this.coldApplianceProfiles = new WeakHashMap<String, double[]>();
 		
 		
 		//Richard test - just to monitor evolution of one agent

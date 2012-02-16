@@ -1,66 +1,33 @@
 package uk.ac.dmu.iesd.cascade.context;
 
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-
-import org.jfree.ui.RefineryUtilities;
-
 import cern.jet.random.Empirical;
-import cern.jet.random.EmpiricalWalker;
-import cern.jet.random.Normal;
-
 import repast.simphony.context.Context;
-import repast.simphony.context.DefaultContext;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
 import repast.simphony.context.space.graph.NetworkFactory;
 import repast.simphony.context.space.graph.NetworkFactoryFinder;
 import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
-import repast.simphony.engine.controller.NullAbstractControllerAction;
-import repast.simphony.engine.environment.GUIRegistry;
-import repast.simphony.engine.environment.GUIRegistryType;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.environment.RunEnvironmentBuilder;
-import repast.simphony.engine.environment.RunState;
-import repast.simphony.engine.schedule.IAction;
 import repast.simphony.engine.schedule.ISchedule;
 import repast.simphony.engine.schedule.ScheduleParameters;
-import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.parameter.ParameterConstants;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.*;
 import repast.simphony.random.RandomHelper;
-import repast.simphony.scenario.ModelInitializer;
-import repast.simphony.scenario.Scenario;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.space.projection.Projection;
-import repast.simphony.ui.RSApplication;
-import repast.simphony.util.ContextUtils;
 import repast.simphony.util.collections.IndexedIterable;
-import repast.simphony.util.collections.Pair;
-import uk.ac.cranfield.cascade.aggregators.TestBattryConsumers;
 import uk.ac.cranfield.cascade.aggregators.TestConsumer;
 import uk.ac.cranfield.cascade.market.*;
 import uk.ac.dmu.iesd.cascade.Consts;
@@ -70,7 +37,6 @@ import uk.ac.dmu.iesd.cascade.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.test.HHProsumer;
 import uk.ac.dmu.iesd.cascade.util.*;
-import repast.simphony.scenario.ModelInitializer;
 
 
 /**
@@ -261,6 +227,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 	private void createHouseholdProsumersAndAddThemToContext(int occupancyNb) {
 
+		
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 
 		double[] householdMiscDemandArray = null; //Misc demand profile array consists of electricity demand for lightening, entertainment, computer and small appliances  
@@ -277,8 +244,14 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(householdMiscDemandArray, false, occupancyNb);
 
-			cascadeMainContext.add(hhProsAgent);			
+			if (!cascadeMainContext.add(hhProsAgent))
+			{
+				System.err.println("Failed to add agent to context!!");
+			}
 		} 
+		
+		if (Consts.DEBUG)System.out.println("initialised and added " + cascadeMainContext.getObjects(HouseholdProsumer.class).size() + " household prosumers"); 
+
 	}
 
 	private void initializeHHProsumersWetAppliancesPar4All() {
@@ -324,9 +297,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			}
 
 			//populate the initial heating profile from the above baseline demand for hot water
-			//thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
+			//thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
 			
-			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
+			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,1, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
 
 		}
 
@@ -418,8 +391,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			
 			System.out.println("Fridge; FridgeFreezer; Freezer: "+  pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+ (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)); 
 
-			//pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer && pAgent.hasChestFreezer));
-			pAgent.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)));
+			//pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer));
+			pAgent.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(1, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)));
 		}
 		
 		if(cascadeMainContext.verbose)
@@ -549,9 +522,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	private void initializeProbabilityDistributions() {
 
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		//System.out.println("  ArrayUtils.sum(drawOffDist)"+ ArrayUtils.sum(drawOffDist));
+		if (Consts.DEBUG) System.out.println("  ArrayUtils.sum(drawOffDist)"+ ArrayUtils.sum(drawOffDist));
 		cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
-		//System.out.println("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+		if (Consts.DEBUG) System.out.println("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
 
 		cascadeMainContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
 		cascadeMainContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
