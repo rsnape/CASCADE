@@ -1,9 +1,5 @@
 package uk.ac.dmu.iesd.cascade;
 
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.ScheduleParameters;
-import simphony.util.messages.MessageCenter;
-
 /**
  * Class to hold all the variable structures etc that are available to 
  * all code in the model - not features of a given environment (they should be in the context)
@@ -167,10 +163,16 @@ public final class Consts {
 	public static final String COLD_APP_FRIDGE = "Fridge";
 	public static final String COLD_APP_FREEZER = "Freezer";
 	public static final String COLD_APP_FRIDGEFREEZER = "FridgeFreezer";
+	public static final String COLD_APP_FRIDGE_ORIGINAL = "FridgeOrig";
+	public static final String COLD_APP_FREEZER_ORIGINAL = "FreezerOrig";
+	public static final String COLD_APP_FRIDGEFREEZER_ORIGINAL = "FridgeFreezerOrig";
 	
 	public static final String WET_APP_WASHER = "Washer";
 	public static final String WET_APP_DRYER = "Dryer";
 	public static final String WET_APP_DISHWASHER = "Dishwasher";
+	public static final String WET_APP_WASHER_ORIGINAL = "WasherOrig";
+	public static final String WET_APP_DRYER_ORIGINAL = "DryerOrig";
+	public static final String WET_APP_DISHWASHER_ORIGINAL = "DishwasherOrig";
 	
 	//Defines is the maximum fraction of any domestic load that is moveable
 	public static final double MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION = 0.5d;
@@ -235,6 +237,8 @@ public final class Consts {
     // WARNING: Be very careful in using this - can mask some nasty algorithmic errors
 	public static final double COST_DECISION_THRESHOLD = 1e-3d; //used by Wattbox
 
+	// The temperature used to represent the prior day external temperature at simulation initialisation
+	public static final double INITIALISATION_EXTERNAL_TEMP = 7;
 
 	/**++++++++++++++++++++++++++++++++
 	 * Hot Water/ Electrical Water Heat
@@ -275,10 +279,11 @@ public final class Consts {
 	/**+++++++++++
 	 * Occupancy
 	 *++++++++++++*/
-
 	//public static final Integer[] NUM_OF_OCCUPANTS_ARRAY = {0,1,2,3,4,5,6,7,8}; // NOT currently used
 	public static final double[] OCCUPANCY_PROBABILITY_ARRAY = {0.300206371,0.341735335,0.15506365,0.133630415,0.049359587,0.014498622,0.003377304,0.002128716};
 	
+
+		
 	/**++++++++++++++++++++++++++
 	 * Energy Consumption Control
 	 *+++++++++++++++++++++++++++*/

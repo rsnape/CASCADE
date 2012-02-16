@@ -4,12 +4,7 @@
 package uk.ac.dmu.iesd.cascade.util;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.WeakHashMap;
-
-import cern.jet.random.Empirical;
-import cern.jet.random.EmpiricalWalker;
-
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
@@ -36,7 +31,7 @@ public abstract class InitialProfileGenUtils {
 	 * @param freezers
 	 * @return
 	 */
-	public static WeakHashMap melodyStokesColdApplianceGen(int numDays, boolean fridges, boolean fridgeFreezers, boolean freezers)
+	public static WeakHashMap<String,double[]> melodyStokesColdApplianceGen(int numDays, boolean fridges, boolean fridgeFreezers, boolean freezers)
 	{
 		//System.out.println("Fridge; FridgeFreezer; Freezer"+ fridges  +" "+ fridgeFreezers + " "+ freezers); 
 
@@ -114,7 +109,7 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	public static WeakHashMap melodyStokesColdApplianceGen(int numDays, int fridges, int fridgeFreezers, int freezers)
+	public static WeakHashMap<String,double[]> melodyStokesColdApplianceGen(int numDays, int fridges, int fridgeFreezers, int freezers)
 	{
 		double[]  d_fridge = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
 		double[]  d_freezer = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
@@ -142,7 +137,7 @@ public abstract class InitialProfileGenUtils {
 		//Initialise a normal distribution for selection
 		RandomHelper.createNormal(0, 1);
 
-		WeakHashMap coldProfiles = new WeakHashMap();
+		WeakHashMap<String,double[]> coldProfiles = new WeakHashMap<String,double[]>();
 
 		for (int i=0; i < numDays; i++)
 		{
@@ -166,6 +161,9 @@ public abstract class InitialProfileGenUtils {
 		coldProfiles.put(Consts.COLD_APP_FRIDGE, d_fridge);
 		coldProfiles.put(Consts.COLD_APP_FREEZER, d_freezer);
 		coldProfiles.put(Consts.COLD_APP_FRIDGEFREEZER, d_fridge_freezer);
+		coldProfiles.put(Consts.COLD_APP_FRIDGE_ORIGINAL, Arrays.copyOf(d_fridge,d_fridge.length));
+		coldProfiles.put(Consts.COLD_APP_FREEZER_ORIGINAL, Arrays.copyOf(d_freezer, d_freezer.length));
+		coldProfiles.put(Consts.COLD_APP_FRIDGEFREEZER_ORIGINAL, Arrays.copyOf(d_fridge_freezer,d_fridge_freezer.length));
 
 		return coldProfiles;
 
@@ -203,7 +201,7 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	public static WeakHashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays,
+	public static WeakHashMap<String,double[]> melodyStokesWetApplianceGen(CascadeContext context,int numDays,
 			boolean washMachine, boolean washerDryer,
 			boolean dishWasher, boolean tumbleDryer) {
 		// TODO Auto-generated method stub
@@ -278,11 +276,6 @@ public abstract class InitialProfileGenUtils {
 		double[]  const_dish_UR={0.058d, 0.053d, 0.017d, 0.009d, 0.008d, 0.006d, 0.006d, 0.003d, 0.001d, 0.001d, 0.001d, 0.001d, 0.001d, 0.002d, 0.009d, 0.025d, 0.072d, 0.104d, 0.114d, 0.117d, 0.137d, 0.128d, 0.094d, 0.068d, 0.06d, 0.051d, 0.061d, 0.079d, 0.083d, 0.085d, 0.078d, 0.068d, 0.06d, 0.056d, 0.053d, 0.061d, 0.067d, 0.094d, 0.143d, 0.196d, 0.212d, 0.195d, 0.182d, 0.187d, 0.172d, 0.13d, 0.093d, 0.068d};
 		double[]  stddev_dish_UR={0.071d, 0.053d, 0.036d, 0.032d, 0.03d, 0.023d, 0.025d, 0.016d, 0.007d, 0.006d, 0.011d, 0.013d, 0.007d, 0.015d, 0.034d, 0.053d, 0.094d, 0.114d, 0.112d, 0.106d, 0.113d, 0.11d, 0.102d, 0.088d, 0.087d, 0.073d, 0.082d, 0.098d, 0.102d, 0.112d, 0.101d, 0.094d, 0.088d, 0.081d, 0.086d, 0.095d, 0.091d, 0.095d, 0.133d, 0.146d, 0.14d, 0.134d, 0.141d, 0.132d, 0.125d, 0.111d, 0.091d, 0.08d};
 
-		double[]  scale_dish_E7={0.063d, 0.062d, 0.062d, 0.073d, 0.084d, 0.072d, 0.08d, 0.057d, 0.007d, 0.042d, 0.083d, 0.006d, 0d, 0.002d, 0.005d, 0.002d, 0.007d, 0.022d, 0.008d, 0.019d, 0.026d, 0.037d, 0.034d, 0.011d, 0.068d, 0.021d, 0.015d, 0.008d, 0.015d, 0.022d, 0.024d, 0.018d, 0.018d, 0.011d, 0.012d, 0.01d, 0.005d, 0.017d, 0.043d, 0.026d, 0.026d, 0.009d, 0.007d, 0.006d, 0.004d, 0.01d, 0.015d, 0.029d};
-		double[]  phase_dish_E7={3.8d, 4.2d, 3.8d, 4.4d, 6.1d, 0.3d, 0.9d, 1.4d, 0.2d, 6.1d, 6d, 6d, 0d, 6d, 0.9d, 0d, 5.2d, 4.9d, 4.4d, 4.9d, 4.4d, 4.7d, 4.5d, 4.8d, 4.7d, 5d, 4.8d, 5d, 4.7d, 4.3d, 4.4d, 4.7d, 4.8d, 4.7d, 4.6d, 4.8d, 4.7d, 4.7d, 4.6d, 4.5d, 4.3d, 3.6d, 3.8d, 3.4d, 4.1d, 3.9d, 3.2d, 3.7d};
-		double[]  const_dish_E7={0.085d, 0.092d, 0.12d, 0.157d, 0.166d, 0.095d, 0.081d, 0.061d, 0.073d, 0.097d, 0.102d, 0.015d, 0.012d, 0.018d, 0.048d, 0.067d, 0.087d, 0.075d, 0.087d, 0.106d, 0.112d, 0.11d, 0.091d, 0.062d, 0.068d, 0.064d, 0.061d, 0.076d, 0.1d, 0.115d, 0.087d, 0.062d, 0.048d, 0.043d, 0.04d, 0.037d, 0.046d, 0.058d, 0.1d, 0.117d, 0.125d, 0.098d, 0.07d, 0.048d, 0.047d, 0.065d, 0.12d, 0.12d};
-		double[]  stddev_dish_E7={0.128d, 0.125d, 0.119d, 0.15d, 0.146d, 0.108d, 0.118d, 0.094d, 0.097d, 0.109d, 0.11d, 0.05d, 0.051d, 0.061d, 0.109d, 0.123d, 0.134d, 0.121d, 0.141d, 0.151d, 0.151d, 0.145d, 0.141d, 0.107d, 0.125d, 0.124d, 0.112d, 0.126d, 0.15d, 0.17d, 0.144d, 0.127d, 0.114d, 0.097d, 0.094d, 0.089d, 0.1d, 0.112d, 0.149d, 0.155d, 0.152d, 0.138d, 0.124d, 0.106d, 0.102d, 0.12d, 0.146d, 0.151d};
-
 		for (int i = 0; i < numDays; i++)
 		{
 			//washing demand for Mondays:
@@ -342,7 +335,7 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	private static WeakHashMap melodyStokesWetApplianceGen(CascadeContext context,int numDays, int washMach,
+	private static WeakHashMap<String,double[]> melodyStokesWetApplianceGen(CascadeContext context,int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
 		// Each day of week is treated the same way! 
 		//this sub-model is for half-hourly electricty demand for washing appliances
@@ -374,7 +367,7 @@ public abstract class InitialProfileGenUtils {
 
 		int timeslot;
 
-		WeakHashMap wetProfiles = new WeakHashMap();
+		WeakHashMap<String,double[]> wetProfiles = new WeakHashMap<String,double[]>();
 
 		for (int i = 0; i < numDays; i++)	{
 			timeslot = context.wetApplProbDistGenerator.nextInt();
@@ -383,16 +376,18 @@ public abstract class InitialProfileGenUtils {
 			timeslot = context.wetApplProbDistGenerator.nextInt();
 			d_dish_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +timeslot]=dishWash * Math.max(0, scale_dish_UR[timeslot]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dish_UR[timeslot])+const_dish_UR[timeslot]+(RandomHelper.getNormal().nextDouble()*stddev_dish_UR[timeslot])) ;               
 		}
-
-
+		
 		//Convert kW to kWh
 		d_washer_UR = ArrayUtils.multiply(d_washer_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
 		d_dryer_UR = ArrayUtils.multiply(d_dryer_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
 		d_dish_UR = ArrayUtils.multiply(d_dish_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
-
+		
 		wetProfiles.put(Consts.WET_APP_WASHER, d_washer_UR);
 		wetProfiles.put(Consts.WET_APP_DRYER, d_dryer_UR);
 		wetProfiles.put(Consts.WET_APP_DISHWASHER, d_dish_UR);
+		wetProfiles.put(Consts.WET_APP_WASHER_ORIGINAL, Arrays.copyOf(d_washer_UR,d_washer_UR.length));
+		wetProfiles.put(Consts.WET_APP_DRYER_ORIGINAL, Arrays.copyOf(d_dryer_UR,d_dryer_UR.length));
+		wetProfiles.put(Consts.WET_APP_DISHWASHER_ORIGINAL, Arrays.copyOf(d_dish_UR,d_dish_UR.length));
 
 		return wetProfiles;
 
@@ -485,6 +480,7 @@ public abstract class InitialProfileGenUtils {
 	 * 
 	 * NOTE TOO: Ignores the BST / GMT issue - this should be addressed if used in anger.
 	 */
+	@SuppressWarnings("unused")
 	private static double[]  melodyStokesDomesticLightingLoadGen(int numDays)
 	{
 		// Some sample values for the change from BST to GMT and back again
