@@ -76,6 +76,7 @@ public final class Consts {
 	/*-----------------------------
 	 * Units of Measurement Constants
 	 *------------------------------*/
+	public static final int HOURS_PER_DAY = 24;
 	public static final int DAYS_PER_WEEK = 7;
 	public static final int DAYS_PER_YEAR = 365;
 	public static final int MINUTES_PER_DAY = 1440;
@@ -167,10 +168,16 @@ public final class Consts {
 	public static final String COLD_APP_FRIDGE = "Fridge";
 	public static final String COLD_APP_FREEZER = "Freezer";
 	public static final String COLD_APP_FRIDGEFREEZER = "FridgeFreezer";
+	public static final String COLD_APP_FRIDGE_ORIGINAL = "FridgeOrig";
+	public static final String COLD_APP_FREEZER_ORIGINAL = "FreezerOrig";
+	public static final String COLD_APP_FRIDGEFREEZER_ORIGINAL = "FridgeFreezerOrig";
 	
 	public static final String WET_APP_WASHER = "Washer";
 	public static final String WET_APP_DRYER = "Dryer";
 	public static final String WET_APP_DISHWASHER = "Dishwasher";
+	public static final String WET_APP_WASHER_ORIGINAL = "WasherOrig";
+	public static final String WET_APP_DRYER_ORIGINAL = "DryerOrig";
+	public static final String WET_APP_DISHWASHER_ORIGINAL = "DishwasherOrig";
 	
 	//Defines is the maximum fraction of any domestic load that is moveable
 	public static final double MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION = 0.5d;
@@ -218,7 +225,9 @@ public final class Consts {
 	public static final int HEAT_PUMP_MIN_SWITCHOFF = 1;
 	public static final int HEAT_PUMP_MAX_SWITCHOFF = 8;
 
-	public static final double DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY = 2.0d;
+	//Don't use the constant below.  Rather, use DOMESTIC_HEAT_PUMP_SPACE_COP * DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE
+	//24/01/2012 This should be removed. TODO
+	//public static final double DOMESTIC_HEAT_PUMP_COP_HEAT_RECOVERY = 2.0d;
 
 	//Typical domestic heat pump rating (electrical) in kW
 	public static final double TYPICAL_HEAT_PUMP_ELEC_RATING = 4d;
@@ -233,6 +242,8 @@ public final class Consts {
     // WARNING: Be very careful in using this - can mask some nasty algorithmic errors
 	public static final double COST_DECISION_THRESHOLD = 1e-3d; //used by Wattbox
 
+	// The temperature used to represent the prior day external temperature at simulation initialisation
+	public static final double INITIALISATION_EXTERNAL_TEMP = 7;
 
 	/**++++++++++++++++++++++++++++++++
 	 * Hot Water/ Electrical Water Heat
@@ -273,10 +284,11 @@ public final class Consts {
 	/**+++++++++++
 	 * Occupancy
 	 *++++++++++++*/
-
 	//public static final Integer[] NUM_OF_OCCUPANTS_ARRAY = {0,1,2,3,4,5,6,7,8}; // NOT currently used
 	public static final double[] OCCUPANCY_PROBABILITY_ARRAY = {0.300206371,0.341735335,0.15506365,0.133630415,0.049359587,0.014498622,0.003377304,0.002128716};
 	
+
+		
 	/**++++++++++++++++++++++++++
 	 * Energy Consumption Control
 	 *+++++++++++++++++++++++++++*/

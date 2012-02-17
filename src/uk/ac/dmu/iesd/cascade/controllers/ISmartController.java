@@ -25,7 +25,7 @@ public interface ISmartController {
 	 * @return a WeakHashMap containing whose keys describe the type of load profile and
 	 * 			whose values are floating point arrays of the current profile for the day
 	 */
-	public WeakHashMap getCurrentProfiles();
+	public WeakHashMap<String,double[]> getCurrentProfiles();
 
 
 

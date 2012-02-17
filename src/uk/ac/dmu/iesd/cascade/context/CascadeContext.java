@@ -1,24 +1,18 @@
 package uk.ac.dmu.iesd.cascade.context;
 
-import java.awt.Component;
-import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+
 import java.util.*;
 
-import javax.imageio.ImageIO;
-import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 import org.jfree.chart.ChartPanel;
 
-import cern.jet.random.Empirical;
 import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.Normal;
 import cern.jet.random.Binomial;
 import cern.jet.random.Uniform;
-
-import java.io.File;
 
 import repast.simphony.context.*;
 import repast.simphony.engine.schedule.*;
@@ -26,13 +20,9 @@ import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.*;
 import repast.simphony.ui.widget.SnapshotTaker;
-import repast.simphony.util.collections.Pair;
-import repast.simphony.visualization.IDisplay;
-import uk.ac.dmu.iesd.cascade.Consts;
-import repast.simphony.engine.environment.GUIRegistry;
-import repast.simphony.engine.environment.GUIRegistryType;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.environment.RunState;
+
+import uk.ac.dmu.iesd.cascade.Consts;
 
 /**
  * <em>CascadeContext</em> is the main context for the <em>Cascade</em> framework.
@@ -93,14 +83,14 @@ public class CascadeContext extends DefaultContext{
 	protected int ticksPerDay;
 	protected int chartSnapshotInterval;
 	
-	private Network socialNetwork;
-	private Network economicNetwork;
+	private Network<?> socialNetwork;
+	private Network<?> economicNetwork;
 	
 	protected GregorianCalendar simulationCalendar;
 	
 	SnapshotTaker snapshotTaker1;
-	Collection chartCompCollection;
-	ArrayList snapshotTakerArrList;
+	Collection<JComponent> chartCompCollection;
+	ArrayList<SnapshotTaker> snapshotTakerArrList;
 	public EmpiricalWalker drawOffGenerator;
 	public EmpiricalWalker occupancyGenerator;
 	public Normal waterUsageGenerator;
@@ -119,7 +109,7 @@ public class CascadeContext extends DefaultContext{
 	 * @return <tt>socialNetwork</tt> associated to the context
 	 * @see #setSocialNetwork
 	 */
-	public Network getSocialNetwork(){
+	public Network<?> getSocialNetwork(){
 		return this.socialNetwork;
 	}
 	
@@ -128,7 +118,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param n the social network
 	 * @see #getSocialNetwork
 	 */
-	public void setSocialNetwork(Network n){
+	public void setSocialNetwork(Network<?> n){
 		this.socialNetwork = n;
 	}
 	
@@ -138,7 +128,7 @@ public class CascadeContext extends DefaultContext{
 	 * @return <tt>economicNetwork</tt> associated to the context
 	 * @see #setEconomicNetwork
 	 */
-	public Network getEconomicNetwork(){
+	public Network<?> getEconomicNetwork(){
 		return this.economicNetwork;
 	}
 	
@@ -147,7 +137,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param n the economic network
 	 * @see #getEconomicNetwork
 	 */
-	public void setEconomicNetwork(Network n){
+	public void setEconomicNetwork(Network<?> n){
 		this.economicNetwork = n;
 	}
 	
@@ -445,8 +435,6 @@ public class CascadeContext extends DefaultContext{
 	
 	private String getFileNameForChart(int chartNb) {
 		String chartName; 
-		String addInfo = "_d"+this.getDayCount()+"_t"+getTickCount()+"_";
-		String extension = Consts.FILE_CHART_FORMAT_EXT;
 
 		switch (chartNb) {
 		 case 0:  
@@ -496,12 +484,9 @@ public class CascadeContext extends DefaultContext{
 
 		if (this.getDayCount()> Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE - 2) {
 
-			Iterator<SnapshotTaker> snapshotTakerIter = snapshotTakerArrList.iterator();
-			//String path =System.getProperty("user.dir");
-			//String path = new java.io.File(".").getCanonicalPath();
 			try {
 				for (int i=0; i<snapshotTakerArrList.size();i++) {
-					SnapshotTaker snapshotTaker = (SnapshotTaker)snapshotTakerArrList.get(i);
+					SnapshotTaker snapshotTaker = snapshotTakerArrList.get(i);
 					String fileName = getFileNameForChart(i);
 					if (fileName != "") {
 						//if (Consts.DEBUG) System.out.println("takeSnapshot: fileName is empty");
@@ -518,7 +503,7 @@ public class CascadeContext extends DefaultContext{
 
 	}
 
-	public void setChartCompCollection(Collection c) {
+	public void setChartCompCollection(Collection<JComponent> c) {
 		chartCompCollection=c;
 		if (chartSnapshotOn) {
 			buildChartSnapshotTakers(c);
@@ -526,13 +511,13 @@ public class CascadeContext extends DefaultContext{
 		}
 	}
 	
-	public Collection getChartCompCollection() {
+	public Collection<JComponent> getChartCompCollection() {
 		return chartCompCollection;
 	}
 	
-	private void buildChartSnapshotTakers (Collection chartCompCollection) {
+	private void buildChartSnapshotTakers (Collection<JComponent> chartCompCollection) {
 		Iterator<JComponent> compIter= chartCompCollection.iterator();
-		snapshotTakerArrList = new ArrayList();
+		snapshotTakerArrList = new ArrayList<SnapshotTaker>();
 		while ( compIter.hasNext() ){
 			ChartPanel chartComp = (ChartPanel) compIter.next();
 			//if (Consts.DEBUG) System.out.println(chartComp.getChart().getTitle().getText());
@@ -579,7 +564,7 @@ public class CascadeContext extends DefaultContext{
 		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
 
 		while (projIterator.hasNext()) {
-			Projection proj = projIterator.next();
+			Projection<?> proj = projIterator.next();
 			this.addProjection(proj);
 			if (verbose)
 				if (Consts.DEBUG) System.out.println("CascadeContext: Added projection: "+ proj.getName());
@@ -590,8 +575,8 @@ public class CascadeContext extends DefaultContext{
 
 	
 		//tttttttttttttt   Babak test ttttttttttttttttttttt
-		RunState runState = RunState.getInstance();
-		GUIRegistry guiRegis = runState.getGUIRegistry();
+		//RunState runState = RunState.getInstance();
+		//GUIRegistry guiRegis = runState.getGUIRegistry();
 		
 		//List<IDisplay> listOfDisplays =  guiRegis.getDisplays();		
 		//if (Consts.DEBUG) System.out.println("list of displays size: "+listOfDisplays.size());

@@ -3,26 +3,21 @@
  */
 package uk.ac.dmu.iesd.cascade.context;
 
-import static repast.simphony.essentials.RepastEssentials.FindNetwork;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import cern.colt.list.DoubleArrayList;
 import bsh.This;
-import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.parameter.Parameters;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.util.ContextUtils;
-//import uk.ac.cranfield.cascade.market.SupplyPrediction;
 import uk.ac.cranfield.cascade.market.Prediction;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
@@ -44,7 +39,11 @@ import org.apache.commons.mathforsimplex.optimization.linear.LinearConstraint;
 import org.apache.commons.mathforsimplex.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.mathforsimplex.optimization.linear.Relationship;
 import org.apache.commons.mathforsimplex.optimization.linear.SimplexSolver;
-import org.jgap.*;
+import org.jgap.Chromosome;
+import org.jgap.Configuration;
+import org.jgap.FitnessFunction;
+import org.jgap.Genotype;
+import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
 
@@ -67,7 +66,163 @@ import org.jgap.impl.DoubleGene;
 
 public class RECO extends AggregatorAgent{
 
+	// New class member to test out Peter B's demand flattening approach with smart signal
+	// Same as class member RecoMinimisationFunction, apart from the function method is different
+	// In this case, equation in function has change to |Di - Bm|, where <Di> is the same as the 
+	// specification described in the paper, and <Bm> is the mean from the baseline load.
+	//
+	// Last updated: (26/02/12) DF
+	class RecoMinimisationFunction_DemandFlattening extends FitnessFunction implements MinimisationFunction, MultivariateRealFunction {
+		
+		private static final long serialVersionUID = 1L;
 
+		private double[] arr_B;
+		private double[] arr_e;		
+		private double[][] arr_k;
+		private boolean hasSimpleSumConstraint = false;
+		private boolean lessThanConstraint;
+		private double sumConstraintValue;
+		private double penaltyWeight  = 1.0e10;
+		private double sumConstraintTolerance;
+		private double mean_B;
+		private boolean hasEqualsConstraint = false;
+		private int numEvaluations = 0;
+
+		// Not sure why I cannot use methods in ArrayUtils class?
+		// Quick & dirty way: just copy the two methods that I want to use 
+		// to here for now
+		public double avg(double[] doubleArray) {
+			double avg=0d;
+			if (doubleArray.length !=0) {
+				double sum = sum(doubleArray);
+				avg = sum/(double)doubleArray.length;
+			}
+			return avg;
+		}
+		
+		public double sum(double[] doubleArray)
+		{
+			double sum = 0;
+			for (int i = 0; i < doubleArray.length; i++)
+			{
+				sum = sum + doubleArray[i];
+			}
+			return sum;
+		}
+		//
+		
+		public double function (double[] arr_S) {
+			double m =0d, di;
+			mean_B = avg(arr_B);
+			
+			for (int i=0; i<arr_S.length; i++){
+
+				double sumOf_SjkijBi =0;
+				for (int j=0; j<arr_S.length; j++){
+					if (i != j)
+						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
+				}
+				
+				di  = arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi;
+				m += Math.abs(di - mean_B);
+			}
+			numEvaluations++;
+			m += checkPosNegConstraint(arr_S);
+			return m;
+		} 
+
+		/**
+		 * Enforce the constraint that all positive values of S must sum to (maximum) of 1
+		 * and -ve values to (minimum) of -1
+		 * @param arr_S
+		 * @return
+		 */
+		private double checkPosNegConstraint(double[] arr_S) {
+			double penalty = 0;
+			double posValueSum = 0;
+			double negValueSum = 0;
+			for (int i = 0; i < arr_S.length; i++)
+			{
+				if (arr_S[i] > 0)
+				{
+					posValueSum += arr_S[i];
+				}
+				else
+				{
+					negValueSum += arr_S[i];
+				}
+			}
+
+			if (posValueSum > 1)
+			{
+				penalty += this.penaltyWeight * Math.pow((posValueSum - 1), 2);
+			}
+			
+			if (negValueSum < -1)
+			{
+				penalty += this.penaltyWeight * Math.pow((-1 - negValueSum), 2);
+			}
+			
+			return penalty;
+		}
+
+		public double value (double[] arr_S)
+		{
+			double penalties = 0;
+			// Add on constraint penalties here (as the Apache NelderMead doesn't do constraints itself)
+			double sumOfArray = ArrayUtils.sum(arr_S);
+
+
+			if (this.hasEqualsConstraint  && (Math.sqrt(Math.pow(sumOfArray - sumConstraintValue, 2)) > this.sumConstraintTolerance))
+			{
+				penalties = this.penaltyWeight*Fmath.square(sumConstraintValue*(1.0-this.sumConstraintTolerance)-sumOfArray);
+			}
+			return function(arr_S) + penalties;
+		}
+
+		private void addSimpleSumEqualsConstraintForApache(double limit, double tolerance)
+		{
+			this.hasEqualsConstraint = true;
+			this.sumConstraintTolerance = tolerance;
+			this.sumConstraintValue = limit;
+
+		}
+
+		public void set_B(double [] b) {
+			arr_B = b;
+		}
+
+		public void set_e(double [] e) {
+			arr_e = e;
+		}
+
+		public void set_k(double [][] k ) {
+			arr_k = k;
+		}
+
+		public int getNumEvals()
+		{
+			return numEvaluations;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.jgap.FitnessFunction#evaluate(org.jgap.Chromosome)
+		 */
+		@Override
+		protected int evaluate(Chromosome arg0) {
+
+			double[] testArray = ArrayUtils.genesToDouble(arg0.getGenes());
+			for (int i = 0; i < testArray.length; i++)
+			{
+				testArray[i] -= 0.5;
+				testArray[i] *= 2;
+			}
+
+			return (int) Math.max(1,(100000 - value(testArray)));
+		}
+		
+	}
+	
 	class RecoMinimisationFunction extends FitnessFunction implements MinimisationFunction, MultivariateRealFunction {
 
 		private static final long serialVersionUID = 1L;
@@ -490,7 +645,7 @@ public class RECO extends AggregatorAgent{
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		Iterable<RepastEdge> iter = economicNet.getEdges();
 		if(Consts.DEBUG) {
-			if (Consts.DEBUG) System.out.println(This.class+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
+			System.out.println(This.class+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
 		}
 
 		for (RepastEdge edge : iter) {
@@ -557,7 +712,7 @@ public class RECO extends AggregatorAgent{
 		double sumDemand = 0d;
 		if(Consts.DEBUG)
 		{
-			if (Consts.DEBUG) System.out.println("RECO:: Updating the aggregator demand history array at day: "+mainContext.getDayCount()+ " tick time " + RepastEssentials.GetTickCount() + " customersList size "+customersList.size());
+			System.out.println("RECO:: Updating the aggregator demand history array at day: "+mainContext.getDayCount()+ " tick time " + RepastEssentials.GetTickCount() + " customersList size "+customersList.size());
 		}
 		//if (Consts.DEBUG) System.out.println(" ====updateHistoryArray==== ");
 		for (ProsumerAgent a : customersList) {
@@ -565,7 +720,7 @@ public class RECO extends AggregatorAgent{
 			//if (Consts.DEBUG) System.out.println(" ID: "+a.agentID+" ND: "+a.getNetDemand());
 			if(Consts.DEBUG)
 			{
-				if (Consts.DEBUG) System.out.println("RECO:: Got Net Demand for agent " + a.getAgentName() + " = "+a.getNetDemand());
+				System.out.println("RECO:: Got Net Demand for agent " + a.getAgentName() + " = "+a.getNetDemand());
 			}
 		}
 
@@ -659,8 +814,6 @@ public class RECO extends AggregatorAgent{
 			break;
 		}
 
-		// MUST REMOVE THIS - TEST TO GIVE ZERO SIGNAL AFTER TRAINING
-		//Arrays.fill(sArr,0d);
 		return sArr;
 	}
 
@@ -781,14 +934,19 @@ public class RECO extends AggregatorAgent{
 		double e=0;
 		double b =1;
 		double s=1;
+		//double s=-1;
 		double deltaB_i=0;
-		int i =  ArrayUtils.indexOf(arr_S, 1f);
-		//int i =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+		int i =  ArrayUtils.indexOf(arr_S, s); 
 
 		if (i != -1 )	 {	
 			b = arr_B[i];
 			deltaB_i = arr_D[i] - b;
 			e = arr_e[i];
+
+		}
+		else
+		{
+			System.err.println("Looking for index of " + s + " to train for k values and didn't find it in signal");
 		}
 		
 		/*if (Consts.DEBUG) System.out.println(" D= "+ arr_D[i]);
@@ -847,14 +1005,15 @@ public class RECO extends AggregatorAgent{
 
 		double e=0;
 		double b =1;
-		double s=1;
+		double s=1; /// Change this value to test for particular index!!!
+		//double s=-1;
 		if (Consts.DEBUG) System.out.println(" £ RECO: Calculate e £");
 
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
 
-		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
-		//int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+
+		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, s);
 		
 		
 		if (timeslotWhenSwas1 != -1 )	 {	
@@ -878,6 +1037,41 @@ public class RECO extends AggregatorAgent{
 		return e;	
 	}
 
+	// (10/02/12) DF
+	// Revised elasticity calculation, refer to Peter B's email dated 09/02/12
+	// Equation now changed to:
+	// sum(Di) - sum(Bi) / sum(Si*Bi)
+	// Beware sum(Si*Bi) can result in zero, because of flat/constant Di throughout the whole day
+	// Separate method to test before actually commit as the main routine
+	private double calculateElasticityFactors_e_new(double[] arr_D, double[] arr_B, double[] arr_S, double[] arr_e) {	
+
+		double e=0;
+		System.out.println(" £ RECO: Calculate e new £");
+
+		double sum_D = ArrayUtils.sum(arr_D);
+		double sum_B = ArrayUtils.sum(arr_B);
+		
+		double sum_SxB = ArrayUtils.sum(ArrayUtils.mtimes(arr_S, arr_B));
+
+		int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, 1f);
+		//int timeslotWhenSwas1 =  ArrayUtils.indexOf(arr_S, -1f); //TESTT
+		
+		if(Math.abs(sum_SxB) > 1e-6) {
+			e = (sum_D - sum_B) / sum_SxB;
+			arr_e[timeslotWhenSwas1] = e;
+		}
+		else {
+			System.out.println("E Factor: " + sum_SxB);
+			// Not sure what is the right value to assign
+			// Current assumption:
+			// if each prosummer will assign e factors (48 timeslot) between 0 and 0.1,
+			// and also we have sufficiently large amount of prosumers, e.g. 100 or more
+			// e value for this timslot would be -0.05 
+			arr_e[timeslotWhenSwas1] = -0.05d;
+		}
+		
+		return e;	
+	}
 
 	private double[] minimise_CD_ApacheSimplex(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) {
 		//private double[] minimise_CD_Apache(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) throws OptimizationException, FunctionEvaluationException, IllegalArgumentException {
@@ -1045,9 +1239,12 @@ public class RECO extends AggregatorAgent{
 		//rho - reflection coefficient, khi - expansion coefficient
 		//gamma - contraction coefficient,  sigma - shrinkage coefficient
 
-		RecoMinimisationFunction minFunct = new RecoMinimisationFunction();
+		/*RecoMinimisationFunction minFunct = new RecoMinimisationFunction();
 
-		minFunct.set_C(arr_C);
+		minFunct.set_C(arr_C);*/
+		// (26/01/12) Change to test out demand flattening approach
+		RecoMinimisationFunction_DemandFlattening minFunct = new RecoMinimisationFunction_DemandFlattening();
+		
 		minFunct.set_B(arr_B);
 		minFunct.set_e(arr_e);
 		minFunct.set_k(arr_ij_k);
@@ -1472,18 +1669,18 @@ public class RECO extends AggregatorAgent{
 
 
 		if(Consts.DEBUG)
-			if (Consts.DEBUG) System.out.println("RECO:: errorEstim_R: " + Arrays.toString(arr_errorEstim_R));
+			System.out.println("RECO:: errorEstim_R: " + Arrays.toString(arr_errorEstim_R));
 
 		double[] arr_multiplier = ArrayUtils.offset(ArrayUtils.multiply(arr_errorEstim_R, alpha), (1 - alpha));
 
 		if(Consts.DEBUG)  {
-			if (Consts.DEBUG) System.out.println("RECO:: e before " + Arrays.toString(arr_i_e));
-			if (Consts.DEBUG) System.out.println("RECO:: multiplier " + Arrays.toString(arr_multiplier));
+			System.out.println("RECO:: e before " + Arrays.toString(arr_i_e));
+			System.out.println("RECO:: multiplier " + Arrays.toString(arr_multiplier));
 		}
 		arr_i_e = ArrayUtils.mtimes(arr_i_e, arr_multiplier);
 		
 		if(Consts.DEBUG)			
-			if (Consts.DEBUG) System.out.println("RECO:: e after times multiplier" + Arrays.toString(arr_i_e));
+			System.out.println("RECO:: e after times multiplier" + Arrays.toString(arr_i_e));
 		
 		for (int i = 0; i < arr_ij_k.length; i++)  {
 			arr_ij_k[i] = ArrayUtils.mtimes(arr_ij_k[i], arr_multiplier);
@@ -1560,9 +1757,8 @@ public class RECO extends AggregatorAgent{
 		timeslotOfDay = mainContext.getTimeslotOfDay();
 		customers = getCustomersList();
 
-
 		if (isAggregateDemandProfileBuildingPeriodCompleted())  
- 		{ //End of history profile building period 
+		{ //End of history profile building period 
 			//Set the Baseline demand on the first time through after building period
 			if (Consts.DEBUG) System.out.println(" ProfileBuildingPeriod is completed");
 
@@ -1579,16 +1775,11 @@ public class RECO extends AggregatorAgent{
 				{	
 					if (Consts.DEBUG) System.out.println("NetDemand BEFORE sending training signal is:"+this.getNetDemand());
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
-					
 					//arr_i_S = ArrayUtils.multiply(arr_i_S, -1);
 
-					//if (Consts.DEBUG) System.out.println("RECO: Signal Sent");
-					//int oneIndex = ArrayUtils.indexOfMax(arr_i_S);
-					//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
-					//if (Consts.DEBUG) System.out.println(" oneIndex: "+ oneIndex);
 					broadcastSignalToCustomers(arr_i_S, customers);
 
-					if (Consts.DEBUG) System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
+					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
 
 				}
 			} //training period completed 
@@ -1596,9 +1787,9 @@ public class RECO extends AggregatorAgent{
 			{ // Begining of the normal operation- both baseline establishing & training periods are complete
 
 				if(Consts.DEBUG){
-					if (Consts.DEBUG) System.out.println("**RECOPre: End of training reached ----day: "+ mainContext.getDayCount());
-					if (Consts.DEBUG) System.out.print("day: "+mainContext.getDayCount());
-					if (Consts.DEBUG) System.out.println("  timetick: "+mainContext.getTickCount());
+					System.out.println("**RECOPre: End of training reached ----day: "+ mainContext.getDayCount());
+					System.out.print("day: "+mainContext.getDayCount());
+					System.out.println("  timetick: "+mainContext.getTickCount());
 				}
 				
 				//Richard Test to stimulate prosumer behaviour
@@ -1634,16 +1825,16 @@ public class RECO extends AggregatorAgent{
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(ArrayUtils.offset(arr_i_C, -(double)ArrayUtils.sum(arr_i_C) / arr_i_C.length));
 					
-					//double [] priceSignalTest = {-0.050175966,-0.057895417,-0.061784662,-0.065208969,-0.069459832,-0.072087102,-0.072957939,-0.073762356,-0.074522493,-0.079503974,-0.0777623,-0.07263322,-0.054729409,-0.03354889,-0.007357371,0.010029843,0.022435575,0.028472392,0.035785944,0.038582953,0.040154887,0.043564434,0.045438947,0.045948165,0.046730442,0.045254448,0.045350387,0.044066272,0.041741581,0.040664105,0.040420566,0.042907617,0.04468619,0.047040401,0.046730442,0.041778481,0.035321006,0.030568304,0.024295328,0.019601666,0.014900624,0.010568581,0.01084902,0.010384081,0.005727319,-0.009194983,-0.026139398,-0.04127572};
+					double [] priceSignalTest = {-0.050175966,-0.057895417,-0.061784662,-0.065208969,-0.069459832,-0.072087102,-0.072957939,-0.073762356,-0.074522493,-0.079503974,-0.0777623,-0.07263322,-0.054729409,-0.03354889,-0.007357371,0.010029843,0.022435575,0.028472392,0.035785944,0.038582953,0.040154887,0.043564434,0.045438947,0.045948165,0.046730442,0.045254448,0.045350387,0.044066272,0.041741581,0.040664105,0.040420566,0.042907617,0.04468619,0.047040401,0.046730442,0.041778481,0.035321006,0.030568304,0.024295328,0.019601666,0.014900624,0.010568581,0.01084902,0.010384081,0.005727319,-0.009194983,-0.026139398,-0.04127572};
 					
-					//double [] priceSignalTestSq = {-0.05214123,-0.058519428,-0.061637587,-0.064330107,-0.067603658,-0.069588738,-0.070240282,-0.070839287,-0.071402807,-0.075035391,-0.073777246,-0.069997708,-0.055933952,-0.037548357,-0.012193205,0.006238673,0.020170176,0.027184535,0.035888531,0.039277016,0.041195863,0.045393732,0.047722565,0.048357764,0.04933571,0.047492691,0.047612207,0.046015744,0.043143309,0.041819699,0.041521206,0.044581234,0.046785581,0.049723912,0.04933571,0.043188725,0.035328476,0.029655829,0.022314676,0.016930452,0.011631015,0.006830171,0.007138559,0.006627465,0.001558774,-0.014066632,-0.030669314,-0.044475072};
+					double [] priceSignalTestSq = {-0.05214123,-0.058519428,-0.061637587,-0.064330107,-0.067603658,-0.069588738,-0.070240282,-0.070839287,-0.071402807,-0.075035391,-0.073777246,-0.069997708,-0.055933952,-0.037548357,-0.012193205,0.006238673,0.020170176,0.027184535,0.035888531,0.039277016,0.041195863,0.045393732,0.047722565,0.048357764,0.04933571,0.047492691,0.047612207,0.046015744,0.043143309,0.041819699,0.041521206,0.044581234,0.046785581,0.049723912,0.04933571,0.043188725,0.035328476,0.029655829,0.022314676,0.016930452,0.011631015,0.006830171,0.007138559,0.006627465,0.001558774,-0.014066632,-0.030669314,-0.044475072};
 
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_ApacheSimplex(arr_i_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					
 					//Arrays.fill(arr_i_S, 0);
-					
+					//NEEDS TIDYING UP - SHOULD GET PARAMS AT INIT
 					Parameters params = RunEnvironment.getInstance().getParameters();
 					switch ((Integer)params.getValue("signalMode"))
 					{
@@ -1768,9 +1959,12 @@ public class RECO extends AggregatorAgent{
 			costSavingCalculation(arr_i_C, hist_day_arr_D, arr_i_B, arr_i_S, arr_i_e);
 		}
 		
+		// (30/01/12) DF
+		// Write out <code>netDemand<\code> for each day for demand flattening test
+		if(isAggregateDemandProfileBuildingPeriodCompleted() && isTrainingPeriodCompleted() && mainContext.isEndOfDay(timeslotOfDay))
+			printOutNetDemand4DemandFlatteningTest();
 		
-		
-		if (Consts.DEBUG) System.out.println(" ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		System.out.println(" ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 	}
 	
 
@@ -1785,14 +1979,14 @@ public class RECO extends AggregatorAgent{
 		super(context);
 		if (Consts.DEBUG)
 		{
-			if (Consts.DEBUG) System.out.println("RECO created ");
+			System.out.println("RECO created ");
 		}
 
 		this.ticksPerDay = context.getNbOfTickPerDay();
 
 		if (Consts.DEBUG)
 		{
-			if (Consts.DEBUG) System.out.println("RECO ticksPerDay "+ ticksPerDay);
+			System.out.println("RECO ticksPerDay "+ ticksPerDay);
 		}
 
 		if (baseDemand.length % ticksPerDay != 0)
@@ -1840,10 +2034,14 @@ public class RECO extends AggregatorAgent{
 		this.alpha = 0.1d;
 		//this.alpha = 1d;
 
+		// (30/01/12) DF
+		// initialise <code>day_arr_D</code> for storing <code>netDemand</code> for the whole day
+		this.day_arr_D = new double[ticksPerDay];
+		
 		//+++++++++++++++++++++++++++++++++++++++++++
 	}
 
-
+// TODO Get this to work properly.
 	/* (non-Javadoc)
 	 * @see uk.ac.cranfield.market.Aggregator#getGeneration()
 	 */
