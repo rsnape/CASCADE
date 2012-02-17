@@ -3,7 +3,10 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.util.*;
 
+import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.hsqldb.lib.ArrayUtil;
+
+import com.sun.tools.internal.jxc.apt.Const;
 
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
@@ -11,6 +14,7 @@ import repast.simphony.space.graph.*;
 import repast.simphony.ui.probe.*;
 import uk.ac.cranfield.cascade.market.Aggregator;
 import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.io.CSVWriter;		// (30/01/12) DF - purely for printing out netdemand values to cvs file 
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.IObservable;
 import uk.ac.dmu.iesd.cascade.util.IObserver;
@@ -141,7 +145,11 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	
 	protected double cumulativeCostSaving =0;
 
-
+	// 30/01/12 DF
+	// This is purely use to calculate the standard deviation of the net demand
+	// of a particular
+	double[] day_arr_D;
+	
 	//-----------------------------
 
 
@@ -213,9 +221,11 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	 */
 	public void setNetDemand(double nd) {
 		this.netDemand = nd;
+		// (30/01/12) DF
+		// Update daily <code>netDemand</code> to <code>day_arr_D</code> for
+		// standard deviation calculation purpose.
+		this.day_arr_D[(int) RepastEssentials.GetTickCount() % ticksPerDay] = nd;
 	}
-	
-	
 
 	/**
 	 * Returns the price signal <code>priceSignal</code> for this agent (S)
@@ -296,8 +306,47 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 		return arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay];
 	}
 
-
+	/**
+	 * Return the standard deviation of baseline load <code>arr_i_B</code>
+	 * of this agent at the end of day
+	 */
+	public double getBaselineStdDev() {
+		double val = new StandardDeviation().evaluate(arr_i_B, ArrayUtils.avg(arr_i_B));
+		return val;
+	}
 	
+	/**
+	 * Return the standard deviation of load <code>hist_day_arr_D</code>
+	 * of this agent at the end of day
+	 */
+	public double getNetDemandStdDev() {
+		double val = new StandardDeviation().evaluate(day_arr_D, ArrayUtils.avg(day_arr_D));
+		return val;
+	}
+	
+	
+	/**
+	 * (30/01/12) DF
+	 * Write out <code>day_arr_D</code> for demand flattening test
+	 * This is only use for calculating standard deviation for the demand flattening condition
+	*/
+	public void printOutNetDemand4DemandFlatteningTest() {
+		
+		CSVWriter res;
+		String Filename = "NetDemand_FlatteningTest.csv";
+		
+		if(RepastEssentials.GetTickCount() == ticksPerDay * (Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_TRAINING_PERIODE)) {
+			res = new CSVWriter(Filename, false);
+			res.appendText("NetDemand:");
+			res.appendRow(day_arr_D);
+		}
+		else {
+			res = new CSVWriter(Filename, true);
+			res.appendRow(day_arr_D);
+		}
+		
+		return;
+	}
 
 	/**
 	 * Add an observer to the list of observer objects
@@ -532,6 +581,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 		this.agentID = agentIDCounter++;
 		this.mainContext = context;
 		observableProxy = new ObservableComponent();
+		
 	}
 
 
