@@ -2,6 +2,7 @@ package uk.ac.dmu.iesd.cascade;
 
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.essentials.RepastEssentials;
 import simphony.util.messages.MessageCenter;
 
 /**
@@ -25,8 +26,8 @@ public final class Consts {
 	/*----------------------------
 	 * Model level constants
 	 *----------------------------*/
-	public static boolean DEBUG = true;  //use for debugging, default is false
-	public static final String DEBUG_OUTPUT_FILE = "DebugOutput.txt"; //Change this to a name to desired filename to divert System.out to a file when DEBUG is true
+	public static boolean DEBUG = false;  //use for debugging, default is false
+	public static String DEBUG_OUTPUT_FILE = "DebugOutputSeed" + RepastEssentials.GetParameter("randomSeed") + "Mode" + RepastEssentials.GetParameter("signalMode") + ".txt"; //Change this to a name to desired filename to divert System.out to a file when DEBUG is true
 	public static String FILE_CHART_FORMAT_EXT = ".png";
 
 	//Controlling the generation of snapshots:
@@ -38,9 +39,9 @@ public final class Consts {
 	public static boolean TAKE_SNAPSHOT_OF_CHART_8_Market = false;
 	
 	//Controlling HHProsumers electricity consumption/usage
-	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = false;
-	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = false;
-	public static boolean HHPRO_HAS_COLD_APPL = false;
+	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
+	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
+	public static boolean HHPRO_HAS_COLD_APPL = true;
 	public static boolean HHPRO_HAS_WET_APPL = true;
 	
 	//Controlling REEA operation

@@ -46,7 +46,7 @@ public abstract class InitialProfileGenUtils {
 	 */
 	public static HashMap melodyStokesColdApplianceGen(int numDays, boolean fridges, boolean fridgeFreezers, boolean freezers)
 	{
-		//System.out.println("Fridge; FridgeFreezer; Freezer"+ fridges  +" "+ fridgeFreezers + " "+ freezers); 
+		//if (Consts.DEBUG) System.out.println("Fridge; FridgeFreezer; Freezer"+ fridges  +" "+ fridgeFreezers + " "+ freezers); 
 
 		//return melodyStokesColdApplianceGen(numDays, fridges ? 1 : 0, freezers ? 1:0, fridgeFreezers ? 1:0);
 		
@@ -95,7 +95,7 @@ public abstract class InitialProfileGenUtils {
 		{
 			for (int HH=0; HH < Consts.MELODY_MODELS_TICKS_PER_DAY; HH++)
 			{
-				//System.out.println("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
+				//if (Consts.DEBUG) System.out.println("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
 
 				d_fridge[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridges * ( Math.max(0, scale_fridge[HH]*Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH])+const_fridge[HH]+(RandomHelper.getNormal().nextDouble()*stddev_fridge[HH])));
 				d_freezer[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridgeFreezers * ( Math.max(0,scale_freezer[HH]* Math.sin(2*Math.PI*(i / Consts.DAYS_PER_YEAR)-2.05)+const_freezer[HH]+(RandomHelper.getNormal().nextDouble()*stddev_freezer[HH])));
@@ -150,7 +150,7 @@ public abstract class InitialProfileGenUtils {
 		{
 			for (int HH=0; HH < Consts.MELODY_MODELS_TICKS_PER_DAY; HH++)
 			{
-				//System.out.println("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
+				//if (Consts.DEBUG) System.out.println("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
 
 				d_fridge[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridges * ( Math.max(0, scale_fridge[HH]*Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH])+const_fridge[HH]+(RandomHelper.getNormal().nextDouble()*stddev_fridge[HH])));
 				d_freezer[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=freezers * ( Math.max(0,scale_freezer[HH]* Math.sin(2*Math.PI*(i / Consts.DAYS_PER_YEAR)-2.05)+const_freezer[HH]+(RandomHelper.getNormal().nextDouble()*stddev_freezer[HH])));

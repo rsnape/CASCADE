@@ -138,7 +138,7 @@ public class CSVReader {
 
 		if(Consts.DEBUG)
 		{
-			System.out.println("Parsed file - " + numCols + " columns and " + numRows + " rows.");
+			if (Consts.DEBUG) System.out.println("Parsed file - " + numCols + " columns and " + numRows + " rows.");
 		}
 	}
 

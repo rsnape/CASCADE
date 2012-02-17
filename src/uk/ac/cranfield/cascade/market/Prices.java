@@ -67,7 +67,7 @@ public class Prices {
 		{
 			if(v > Parameters.brownOutCost+1)
 				{
-				//System.out.println("Sale price too big");
+				//if (Consts.DEBUG) System.out.println("Sale price too big");
 				//System.exit(1);
 				}
 			sale = v;
@@ -78,7 +78,7 @@ public class Prices {
 		{
 			if(v > Parameters.brownOutCost+1)
 			{
-			//System.out.println("Purchase price too big"+v);
+			//if (Consts.DEBUG) System.out.println("Purchase price too big"+v);
 			System.exit(1);
 			}
 			purchase = v;
@@ -129,7 +129,7 @@ public class Prices {
 			contractPurchase = v;
 			avgContractPurchase = avgContractPurchase * reactiveness + v * reac1;
 			avgGContractPurchase = avgGContractPurchase * Parameters.reactivnessG + v * Parameters.reac2;
-	        //System.out.println("Setting contract Purchase of "+v+" avg now "+avgContractPurchase +" and "+avgGContractPurchase);
+	        //if (Consts.DEBUG) System.out.println("Setting contract Purchase of "+v+" avg now "+avgContractPurchase +" and "+avgGContractPurchase);
 		}
 		
 

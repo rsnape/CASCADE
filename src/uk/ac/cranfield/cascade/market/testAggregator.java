@@ -59,11 +59,11 @@ public class testAggregator extends Aggregator {
 		tar1d = tar1 * tar1;
 		tard = 1-tar1d;
 		
-		//System.out.println(minGenerationPrice+" "+ minGeneration);
-		//System.out.println(maxGenerationPrice+" "+ maxGeneration);
-		//System.out.println(minDemandPrice+" "+minDemand);
-		//System.out.println(maxDemandPrice+" "+maxDemand);
-		//System.out.println();
+		//if (Consts.DEBUG) System.out.println(minGenerationPrice+" "+ minGeneration);
+		//if (Consts.DEBUG) System.out.println(maxGenerationPrice+" "+ maxGeneration);
+		//if (Consts.DEBUG) System.out.println(minDemandPrice+" "+minDemand);
+		//if (Consts.DEBUG) System.out.println(maxDemandPrice+" "+maxDemand);
+		//if (Consts.DEBUG) System.out.println();
 	}
 	
 	
@@ -84,7 +84,7 @@ public class testAggregator extends Aggregator {
 		//powerPriceG=Market.defaultM.getAverageCost();
 		//powerPriceD=powerPriceG;
 		
-		//System.out.println("q "+cd+" "+cg+" "+avgPrice);
+		//if (Consts.DEBUG) System.out.println("q "+cd+" "+cg+" "+avgPrice);
 		
 		if(powerPriceG <= minGenerationPrice)
 			nextGeneration = 0.0;
@@ -111,7 +111,7 @@ public class testAggregator extends Aggregator {
 		//if(nextGeneration < cg * 0.99) nextGeneration=cg * 0.99;
 		//if(nextGeneration > cg * 1.01) nextGeneration=cg * 1.01;
 
-		//System.out.println("q currentGen="+cg+" currentDemand="+cd+" price="+powerPriceG+" nextGen="+nextGeneration+" nextDemand="+nextDemand);
+		//if (Consts.DEBUG) System.out.println("q currentGen="+cg+" currentDemand="+cd+" price="+powerPriceG+" nextGen="+nextGeneration+" nextDemand="+nextDemand);
 
 		for(int i = currentTick; i < currentTick+Parameters.tradingHorizon +5; i++)
 		{
@@ -127,7 +127,7 @@ public class testAggregator extends Aggregator {
 					       ((j < 1001) && (j%100 == 0)))
 					    {
 					    	Prediction nsp = new Prediction(i,cg,sdG,cd*demandFactor,sdD);
-					    	//System.out.println(cg+" "+sdG+" "+cd+" "+sdD);
+					    	//if (Consts.DEBUG) System.out.println(cg+" "+sdG+" "+cd+" "+sdD);
 					    	result.add(nsp);
 					    }
 			    

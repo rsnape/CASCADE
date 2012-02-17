@@ -253,7 +253,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		{
 			if (returnAmount != 0)
 			{
-				System.out.println("NonDomesticProsumer: Generating " + returnAmount);
+				if (Consts.DEBUG) System.out.println("NonDomesticProsumer: Generating " + returnAmount);
 			}
 		}
 		return returnAmount;
@@ -350,7 +350,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 				// console or file.  Can we use log4j?
 				if (Consts.DEBUG)
 				{
-					System.out.println("NonDomesticProsumer: " + this.agentID + "Changing demand at time " + time + " with price signal " + (predictedCostNow - costThreshold) + " above threshold");
+					if (Consts.DEBUG) System.out.println("NonDomesticProsumer: " + this.agentID + "Changing demand at time " + time + " with price signal " + (predictedCostNow - costThreshold) + " above threshold");
 				}
 				myDemand = myDemand * (1 - percentageMoveableDemand * (1 - Math.exp( - ((predictedCostNow - costThreshold) / costThreshold))));
 
@@ -416,10 +416,10 @@ public class NonDomesticProsumer extends ProsumerAgent{
 			{
 				//TODO: This always gets triggerd - I wonder if the "day" i'm taking
 				//here and in the inelasticdemand method are "off-by-one"
-				System.out.println("NonDomesticProsumer: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
+				if (Consts.DEBUG) System.out.println("NonDomesticProsumer: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
 			}
 
-			System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+			if (Consts.DEBUG) System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
 		}
 	}
 	
@@ -455,7 +455,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 			daysOptimisedDemand[minIndex] = swapAmount;
 			if (Consts.DEBUG)
 			{
-				System.out.println("NonDomesticProsumer: " +agentID + " moving " + movedLoad + "MaxIndex = " + maxIndex + " minIndex = " + minIndex + Arrays.toString(tempArray));
+				if (Consts.DEBUG) System.out.println("NonDomesticProsumer: " +agentID + " moving " + movedLoad + "MaxIndex = " + maxIndex + " minIndex = " + minIndex + Arrays.toString(tempArray));
 			}
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
 		}
@@ -466,10 +466,10 @@ public class NonDomesticProsumer extends ProsumerAgent{
 			{
 				//TODO: This always gets triggerd - I wonder if the "day" i'm taking
 				//here and in the inelasticdemand method are "off-by-one"
-				System.out.println("NonDomesticProsumer: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
+				if (Consts.DEBUG) System.out.println("NonDomesticProsumer: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
 			}
 
-			System.out.println("NonDomesticProsumer: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+			if (Consts.DEBUG) System.out.println("NonDomesticProsumer: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
 		}
 	}
 

@@ -119,7 +119,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		returnAmount = returnAmount + windGeneration();
 		if (Consts.DEBUG) {
 			if (returnAmount != 0) {
-				System.out.println("WindGeneratorProsumer: Generating " + returnAmount);
+				if (Consts.DEBUG) System.out.println("WindGeneratorProsumer: Generating " + returnAmount);
 			}
 		}
 		return returnAmount;

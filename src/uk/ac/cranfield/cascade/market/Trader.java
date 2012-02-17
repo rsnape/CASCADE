@@ -46,9 +46,9 @@ public class Trader {
     public double currentTBalance()
     {//if(balance.size()>0)return balance.get(0); //else return -1.0;}
     	
-    	//System.out.println("demand "+ owningAggrigator.currentTDemand(this)+" sold "+traded.get(0).sold());
-    	//System.out.println(" supply "+ owningAggrigator.currentTSupply(this)+ "purc "+ traded.get(0).purchased());
-    	//System.out.println(" tot "+ (this.owningAggrigator.currentTSupply(this)-owningAggrigator.currentTDemand(this)+
+    	//if (Consts.DEBUG) System.out.println("demand "+ owningAggrigator.currentTDemand(this)+" sold "+traded.get(0).sold());
+    	//if (Consts.DEBUG) System.out.println(" supply "+ owningAggrigator.currentTSupply(this)+ "purc "+ traded.get(0).purchased());
+    	//if (Consts.DEBUG) System.out.println(" tot "+ (this.owningAggrigator.currentTSupply(this)-owningAggrigator.currentTDemand(this)+
     	      // traded.get(0).purchased()-traded.get(0).sold())+" cb"+currentBalance());
     	return this.owningAggrigator.currentTSupply(this)-owningAggrigator.currentTDemand(this)+
     	       traded.get(0).purchased()-traded.get(0).sold();
@@ -113,8 +113,8 @@ public class Trader {
 		double v = 0;
 		if(o.from==this) return Double.MIN_VALUE;
 		
-		//System.out.println("o.size="+o.size);
-		//System.out.println("prices.avgSale="+prices.avgSale);
+		//if (Consts.DEBUG) System.out.println("o.size="+o.size);
+		//if (Consts.DEBUG) System.out.println("prices.avgSale="+prices.avgSale);
 		double ppu = (prices.avgGPurchase*1.0+prices.avgGSale*1.0+prices.avgPurchase*1.0+prices.avgSale*1.0)/4.10;
         double ppu1 = prices.avgClosingPurchase;
          ppu1 = ppu;
@@ -125,13 +125,13 @@ public class Trader {
 		if (ppu1>Parameters.brownOutCost ) ppu1 = Parameters.brownOutCost;
 		if (ppu1<Parameters.surplasSupplyValue ) ppu1 = Parameters.surplasSupplyValue;
 		
-		//System.out.print("ppu="+ppu);
+		//if (Consts.DEBUG) System.out.print("ppu="+ppu);
 		for(int i = o.startTimeStamp; i <= o.endTimeStamp;i++)
 		{
 			double price = ((i-currentTick)* ppu  + (currentTick+48 - i) * ppu1)/48;
 			
 			double bal = balance.get(i-currentTick);
-			//System.out.println("bal="+bal);
+			//if (Consts.DEBUG) System.out.println("bal="+bal);
 			if(bal<0)
 			{
 				bal = -bal;
@@ -139,14 +139,14 @@ public class Trader {
 						v+= o.size * price;
 				else
 						v+= bal * price + (o.size-bal)*Parameters.surplasSupplyValue;
-				//System.out.println(v);
+				//if (Consts.DEBUG) System.out.println(v);
 				//v += bal * prices.avgPowerCost * 0.8;
 				//v+= bal* (Prices.getGlobalPowerPrice()+prices.avgPowerCost)/2.1;
 			}
 			else
 				v+= o.size*Parameters.surplasSupplyValue;
 		}
-		//System.out.println("ppuR="+v/o.power);
+		//if (Consts.DEBUG) System.out.println("ppuR="+v/o.power);
 		
 		return v;
 	}
@@ -258,7 +258,7 @@ public class Trader {
 			
 			if(Math.abs(currentTBalance()+traded.get(0).sold())>0.01)
 			{
-				//System.out.println("1:"+salePrice+ " "+currentTBalance()+" "+Math.abs(traded.get(0).sold())+" "+traded.get(0).avgSellPrice());
+				//if (Consts.DEBUG) System.out.println("1:"+salePrice+ " "+currentTBalance()+" "+Math.abs(traded.get(0).sold())+" "+traded.get(0).avgSellPrice());
 				prices.setSale((salePrice*currentTBalance()+
 						             Math.abs(traded.get(0).sold())*traded.get(0).avgSellPrice())
 						             /(currentTBalance()+traded.get(0).sold()));
@@ -273,9 +273,9 @@ public class Trader {
 		}
 		else if(currentTBalance() < 0.0)
 		{
-			//System.out.println(toString()+" update purchase");
+			//if (Consts.DEBUG) System.out.println(toString()+" update purchase");
 			
-			//System.out.println("2:s="+salePrice+ " p="+purchasePrice+" "+currentTBalance()+" "+Math.abs(traded.get(0).sold())+" "+traded.get(0).avgSellPrice());
+			//if (Consts.DEBUG) System.out.println("2:s="+salePrice+ " p="+purchasePrice+" "+currentTBalance()+" "+Math.abs(traded.get(0).sold())+" "+traded.get(0).avgSellPrice());
 					
 			if(Math.abs(currentTBalance())+traded.get(0).purchased()> 0.01)
 			{
@@ -293,7 +293,7 @@ public class Trader {
 		}
 		else
 		{
-			//System.out.println("3:"+salePrice+ " "+currentTBalance()+" "+Math.abs(traded.get(0).sold())+" "+traded.get(0).avgSellPrice());
+			//if (Consts.DEBUG) System.out.println("3:"+salePrice+ " "+currentTBalance()+" "+Math.abs(traded.get(0).sold())+" "+traded.get(0).avgSellPrice());
 			
 			if(Math.abs(traded.get(0).sold())>0.01)
 			{

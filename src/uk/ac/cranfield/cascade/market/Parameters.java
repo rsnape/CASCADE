@@ -37,12 +37,12 @@ public class Parameters {
 	
 	
 	//Factors used for the mapping to the predictors
-	static public double supplyScale = 100000;
-	static public double minCost = -20.0;
-	static public double maxCost = 50.0;
+	static public double supplyScale = 10000;
+	static public double minCost = -0.0;
+	static public double maxCost = 60.0;
 	
 	//The points in the trading horizon where predictions will be calculated
-	static public int[] predictPoint = {1};
+	static public int[] predictPoint = {47};
 	
 	//Number of aggs to graph. The rest will return 0 in all trends
 	static public int aggsToGraph = 10;

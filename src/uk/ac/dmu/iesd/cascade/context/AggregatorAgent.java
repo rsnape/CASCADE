@@ -224,7 +224,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	public double getCurrentPriceSignal()
 	{
 		double time = RepastEssentials.GetTickCount();
-		//System.out.println( time+" getCurrentPriceSignal: "+priceSignal[(int) time % priceSignal.length]);
+		//if (Consts.DEBUG) System.out.println( time+" getCurrentPriceSignal: "+priceSignal[(int) time % priceSignal.length]);
 		return priceSignal[(int) time % priceSignal.length];
 	}
 
@@ -233,6 +233,40 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	/*public double getCurrentCostOfDemand() {
 		return getCurrentCost_C() * this.getNetDemand();
 	} */
+	
+	/**
+	 * This sets the costs for the day. Currently is only called once at 
+	 * the beginning of each day in the step method.
+	 */
+	public void setCostsForDay_C(ArrayList<Double> cost)
+	{
+		// This is setting true cost.
+		for (int i = 0; i<cost.size(); i++) {
+			arr_i_C[i] = cost.get(i) ; 
+		}
+		
+	}
+	
+	/**
+	 * This sets the predicted market sell price calculated by the market aggregator
+	 * for the current tick + 48 (i.e. 24 hours ahead of now). Currently called at each
+	 * tick within step_pre function of RECO aggregator class.
+	 */
+	public void setCostsForTick48_C(int i, double costPrediction)
+	{
+		arr_i_C[i] = costPrediction;	
+	}
+	
+	/**
+	 * This is added to get the cost of buying wholesale electricty for this aggregator 
+	 * at a given tick location for the day. It therefore expects i to be from 0 up to 48
+	 * STEFAN THOR SMITH
+	 */
+	
+	public double getCostAtTick_C(int i)
+	{
+		return arr_i_C[i];
+	}
 	/**
 	 * This method returns the cost of buying wholesale electricity for this aggregator
 	 * at the current tick
@@ -291,7 +325,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	
 	
 	public double getCurrentPriceElasticityFactor_e()	{
-		//System.out.println( RepastEssentials.GetTickCount()+" getCurrentPriceElasticityFactor_e: "+arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay]);
+		//if (Consts.DEBUG) System.out.println( RepastEssentials.GetTickCount()+" getCurrentPriceElasticityFactor_e: "+arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay]);
 		
 		return arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay];
 	}
@@ -390,7 +424,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 	{
 		double price;
 		double x;
-		System.out.println(" setPriceSignalRoscoeAndAult ");
+		if (Consts.DEBUG) System.out.println(" setPriceSignalRoscoeAndAult ");
 		for (int i = 0; i < priceSignal.length; i++)
 		{	
 			//Note that the division by 10 is to convert the units of predicted customer demand
@@ -400,7 +434,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 			price = (double) (A * Math.exp(B * x) + C);
 			if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 			{
-				System.out.println("AggregatorAgent: Price at tick" + i + " is " + price);
+				if (Consts.DEBUG) System.out.println("AggregatorAgent: Price at tick" + i + " is " + price);
 			}
 			if (price > Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH) 
 			{
@@ -493,7 +527,7 @@ public abstract class AggregatorAgent extends Aggregator implements ICognitiveAg
 				// signals valid at an offset from now.
 				if (Consts.DEBUG)
 				{
-					//System.out.println("Broadcasting to " + a.sAgentID);
+					//if (Consts.DEBUG) System.out.println("Broadcasting to " + a.sAgentID);
 				}
 				a.receiveValueSignal(broadcastSignal, broadcastLength);
 			}

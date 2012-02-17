@@ -1,36 +1,48 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Air Temperature</name>
+  <name>Market</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>weather</string>
+      <string>MarketDataSet</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">weather</dataSetId>
+  <dataSetId class="string">MarketDataSet</dataSetId>
   <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>144.0</visibleXRange>
+  <visibleXRange>100.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
-  <precisionValue>0</precisionValue>
-  <maxHistory>1500</maxHistory>
+  <precisionValue>3</precisionValue>
+  <maxHistory>500</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Air Temperature</seriesID>
-      <valueColumn>Air Temperature</valueColumn>
-      <hashCode>-1994405155</hashCode>
-      <proxy>true</proxy>
+      <seriesID>s3</seriesID>
+      <valueColumn>Demand</valueColumn>
+      <hashCode>2043558900</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>s1</seriesID>
+      <valueColumn>AverageCost</valueColumn>
+      <hashCode>-371017559</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>s2</seriesID>
+      <valueColumn>Supply</valueColumn>
+      <hashCode>-1807091085</hashCode>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

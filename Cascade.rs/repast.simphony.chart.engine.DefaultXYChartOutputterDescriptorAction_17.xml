@@ -1,5 +1,5 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>predicted and actual buy price</name>
+  <name>e vs s</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
@@ -11,7 +11,7 @@
   </streamHandler>
   <isBatchAction>false</isBatchAction>
   <dataSetId class="string">AggregatorData</dataSetId>
-  <showLegend>false</showLegend>
+  <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
@@ -27,15 +27,15 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>AggName</seriesID>
-      <valueColumn>BuyPrice</valueColumn>
-      <hashCode>-40109528</hashCode>
+      <seriesID>CurrentPriceSignalSeriesName</seriesID>
+      <valueColumn>CurrentPriceSignal</valueColumn>
+      <hashCode>1586787907</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
     <repast.simphony.chart.Series>
-      <seriesID>AgentID</seriesID>
-      <valueColumn>Pred30PriceD</valueColumn>
-      <hashCode>1617033922</hashCode>
+      <seriesID>CurrentPriceElasticityFactor_e_seriesName</seriesID>
+      <valueColumn>CurrentPriceElasticityFactor_e</valueColumn>
+      <hashCode>1249874518</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

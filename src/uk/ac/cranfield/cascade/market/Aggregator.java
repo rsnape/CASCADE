@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.random.RandomHelper;
+import uk.ac.dmu.iesd.cascade.Consts;
 
 
 /**
@@ -195,7 +196,7 @@ public abstract class Aggregator {
 		if(ID >= Parameters.aggsToGraph) return Double.NaN;
 		else
 		{
-			System.out.println(toString()+" "+(currentSupply() - currentDemand()));
+			if (Consts.DEBUG) System.out.println(toString()+" "+(currentSupply() - currentDemand()));
 			return currentSupply() - currentDemand();
 		}
 	}
@@ -401,11 +402,11 @@ public abstract class Aggregator {
 				buyPPUpredictions.set(i, p.get(1));
 			}
 			
-		    pred30PriceD = sellPPUpredictions.get(12);
-		    pred30PriceS = buyPPUpredictions.get(12);
+		    pred30PriceD = sellPPUpredictions.get(0);
+		    pred30PriceS = buyPPUpredictions.get(0);
 			//Old predictions are used to store what we thaught the balance would be so that
 			// the neural network can be trained to predict prices forward
-			if ((currentTick>0))
+			if ((currentTick>54*48))
 			{
 			
 				//Add a new record to the end of the predictions

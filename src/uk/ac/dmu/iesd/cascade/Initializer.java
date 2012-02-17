@@ -59,8 +59,8 @@ public class Initializer implements ModelInitializer{
 
 		//@Override
 		public void runInitialize(RunState runState, Context context, Parameters runParams) {
-			//System.out.println("Begining of runInitialize");
-			//System.out.println("this is runInitialize method test");
+			//if (Consts.DEBUG) System.out.println("Begining of runInitialize");
+			//if (Consts.DEBUG) System.out.println("this is runInitialize method test");
 			// will be executed at initialization.
 			
 			/*ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
@@ -76,55 +76,83 @@ public class Initializer implements ModelInitializer{
 			}); */
 			
 			CascadeContext cascadeContext = (CascadeContext) context;
-			//System.out.println("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
-			GUIRegistry guiRegis = runState.getGUIRegistry();
-			RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
-			RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
-			//Collection <Pair<GUIRegistryType,Collection<JComponent>>> typeAndComp = guiRegis.getTypesAndComponents();
-			Collection typeAndComp = guiRegis.getTypesAndComponents();
-			//Iterator <Pair<GUIRegistryType,Collection<JComponent>>> typeAndCompIter = typeAndComp.iterator();
-			Iterator<Pair> typeAndCompIter = typeAndComp.iterator();
+			//if (Consts.DEBUG) System.out.println("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
+			if (RSApplication.isGui()){
+				GUIRegistry guiRegis = runState.getGUIRegistry();
+				RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
+				RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
+				//Collection <Pair<GUIRegistryType,Collection<JComponent>>> typeAndComp = guiRegis.getTypesAndComponents();
+				Collection typeAndComp = guiRegis.getTypesAndComponents();
+				//Iterator <Pair<GUIRegistryType,Collection<JComponent>>> typeAndCompIter = typeAndComp.iterator();
+				Iterator<Pair> typeAndCompIter = typeAndComp.iterator();
 
-			while ( typeAndCompIter.hasNext() ){
-				Pair <GUIRegistryType,Collection<JComponent>> typeAndCompPair = typeAndCompIter.next();
-				GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
-				//System.out.println("guiRegisType: "+ guiRegisType);
-				if (guiRegisType == GUIRegistryType.CHART) {
-					Collection <JComponent> chartCollection = typeAndCompPair.getSecond();  
-					cascadeContext.setChartCompCollection(chartCollection);
-
-
-				}
-				if (guiRegisType == GUIRegistryType.DISPLAY) {
-
-				}
-				Collection <JComponent> compCol = typeAndCompPair.getSecond();
-				//System.out.println("compCol: "+ compCol);
-				Iterator<JComponent> compIter= compCol.iterator();
-				while ( compIter.hasNext() ){
-					JComponent comp = compIter.next();
+				while ( typeAndCompIter.hasNext() ){
+					Pair <GUIRegistryType,Collection<JComponent>> typeAndCompPair = typeAndCompIter.next();
+					GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
+					//if (Consts.DEBUG) System.out.println("guiRegisType: "+ guiRegisType);
 					if (guiRegisType == GUIRegistryType.CHART) {
-						//System.out.println("chartTitle: "+((ChartPanel) comp).getChart().getTitle().getText());
+						Collection <JComponent> chartCollection = typeAndCompPair.getSecond();  
+						cascadeContext.setChartCompCollection(chartCollection);
+
+
 					}
-					// System.out.print("Comp Name: "+ comp.getName());
-					// System.out.print(" Comp toolTipText: "+ comp.getToolTipText() );
-					//System.out.print(" Comp Count: "+ comp.getComponentCount());
-					if (comp.getComponentCount()>0) {
-						//System.out.print(" SubComp: "+ comp.getComponent(0));
+					if (guiRegisType == GUIRegistryType.DISPLAY) {
+
 					}
-					//System.out.println(" Comp class: "+ comp.getClass());
+					Collection <JComponent> compCol = typeAndCompPair.getSecond();
+					//if (Consts.DEBUG) System.out.println("compCol: "+ compCol);
+					Iterator<JComponent> compIter= compCol.iterator();
+					while ( compIter.hasNext() ){
+						JComponent comp = compIter.next();
+						if (guiRegisType == GUIRegistryType.CHART) {
+							//if (Consts.DEBUG) System.out.println("chartTitle: "+((ChartPanel) comp).getChart().getTitle().getText());
+						}
+						// if (Consts.DEBUG) System.out.print("Comp Name: "+ comp.getName());
+						// if (Consts.DEBUG) System.out.print(" Comp toolTipText: "+ comp.getToolTipText() );
+						//if (Consts.DEBUG) System.out.print(" Comp Count: "+ comp.getComponentCount());
+						if (comp.getComponentCount()>0) {
+							//if (Consts.DEBUG) System.out.print(" SubComp: "+ comp.getComponent(0));
+						}
+						//if (Consts.DEBUG) System.out.println(" Comp class: "+ comp.getClass());
+					}
+
+				} 
+
+
+				List<IDisplay> listOfDisplays =  guiRegis.getDisplays();
+				for (IDisplay display : listOfDisplays) {
+
+					if (display instanceof DisplayOGL2D)
+					{
+						((DisplayOGL2D) display).addProbeListener(new ProsumerProbeListener(cascadeContext));
+					}
 				}
 
-			} 
 
 
-			List<IDisplay> listOfDisplays =  guiRegis.getDisplays();
-			for (IDisplay display : listOfDisplays) {
+				//++++++++++++++Add stuff to user panel
+				JPanel customPanel = new JPanel();
+				customPanel.add(new JLabel("TestLabel"));
+				customPanel.add(new JButton("Test Button"));		
+				JLabel dayCountLabel = new JLabel();
+				dayCountLabel.setText("");
+				
+				/*if (tickListener != null) {
+					tickListener.tickCountUpdated(mainContext.getTickCount());
+				} */
+				
+				RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
+				
+				RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
+				RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
 
-				if (display instanceof DisplayOGL2D)
-				{
-					((DisplayOGL2D) display).addProbeListener(new ProsumerProbeListener(cascadeContext));
-				}
+				
+				
+				//runParams.
+			   // if (Consts.DEBUG) System.out.println("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
+				//+++++++++++++++++++++++++++++++++++++
+
+				
 			}
 
 			
@@ -137,7 +165,7 @@ public class Initializer implements ModelInitializer{
 					try {
 						printStream = new PrintStream(new FileOutputStream(file));
 						System.setOut(printStream);
-						System.out.println("Redirected System.out to this file, namely " + Consts.DEBUG_OUTPUT_FILE);
+						if (Consts.DEBUG) System.out.println("Redirected System.out to this file, namely " + Consts.DEBUG_OUTPUT_FILE);
 
 					} catch (FileNotFoundException e) {
 						System.err.println("Couldn't find file with name " + Consts.DEBUG_OUTPUT_FILE);
@@ -145,32 +173,6 @@ public class Initializer implements ModelInitializer{
 					}						    
 				}
 			}
-
-
-			//++++++++++++++Add stuff to user panel
-			JPanel customPanel = new JPanel();
-			customPanel.add(new JLabel("TestLabel"));
-			customPanel.add(new JButton("Test Button"));		
-			JLabel dayCountLabel = new JLabel();
-			dayCountLabel.setText("");
-			
-			/*if (tickListener != null) {
-				tickListener.tickCountUpdated(mainContext.getTickCount());
-			} */
-			
-			RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
-			
-			RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
-			RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
-
-			
-			
-			//runParams.
-		   // System.out.println("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
-			//+++++++++++++++++++++++++++++++++++++
-
-
-
 		}
 
 
@@ -179,7 +181,7 @@ public class Initializer implements ModelInitializer{
 		}
 
 		public void accept(ControllerActionVisitor visitor) {
-			//System.out.println("Initializer:: accept test "+visitor.toString());
+			//if (Consts.DEBUG) System.out.println("Initializer:: accept test "+visitor.toString());
 
 		}
 	}

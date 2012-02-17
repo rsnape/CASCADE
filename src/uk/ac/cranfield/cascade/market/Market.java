@@ -67,7 +67,7 @@ public class Market {
 	{
 		int currentTick = (int) RunEnvironment.getInstance().getCurrentSchedule().getTickCount();	
 
-		//System.out.println("run market");
+		//if (Consts.DEBUG) System.out.println("run market");
 		
 		//Clear the global balance predictions
 		//Set the global supply predictions at the correct size;
@@ -76,10 +76,9 @@ public class Market {
 			globalBalancePrediction.add(0.0);
 		globalBalancePredictionWithAtt = (ArrayList<Double>) globalBalancePrediction.clone();
 		
-		//Allow all aggrigators to update their data
-		for(Aggregator a : aggs)
-			a.beforeTrade();
-
+		//Allow all aggregators to update their data
+			for(Aggregator a : aggs)
+				a.beforeTrade();
 		//Update the internal balances of all the traders
 		for(Trader t : traders)
 			t.updateStoredData();
@@ -103,7 +102,7 @@ public class Market {
 				Offer o = a.biggestOffer(r < Parameters.tradesNow);
 				if(o != null)
 				{//
-					//System.out.println("offer "+o.from+" from:"+o.startTimeStamp+" to:"+o.endTimeStamp+" pow="+o.size);
+					//if (Consts.DEBUG) System.out.println("offer "+o.from+" from:"+o.startTimeStamp+" to:"+o.endTimeStamp+" pow="+o.size);
 			
 					Trader bestT = null;
 					double bestPrice = Double.MIN_VALUE;
@@ -124,7 +123,7 @@ public class Market {
 						if(b != a)
 						{
 							double price = b.valueOffer(o);
-							//System.out.print("<"+price/o.power+">");
+							//if (Consts.DEBUG) System.out.print("<"+price/o.power+">");
 							if(price > bestPrice)
 							{
 								secondPrice = bestPrice;
@@ -135,9 +134,9 @@ public class Market {
 								secondPrice = price;
 							}
 						}
-						//else System.out.print("<----->");
+						//else if (Consts.DEBUG) System.out.print("<----->");
 					}
-					//System.out.println();
+					//if (Consts.DEBUG) System.out.println();
 					
 					if(secondPrice > Double.MIN_VALUE)
 						o.price = secondPrice;
@@ -151,7 +150,7 @@ public class Market {
 					}
 					if((bestT != null) && (o.unitPrice > Parameters.surplasSupplyValue+0.01))
 					{
-						//System.out.println("Selling from "+a+" to "+bestT+" at "+o.unitPrice);
+						//if (Consts.DEBUG) System.out.println("Selling from "+a+" to "+bestT+" at "+o.unitPrice);
 						a.sell(o);
 						bestT.buy(o);
 						a.updateStoredData();
@@ -196,7 +195,7 @@ public class Market {
 	}
 	public void runMarketClosing()
 	{
-		//System.out.println("===================================");
+		//if (Consts.DEBUG) System.out.println("===================================");
 		//Run calculation for every trader		
 		double totalSupply = 0.0;
 		double totalSupplyCost = 0.0;
@@ -218,7 +217,7 @@ public class Market {
 		
 		//Calculate the amount shipped around the system at closing
 		for(Trader a : traders) {	
-			//System.out.println(a.toString()+"---:"+a.currentTBalance());
+			//if (Consts.DEBUG) System.out.println(a.toString()+"---:"+a.currentTBalance());
 			if(a.currentTBalance()>0.0) {
 				totalSupply += a.currentTBalance();
 				totalSupplyCost += a.currentTBalance() * a.closingSalePrice();
@@ -234,9 +233,9 @@ public class Market {
 			totalShipped += Math.abs(a.currentTBalance());
 		}
 		//
-		//System.out.println("total balance ="+totalBalance+" total in closing="+(totalShipped));
-		//System.out.println("total demand ="+totalDemand+" at "+totalDemandCost);
-		//System.out.println("total supply ="+totalSupply+" at "+totalSupplyCost);
+		//if (Consts.DEBUG) System.out.println("total balance ="+totalBalance+" total in closing="+(totalShipped));
+		//if (Consts.DEBUG) System.out.println("total demand ="+totalDemand+" at "+totalDemandCost);
+		//if (Consts.DEBUG) System.out.println("total supply ="+totalSupply+" at "+totalSupplyCost);
 		averageBalance = averageBalance * 0.5 + totalBalance * 0.5;
 		averageShipped = averageShipped * 0.5 + totalShipped * 0.5;
         averageDemand = RDemand * 0.5 + averageDemand * 0.5;
@@ -270,8 +269,8 @@ public class Market {
         else
         	salePrice = purchasePrice = tPrice;
 		
-        //System.out.print(" Closing SalePrcie="+salePrice);
-        //System.out.println(" Closing PurchasePrice="+purchasePrice);
+        //if (Consts.DEBUG) System.out.print(" Closing SalePrcie="+salePrice);
+        //if (Consts.DEBUG) System.out.println(" Closing PurchasePrice="+purchasePrice);
 		Prices.setGClosingPurchese(purchasePrice);
 		Prices.setGClosingSale(salePrice);
         

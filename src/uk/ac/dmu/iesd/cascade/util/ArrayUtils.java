@@ -645,11 +645,11 @@ public class ArrayUtils {
 			double val = Math.pow(doubleArrayBase[i], exp);
 			/*if (Double.isNaN(val)) {
 				val =0;
-				System.out.println("ArrayUtils:: pow(), calculated val was NaN and set to 0");
+				if (Consts.DEBUG) System.out.println("ArrayUtils:: pow(), calculated val was NaN and set to 0");
 			}
 
 			if (Double.isInfinite(val)) {
-				System.out.println("ArrayUtils:: pow(), calculated val was Infinity and set to 0");
+				if (Consts.DEBUG) System.out.println("ArrayUtils:: pow(), calculated val was Infinity and set to 0");
 				val =0;
 			} */
 			powArray[i]=val;
@@ -765,7 +765,7 @@ public class ArrayUtils {
 		float sum= sum(floatArray);
 		if (sum ==0)
 			sumIsEqualZero=true;
-		//System.out.println("ArryUtils.isSumEqualZero: "+sum);
+		//if (Consts.DEBUG) System.out.println("ArryUtils.isSumEqualZero: "+sum);
 		return sumIsEqualZero;
 	}
 

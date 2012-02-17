@@ -34,7 +34,7 @@ public class Neuron {
 		
 	public void reset()
 	{
-		//System.out.print("r");
+		//if (Consts.DEBUG) System.out.print("r");
 		mode = 0;
 	}
 	
@@ -53,7 +53,7 @@ public class Neuron {
 	        
 	        outputValue = inputSum / (temp+Math.abs(inputSum));
 		}
-		//System.out.println("fire="+outputValue);
+		//if (Consts.DEBUG) System.out.println("fire="+outputValue);
 	    return outputValue;
 	}
 	
@@ -69,7 +69,7 @@ public class Neuron {
 	
 	public double setError(double expectedV)
 	{
-		//System.out.print("m="+mode);
+		//if (Consts.DEBUG) System.out.print("m="+mode);
 		if(mode < 2)
 		{
 			if(mode == 0)

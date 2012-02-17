@@ -3,6 +3,8 @@ package uk.ac.dmu.iesd.cascade.io;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import uk.ac.dmu.iesd.cascade.Consts;
+
 /**
  * 
  * This class can be used to create CSV (Comma Separated Values)files.
@@ -83,7 +85,7 @@ public class CSVWriter {
 		try {
 			for (int i=0; i<values.length; i++){
 				writer.append(""+values[i]);
-				//System.out.println("CSWriter:: value: "+values[i]);
+				//if (Consts.DEBUG) System.out.println("CSWriter:: value: "+values[i]);
 				writer.append(',');
 				
 			}

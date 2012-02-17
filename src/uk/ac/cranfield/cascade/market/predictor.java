@@ -4,6 +4,7 @@
 package uk.ac.cranfield.cascade.market;
 import java.util.ArrayList;
 
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.random.RandomHelper;
 
 import uk.ac.cranfield.base.neural.*;
@@ -19,8 +20,9 @@ public class predictor {
    public double train()
    {
 	   double e = 0.0;
-      
-	   e += t.learnRandom(n,10000);
+	   int currentTick = (int) RunEnvironment.getInstance().getCurrentSchedule().getTickCount();	
+	   int tt = Math.max(1000,100000-((currentTick-(48*54))*100));
+	   e += t.learnRandom(n,tt);
       
       return e / 1;
       
@@ -82,8 +84,8 @@ public class predictor {
 	   out.add(codeCost(unitCostD));
 	   
 	   
-	   if(RandomHelper.nextIntFromTo(0,100) <= 0)
-	       t.addExample(in, out, 1005);
+	   if(RandomHelper.nextIntFromTo(0,100) <= 30)
+	       t.addExample(in, out, 4005);
 	   
 	   //Test the example as well
 	   n.reset();

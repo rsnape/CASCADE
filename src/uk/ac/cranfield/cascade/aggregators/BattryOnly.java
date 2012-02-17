@@ -93,7 +93,7 @@ public class BattryOnly extends Aggregator{
 		if(demandPrediction == null)
 			return new ArrayList<Prediction>();
 		
-		//System.out.println("kk");
+		//if (Consts.DEBUG) System.out.println("kk");
 		
 		ArrayList<Prediction> p = (ArrayList<Prediction>)demandPrediction.clone();
 		
@@ -121,7 +121,7 @@ public class BattryOnly extends Aggregator{
 	
 	public void updateSupplyDemand()
 	{
-		//System.out.println("updateSupplyDemand");
+		//if (Consts.DEBUG) System.out.println("updateSupplyDemand");
 		
 		demandPrediction = new ArrayList<Prediction>();
 		int currentTick = (int) RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
@@ -131,7 +131,7 @@ public class BattryOnly extends Aggregator{
 		//Calculate the price point on which future demand will be based		
 		double powerPriceD = avgBuyPrice*0.899 + avgSellPrice*0.1 + Market.defaultM.getAverageCost() * 0.001;
 
-		//System.out.print(toString()+" "+powerPriceD);
+		//if (Consts.DEBUG) System.out.print(toString()+" "+powerPriceD);
 		
 		//Calulate the eventual demand based on that price point
 		double nextDemand;
@@ -147,7 +147,7 @@ public class BattryOnly extends Aggregator{
 		if(nextDemand < currentDemand * 0.999) nextDemand=currentDemand * 0.999;
 		if(nextDemand > currentDemand * 1.001) nextDemand=currentDemand * 1.001;
 
-		//System.out.println(currentDemand+" "+nextDemand);
+		//if (Consts.DEBUG) System.out.println(currentDemand+" "+nextDemand);
 		
 		//calculate the predicted battry power usage and the forward predictions for demand
 		double cStored = stored;
@@ -217,14 +217,14 @@ public class BattryOnly extends Aggregator{
 			cDemand = demandPrediction.get(0).prediction2.value - demandPrediction.get(0).prediction.value;
 			cStored += incr;
 			battryUsage[i]=incr;
-			//System.out.print(""+incr+",");
+			//if (Consts.DEBUG) System.out.print(""+incr+",");
 		}
-		//System.out.println();
+		//if (Consts.DEBUG) System.out.println();
 		//Update the energy in the battry 
 		if(currentTick > battyOnAt)
 		    stored += battryUsage[0];	
 		
-		//System.out.println("updateSupplyDemand XX");
+		//if (Consts.DEBUG) System.out.println("updateSupplyDemand XX");
 	}
 	
 	public double currentDemand()

@@ -504,7 +504,7 @@ public class CascadeContext extends DefaultContext{
 					SnapshotTaker snapshotTaker = (SnapshotTaker)snapshotTakerArrList.get(i);
 					String fileName = getFileNameForChart(i);
 					if (fileName != "") {
-						//System.out.println("takeSnapshot: fileName is empty");
+						//if (Consts.DEBUG) System.out.println("takeSnapshot: fileName is empty");
 						File file = new File(fileName);
 						snapshotTaker.save(file, "png");
 					}
@@ -512,7 +512,7 @@ public class CascadeContext extends DefaultContext{
 
 			} catch (IOException e) {
 				// Print out the exception that occurred
-				System.out.println("CascadeContext: Unable to takeSnapshot "+e.getMessage());
+				if (Consts.DEBUG) System.out.println("CascadeContext: Unable to takeSnapshot "+e.getMessage());
 			}
 		}
 
@@ -535,7 +535,7 @@ public class CascadeContext extends DefaultContext{
 		snapshotTakerArrList = new ArrayList();
 		while ( compIter.hasNext() ){
 			ChartPanel chartComp = (ChartPanel) compIter.next();
-			//System.out.println(chartComp.getChart().getTitle().getText());
+			//if (Consts.DEBUG) System.out.println(chartComp.getChart().getTitle().getText());
 			SnapshotTaker snapshotTaker = new SnapshotTaker(chartComp);
 			snapshotTakerArrList.add(snapshotTaker);
 		}
@@ -545,7 +545,7 @@ public class CascadeContext extends DefaultContext{
 
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
-		//System.out.println("chartCompCol: null?: "+getChartCompCollection());
+		//if (Consts.DEBUG) System.out.println("chartCompCol: null?: "+getChartCompCollection());
 		//if ((chartSnapshotOn) && (getChartCompCollection() != null)){
 		ScheduleParameters params = ScheduleParameters.createRepeating(0, getChartSnapshotInterval(),ScheduleParameters.LAST_PRIORITY);
 		schedule.schedule(params, this, "takeSnapshot"); 
@@ -562,7 +562,7 @@ public class CascadeContext extends DefaultContext{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
-		System.out.println("calendarStep()");
+		if (Consts.DEBUG) System.out.println("calendarStep()");
 		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
 	}
 
@@ -574,7 +574,7 @@ public class CascadeContext extends DefaultContext{
 	{
 		super(context.getId(), context.getTypeID());
 		if (verbose)
-			System.out.println("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
+			if (Consts.DEBUG) System.out.println("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
 
 		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
 
@@ -582,7 +582,7 @@ public class CascadeContext extends DefaultContext{
 			Projection proj = projIterator.next();
 			this.addProjection(proj);
 			if (verbose)
-				System.out.println("CascadeContext: Added projection: "+ proj.getName());
+				if (Consts.DEBUG) System.out.println("CascadeContext: Added projection: "+ proj.getName());
 		}
 
 		this.setId(context.getId());
@@ -594,7 +594,7 @@ public class CascadeContext extends DefaultContext{
 		GUIRegistry guiRegis = runState.getGUIRegistry();
 		
 		//List<IDisplay> listOfDisplays =  guiRegis.getDisplays();		
-		//System.out.println("list of displays size: "+listOfDisplays.size());
+		//if (Consts.DEBUG) System.out.println("list of displays size: "+listOfDisplays.size());
 		//tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
 
 		// ------------Custom global schedule action --------------------

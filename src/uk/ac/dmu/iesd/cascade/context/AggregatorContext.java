@@ -21,8 +21,8 @@ public class AggregatorContext extends CascadeContext {
 		 * @return <code>parent tickPerDay</code>
 		 */
 		public int getNbOfTickPerDay() {
-			//System.out.println("AggContext getTickPerDay: this "+this.ticksPerDay);
-			//System.out.println("AggContext getTickPerDay: super "+super.getTickPerDay());
+			//if (Consts.DEBUG) System.out.println("AggContext getTickPerDay: this "+this.ticksPerDay);
+			//if (Consts.DEBUG) System.out.println("AggContext getTickPerDay: super "+super.getTickPerDay());
 
 			return super.getNbOfTickPerDay();
 		}

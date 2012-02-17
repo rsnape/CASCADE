@@ -32,7 +32,7 @@ public class tradeRecord {
 	{
 		if(cost/power > Parameters.brownOutCost+1)
 		{
-			//System.out.println("Sell cost too high");
+			//if (Consts.DEBUG) System.out.println("Sell cost too high");
 			System.exit(1);
 		}
 		sold += power;
@@ -49,7 +49,7 @@ public class tradeRecord {
 	
 	double avgSellPrice()
 	{
-		//System.out.println(totalSoldCost+" "+sold);
+		//if (Consts.DEBUG) System.out.println(totalSoldCost+" "+sold);
 		if(sold > 0.0)
 		return totalSoldCost / sold;
 		else
