@@ -21,7 +21,7 @@ public final class Consts {
 	/*----------------------------
 	 * Model level constants
 	 *----------------------------*/
-	public static boolean DEBUG = true;  //use for debugging, default is false
+	public static boolean DEBUG = false;  //use for debugging, default is false
 	public static final String DEBUG_OUTPUT_FILE = "DebugOutput.txt"; //Change this to a name to desired filename to divert System.out to a file when DEBUG is true
 	public static String FILE_CHART_FORMAT_EXT = ".png";
 
