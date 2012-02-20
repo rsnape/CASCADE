@@ -11,7 +11,7 @@
   </streamHandler>
   <isBatchAction>false</isBatchAction>
   <dataSetId class="string">MarketDataSet</dataSetId>
-  <showLegend>false</showLegend>
+  <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>

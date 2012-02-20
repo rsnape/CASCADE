@@ -721,7 +721,7 @@ public class WattboxController implements ISmartController{
 					{
 						//calculate energy implications and cost for this candidate setPointProfile
 						localDemandProfile = calculateEstimatedSpaceHeatPumpDemand(localSetPointArray);
-						if (owner.getAgentID() == 0)//TESTTTESTTEST((i+j) == 0 && Consts.DEBUG)
+						if ((i+j) == 0 && Consts.DEBUG)
 						{
 							System.out.println("Calculated demand for set point array turning off at tick " + i + " for " + (j+1) + " ticks " + Arrays.toString(localSetPointArray));
 							System.out.println("Demand = " + Arrays.toString(localDemandProfile));
@@ -730,12 +730,6 @@ public class WattboxController implements ISmartController{
 						{
 							//in here if the set point profile is achievable
 							newCost = evaluateCost(localDemandProfile);
-
-							if (owner.getAgentID() == 0)//TESTTTESTTEST
-							{
-								System.out.println(newCost + " vs. " + leastCost);
-
-							}
 
 							//Decide whether to swap the new profile with the current best one
 							//based on cost.

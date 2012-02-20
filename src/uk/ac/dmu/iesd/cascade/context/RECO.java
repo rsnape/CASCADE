@@ -12,9 +12,11 @@ import java.util.Vector;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import cern.colt.list.DoubleArrayList;
 import bsh.This;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
@@ -1779,7 +1781,7 @@ public class RECO extends AggregatorAgent{
 
 					broadcastSignalToCustomers(arr_i_S, customers);
 
-					System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
+					if (Consts.DEBUG) System.out.println("RECO: TrainingPeriod/BeginingOfDay ND AFTER sending training signal: "+calculateNetDemand(customers));
 
 				}
 			} //training period completed 
@@ -1964,7 +1966,7 @@ public class RECO extends AggregatorAgent{
 		if(isAggregateDemandProfileBuildingPeriodCompleted() && isTrainingPeriodCompleted() && mainContext.isEndOfDay(timeslotOfDay))
 			printOutNetDemand4DemandFlatteningTest();
 		
-		System.out.println(" ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		if (Consts.DEBUG) System.out.println(" ++++++++++ RECO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 	}
 	
 
