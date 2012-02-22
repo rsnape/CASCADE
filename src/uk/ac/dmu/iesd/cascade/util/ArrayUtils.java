@@ -289,7 +289,14 @@ public class ArrayUtils {
 	{
 		float [] returnArray = null;
 
-		float normalisationConstant = (1 / max(absoluteValues(array)));
+		//By definition if maxAbs = 0 then array filled with zeros and return with zeros.
+		float maxAbs = max(absoluteValues(array));
+		if(Float.compare(maxAbs, 0.0f) == 0) 
+		{
+			return array;
+		}
+				
+		float normalisationConstant = (1 / maxAbs);
 
 		returnArray = multiply(array, (normalisationConstant * maxMagnitude));
 
@@ -297,7 +304,7 @@ public class ArrayUtils {
 		{
 			float minVal = 0;
 			minVal = Math.min(minVal, min(array));
-			returnArray = multiply(offset(returnArray, minVal), ((1/max(returnArray)) * maxMagnitude));
+			returnArray = multiply(offset(returnArray, -minVal), ((1/max(returnArray)) * maxMagnitude));
 
 		}
 		return returnArray;
@@ -317,8 +324,15 @@ public class ArrayUtils {
 	public static double[] normalizeValues(double[] array, double maxMagnitude, boolean allowNegative)
 	{
 		double [] returnArray = null;
+		//By definition if maxAbs = 0 then array filled with zeros and return with zeros.
+		double maxAbs = max(absoluteValues(array));
 
-		double normalisationConstant = (1 / max(absoluteValues(array)));
+		if(Double.compare(maxAbs, 0.0d) == 0) 
+		{
+			return array;
+		}
+				
+		double normalisationConstant = (1 / maxAbs);
 
 		returnArray = multiply(array, (normalisationConstant * maxMagnitude));
 
@@ -326,7 +340,7 @@ public class ArrayUtils {
 		{
 			double minVal = 0;
 			minVal = Math.min(minVal, min(array));
-			returnArray = multiply(offset(returnArray, minVal), ((1/max(returnArray)) * maxMagnitude));
+			returnArray = multiply(offset(returnArray, -minVal), ((1/max(returnArray)) * maxMagnitude));
 
 		}
 		return returnArray;
@@ -407,7 +421,7 @@ public class ArrayUtils {
 	 */
 	public static float max( float[] array)
 	{
-		float maxVal = Float.MIN_VALUE;
+		float maxVal = - Float.MAX_VALUE;
 
 		for(int i = array.length - 1; i >= 0; --i)
 		{
@@ -425,7 +439,7 @@ public class ArrayUtils {
 	 */
 	public static double max( double[] array)
 	{
-		double maxVal = Double.MIN_VALUE;
+		double maxVal = - Double.MAX_VALUE;
 
 		for(int i = array.length - 1; i >= 0; --i)
 		{
@@ -1197,7 +1211,8 @@ public class ArrayUtils {
 			if (returnArrayList.size() != n)
 			{
 				System.err.println("Find n smallest failed - sort reported non-tied, but didn't find clear n smallest");
-			}
+				System.err.println(Arrays.toString(workingArray) + ", " + n + " smallest = " + returnArrayList.toString());
+				}
 		}
 		else
 		{

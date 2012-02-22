@@ -45,5 +45,5 @@ public class Parameters {
 	static public int[] predictPoint = {47};
 	
 	//Number of aggs to graph. The rest will return 0 in all trends
-	static public int aggsToGraph = 10;
+	static public int aggsToGraph = 10000;
 }

@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.random.RandomHelper;
+import repast.simphony.util.ContextUtils;
 import uk.ac.dmu.iesd.cascade.Consts;
 
 
@@ -41,6 +42,7 @@ public abstract class Aggregator {
     private Trader sellTrader;
     private Trader buyTrader;
     private Market market = Market.defaultM ;
+    
     
     //Figures achived across both traders for buying and selling
     public double avgBuyPrice = 1.0;

@@ -579,7 +579,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		double maxGenPrice = 20;
 			
 		
-		for(int i = 0; i < 0; i++)
+		/*for(int i = 0; i < 0; i++)
 		{
 			TestConsumer ta = new TestConsumer(
 		              minDPrice,maxDPrice,
@@ -590,11 +590,11 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			RunEnvironment.getInstance().getCurrentSchedule().schedule(params, ta, "updateSupplyDemand");
 			
 			
-		}
+		}*/
 		
 		for(int i = 0; i < 2; i++)
 		{	
-			
+			//These are proxies for power stations
 
 				
 			testAggregator ta = new testAggregator(minGenPrice,maxGenPrice,
@@ -605,10 +605,11 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,2);
 			RunEnvironment.getInstance().getCurrentSchedule().schedule(params, ta, "updateSupplyDemand");
         }
+		//Market contextMarket = new Market();
 		
-		cascadeMainContext.add(Market.defaultM );
+		cascadeMainContext.add(Market.defaultM ); /*contextMarket);*/
 		ScheduleParameters params = ScheduleParameters.createRepeating(1, 1,ScheduleParameters.LAST_PRIORITY);
-		RunEnvironment.getInstance().getCurrentSchedule().schedule(params, Market.defaultM, "runMarket");
+		RunEnvironment.getInstance().getCurrentSchedule().schedule(params, Market.defaultM, "runMarket"); //contextMarket
 		
 		
 		
@@ -675,9 +676,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	 */
 	public CascadeContext build(Context context) {
 
+		Market.defaultM = new Market();
 		RunEnvironment.getInstance().endAt(7007);		
 		//if (Consts.DEBUG) System.out.println("CascadeContextBuilder");
-
+		
 		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
 
 		readParamsAndInitializeArrays();
