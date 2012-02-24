@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<sweep runs="1">
+<parameter name="randomSeed" type="list" value_type="int" values="1 2 3 4 5 6 7 8">
+<parameter name="signalMode" type="list" value_type="int" values="0"/>
+<parameter name="dataFileFolder" type="constant" constant_type="string" value="dataFiles" />
+<parameter name="startDate" type="constant" constant_type="string" value="01/01/2000" />
+<parameter name="elecWaterFraction" type="constant" constant_type="number" value="1.0" />
+<parameter name="systemBaseDemandFile" type="constant" constant_type="string" value="macroDemand_1Day_Thursday.csv" />
+<parameter name="defraProfiles" type="constant" constant_type="string" value="melodySampleWeek.csv" />
+<parameter name="ticksPerDay" type="constant" constant_type="number" value="48" />
+<parameter name="defraCategories" type="constant" constant_type="string" value="DEFRA_pro_env_categories.csv" />
+<parameter name="smartControlDecisionThreshold" type="constant" constant_type="number" value="0.9" />
+<parameter name="weatherFile" type="constant" constant_type="string" value="oneFlatDayWeather.csv" />
+<parameter name="defaultProsumersPerFeeder" type="constant" constant_type="number" value="5" />
+<parameter name="householdBaseAttributeFile" type="constant" constant_type="string" value="miscDemand_1Day_Melody_Thursday.csv" />
+<parameter name="defaultSignalLength" type="constant" constant_type="number" value="48" />
+<parameter name="electricalNetworkLayoutFile" type="constant" constant_type="string" value="networkTopology.csv" />
+<parameter name="chartSnapshotInterval" type="constant" constant_type="number" value="144" />
+<parameter name="chartSnapshot" type="constant" constant_type="boolean" value="false" />
+<parameter name="elecSpaceFraction" type="constant" constant_type="number" value="1.0" />
+<parameter name="verboseOutput" type="constant" constant_type="boolean" value="false" />
+</parameter>
+</sweep>

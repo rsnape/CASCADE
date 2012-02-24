@@ -8,3 +8,5 @@ Repast.settings
 *.png
 *.txt
 !dataFiles/*
+!cascade.rs/*
+java*
