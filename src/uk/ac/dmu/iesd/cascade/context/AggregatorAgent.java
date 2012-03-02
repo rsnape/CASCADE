@@ -6,8 +6,6 @@ import java.util.*;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.hsqldb.lib.ArrayUtil;
 
-import com.sun.tools.internal.jxc.apt.Const;
-
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.*;
