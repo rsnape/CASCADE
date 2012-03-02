@@ -7,4 +7,7 @@ Repast.settings
 *.csv
 *.png
 *.txt
+*.tab
+*.pdf
+!cascade.rs/*
 !dataFiles/*
