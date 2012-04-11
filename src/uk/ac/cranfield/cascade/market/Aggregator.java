@@ -198,7 +198,7 @@ public abstract class Aggregator {
 		if(ID >= Parameters.aggsToGraph) return Double.NaN;
 		else
 		{
-			if (Consts.DEBUG) System.out.println(toString()+" "+(currentSupply() - currentDemand()));
+			//if (Consts.DEBUG) System.out.println(toString()+" "+(currentSupply() - currentDemand()));
 			return currentSupply() - currentDemand();
 		}
 	}

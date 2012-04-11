@@ -181,7 +181,8 @@ public class CSVWriter {
 			//writer.flush();
 			writer.close();
 			System.getProperty("user.dir");
-			System.out.println("CSVWriter: File created: "+System.getProperty("user.dir")+"\\"+fileName);
+			if (Consts.DEBUG)
+				System.out.println("CSVWriter: File created: "+System.getProperty("user.dir")+"\\"+fileName);
 		}
 		catch(IOException e) {
 			e.printStackTrace();

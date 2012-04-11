@@ -77,11 +77,14 @@ public class CascadeContext extends DefaultContext{
 	
 	int totalNbOfProsumers;
 	int randomSeed;
+	private int lengthOfDemandProfiles;
 	
 	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
 	protected static boolean chartSnapshotOn = false;  // use
 	protected int ticksPerDay;
 	protected int chartSnapshotInterval;
+	
+	protected int signalMode=-1;
 	
 	private Network<?> socialNetwork;
 	private Network<?> economicNetwork;
@@ -102,8 +105,8 @@ public class CascadeContext extends DefaultContext{
 	public EmpiricalWalker wetApplProbDistGenerator;
 	
 	public Binomial hhProsumerElasticityTest;
-
 	
+
 	/**
 	 * This method return the social network 
 	 * @return <tt>socialNetwork</tt> associated to the context
@@ -164,7 +167,13 @@ public class CascadeContext extends DefaultContext{
 	
 	public void setNbOfTickPerDay(int tick) {
 		this.ticksPerDay = tick;
+	   
+		
 	}
+	
+	/*public int getLengthOfDemandProfiles() {
+		return this.lengthOfDemandProfiles;
+	} */
 	
 	public void setChartSnapshotInterval(int interval) {
 		this.chartSnapshotInterval = interval;
@@ -497,7 +506,7 @@ public class CascadeContext extends DefaultContext{
 
 			} catch (IOException e) {
 				// Print out the exception that occurred
-				if (Consts.DEBUG) System.out.println("CascadeContext: Unable to takeSnapshot "+e.getMessage());
+				 System.out.println("CascadeContext: Unable to takeSnapshot "+e.getMessage());
 			}
 		}
 
@@ -547,8 +556,8 @@ public class CascadeContext extends DefaultContext{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
-		if (Consts.DEBUG) System.out.println("calendarStep()");
-		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
+		//if (Consts.DEBUG) System.out.println("calendarStep()");
+		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);		
 	}
 
 	/**
@@ -559,7 +568,7 @@ public class CascadeContext extends DefaultContext{
 	{
 		super(context.getId(), context.getTypeID());
 		if (verbose)
-			if (Consts.DEBUG) System.out.println("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
+			System.out.println("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
 
 		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
 
@@ -567,25 +576,12 @@ public class CascadeContext extends DefaultContext{
 			Projection<?> proj = projIterator.next();
 			this.addProjection(proj);
 			if (verbose)
-				if (Consts.DEBUG) System.out.println("CascadeContext: Added projection: "+ proj.getName());
+				System.out.println("CascadeContext: Added projection: "+ proj.getName());
 		}
 
 		this.setId(context.getId());
 		this.setTypeID(context.getTypeID());
-
-	
-		//tttttttttttttt   Babak test ttttttttttttttttttttt
-		//RunState runState = RunState.getInstance();
-		//GUIRegistry guiRegis = runState.getGUIRegistry();
 		
-		//List<IDisplay> listOfDisplays =  guiRegis.getDisplays();		
-		//if (Consts.DEBUG) System.out.println("list of displays size: "+listOfDisplays.size());
-		//tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt
-
-		// ------------Custom global schedule action --------------------
-
-		
-		// ----------------------------------------------------------------
 
 	}
 }

@@ -6,8 +6,13 @@ package uk.ac.dmu.iesd.cascade.util;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.JFrame;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
@@ -33,12 +38,18 @@ import cern.jet.random.AbstractDiscreteDistribution;
 public class ChartUtils {
 	
 	
-	static class ChartAppFrame extends ApplicationFrame {
+	static class ChartAppFrame extends JFrame {
 		public ChartAppFrame(String title, JFreeChart chart) {
 			super(title);
 			final ChartPanel chartPanel = new ChartPanel(chart);
 			chartPanel.setPreferredSize(new Dimension(500, 270));
 			setContentPane(chartPanel);
+			//setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			/*addWindowListener(new WindowAdapter(  ) {
+			      public void windowClosing(WindowEvent we) { 
+			    	  dispose(); }
+			    }); */		
+			
 		}
 	}
 
@@ -48,6 +59,7 @@ public class ChartUtils {
 		chartAppFrame.pack();
 		RefineryUtilities.centerFrameOnScreen(chartAppFrame);
 		chartAppFrame.setVisible(true);
+	
 	}
 
 	public static void testProbabilityDistAndShowHistogram(AbstractDiscreteDistribution pd, int numOfVal, int numOfBins) {

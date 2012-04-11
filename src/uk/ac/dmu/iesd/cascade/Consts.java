@@ -26,17 +26,15 @@ public final class Consts {
 	/*----------------------------
 	 * Model level constants
 	 *----------------------------*/
-	public static boolean DEBUG = false;  //use for debugging, default is false
+	public static boolean DEBUG = true;  //use for debugging, default is false
 	public static String DEBUG_OUTPUT_FILE = "DebugOutputSeed" + RepastEssentials.GetParameter("randomSeed") + "Mode" + RepastEssentials.GetParameter("signalMode") + ".txt"; //Change this to a name to desired filename to divert System.out to a file when DEBUG is true
 	public static String FILE_CHART_FORMAT_EXT = ".png";
-
-	//Controlling the generation of snapshots:
-	public static boolean TAKE_SNAPSHOT_OF_CHART_0_Insol = false;
-	public static boolean TAKE_SNAPSHOT_OF_CHART_1_AirTemp = false;
-	public static boolean TAKE_SNAPSHOT_OF_CHART_2_WindSpeed = false;
-	public static boolean TAKE_SNAPSHOT_OF_CHART_3_AggSumOfD = false;
-	public static boolean TAKE_SNAPSHOT_OF_CHART_5_SmartAdapt = false;
-	public static boolean TAKE_SNAPSHOT_OF_CHART_8_Market = false;
+	
+	/*This is to control the length of initialized demand profile 
+	 *it can be set to 1 day [presumably necessary for smart signal] up to one year (365 days) [usually by default]
+	 * this currently affects the size of all profile arrays, except heat space and hot water (along with historical arrays) 
+	 */
+	public static int NB_OF_DAYS_LOADED_DEMAND = 365;  //default 365 
 	
 	//Controlling HHProsumers electricity consumption/usage
 	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
@@ -46,6 +44,15 @@ public final class Consts {
 	
 	//Controlling REEA operation
 	public static boolean AGG_RECO_REEA_ON = false;
+	
+
+	//Controlling the generation of snapshots:
+	public static boolean TAKE_SNAPSHOT_OF_CHART_0_Insol = false;
+	public static boolean TAKE_SNAPSHOT_OF_CHART_1_AirTemp = false;
+	public static boolean TAKE_SNAPSHOT_OF_CHART_2_WindSpeed = false;
+	public static boolean TAKE_SNAPSHOT_OF_CHART_3_AggSumOfD = false;
+	public static boolean TAKE_SNAPSHOT_OF_CHART_5_SmartAdapt = false;
+	public static boolean TAKE_SNAPSHOT_OF_CHART_8_Market = false;
 	
 	//public static boolean WRITE_OUTPUTS_ON = false;
 
@@ -66,6 +73,15 @@ public final class Consts {
 	public static enum AGENT_TYPE {
 		PROSUMER,AGGREGATOR
 	}
+	
+
+	/*----------------
+	 * Signal Mode
+	 *----------------*/	
+	public static int SIGNAL_MODE_FIXED = 0;
+	public static int SIGNAL_MODE_PRICE = 1;
+	public static int SIGNAL_MODE_SMART = 2;
+	
 	
 	/*--------------------------------------
 	 * System exit error codes for different types of error
@@ -168,9 +184,18 @@ public final class Consts {
 	public static final String COLD_APP_FRIDGE = "Fridge";
 	public static final String COLD_APP_FREEZER = "Freezer";
 	public static final String COLD_APP_FRIDGEFREEZER = "FridgeFreezer";
-	public static final String COLD_APP_FRIDGE_ORIGINAL = "FridgeOrig";
-	public static final String COLD_APP_FREEZER_ORIGINAL = "FreezerOrig";
-	public static final String COLD_APP_FRIDGEFREEZER_ORIGINAL = "FridgeFreezerOrig";
+	public static final String COLD_APP_FRIDGE_ORIGINAL = "FridgeOrig"; // initial/original Values
+	public static final String COLD_APP_FREEZER_ORIGINAL = "FreezerOrig";  
+	public static final String COLD_APP_FRIDGEFREEZER_ORIGINAL = "FridgeFreezerOrig"; 
+	
+	//these are some scaling factor used in Melody model, so that the values (for cold and wet) won't be too high
+	public static final double COLD_APP_SCALE_FACTOR_FRIDGE = 0.049;
+	public static final double COLD_APP_SCALE_FACTOR_FREEZER = 0.082;
+	public static final double COLD_APP_SCALE_FACTOR_FRIDGEFREEZER = 0.105;
+	
+	public static final double WET_APP_SCALE_FACTOR_WASHER = 0.197;
+	public static final double WET_APP_SCALE_FACTOR_DRYER = 0.321;
+	public static final double WET_APP_SCALE_FACTOR_DISH = 0.413;
 	
 	public static final String WET_APP_WASHER = "Washer";
 	public static final String WET_APP_DRYER = "Dryer";
@@ -213,7 +238,7 @@ public final class Consts {
 	public static final double DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE = 0.9d;
 
 	//The typical heat pump coefficient of performance for heating water in a domestic dwelling
-	public static final double DOMESTIC_HEAT_PUMP_WATER_COP = 2.0d;
+	public static final double DOMESTIC_HEAT_PUMP_WATER_COP = 1.0d; //
 
 	//Maximum domestic heat pump power (in kW)
 	public static final double MAX_DOMESTIC_IMMERSION_POWER = 3;
@@ -304,6 +329,8 @@ public final class Consts {
 	//public static final int MAX_GENERATOR_CAPACITY = 5; //Not currently used
 	//public static final int MAX_SUPPLY_CAPACITY = 45;  //Not currently used
 	//public static final int NUM_DEMAND_COLUMNS = 1; //Not currently used
+	
+	
 
 
 }

@@ -33,15 +33,15 @@
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
     <repast.simphony.chart.Series>
-      <seriesID>s1</seriesID>
-      <valueColumn>AverageCost</valueColumn>
-      <hashCode>-371017559</hashCode>
-      <proxy>false</proxy>
-    </repast.simphony.chart.Series>
-    <repast.simphony.chart.Series>
       <seriesID>s2</seriesID>
       <valueColumn>Supply</valueColumn>
       <hashCode>-1807091085</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>s1</seriesID>
+      <valueColumn>AverageCost</valueColumn>
+      <hashCode>-371017559</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

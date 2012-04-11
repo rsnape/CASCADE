@@ -67,8 +67,8 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 
 	public double getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
-		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
-		return (baseDemandProfile[index]) - currentGeneration();
+		int index = Math.max(((int) RepastEssentials.GetTickCount() % arr_otherDemandProfile.length), 0);
+		return (arr_otherDemandProfile[index]) - currentGeneration();
 	}
 
 
@@ -117,8 +117,8 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	 * @return double giving sum of baseDemand for the day.
 	 */
 	private double calculateFixedDayTotalDemand(int time) {
-		int baseProfileIndex = time % baseDemandProfile.length;
-		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
+		int baseProfileIndex = time % arr_otherDemandProfile.length;
+		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
 	}
 	
 

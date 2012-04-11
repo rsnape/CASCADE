@@ -111,8 +111,8 @@ public class StorageProsumer extends ProsumerAgent{
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("StorageProsumer:  Will be truncated and may cause unexpected behaviour");
 		}
-		this.baseDemandProfile = new double [baseDemand.length];
-		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
+		this.arr_otherDemandProfile = new double [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.arr_otherDemandProfile, 0, baseDemand.length);
 		//Initialise the smart optimised profile to be the same as base demand
 		//smart controller will alter this
 		this.smartOptimisedProfile = new double [baseDemand.length];

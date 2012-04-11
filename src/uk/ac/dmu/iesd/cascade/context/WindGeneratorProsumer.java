@@ -54,9 +54,9 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		// Cope with tick count being null between project initialisation and
 		// start.
 		int index = Math
-				.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length),
+				.max(((int) RepastEssentials.GetTickCount() % arr_otherDemandProfile.length),
 						0);
-		return (baseDemandProfile[index]) - currentGeneration();
+		return (arr_otherDemandProfile[index]) - currentGeneration();
 	}
 
 	/*
@@ -146,8 +146,8 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	 * @return double giving sum of baseDemand for the day.
 	 */
 	private double calculateFixedDayTotalDemand(int time) {
-		int baseProfileIndex = time % baseDemandProfile.length;
-		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,
+		int baseProfileIndex = time % arr_otherDemandProfile.length;
+		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,
 				baseProfileIndex, baseProfileIndex + ticksPerDay - 1));
 	}
 
@@ -175,8 +175,8 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("WindGeneratorProsumer: Will be truncated and may cause unexpected behaviour");
 		}
-		this.baseDemandProfile = new double[baseDemand.length];
-		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0,
+		this.arr_otherDemandProfile = new double[baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.arr_otherDemandProfile, 0,
 				baseDemand.length);
 		// Initialise the smart optimised profile to be the same as base demand
 		// smart controller will alter this

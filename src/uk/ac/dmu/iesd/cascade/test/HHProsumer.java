@@ -394,7 +394,7 @@ public class HHProsumer extends ProsumerAgent{
 		//As a basic strategy only the base (non-displaceable) demand is
 		//elastic
 		
-		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		myDemand = arr_otherDemandProfile[time % arr_otherDemandProfile.length];
 		myDemand = myDemand * (1 - dailyElasticity[time % ticksPerDay]);
 
        /*
@@ -416,8 +416,8 @@ public class HHProsumer extends ProsumerAgent{
 
 	public double getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
-		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
-		return (baseDemandProfile[index]) - currentGeneration();
+		int index = Math.max(((int) RepastEssentials.GetTickCount() % arr_otherDemandProfile.length), 0);
+		return (arr_otherDemandProfile[index]) - currentGeneration();
 	}
 
 	/**
@@ -508,7 +508,7 @@ public class HHProsumer extends ProsumerAgent{
 		// finer grained model of lighting, brown and cooking
 
 		//return lightingDemand() + miscBrownDemand() + cookingDemand();
-		return baseDemandProfile[time % baseDemandProfile.length];
+		return arr_otherDemandProfile[time % arr_otherDemandProfile.length];
 	}
 
 	/**
@@ -688,8 +688,8 @@ public class HHProsumer extends ProsumerAgent{
 	 * @return double giving sum of baseDemand for the day.
 	 */
 	private double calculateFixedDayTotalDemand(int time) {
-		int baseProfileIndex = time % baseDemandProfile.length;
-		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
+		int baseProfileIndex = time % arr_otherDemandProfile.length;
+		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
 	}
 
 	/*
@@ -722,7 +722,7 @@ public class HHProsumer extends ProsumerAgent{
 
 		//As a basic strategy only the base (non-displaceable) demand is
 		//elastic
-		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		myDemand = arr_otherDemandProfile[time % arr_otherDemandProfile.length];
 		double initialDemand = myDemand;
 		
 		//if (Consts.DEBUG) System.out.println("     hasSmartMeter: "+hasSmartMeter);
@@ -769,7 +769,7 @@ public class HHProsumer extends ProsumerAgent{
 
 		//As a basic strategy only the base (non-displaceable) demand is
 		//elastic
-		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		myDemand = arr_otherDemandProfile[time % arr_otherDemandProfile.length];
 		double initialDemand = myDemand;
 		
 		//if (Consts.DEBUG) System.out.println("     hasSmartMeter: "+hasSmartMeter);
@@ -816,7 +816,7 @@ public class HHProsumer extends ProsumerAgent{
 			demand = modifiedDemandProfile[time % modifiedDemandProfile.length];
 			if (Consts.DEBUG) System.out.println("   modifiedDemandProfile vlaue @ index " + (time % modifiedDemandProfile.length));
 		}
-		else demand = baseDemandProfile[time % baseDemandProfile.length];
+		else demand = arr_otherDemandProfile[time % arr_otherDemandProfile.length];
 		
 		if (Consts.DEBUG) System.out.println(" set finalDemand: " + demand);
 		return demand;
@@ -1130,11 +1130,11 @@ public class HHProsumer extends ProsumerAgent{
 			if (Consts.DEBUG) System.out.println(" signal Recieved: "+ Arrays.toString(signal));
 			if (Consts.DEBUG) System.out.println(" predictedCostSignal: "+ Arrays.toString(predictedCostSignal));
 
-			if (Consts.DEBUG) System.out.println(" baseDemandProfile: "+ Arrays.toString(baseDemandProfile));
+			if (Consts.DEBUG) System.out.println(" baseDemandProfile: "+ Arrays.toString(arr_otherDemandProfile));
 			int maxIndex = ArrayUtils.indexOfMax(predictedCostSignal);
 			//int indexOf1 = ArrayUtils.indexOf(baseDemandProfile, 1);
 			if (Consts.DEBUG) System.out.println(" maxIndex: "+ maxIndex);
-			double valueOfMaxIndex = baseDemandProfile[maxIndex];
+			double valueOfMaxIndex = arr_otherDemandProfile[maxIndex];
 			if (Consts.DEBUG) System.out.println(" valueOfMaxIndex "+ valueOfMaxIndex);
 			modifiedDemandProfile = new double[ticksPerDay];
 			modifiedDemandProfile[maxIndex] = 0; 
@@ -1144,12 +1144,12 @@ public class HHProsumer extends ProsumerAgent{
 			
 			for (int j = maxIndex+1; j < this.ticksPerDay; j++) {
 				
-				modifiedDemandProfile[j] = baseDemandProfile[j]+ demandToShiftEqually;
+				modifiedDemandProfile[j] = arr_otherDemandProfile[j]+ demandToShiftEqually;
 
 			}
 			
 			for(int j = maxIndex-1; j >= 0; --j) {
-				modifiedDemandProfile[j] = baseDemandProfile[j]+ demandToShiftEqually;
+				modifiedDemandProfile[j] = arr_otherDemandProfile[j]+ demandToShiftEqually;
 			}
 			
 			if (Consts.DEBUG) System.out.println(" after: modifiedDemandProfile: "+ Arrays.toString(modifiedDemandProfile));
@@ -1311,8 +1311,8 @@ public class HHProsumer extends ProsumerAgent{
 			System.err.println("HHProsumer: Will be truncated and may cause unexpected behaviour");
 		}
 		
-		this.baseDemandProfile = new double [baseDemand.length];
-		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
+		this.arr_otherDemandProfile = new double [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.arr_otherDemandProfile, 0, baseDemand.length);
 		
 		//+++++++++++++++++++++
 		this.dailyElasticity = new double[ticksPerDay];

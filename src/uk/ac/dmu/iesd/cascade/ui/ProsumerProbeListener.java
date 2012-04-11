@@ -5,6 +5,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Label;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +18,13 @@ import javax.swing.border.EmptyBorder;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.util.Rotation;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.IAction;
@@ -26,11 +34,16 @@ import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.ui.RSApplication;
 import repast.simphony.ui.probe.Probe;
 import repast.simphony.ui.probe.ProbePanelCreator;
+import repast.simphony.util.collections.IndexedIterable;
 import repast.simphony.visualization.ProbeEvent;
 import repast.simphony.visualization.ProbeListener;
 
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.io.CSVWriter;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
+import uk.ac.dmu.iesd.cascade.util.ChartUtils;
+import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 
 public class ProsumerProbeListener implements ProbeListener {
 
@@ -42,6 +55,8 @@ public class ProsumerProbeListener implements ProbeListener {
 	 * Ordered ArrayList of agents that have been probed and called this listener
 	 */
 	ArrayList<HouseholdProsumer> probedAgents = new ArrayList<HouseholdProsumer>();
+	
+	CascadeContext mainContext;
 
 	@NonModelAction
 	static class ProbeUpdater implements IAction {
@@ -63,12 +78,12 @@ public class ProsumerProbeListener implements ProbeListener {
 	public void objectProbed(ProbeEvent evt) {
 		// TODO Auto-generated method stub
 		List<?> probedObjects = evt.getProbedObjects();
-
+		
 		for(Object thisObj : probedObjects)
 		{
 			if (thisObj instanceof HouseholdProsumer)
 			{
-				HouseholdProsumer thisAgent = (HouseholdProsumer) thisObj;
+				final HouseholdProsumer thisAgent = (HouseholdProsumer) thisObj;
 				probedAgents.add(thisAgent);
 				ProbePanelCreator newProbe = new ProbePanelCreator(thisAgent);
 				Probe myProbe = newProbe.getProbe("TestProbe", true);
@@ -91,6 +106,7 @@ public class ProsumerProbeListener implements ProbeListener {
 				variablesBox.setLayout(new GridLayout(3,2));
 				variablesBox.setBorder(new EmptyBorder(10,10,10,10));
 				variablesBox.setBackground(Color.WHITE);
+				variablesBox.add(new JLabel("Has Gas? " + thisAgent.isHasGas()));
 				variablesBox.add(new JLabel("Tau (secs) = " + String.format("%.2f", thisAgent.tau)));
 				variablesBox.add(new JLabel("M (kWh / deg C) = " + String.format("%.2f", thisAgent.buildingThermalMass)));
 				variablesBox.add(new JLabel("L (W / deg C) = " + String.format("%.2f", thisAgent.buildingHeatLossRate)));
@@ -99,11 +115,11 @@ public class ProsumerProbeListener implements ProbeListener {
 				propertiesPanel.setBackground(Color.WHITE);
 				agentProbeFrame.getContentPane().add(propertiesPanel);
 				
-				if (thisAgent.getHasElectricalSpaceHeat())
+				if (thisAgent.isHasElectricalSpaceHeat())
 				{
 					DefaultCategoryDataset tempDataset = createTemperatureDataset(thisAgent);
 					// based on the dataset we create the chart
-					JFreeChart tempChart = createTemperatureChart(tempDataset, "Previous day temperatures");
+					JFreeChart tempChart = createLineChart(tempDataset, "Previous day temperatures", "Half hour", "degrees C");
 					charts.add(tempChart);
 					// we put the chart into a panel
 					ChartPanel tempChartPanel = new ChartPanel(tempChart);
@@ -117,13 +133,49 @@ public class ProsumerProbeListener implements ProbeListener {
 				JFreeChart chart = createChart(dataset, "Previous day demand by type");
 				chart.getCategoryPlot().getRangeAxis().setRange(0, 4.5);
 				charts.add(chart);
+				
 				// we put the chart into a panel
 				ChartPanel chartPanel = new ChartPanel(chart);
 				// default size
 				chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 
 				agentProbeFrame.getContentPane().add(chartPanel);
+				
 
+				DefaultPieDataset pieDataset = createPieDataset(thisAgent);
+				JFreeChart pieChart = createPieChart(pieDataset, "Demands Proportion");
+				ChartPanel pieChartPanel = new ChartPanel(pieChart);
+				pieChartPanel.setPreferredSize(new java.awt.Dimension(300, 240));
+				agentProbeFrame.getContentPane().add(pieChartPanel);
+				charts.add(pieChart);
+				
+				JButton loadsProfilesLineChartButton = new JButton("Click here to see demands Line Chart of this HHPros");
+				loadsProfilesLineChartButton.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						//IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
+						DefaultCategoryDataset loadsDataset = createLoadsProfileDataset(thisAgent);
+						JFreeChart loadsChart = createLineChart(loadsDataset, "Demand Profiles Chart (hh_"+thisAgent.getAgentID()+", @t="+mainContext.getTickCount()+")", "Half hour", "Load (KWh)");
+						ChartUtils.showChart(loadsChart);
+					}
+				});
+				
+				agentProbeFrame.getContentPane().add(loadsProfilesLineChartButton);
+				
+				JButton allPieChartButton = new JButton("Click here to see demands Pie Chart of  ALL HHPros");
+				allPieChartButton.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+					   //System.out.println(" mouseClicked: ");
+						IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
+						ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
+						DefaultPieDataset pieDatasetOfAvgDemandOfAllHHProsConsumption = createPieDataset4AvgDemandOfAllHHPros(list_hhProsumers);
+						JFreeChart pieChart4AllHHProsConsumption = createPieChart(pieDatasetOfAvgDemandOfAllHHProsConsumption, "AVG Demands Proportion of All HHPros (@t=" +mainContext.getTickCount()+")");
+						ChartUtils.showChart(pieChart4AllHHProsConsumption);
+						
+					}
+				});
+				
+				agentProbeFrame.getContentPane().add(allPieChartButton);
+	
 				//Display the window.
 				agentProbeFrame.pack();
 				agentProbeFrame.setVisible(true);
@@ -140,7 +192,7 @@ public class ProsumerProbeListener implements ProbeListener {
 
 		double[] arr1 = thisAgent.getHistoricalSpaceHeatDemand();
 		double[] arr2 = thisAgent.getHistoricalWaterHeatDemand();
-		double[] arr3 = thisAgent.getHistoricalBaseDemand();
+		double[] arr3 = thisAgent.getHistoricalOtherDemand();
 		double[] arr4 = thisAgent.getHistoricalColdDemand();
 		double[] arr5 = thisAgent.getHistoricalWetDemand();
 
@@ -148,7 +200,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		{
 			result.addValue((Number)arr1[i], "Space Heat", i);
 			result.addValue((Number)arr2[i], "Water Heat", i);
-			result.addValue((Number)arr3[i], "Base", i);
+			result.addValue((Number)arr3[i], "Other", i);
 			result.addValue((Number)arr4[i], "Cold", i);
 			result.addValue((Number)arr5[i], "Wet", i);
 
@@ -179,6 +231,134 @@ public class ProsumerProbeListener implements ProbeListener {
 
 		return result;
 	}
+	
+	private  DefaultCategoryDataset createLoadsProfileDataset(HouseholdProsumer thisAgent) {
+		DefaultCategoryDataset dcDataset = new DefaultCategoryDataset();
+
+		double[] arr_spaceHeat = thisAgent.getHistoricalSpaceHeatDemand();
+		double[] arr_hotWater = thisAgent.getHistoricalWaterHeatDemand();
+		double[] arr_otherDemand = thisAgent.getHistoricalOtherDemand();
+		double[] arr_cold = thisAgent.getHistoricalColdDemand();
+		double[] arr_wet = thisAgent.getHistoricalWetDemand();
+
+
+		for (int i = 0; i < arr_otherDemand.length ; i++)	{
+			dcDataset.addValue((Number)arr_spaceHeat[i], "SH", i);
+			dcDataset.addValue((Number)arr_hotWater[i], "WH", i);
+			dcDataset.addValue((Number)arr_otherDemand[i], "O", i);
+			dcDataset.addValue((Number)arr_cold[i], "C", i);
+			dcDataset.addValue((Number)arr_wet[i], "W", i);
+
+		}
+
+		return dcDataset;
+	}
+	
+
+	private  DefaultPieDataset createPieDataset(HouseholdProsumer thisAgent) {
+		
+		DefaultPieDataset pieDataset = new DefaultPieDataset();
+
+		double[] arr_spaceHeat = thisAgent.getHistoricalSpaceHeatDemand();
+		double[] arr_hotWater = thisAgent.getHistoricalWaterHeatDemand();
+		double[] arr_otherDemand = thisAgent.getHistoricalOtherDemand();
+		double[] arr_cold = thisAgent.getHistoricalColdDemand();
+		double[] arr_wet = thisAgent.getHistoricalWetDemand();
+
+		pieDataset.setValue("SH", ArrayUtils.sum(arr_spaceHeat));
+		pieDataset.setValue("WH", ArrayUtils.sum(arr_hotWater));
+		pieDataset.setValue("O", ArrayUtils.sum(arr_otherDemand));
+		pieDataset.setValue("C", ArrayUtils.sum(arr_cold));
+		pieDataset.setValue("W", ArrayUtils.sum(arr_wet));
+		
+
+		return pieDataset;
+
+	}
+	
+	@Deprecated
+	private  DefaultPieDataset createPieDataset4AllHHProsumers(List<HouseholdProsumer> list_hhProsumers) {
+
+		DefaultPieDataset pieDataset = new DefaultPieDataset();
+
+		double sum_spaceHeat=0;
+		double sum_hotWater=0;
+		double sum_other=0;
+		double sum_cold=0;
+		double sum_wet=0;
+
+		for (HouseholdProsumer hhAgent : list_hhProsumers) {
+			sum_spaceHeat += ArrayUtils.sum(hhAgent.getHistoricalSpaceHeatDemand());
+			sum_hotWater += ArrayUtils.sum(hhAgent.getHistoricalWaterHeatDemand());
+			sum_other += ArrayUtils.sum(hhAgent.getHistoricalOtherDemand());
+			sum_cold += ArrayUtils.sum(hhAgent.getHistoricalColdDemand());
+			sum_wet += ArrayUtils.sum(hhAgent.getHistoricalWetDemand());
+		}
+
+		pieDataset.setValue("SH", sum_spaceHeat);
+		pieDataset.setValue("WH", sum_hotWater);
+		pieDataset.setValue("O", sum_other);
+		pieDataset.setValue("C", sum_cold);
+		pieDataset.setValue("W", sum_wet);
+
+		return pieDataset;
+
+	}
+	
+	private  DefaultPieDataset createPieDataset4AvgDemandOfAllHHPros(List<HouseholdProsumer> list_hhProsumers) {
+
+		DefaultPieDataset pieDataset = new DefaultPieDataset();
+
+		double sum_spaceHeat=0;
+		double sum_hotWater=0;
+		double sum_other=0;
+		double sum_cold=0;
+		double sum_wet=0;
+		
+		double nbOfHHPros = list_hhProsumers.size();
+
+		for (HouseholdProsumer hhAgent : list_hhProsumers) {
+			sum_spaceHeat += ArrayUtils.sum(hhAgent.getHistoricalSpaceHeatDemand());
+			sum_hotWater += ArrayUtils.sum(hhAgent.getHistoricalWaterHeatDemand());
+			sum_other += ArrayUtils.sum(hhAgent.getHistoricalOtherDemand());
+			sum_cold += ArrayUtils.sum(hhAgent.getHistoricalColdDemand());
+			sum_wet += ArrayUtils.sum(hhAgent.getHistoricalWetDemand());
+		}
+		
+		double avg_spaceHeat= sum_spaceHeat/nbOfHHPros;
+		double avg_hotWater=sum_hotWater/nbOfHHPros;
+		double avg_other= sum_other/nbOfHHPros;
+		double avg_cold= sum_cold/nbOfHHPros;
+		double avg_wet= sum_wet/nbOfHHPros;
+
+		pieDataset.setValue("SH", avg_spaceHeat);
+		pieDataset.setValue("WH", avg_hotWater);
+		pieDataset.setValue("O", avg_other);
+		pieDataset.setValue("C", avg_cold);
+		pieDataset.setValue("W", avg_wet);
+
+		return pieDataset;
+
+	}
+	
+
+	private JFreeChart createPieChart(DefaultPieDataset dataset, String title) {
+
+		//final JFreeChart pieChart = ChartFactory.createPieChart3D(
+		  final JFreeChart pieChart = ChartFactory.createPieChart(
+
+				title,
+				dataset,                // data
+				true,                   // include legend
+				true,
+				false
+		);
+        
+        PiePlot plot = (PiePlot) pieChart.getPlot();        
+        plot.setLabelGenerator(new StandardPieSectionLabelGenerator(" {0}: {1} ({2})"));
+		return pieChart;
+
+	}
 
 
 	/**
@@ -203,15 +383,12 @@ public class ProsumerProbeListener implements ProbeListener {
 
 	}
 
-	/**
-	 * Creates a chart
-	 */
-	private JFreeChart createTemperatureChart(DefaultCategoryDataset dataset, String title) {
+	private JFreeChart createLineChart(DefaultCategoryDataset dataset, String title, String xLabel, String yLabel) {
 
 		JFreeChart chart = ChartFactory.createLineChart(
 				title, //chart title 
-				"Half hour", // Domain label
-				"degrees C", //Range label
+				xLabel, // Domain label
+				yLabel, //Range label
 				dataset,                // data
 				PlotOrientation.VERTICAL, 
 				true,                   // include legend
@@ -224,6 +401,8 @@ public class ProsumerProbeListener implements ProbeListener {
 		return chart;
 
 	}
+	
+
 
 	//@ScheduledMethod(start = 0, interval = 48, shuffle = true, priority = Consts.PROBE_PRIORITY)
 	public void scheduledUpdate()
@@ -232,20 +411,23 @@ public class ProsumerProbeListener implements ProbeListener {
 		//Could be we should have a Collection of Pairs to 
 		//Make this more explicit.
 		int i = 0;
-		for (HouseholdProsumer testProbed : probedAgents)
+		for (HouseholdProsumer hhProbedAgent : probedAgents)
 		{
-			if(testProbed.getHasElectricalSpaceHeat())
+			if(hhProbedAgent.isHasElectricalSpaceHeat())
 			{
-				charts.get(i).getCategoryPlot().setDataset(createTemperatureDataset(testProbed));
-				charts.get(i+1).getCategoryPlot().setDataset(createDataset(testProbed));
-				i += 2;
+				charts.get(i).getCategoryPlot().setDataset(createTemperatureDataset(hhProbedAgent));
+				charts.get(i+1).getCategoryPlot().setDataset(createDataset(hhProbedAgent));				
+			    ((PiePlot) charts.get(i+2).getPlot()).setDataset(this.createPieDataset(hhProbedAgent));
+				
+				i += 3;
 			}
 			else
 			{
-				charts.get(i).getCategoryPlot().setDataset(createDataset(testProbed));
-				i += 1;
-			}
+				charts.get(i).getCategoryPlot().setDataset(createDataset(hhProbedAgent));
+			    ((PiePlot) charts.get(i+1).getPlot()).setDataset(this.createPieDataset(hhProbedAgent));
 
+				i += 2;
+			}
 
 		}
 
@@ -256,6 +438,10 @@ public class ProsumerProbeListener implements ProbeListener {
 		super();
 		RunEnvironment.getInstance().getCurrentSchedule().schedule(ScheduleParameters.createRepeating(RepastEssentials.GetTickCount()+1, context.getNbOfTickPerDay(),
 				ScheduleParameters.END), new ProbeUpdater(this));
+		
+		mainContext = context;
+	
+	
 	}
 
 

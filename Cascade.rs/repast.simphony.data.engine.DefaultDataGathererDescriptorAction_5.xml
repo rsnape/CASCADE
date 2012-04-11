@@ -11,10 +11,6 @@
   <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
     <nameMappingTable>
       <entry>
-        <string>Tick</string>
-        <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
-      </entry>
-      <entry>
         <string>AverageDemand</string>
         <repast.simphony.data.logging.gather.MethodMapping>
           <method>
@@ -23,6 +19,10 @@
             <parameter-types/>
           </method>
         </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>Tick</string>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
       </entry>
       <entry>
         <string>s3</string>
@@ -65,48 +65,48 @@
         </repast.simphony.data.logging.gather.MethodMapping>
       </entry>
       <entry>
-        <string>Demand</string>
-        <repast.simphony.data.logging.BSFMapping>
-          <bsfExpression>value = agent.getAverageDemand() / 20;</bsfExpression>
-          <bsfLanguage>beanshell</bsfLanguage>
-        </repast.simphony.data.logging.BSFMapping>
-      </entry>
-      <entry>
         <string>Supply</string>
         <repast.simphony.data.logging.BSFMapping>
           <bsfExpression>value = agent.getAverageSupply()/20;</bsfExpression>
           <bsfLanguage>beanshell</bsfLanguage>
         </repast.simphony.data.logging.BSFMapping>
       </entry>
+      <entry>
+        <string>Demand</string>
+        <repast.simphony.data.logging.BSFMapping>
+          <bsfExpression>value = agent.getAverageDemand() / 20;</bsfExpression>
+          <bsfLanguage>beanshell</bsfLanguage>
+        </repast.simphony.data.logging.BSFMapping>
+      </entry>
     </nameMappingTable>
     <mappingNameTable>
-      <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>s1</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[8]/repast.simphony.data.logging.BSFMapping"/>
-        <string>Supply</string>
-      </entry>
       <entry>
         <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.MethodMapping"/>
         <string>s2</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[6]/repast.simphony.data.logging.gather.MethodMapping"/>
-        <string>AverageCost</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[7]/repast.simphony.data.logging.BSFMapping"/>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[8]/repast.simphony.data.logging.BSFMapping"/>
         <string>Demand</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.MethodMapping"/>
         <string>AverageDemand</string>
       </entry>
       <entry>
-        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>s1</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.BSFMapping reference="../../../nameMappingTable/entry[7]/repast.simphony.data.logging.BSFMapping"/>
+        <string>Supply</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[6]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>AverageCost</string>
       </entry>
       <entry>
         <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>

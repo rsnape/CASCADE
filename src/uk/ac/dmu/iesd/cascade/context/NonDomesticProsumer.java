@@ -177,8 +177,8 @@ public class NonDomesticProsumer extends ProsumerAgent{
 
 	public double getUnadaptedDemand(){
 		// Cope with tick count being null between project initialisation and start.
-		int index = Math.max(((int) RepastEssentials.GetTickCount() % baseDemandProfile.length), 0);
-		return (baseDemandProfile[index]) - currentGeneration();
+		int index = Math.max(((int) RepastEssentials.GetTickCount() % arr_otherDemandProfile.length), 0);
+		return (arr_otherDemandProfile[index]) - currentGeneration();
 	}
 
 
@@ -230,7 +230,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		else
 		{
 			//No adaptation case
-			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
+			setNetDemand(arr_otherDemandProfile[time % arr_otherDemandProfile.length] - currentGeneration());
 
 			learnSmartAdoptionDecision(time);
 		}
@@ -311,8 +311,8 @@ public class NonDomesticProsumer extends ProsumerAgent{
 	 * @return double giving sum of baseDemand for the day.
 	 */
 	private double calculateFixedDayTotalDemand(int time) {
-		int baseProfileIndex = time % baseDemandProfile.length;
-		return ArrayUtils.sum(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
+		int baseProfileIndex = time % arr_otherDemandProfile.length;
+		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
 	}
 
 	/*
@@ -335,7 +335,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 
 		//As a basic strategy ("pass-through"), we set the demand now to
 		//basic demand as of now.
-		myDemand = baseDemandProfile[time % baseDemandProfile.length];
+		myDemand = arr_otherDemandProfile[time % arr_otherDemandProfile.length];
 
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
 		// Note, we can only moderate based on cost signal
@@ -527,8 +527,8 @@ public class NonDomesticProsumer extends ProsumerAgent{
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("NonDomesticProsumer: Will be truncated and may cause unexpected behaviour");
 		}
-		this.baseDemandProfile = new double [baseDemand.length];
-		System.arraycopy(baseDemand, 0, this.baseDemandProfile, 0, baseDemand.length);
+		this.arr_otherDemandProfile = new double [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.arr_otherDemandProfile, 0, baseDemand.length);
 		//Initialise the smart optimised profile to be the same as base demand
 		//smart controller will alter this
 		this.smartOptimisedProfile = new double [baseDemand.length];

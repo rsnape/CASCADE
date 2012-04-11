@@ -5,6 +5,8 @@ package uk.ac.dmu.iesd.cascade.util;
 
 import java.util.Arrays;
 import java.util.WeakHashMap;
+
+import cern.jet.random.Normal;
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
@@ -53,6 +55,7 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
+	@Deprecated
 	public static double[] melodyStokesColdApplianceGen_Old(int numDays, int fridges, int fridgeFreezers, int freezers)
 	{
 		double[] d_fridge = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
@@ -136,14 +139,21 @@ public abstract class InitialProfileGenUtils {
 
 		//Initialise a normal distribution for selection
 		RandomHelper.createNormal(0, 1);
+		
 
 		WeakHashMap<String,double[]> coldProfiles = new WeakHashMap<String,double[]>();
 
+		//System.out.println("fridges: "+fridges);
+		//System.out.println("freezers: "+freezers);
+		//System.out.println("fridgeFreezers: "+fridgeFreezers);
+		
+		
 		for (int i=0; i < numDays; i++)
 		{
 			for (int HH=0; HH < Consts.MELODY_MODELS_TICKS_PER_DAY; HH++)
 			{
 				//if (Consts.DEBUG) System.out.println("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
+				//System.out.println("randomNB: "+RandomHelper.getNormal().nextDouble());
 
 				d_fridge[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridges * ( Math.max(0, scale_fridge[HH]*Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH])+const_fridge[HH]+(RandomHelper.getNormal().nextDouble()*stddev_fridge[HH])));
 				d_freezer[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=freezers * ( Math.max(0,scale_freezer[HH]* Math.sin(2*Math.PI*(i / Consts.DAYS_PER_YEAR)-2.05)+const_freezer[HH]+(RandomHelper.getNormal().nextDouble()*stddev_freezer[HH])));
@@ -151,19 +161,28 @@ public abstract class InitialProfileGenUtils {
 
 			}
 		}
-
+		
+		d_fridge = ArrayUtils.multiply(d_fridge, Consts.COLD_APP_SCALE_FACTOR_FRIDGE);
+		d_freezer = ArrayUtils.multiply(d_freezer, Consts.COLD_APP_SCALE_FACTOR_FREEZER);
+		d_fridge_freezer = ArrayUtils.multiply(d_fridge_freezer, Consts.COLD_APP_SCALE_FACTOR_FRIDGEFREEZER);
+		
 		//Convert kW to kWh
 		//TODO: Hard - coded constant!!! Shouldn't do this - fix.
 		d_fridge = ArrayUtils.multiply(d_fridge, 0.5);
 		d_freezer = ArrayUtils.multiply(d_freezer, 0.5);
 		d_fridge_freezer = ArrayUtils.multiply(d_fridge_freezer, 0.5);
-
+		
 		coldProfiles.put(Consts.COLD_APP_FRIDGE, d_fridge);
 		coldProfiles.put(Consts.COLD_APP_FREEZER, d_freezer);
 		coldProfiles.put(Consts.COLD_APP_FRIDGEFREEZER, d_fridge_freezer);
-		coldProfiles.put(Consts.COLD_APP_FRIDGE_ORIGINAL, Arrays.copyOf(d_fridge,d_fridge.length));
+		
+		coldProfiles.put(Consts.COLD_APP_FRIDGE_ORIGINAL, Arrays.copyOf(d_fridge,d_fridge.length));  //initial/original values
 		coldProfiles.put(Consts.COLD_APP_FREEZER_ORIGINAL, Arrays.copyOf(d_freezer, d_freezer.length));
 		coldProfiles.put(Consts.COLD_APP_FRIDGEFREEZER_ORIGINAL, Arrays.copyOf(d_fridge_freezer,d_fridge_freezer.length));
+		
+		//System.out.println("d_fridge_freezer: "+ Arrays.toString(d_fridge_freezer));
+		//System.out.println("d_fridge_freezer(sum): "+ ArrayUtils.sum(d_fridge_freezer));
+
 
 		return coldProfiles;
 
@@ -183,11 +202,11 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	public static double[] melodyStokesWetApplianceGen_old(int numDays,
+	public static  WeakHashMap<String,double[]>  melodyStokesWetApplianceGen(CascadeContext context, int numDays,
 			boolean washMachine, boolean washerDryer,
 			boolean dishWasher, boolean tumbleDryer) {
 		// TODO Auto-generated method stub
-		return 	melodyStokesWetApplianceGenWithWeekends(numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
+		return 	melodyStokesWetApplianceGenWithWeekends(context, numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
 	}
 
 	/**
@@ -201,11 +220,13 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	public static WeakHashMap<String,double[]> melodyStokesWetApplianceGen(CascadeContext context,int numDays,
+	
+	@Deprecated
+	public static WeakHashMap<String,double[]> melodyStokesWetApplianceGen_DiscreteValues(CascadeContext context,int numDays,
 			boolean washMachine, boolean washerDryer,
 			boolean dishWasher, boolean tumbleDryer) {
 		// TODO Auto-generated method stub
-		return 	melodyStokesWetApplianceGen(context, numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
+		return 	melodyStokesWetApplianceGen_DiscreteValues(context, numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
 	}
 
 
@@ -220,7 +241,7 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	private static double[]  melodyStokesWetApplianceGenWithWeekends(int numDays, int washMach,
+	private static  WeakHashMap<String,double[]>   melodyStokesWetApplianceGenWithWeekends(CascadeContext context, int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
 		// nasty implementation that assumes this starts 1st Jan and that's a Sunday
 		// TODO: refine days of week. Possibly add start date to context and maintain day of week etc in there too
@@ -276,11 +297,14 @@ public abstract class InitialProfileGenUtils {
 		double[]  const_dish_UR={0.058d, 0.053d, 0.017d, 0.009d, 0.008d, 0.006d, 0.006d, 0.003d, 0.001d, 0.001d, 0.001d, 0.001d, 0.001d, 0.002d, 0.009d, 0.025d, 0.072d, 0.104d, 0.114d, 0.117d, 0.137d, 0.128d, 0.094d, 0.068d, 0.06d, 0.051d, 0.061d, 0.079d, 0.083d, 0.085d, 0.078d, 0.068d, 0.06d, 0.056d, 0.053d, 0.061d, 0.067d, 0.094d, 0.143d, 0.196d, 0.212d, 0.195d, 0.182d, 0.187d, 0.172d, 0.13d, 0.093d, 0.068d};
 		double[]  stddev_dish_UR={0.071d, 0.053d, 0.036d, 0.032d, 0.03d, 0.023d, 0.025d, 0.016d, 0.007d, 0.006d, 0.011d, 0.013d, 0.007d, 0.015d, 0.034d, 0.053d, 0.094d, 0.114d, 0.112d, 0.106d, 0.113d, 0.11d, 0.102d, 0.088d, 0.087d, 0.073d, 0.082d, 0.098d, 0.102d, 0.112d, 0.101d, 0.094d, 0.088d, 0.081d, 0.086d, 0.095d, 0.091d, 0.095d, 0.133d, 0.146d, 0.14d, 0.134d, 0.141d, 0.132d, 0.125d, 0.111d, 0.091d, 0.08d};
 
+		//Initialise a normal distribution for selection
+		RandomHelper.createNormal(0, 1);
+		
 		for (int i = 0; i < numDays; i++)
 		{
 			//washing demand for Mondays:
 			if (i%Consts.DAYS_PER_WEEK == 1)
-			{
+			{ //System.out.println("Wet: Monday");
 				for (int HH = 0; HH < 48; HH++)
 				{
 					d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= (washMach + washDry) * Math.max(0, scale_washer_mon_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_mon_UR[HH])+const_washer_mon_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_washer_mon_UR[HH]) );
@@ -290,7 +314,7 @@ public abstract class InitialProfileGenUtils {
 			}
 			//washing demand for Sundays:
 			else if (i%Consts.DAYS_PER_WEEK == 0)
-			{
+			{ //System.out.println("Wet: SUNDAY");
 				for (int HH = 0; HH < 48; HH++)
 				{
 					d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=(washMach + washDry) * Math.max(0, scale_washer_sun_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_sun_UR[HH])+const_washer_sun_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_washer_sun_UR[HH]));
@@ -300,7 +324,7 @@ public abstract class InitialProfileGenUtils {
 			}
 			//washing demand for Saturdays:
 			else if (i%Consts.DAYS_PER_WEEK == 6)
-			{
+			{ //System.out.println("Wet: SAT");
 				for (int HH = 0; HH < 48; HH++)
 				{
 					d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=(washMach + washDry) * Math.max(0, scale_washer_sat_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_sat_UR[HH])+const_washer_sat_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_washer_sat_UR[HH]));
@@ -309,17 +333,41 @@ public abstract class InitialProfileGenUtils {
 				}
 			}
 			else
-			{
+			{ 
 				for (int HH = 0; HH < 48; HH++)
-				{
+				{ //System.out.println("Wet: Wkdays");
 					d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=(washMach + washDry) * Math.max(0, scale_washer_wkdays_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_wkdays_UR[HH])+const_washer_wkdays_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_washer_wkdays_UR[HH]));
 					d_dryer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=(tumbleDry + washDry) * Math.max(0, scale_dryer_wkdays_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dryer_wkdays_UR[HH])+const_dryer_wkdays_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_dryer_wkdays_UR[HH])) ;
 					d_dish_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=dishWash * Math.max(0, scale_dish_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dish_UR[HH])+const_dish_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_dish_UR[HH])) ;
 				}
 			}
 		}
-
-		return ArrayUtils.add(d_washer_UR, d_dryer_UR, d_dish_UR);
+		
+		d_washer_UR = ArrayUtils.multiply(d_washer_UR, Consts.WET_APP_SCALE_FACTOR_WASHER);
+		d_dryer_UR = ArrayUtils.multiply(d_dryer_UR, Consts.WET_APP_SCALE_FACTOR_DRYER);
+		d_dish_UR = ArrayUtils.multiply(d_dish_UR, Consts.WET_APP_SCALE_FACTOR_DISH);
+		
+		return one_min_wash_generate(d_washer_UR, d_dish_UR, d_dryer_UR, numDays, 2010, washMach, tumbleDry, washDry, dishWash);
+		
+		/*
+		WeakHashMap<String,double[]> wetProfiles = new WeakHashMap<String,double[]>();
+		
+		//Convert kW to kWh
+		d_washer_UR = ArrayUtils.multiply(d_washer_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
+		d_dryer_UR = ArrayUtils.multiply(d_dryer_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
+		d_dish_UR = ArrayUtils.multiply(d_dish_UR, (double) Consts.HOURS_PER_DAY / context.getNbOfTickPerDay());
+		
+		wetProfiles.put(Consts.WET_APP_WASHER, d_washer_UR);
+		wetProfiles.put(Consts.WET_APP_DRYER, d_dryer_UR);
+		wetProfiles.put(Consts.WET_APP_DISHWASHER, d_dish_UR);
+		
+		wetProfiles.put(Consts.WET_APP_WASHER_ORIGINAL, Arrays.copyOf(d_washer_UR,d_washer_UR.length));
+		wetProfiles.put(Consts.WET_APP_DRYER_ORIGINAL, Arrays.copyOf(d_dryer_UR,d_dryer_UR.length));
+		wetProfiles.put(Consts.WET_APP_DISHWASHER_ORIGINAL, Arrays.copyOf(d_dish_UR,d_dish_UR.length));
+		
+		//return ArrayUtils.add(d_washer_UR, d_dryer_UR, d_dish_UR);
+		return wetProfiles;
+		*/
 
 	}
 
@@ -335,7 +383,8 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
-	private static WeakHashMap<String,double[]> melodyStokesWetApplianceGen(CascadeContext context,int numDays, int washMach,
+	@Deprecated
+	private static WeakHashMap<String,double[]> melodyStokesWetApplianceGen_DiscreteValues(CascadeContext context,int numDays, int washMach,
 			int washDry, int dishWash, int tumbleDry) {
 		// Each day of week is treated the same way! 
 		//this sub-model is for half-hourly electricty demand for washing appliances
@@ -385,6 +434,7 @@ public abstract class InitialProfileGenUtils {
 		wetProfiles.put(Consts.WET_APP_WASHER, d_washer_UR);
 		wetProfiles.put(Consts.WET_APP_DRYER, d_dryer_UR);
 		wetProfiles.put(Consts.WET_APP_DISHWASHER, d_dish_UR);
+		
 		wetProfiles.put(Consts.WET_APP_WASHER_ORIGINAL, Arrays.copyOf(d_washer_UR,d_washer_UR.length));
 		wetProfiles.put(Consts.WET_APP_DRYER_ORIGINAL, Arrays.copyOf(d_dryer_UR,d_dryer_UR.length));
 		wetProfiles.put(Consts.WET_APP_DISHWASHER_ORIGINAL, Arrays.copyOf(d_dish_UR,d_dish_UR.length));
@@ -406,6 +456,7 @@ public abstract class InitialProfileGenUtils {
 	 * NOTE: Values for this are given in kW.  Depending on your end use, these may require
 	 * conversion to kWh.
 	 */
+	
 	public static double[]  melodyStokesDomesticCookingLoadGen(int numDays){
 		double[]  d_cook = new double[numDays * Consts.MELODY_MODELS_TICKS_PER_DAY];
 
@@ -659,6 +710,527 @@ public abstract class InitialProfileGenUtils {
 		}
 		return d_lights;
 	}
+	
+	
+	
+//  this submodule calculates the one minute demands for washing from the specif (ic half-hourly demand)
+
+	public static double[] trend_year_wash = new double[] {1970, 1990, 1998, 2000, 2005, 2010, 2015, 2020}; 
+	public static double[] forty_trend = new double[] {0.30, 0.58, 0.64, 0.66, 0.68, 0.68, 0.68, 0.68}; 
+	public static double[] sixty_trend = new double[] {0.45, 0.36, 0.34, 0.32, 0.30, 0.30, 0.30, 0.30}; 
+	public static double[] ninety_trend = new double[] {0.25, 0.06, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03}; 
+	public static double[]	forty_wash = new double[] {0.05, 0.05, 0.3, 0.3, 2, 2, 2.05, 2.1, 2.1, 2, 2.05, 2, 2.1, 2.05, 0.3, 0.25, 0.1, 0.05, 0.45, 0.3, 0.25, 0.75, 0.05, 0.05, 0.45, 0.3, 0.25	              , 0.75, 0.05, 0.05, 0.45, 0.3, 0.25, 0.75, 0.05, 0.05, 0.05, 0.3, 0.3, 0.1, 0.75, 0.4, 0.4, 0.4, 0.1, 0.1, 0.1, 0.1};
+
+	public static double[] forty_wash_reactive  = new double[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0, 0, 0, 0, 0.36, 0.192, 0.192, 0.192, 0, 0, 0, 0}; 
+	// based on forty_wash*0.48 (tan(cos-1(PF of, 0.9 - while spin motor runs)
+	public static double[] sixty_wash = new double[] {0.05, 0.05, 0.3, 0.3, 2, 2, 2.05, 2.1, 2, 2.05, 2.05, 2, 2.1, 2.05, 2, 2.05, 2, 2.1, 2, 2.1, 0.1, 0.05, 2, 2.1, 0.3, 0.25, 0.1, 0.05, 0.45, 0.3, 0.25, 0.75, 0.05, 0.05, 0.45, 0.3, 0.25, 0.75, 0.05, 0.05, 0.45, 0.3, 0.25, 0.75, 0.05, 0.05, 0.05, 0.3, 0.3, 0.1, 0.75, 0.4, 0.4, 0.4, 0.1, 0.1, 0.1, 0.1};
+	public static double[] sixty_wash_reactive = new double[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.144, 0.12, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0, 0, 0, 0, 0.36, 0.192, 0.192, 0.192, 0, 0, 0, 0, 0}; 
+	public static double[] ninety_wash = new double[] {0.05, 0.05, 0.3, 0.3, 2, 2, 2.05, 2.1, 2, 2.05, 2.05, 2, 2.1, 2.05, 2, 2.05, 2, 2.1, 2, 2.1, 2, 2.05, 2.1, 2.1, 2, 2.05, 2.1, 2, 2.1, 2.05, 2.1, 2, 2.1, 2.05, 2.1, 2, 2, 2.1, 2.05, 2.1, 0.1, 0.05, 2, 2.1, 0.1, 0.05, 2, 2.1, 0.1, 0.05, 2, 2.1, 0.3, 0.25, 0.1, 0.05, 0.45, 0.3, 0.25, 0.75, 0.05, 0.05, 0.45, 0.3, 0.25, 0.75, 0.05, 0.05, 0.45, 0.3, 0.25, 0.75, 0.05, 0.05, 0.05, 0.3, 0.3, 0.1, 0.75, 0.4, 0.4, 0.4, 0.1, 0.1, 0.1, 0.1};
+	public static double[] ninety_wash_reactive  = new double[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0.216, 0.144, 0.12, 0.36, 0, 0, 0, 0, 0, 0, 0.36, 0.192, 0.192, 0.192, 0, 0, 0, 0}; 
+
+	public static double[] dry_event = new double[] {1.901, 2.340, 2.441, 2.326, 2.016, 2.340, 2.441, 2.441, 2.300, 1.941, 2.441, 2.441, 2.415, 2.225, 2.041, 2.441, 2.415, 2.340, 2.326, 2.041, 2.415, 2.340, 2.441, 2.326, 2.016, 2.340, 2.441, 2.441, 2.300, 1.941, 2.441, 2.441, 2.415, 2.225, 2.041, 2.441, 2.415, 2.340, 2.326, 2.041, 2.415, 2.340, 2.441, 2.326, 2.016, 2.340, 2.441, 2.441, 2.300, 1.941, 2.441, 2.441, 2.415, 2.225, 2.041, 2.441, 2.415, 2.340, 2.326, 2.041, 2.415, 2.340, 2.441, 2.326, 2.016, 2.340, 2.441, 2.441, 2.300, 1.941, 2.441, 2.441, 2.415, 2.225, 2.041, 2.441, 2.415, 2.340, 2.326, 2.041, 2.415, 2.340, 2.441, 2.326, 2.016, 2.340, 2.441, 2.441, 2.300, 1.941, 2.441, 2.441, 2.415, 2.225, 2.041, 2.441, 2.415, 2.340, 2.326, 2.041, 2.415, 2.340, 2.441, 2.326, 2.016, 2.340, 2.441, 2.441, 2.300, 1.941, 2.441, 2.441, 2.415, 2.225, 2.041, 2.441, 2.415, 2.340, 2.326, 2.041}; 
+	public static double[] dry_event_reactive = new double[] {0.048, 0.144, 0.192, 0.156, 0.084, 0.144, 0.192, 0.192, 0.144, 0.048, 0.192, 0.192, 0.180, 0.108, 0.096, 0.192, 0.180, 0.144, 0.156, 0.096, 0.180, 0.144, 0.192, 0.156, 0.084, 0.144, 0.192, 0.192, 0.144, 0.048, 0.192, 0.192, 0.180, 0.108, 0.096, 0.192, 0.180, 0.144, 0.156, 0.096, 0.180, 0.144, 0.192, 0.156, 0.084, 0.144, 0.192, 0.192, 0.144, 0.048, 0.192, 0.192, 0.180, 0.108, 0.096, 0.192, 0.180, 0.144, 0.156, 0.096, 0.180, 0.144, 0.192, 0.156, 0.084, 0.144, 0.192, 0.192, 0.144, 0.048, 0.192, 0.192, 0.180, 0.108, 0.096, 0.192, 0.180, 0.144, 0.156, 0.096, 0.180, 0.144, 0.192, 0.156, 0.084, 0.144, 0.192, 0.192, 0.144, 0.048, 0.192, 0.192, 0.180, 0.108, 0.096, 0.192, 0.180, 0.144, 0.156, 0.096, 0.180, 0.144, 0.192, 0.156, 0.084, 0.144, 0.192, 0.192, 0.144, 0.048, 0.192, 0.192, 0.180, 0.108, 0.096, 0.192, 0.180, 0.144, 0.156, 0.096};
+	//dishwashers
+	public static double[] dish_chance  = new double[] {1.337, 0.920, 0.998, 0.677}; 
+	//  half-hourly average demand for 4 dishwasher cycles
+	public static double[] trend_year_dish = new double[] {1990, 1998, 2000, 2005, 2010, 2015, 2020}; 
+	public static double[] dish_temp_trend  = new double[] {0.68 , 0.64 , 0.63 , 0.59 , 0.55 , 0.51 , 0.50}; 
+	//  ratio of dish-washes that are at 65deg, rest at 55 deg
+
+	// 76x4 array 
+	public static double[][] dish_event=new double[][] {{0, 0, 0, 0},{0, 0, 0, 0},{0.2, 0.2, 0.2, 0.2},{0.2, 0.2, 0.2, 0.2},{0.2, 0.2, 0.2, 0.2},{0.2, 0.2, 0.05, 0.05},{0.1, 0.1, 0, 0},{0, 0, 0.2, 0.2},{0, 0, 0.2, 0.2},{0.2, 0.2, 2.1, 2.1},{2.7, 2.7, 2.1, 2.1},{2.7, 2.7, 2.1, 2.1},{2.7, 2.7, 2.1, 2.1},{2.7, 2.7, 2.1, 2.1},{2.7, 2.7, 2.1, 2.1},{2.7, 2.7, 2.1, 2.1},{2.7, 2.7, 2.1, 2.1},{2.7, 2.7, 2.1, 0.2},{2.7, 2.7, 2.1, 0.2},{2.7, 0.2, 2.1, 0.2},{2.7, 0.2, 2.1, 0.2},{2.7, 0.2, 2.1, 0.2},{2.7, 0.2, 0.2, 0.2},{2.7, 0.2, 0.2, 0.2},{0.2, 0.2, 0.2, 0.2},{0.2, 0.2, 0.2, 0.2},{0.2, 0.2, 0.2, 0.2},{0.2, 0.2, 0.2, 0.05},{0.2, 0.2, 0.2, 0.2},{0.2, 0.2, 0.2, 0.2},{0.2, 0.2, 0.2, 0.2},{0.2, 0.1, 0.2, 0.2},{0.2, 0, 0.05, 0},{0.2, 0, 0.2, 0.2},{0.2, 0, 0.2, 0.2},{0.2, 0.2, 0.2, 0.2},{0.1, 0.2, 0.2, 0.05},{0, 0.1, 0, 0},{0, 0.1, 0.2, 0.2},{0, 0, 0.2, 0.2},{0.2, 0.2, 0.2, 2.1},{0.2, 0.2, 0.05, 2.1},{0.1, 0.1, 0, 2.1},{0.1, 0.1, 0.2, 2.1},{0, 0, 0.2, 2.15},{0.2, 0.2, 2.1, 2.15},{0.2, 2.7, 2.1, 2.15},{0.1, 2.7, 2.1, 0.2},{0.1, 2.7, 2.1, 0.2},{0, 2.7, 2.15, 0.2},{0.2, 2.7, 2.15, 0.2},{2.7, 2.7, 2.15, 0.2},{2.7, 2.7, 2.15, 0.2},{2.7, 2.7, 2.15, 0.2},{2.7, 2.7, 2.15, 0.05},{2.7, 2.7, 2.15, 0},{2.7, 0.2, 0.2, 0},{2.7, 0.2, 0.2, 2.1},{2.7, 0.2, 0.2, 2.1},{2.7, 0.2, 0.2, 0},{2.7, 0.2, 0.2, 0},{2.7, 0.1, 0.2, 2.1},{2.7, 0.1, 0.2, 2.1},{2.7, 0, 0.05, 0.05},{2.7, 0, 0, 0},{0.2, 0, 0, 0},{0.2, 0, 2.1, 0},{0.2, 0, 2.1, 0},{0.2, 0, 0, 0},{0.2, 0, 0, 0},{0.1, 0, 2.1, 0},{0.1, 0, 2.1, 0},{0, 0, 0.05, 0},{0, 0, 0, 0},{0, 0, 0, 0},{0, 0, 0, 0}};
+
+	//private static double[] one_min_wash_generate(double[] D_HHspecific_wash, double[] D_HHspecific_dish, double[] D_HHspecific_dryer, int Nspan, int y, int washMachs, int dryers, int washer_dryers, int dishwashers)//y = year of simulation
+	//{
+	private static WeakHashMap<String,double[]> one_min_wash_generate(double[] D_HHspecific_wash, double[] D_HHspecific_dish, double[] D_HHspecific_dryer, int Nspan, int y, int washMachs, int dryers, int washer_dryers, int dishwashers)//y = year of simulation
+	{
+		double[] D_min_wash = new double[D_HHspecific_wash.length * 30];
+		double[] D_min_wash_reactive = new double[D_HHspecific_wash.length * 30];
+		double[] D_min_dish = new double[D_HHspecific_dish.length * 30];
+		double[] D_min_dish_reactive = new double[D_HHspecific_dish.length * 30];
+		double[] D_min_dry = new double[D_HHspecific_dryer.length * 30];
+		double[] D_min_dry_reactive = new double[D_HHspecific_dryer.length * 30];
+
+
+		boolean wash_marker = (washMachs > 0);
+		boolean wash_dry_marker = (washer_dryers > 0);
+		boolean dryer_marker = (dryers > 0);
+		boolean dish_marker = (dishwashers > 0);
+		
+		/*D_min_washing (1:Nspan, 1:1440)=0;
+		D_min_wash(1:Nspan,1:1440) = 0;
+		D_min_dry(1:Nspan,1:1440) = 0;
+		D_min_dish(1:Nspan,1:1440) = 0;
+		D_min_wash_reactive(1:Nspan,1:1440)=0;
+		D_min_dry_reactive(1:Nspan,1:1440) =0;*/
+
+		//  washing machines
+		//  first, the relative number of washes at 40, 60 and 90 deg is calculated:
+		int a = 0;
+		for (int i=0;  i< 8;  i++)
+		{
+			if ( y > trend_year_wash[i])
+			{
+				a=a+1;
+			}
+		}
+
+		double b=(double)(y-trend_year_wash[a-1])/(trend_year_wash[a]-trend_year_wash[a-1]);
+		double forty_num = forty_trend[a-1]+b*(forty_trend[a]-forty_trend[a-1]);
+		double sixty_num = sixty_trend[a-1]+b*(sixty_trend[a]-sixty_trend[a-1]);
+		double ninety_num = ninety_trend[a-1]+b*(ninety_trend[a]-ninety_trend[a-1]);
+
+
+		int wash = 0; 
+		//  determines whether wash events occur in washing machines & washer-dryers
+		if ( wash_marker)
+		{
+			wash = 1;
+		}
+
+		if (wash_dry_marker)
+		{
+			wash = 1;
+		}
+
+		if ( wash == 1)
+		{
+			int wash_end = 0;
+			int wash_start = 0;
+			double wash_demand = 0;
+			for (int i=0;  i< Nspan;  i++)
+			{
+
+				if ( i>0)
+				{
+					wash_end=wash_end-1440;
+				}
+
+				for (int p=0; p < 48; p++)
+				{
+					double R = RandomHelper.nextDouble();
+
+					if ( R > (forty_num))
+					{
+						if ( R > (forty_num+sixty_num))
+						{
+							a=1 ;
+							//  90 deg wash
+							wash_demand = 1.58;
+						}
+						if ( R <= (forty_num+sixty_num))
+						{
+							a=2 ;
+							//  60 deg wash
+							wash_demand = 1.099;
+						}
+					}
+					if ( R <= (forty_num))
+					{
+						a=3 ;
+						//  40 deg wash
+						wash_demand = 0.852;
+					}
+					double wash_chance = 0.61*D_HHspecific_wash[48*i + p]/wash_demand ;
+
+					// factor of 0.61 added in to give 4.3 cycles/week on average (Mansouri)
+					R=RandomHelper.nextDouble() ;                                         
+					if ( R < wash_chance)
+					{
+						wash_start=(int)(RandomHelper.nextDouble()*30);
+						if ( wash_start > 30)
+						{
+							wash_start=30;
+						}
+						if ( wash_start==0)
+						{
+							wash_start=1;
+						}
+						//wash_start = ((p-1)*30) + wash_start;
+						wash_start = (p*30) + wash_start;		// because we start p at 0, not 1?
+						
+						int wash_flag = 0;
+						if ( wash_start <= wash_end)
+						{
+							wash_flag = 0;
+						}
+						if ( wash_start > wash_end)
+						{
+							wash_flag = 1;
+						}
+						
+						if ( wash_flag >0)
+						{
+							if ( a==1)
+							{
+								wash_end = wash_start+86;
+								for (int q=0;  q< 86;  q++)
+								{
+									if ( wash_start+q < 1440)
+									{
+										D_min_wash[i*1440+wash_start+q]=ninety_wash[q];
+										D_min_wash_reactive[i*1440+wash_start+q]=ninety_wash_reactive[q];
+									}
+									if ( wash_start+q >= 1440)
+									{
+										if ( (i+1) < Nspan)
+										{
+											D_min_wash[(i+1)*1440+((wash_start+q)-1440)]=ninety_wash[q];
+											D_min_wash_reactive[(i+1)*1440+((wash_start+q)-1440)]=ninety_wash_reactive[q];
+										}
+									}
+								}
+							}
+							if ( a==2)
+							{
+								wash_end=wash_start+58;
+								for (int q=0;  q< 58;  q++)
+								{
+									if ( wash_start+q < 1440)
+									{
+										D_min_wash[i*1440+wash_start+q]=sixty_wash[q];
+										D_min_wash_reactive[i*1440+wash_start+q]=sixty_wash_reactive[q];
+									}
+									if ( wash_start+q >= 1440)
+									{
+										if ( (i+1) < Nspan)
+										{
+											D_min_wash[(i+1)*1440+((wash_start+q)-1440)]=sixty_wash[q];
+											D_min_wash_reactive[(i+1)*1440+((wash_start+q)-1440)]=sixty_wash_reactive[q];
+										}
+									}
+								}
+							}
+							if ( a==3)
+							{
+								wash_end=wash_start+48;
+								for (int q=0;  q< 48;  q++)
+								{
+									if ( wash_start+q < 1440)
+									{
+										D_min_wash[i*1440+wash_start+q]=forty_wash[q];
+										D_min_wash_reactive[i*1440+wash_start+q]=forty_wash_reactive[q];
+									}
+									if ( wash_start+q >= 1440)
+									{
+										if ( (i+1) < Nspan)
+										{
+											D_min_wash[(i+1)*1440+((wash_start+q)-1440)]=forty_wash[q];
+											D_min_wash_reactive[(i+1)*1440+((wash_start+q)-1440)]=forty_wash_reactive[q];
+										}
+									}
+								}
+							}                
+						}              
+					}
+				}
+			}
+		}
+		
+		//  tumble-dryers
+		int dry = 0;
+		if ( dryer_marker)
+		{
+			dry = 1;
+		}
+		if ( wash_dry_marker)
+		{
+			dry = 1;
+		}
+
+		if ( dry == 1)
+		{
+
+			int dry_end = 0;
+			int dry_start = 0;
+			for (int i=0;  i< Nspan;  i++)
+			{
+				if ( i==1)
+				{
+					dry_end=0;
+				}
+				if ( i>1)
+				{
+					dry_end=dry_end-1440;
+				}
+
+				for (int p=0;  p< 48;  p++)
+				{
+					double dry_chance = D_HHspecific_dryer[i*48+p]/2.29;
+
+					double R=RandomHelper.nextDouble();
+					if ( R < dry_chance)
+					{
+						double R1=RandomHelper.nextDouble();
+						if ( R1 > 0.75 )
+						{
+							//  90min cycle
+							a=1;
+						}
+						if ( R1 <= 0.75 )
+						{
+							//  120 min cycle
+							a=2;
+						}
+						dry_start = (int)(RandomHelper.nextDouble()*30);
+						if ( dry_start > 30)
+						{
+							dry_start = 30;
+						}
+						//dry_start = ((p-1)*30)+dry_start;
+						dry_start = (p*30)+dry_start;
+						int dry_flag = 0;
+						if ( dry_start <= dry_end)
+						{
+							dry_flag = 0;
+						}
+						if ( dry_start > dry_end)
+						{
+							dry_flag = 1;
+						}
+						if ( dry_flag > 0)
+						{
+							if ( a ==1)
+							{
+								dry_end = dry_start+90;
+								for (int q=0;  q< 90;  q++)
+								{
+									if ( dry_start+q < 1440)
+									{
+										D_min_dry[i*1440+dry_start+q]=dry_event[q] ;
+										D_min_dry_reactive[i*1440+dry_start+q]=dry_event_reactive[q] ;
+									}
+									if ( dry_start+q >= 1440)
+									{
+										if ( (i+1) < Nspan)
+										{
+											D_min_dry[(i+1)*1440+((dry_start+q)-1440)]=dry_event[q] ;
+											D_min_dry_reactive[(i+1)*1440+((dry_start+q)-1440)]=dry_event_reactive[q] ;
+										}
+									}
+								}
+							}
+							if ( a == 2)
+							{
+								dry_end = dry_start + 120;
+								for (int q=0;  q< 120;  q++)
+								{
+									if ( dry_start+q < 1440)
+									{
+										D_min_dry[i*1440+dry_start+q]=dry_event[q];
+										D_min_dry_reactive[i*1440+dry_start+q]=dry_event_reactive[q];
+									}
+									if ( dry_start+q >= 1440)
+									{
+										if ( (i+1) < Nspan)
+										{
+											D_min_dry[(i+1)*1440+((dry_start+q)-1440)]=dry_event[q];
+											D_min_dry_reactive[(i+1)*1440+((dry_start+q)-1440)]=dry_event_reactive[q];
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			} 
+		}
+
+
+		//  dishwashers
+
+		a=0;
+		for (int i=0;  i< 7;  i++)
+		{
+			if ( y > trend_year_dish[i])
+			{
+				a=a+1;
+			}
+		}
+		b=(y-trend_year_dish[a-1])/(trend_year_dish[a]-trend_year_dish[a-1]);
+		double dish_temp = dish_temp_trend[a-1]+b*(dish_temp_trend[a]-dish_temp_trend[a-1]);
+		if ( y < 1990)
+		{
+			dish_temp = 0.68;
+		}
+
+		if ( dish_marker)
+		{
+
+			int dish_end = 0;
+			int dish_start = 0;
+			for (int i=0;  i< Nspan;  i++)
+			{
+				if ( i==1)
+				{
+					dish_end=0;
+				}
+				if ( i>1)
+				{
+					dish_end=dish_end-1440;
+				}
+				for (int p=0;  p< 48;  p++)
+				{
+					double R=RandomHelper.nextDouble();
+					double R1 = RandomHelper.nextDouble();
+					int n = 0;
+					if ( R <= 0.4 )
+					{
+						//  programme A
+						if ( R1 <= dish_temp )
+						{
+							//  65 deg wash
+							n=1;
+						}
+						if ( R1 > dish_temp )
+						{
+							//  55 deg wash
+							n=2;
+						}
+					}
+					if ( R > 0.4 )
+					{
+						//  programme B
+						if ( R1 <= dish_temp)
+						{
+							n=3;
+						}
+						if ( R1 > dish_temp)
+						{
+							n=4;
+						}
+					}
+					R= RandomHelper.nextDouble();
+					double dish_event_chance = 0.33*D_HHspecific_dish[i*48+p]/dish_chance[n-1];
+
+					//  0.33 factor used to make average 0.76 events/day (Mansouri)
+					if ( R < dish_event_chance)
+					{
+						dish_start = (int)(RandomHelper.nextDouble()*30);
+						if ( dish_start == 0)
+						{
+							dish_start=1;
+						}
+						if ( dish_start > 30)
+						{
+							dish_start = 30;
+						}
+						//dish_start = ((p-1)*30)+dish_start;
+						dish_start = (p*30)+dish_start;
+						int dish_flag = 0;
+						if ( dish_start <= dish_end)
+						{
+							dish_flag = 0;
+						}
+						if ( dish_start > dish_end)
+						{
+							dish_flag = 1;
+						}
+						if ( dish_flag > 0)
+						{
+							dish_end = dish_start + 76;
+							for (int q=0;  q< 76;  q++)
+							{
+								if ( dish_start+q < 1440)
+								{
+									D_min_dish[i*1440+dish_start+q]=dish_event[q][n-1];
+								}
+								if ( dish_start+q >= 1440)
+								{
+									if ( (i+1) < Nspan)
+									{
+										D_min_dish[(i+1)*1440+((dish_start+q)-1440)]=dish_event[q][n-1];
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}	
+		
+		/*
+		double[] D_min_washing = ArrayUtils.add(D_min_wash, D_min_dry, D_min_dish);
+		double[] D_min_washing_reactive = ArrayUtils.add(D_min_wash_reactive, D_min_dry_reactive);
+		// no reactive load for dishwasher (no spin cycle!)
+		return D_min_washing;
+		*/
+		
+		//Convert kW to kWh, as well as aggregate from one minute to half an hour
+		double[] d_washer = aggregate_one_min_kWh_to_half_hour_kWh(convertToKWh(D_min_wash, false));
+		double[] d_dryer = aggregate_one_min_kWh_to_half_hour_kWh(convertToKWh(D_min_dry, false));
+		double[] d_dish = aggregate_one_min_kWh_to_half_hour_kWh(convertToKWh(D_min_dish, false));
+		
+		/*
+		for(int f=0; f<48; f++) {
+			System.out.print(d_dryer[f] + " ");
+		}
+		System.out.println("\n");
+		*/
+		
+		double temp1 = ArrayUtils.sum(d_washer)/Nspan;
+		double temp2 = ArrayUtils.sum(d_dryer)/Nspan;
+		double temp3 = ArrayUtils.sum(d_dish)/Nspan;
+		
+		//System.out.print("[" + temp1 + "," + temp2 + "," + temp3 + "];");
+		//System.out.println(Arrays.toString(d_washer));
+		//System.out.println(Arrays.toString(d_dryer));
+		//System.out.println(Arrays.toString(d_dish));
+
+		//System.out.println(ArrayUtils.sum(Arrays.copyOfRange(D_min_wash, 20000, D_min_wash.length)));
+		
+		
+		WeakHashMap<String,double[]> wetProfiles = new WeakHashMap<String,double[]>();
+		
+		wetProfiles.put(Consts.WET_APP_WASHER, d_washer);
+		wetProfiles.put(Consts.WET_APP_DRYER, d_dryer);
+		wetProfiles.put(Consts.WET_APP_DISHWASHER, d_dish);
+		
+		wetProfiles.put(Consts.WET_APP_WASHER_ORIGINAL, Arrays.copyOf(d_washer,d_washer.length));
+		wetProfiles.put(Consts.WET_APP_DRYER_ORIGINAL, Arrays.copyOf(d_dryer,d_dryer.length));
+		wetProfiles.put(Consts.WET_APP_DISHWASHER_ORIGINAL, Arrays.copyOf(d_dish,d_dish.length));
+		
+		return wetProfiles;
+	}
+	
+	/**
+	 * @param d_fridge
+	 * @param b
+	 * @return
+	 */
+	private static double[] convertToKWh(double[] array, boolean halfHourAverages) {
+		
+		double conversionFactor = 0;
+		if (halfHourAverages)
+		{
+			conversionFactor = 0.5;
+		}
+		else
+		{
+			// one minute profile
+			conversionFactor = 1d / 60;
+		}
+		
+		
+		return ArrayUtils.multiply(array, conversionFactor);
+	}
+	
+	private static double[] aggregate_one_min_kWh_to_half_hour_kWh(double[] one_min_prof)
+	{
+		double[] returnArr = new double[one_min_prof.length / 30];
+		for (int i = 0; i < one_min_prof.length; i += 30)
+		{
+			double sum = 0;
+			for (int j = 0; j < 30; j++)
+			{
+				sum += one_min_prof[i+j];
+			}
+			returnArr[i/30] = sum;
+		}
+		return returnArr;
+	}
+	
+	
 }
 
 

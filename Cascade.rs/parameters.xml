@@ -6,12 +6,6 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
-				<parameter name="elecWaterFraction" displayName="elecWaterFraction" type="double" 
-						defaultValue="1.0" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
-									
-		/>
 				<parameter name="randomSeed" displayName="Default Random Seed" type="int" 
 						defaultValue="__NULL__"
 						isReadOnly="false" 
@@ -19,13 +13,7 @@
 									
 		/>
 				<parameter name="systemBaseDemandFile" displayName="systemBaseDemandFile" type="java.lang.String" 
-						defaultValue="macroDemand_1Day_Thursday.csv" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-									
-		/>
-				<parameter name="defraProfiles" displayName="defraProfiles" type="java.lang.String" 
-						defaultValue="melodySampleWeek.csv" 
+						defaultValue="macroDemand_1Y.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -34,13 +22,8 @@
 						defaultValue="48" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-									
-		/>
-				<parameter name="defraCategories" displayName="defraCategories" type="java.lang.String" 
-						defaultValue="DEFRA_pro_env_categories.csv" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-									
+									values="24 48 "
+						
 		/>
 				<parameter name="smartControlDecisionThreshold" displayName="smartControlDecisionThreshold" type="java.lang.Double" 
 						defaultValue="0.9" 
@@ -49,7 +32,13 @@
 									
 		/>
 				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
-						defaultValue="oneFlatDayWeather.csv" 
+						defaultValue="weatherProfiles_1Y.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="householdOtherDemandFile" displayName="householdOtherDemandFile" type="java.lang.String" 
+						defaultValue="hhOtherDemandProfiles_1Y.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -60,29 +49,19 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
-				<parameter name="householdBaseAttributeFile" displayName="householdBaseAttributeFile" type="java.lang.String" 
-						defaultValue="miscDemand_1Day_Melody_kWh.csv" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-									
-		/>
 				<parameter name="defaultSignalLength" displayName="defaultSignalLength" type="java.lang.Integer" 
 						defaultValue="48" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-									
-		/>
-				<parameter name="electricalNetworkLayoutFile" displayName="electricalNetworkLayoutFile" type="java.lang.String" 
-						defaultValue="networkTopology.csv" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-									
+									values="24 48 96 "
+						
 		/>
 				<parameter name="chartSnapshotInterval" displayName="chartSnapshotInterval" type="int" 
 						defaultValue="144" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-									
+									values="48 96 144 192 240 288 336 "
+						
 		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
 						defaultValue="dataFiles" 
@@ -100,12 +79,13 @@
 						defaultValue="1" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-									
+									values="0 1 2 "
+						
 		/>
-				<parameter name="elecSpaceFraction" displayName="elecSpaceFraction" type="double" 
-						defaultValue="1.0" 
+				<parameter name="hhWithGasPercentage" displayName="householdsWithGas%" type="int" 
+						defaultValue="0" 
 						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
 				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 

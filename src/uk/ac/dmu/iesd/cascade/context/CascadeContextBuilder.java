@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.WeakHashMap;
+
 import cern.jet.random.Empirical;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
@@ -91,10 +93,15 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	private CascadeContext cascadeMainContext;  // cascade main context
 	private Parameters params; // parameters for the model run environment 	
 	private int numProsumers; //number of Prosumers
-	CSVReader baseDemandReader = null;
+	private int percentageOfHHProsWithGas;
+	
+	//CSVReader otherElasticDemandReader = null;
+	
+	private WeakHashMap <Integer, double[]> map_nbOfOccToOtherDemand;
+	
 
 	//int ticksPerDay;
-	int numDemandColumns;
+	//int numOfOtherDemandColumns;
 	//Normal buildingLossRateGenerator = RandomHelper.createNormal(275,75);
 	//Normal thermalMassGenerator = RandomHelper.createNormal(12.5, 2.5);
 
@@ -109,17 +116,21 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		String dataFileFolderPath = (String)params.getValue("dataFileFolder");
 		String weatherFileName = (String)params.getValue("weatherFile");
 		String systemDemandFileName = (String)params.getValue("systemBaseDemandFile");
-		String householdAttrFileName = (String)params.getValue("householdBaseAttributeFile");
-		String elecLayoutFilename = (String)params.getValue("electricalNetworkLayoutFile");
+		String householdOtherDemandFilename = (String)params.getValue("householdOtherDemandFile");
+		//String elecLayoutFilename = (String)params.getValue("electricalNetworkLayoutFile");
 		numProsumers = (Integer) params.getValue("defaultProsumersPerFeeder");
+		percentageOfHHProsWithGas = (Integer) params.getValue("hhWithGasPercentage");
 		cascadeMainContext.setTotalNbOfProsumers(numProsumers);
-		cascadeMainContext.setNbOfTickPerDay((Integer) params.getValue("ticksPerDay"));
+		int ticksPerDay = (Integer) params.getValue("ticksPerDay");
+		cascadeMainContext.setNbOfTickPerDay(ticksPerDay);
 		cascadeMainContext.verbose = (Boolean) params.getValue("verboseOutput");
 		cascadeMainContext.chartSnapshotOn = (Boolean) params.getValue("chartSnapshot");
 		cascadeMainContext.setChartSnapshotInterval((Integer) params.getValue("chartSnapshotInterval"));
+		cascadeMainContext.signalMode = (Integer)params.getValue("signalMode");
 		
 		cascadeMainContext.setRandomSeedValue((Integer)params.getValue("randomSeed"));
-
+		
+	
 		// RunEnvironment.getInstance().
 		Date startDate;
 		try {
@@ -142,17 +153,25 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		CSVReader weatherReader = null;
 		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
 		CSVReader systemBasePriceReader = null;
-		File householdAttrFile = new File(dataDirectory, householdAttrFileName);
+		
+		File householdOtherDemandFile = new File(dataDirectory, householdOtherDemandFilename);
 
-
+		int lengthOfProfileArrays = ticksPerDay*Consts.NB_OF_DAYS_LOADED_DEMAND;
+		
 		try {
 			weatherReader = new CSVReader(weatherFile);
 			weatherReader.parseByColumn();
-
-			cascadeMainContext.insolationArray = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("insolation"));
-			cascadeMainContext.windSpeedArray = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("windSpeed"));
-			cascadeMainContext.airTemperatureArray = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airTemp"));
-			cascadeMainContext.weatherDataLength = cascadeMainContext.insolationArray.length;
+			
+			double [] insolationArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("insolation"));
+			double [] windSpeedArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("windSpeed"));
+			double [] airTemperatureArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airTemp"));
+						
+			cascadeMainContext.insolationArray = Arrays.copyOf(insolationArray_all, lengthOfProfileArrays);
+			cascadeMainContext.windSpeedArray =  Arrays.copyOf(windSpeedArray_all, lengthOfProfileArrays);
+			cascadeMainContext.airTemperatureArray = Arrays.copyOf(airTemperatureArray_all, lengthOfProfileArrays);
+			
+			cascadeMainContext.weatherDataLength = lengthOfProfileArrays;
+			
 
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not find file with name " + weatherFile.getAbsolutePath());
@@ -167,11 +186,13 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		try {
 			systemBasePriceReader = new CSVReader(systemDemandFile);
 			systemBasePriceReader.parseByColumn();
+			
 			double[] systemBasePriceSignal = ArrayUtils.convertStringArrayToDoubleArray(systemBasePriceReader.getColumn("demand"));
+			cascadeMainContext.systemPriceSignalDataArray = Arrays.copyOf(systemBasePriceSignal, lengthOfProfileArrays);
 			cascadeMainContext.systemPriceSignalDataLength = systemBasePriceSignal.length;
-			cascadeMainContext.systemPriceSignalDataArray = Arrays.copyOf(systemBasePriceSignal, systemBasePriceSignal.length);
+			
 		} catch (FileNotFoundException e) {
-			System.err.println("Could not find file with name " + householdAttrFileName);
+			System.err.println("Could not find file with name " + householdOtherDemandFilename);
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}		
@@ -181,21 +202,30 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		}
 
 		try {
-			baseDemandReader = new CSVReader(householdAttrFile);
-			baseDemandReader.parseByColumn();
-			numDemandColumns = baseDemandReader.columnsStarting("demand");
+			CSVReader otherDemandReader = new CSVReader(householdOtherDemandFile);
+			
+			otherDemandReader.parseByColumn();
+			int numOfOtherDemandColumns = otherDemandReader.columnsStarting("occ");
 
-			if (numDemandColumns == 0)
+			if (numOfOtherDemandColumns == 0)
 			{
 				System.err.println("The household demand data files appears to have no demand data columns");
 				System.err.println("Demand data columns should be headed 'demand' followed by an integer e.g. 'demand0', 'demand1'...");
 				System.err.println("Proceeding with no demand data would cause failure, so the program will now terminate");
-				System.err.println("Please check file " + householdAttrFile.getAbsolutePath());
+				System.err.println("Please check file " + householdOtherDemandFile.getAbsolutePath());
 				System.exit(1);
 			}
+			
+			map_nbOfOccToOtherDemand = new WeakHashMap <Integer, double[]> (); 
+			
+			
+			for (int i=1; i<=numOfOtherDemandColumns; i++) {
+				
+				  this.map_nbOfOccToOtherDemand.put(i,ArrayUtils.convertStringArrayToDoubleArray(otherDemandReader.getColumn("occ"+i)));
+			}	
 
 		} catch (FileNotFoundException e) {
-			System.err.println("Could not find file with name " + householdAttrFileName);
+			System.err.println("Could not find file with name " + householdOtherDemandFilename);
 			e.printStackTrace();
 			RunEnvironment.getInstance().endRun();
 		}
@@ -203,7 +233,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		this.monthlyMainsWaterTemp = Arrays.copyOf(Consts.MONTHLY_MAINS_WATER_TEMP, Consts.MONTHLY_MAINS_WATER_TEMP.length);
 	}
 
-
+ /*
 	private void createTestHHProsumersAndAddThemToContext() {
 
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
@@ -217,40 +247,50 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			{
 				System.out.println("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
 			}
-			householdBaseDemandArray = ArrayUtils.convertStringArrayToDoubleArray(baseDemandReader.getColumn(demandName));
+			//householdBaseDemandArray = ArrayUtils.convertStringArrayToDoubleArray(otherDemandReader.getColumn(demandName));
 
 			HHProsumer hhProsAgent = prosumerFactory.createHHProsumer(householdBaseDemandArray, false);
 
 			cascadeMainContext.add(hhProsAgent);			
 		} 
-	}
+	}  */
 
-	private void createHouseholdProsumersAndAddThemToContext(int occupancyNb) {
+	private void createHouseholdProsumersAndAddThemToContext(int occupancyModeOrNb) {
 
-		
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
+		
+		System.out.println("-----------------------------");
+		System.out.println("% Of HHPros With Gas: "+ percentageOfHHProsWithGas+"%");
+		
+		int nbOfHHProsWithGas = (numProsumers * percentageOfHHProsWithGas)/100;
+		int nbOfHHProsWithElectricty = numProsumers - nbOfHHProsWithGas;
+		
+		System.out.println("# of HHPros With Gas: "+ nbOfHHProsWithGas);
+		System.out.println("# of HHPros With Electricty: "+ nbOfHHProsWithElectricty);
 
-		double[] householdMiscDemandArray = null; //Misc demand profile array consists of electricity demand for lightening, entertainment, computer and small appliances  
-		for (int i = 0; i < numProsumers; i++) {
 
-			String demandName = "demand" + RandomHelper.nextIntFromTo(0, numDemandColumns - 1);
+		double[] hhOtherDemandArray = null; //Other elastic demand profiles array consists of electricity demand for cooking, lightening, and brown(entertainment, computer and small appliances)
+		
+		for (int i = 0; i < nbOfHHProsWithGas; i++) {
 
-			if (cascadeMainContext.verbose)
-			{
-				System.out.println("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
-			}
+			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(map_nbOfOccToOtherDemand, occupancyModeOrNb, true, true);
 
-			householdMiscDemandArray = ArrayUtils.convertStringArrayToDoubleArray(baseDemandReader.getColumn(demandName));
-
-			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(householdMiscDemandArray, false, occupancyNb);
-
-			if (!cascadeMainContext.add(hhProsAgent))
-			{
+			if (!cascadeMainContext.add(hhProsAgent))	{
 				System.err.println("Failed to add agent to context!!");
 			}
 		} 
 		
-		if (Consts.DEBUG)System.out.println("initialised and added " + cascadeMainContext.getObjects(HouseholdProsumer.class).size() + " household prosumers"); 
+		for (int i = 0; i < nbOfHHProsWithElectricty; i++) {
+
+			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(map_nbOfOccToOtherDemand, occupancyModeOrNb, true, false);
+
+			if (!cascadeMainContext.add(hhProsAgent))	{
+				System.err.println("Failed to add agent to context!!");
+			}
+		} 
+			
+		System.out.println("Total # of HHPros added to context: " + cascadeMainContext.getObjects(HouseholdProsumer.class).size()); 
+		System.out.println("-----------------------------");
 
 	}
 
@@ -299,10 +339,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			//populate the initial heating profile from the above baseline demand for hot water
 			//thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
 			
-			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,1, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
+			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.NB_OF_DAYS_LOADED_DEMAND, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
 
 		}
-
+		
 		if(cascadeMainContext.verbose)
 		{
 			System.out.println("Percentages:");
@@ -321,9 +361,12 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		}
 	}
 	
-	private void setHHProsumersElecWaterHeatBasedOnFraction() {
+  /*
+	private void initializeHHProsumersElecWaterHeat() {
 
-		Iterable waterHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecWaterFraction")));
+		//Iterable waterHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecWaterFraction")));
+		Iterable waterHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers));
+
 		ArrayList prosumersWithElecWaterHeatList = IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
 
 		//if (Consts.DEBUG) System.out.println("ArrayList.size: WaterHeat "+ prosumersWithElecWaterHeatList.size());
@@ -334,24 +377,33 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		while (iter.hasNext()) {
 			((HouseholdProsumer) iter.next()).initializeElectWaterHeatPar();
 		}
-	}
+	} */
 
-	private void setHHProsumersElecSpaceHeatBasedOnFraction() {
-		Iterable spaceHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecSpaceFraction")));
+	private void initializeWithoutGasHHProsumersElecSpaceHeat() {
+		
+		IndexedIterable <HouseholdProsumer> spaceHeatedProsumersIter = cascadeMainContext.getObjects(HouseholdProsumer.class);
+		
+		for (HouseholdProsumer hhPros: spaceHeatedProsumersIter) {
+			if (!hhPros.isHasGas()) {
+				hhPros.setHasElectricalSpaceHeat(true);
+				hhPros.initializeElecSpaceHeatPar();
 
-		ArrayList prosumersWithElecSpaceHeatList = IterableUtils.Iterable2ArrayList(spaceHeatedProsumersIter);
-
-		//if (Consts.DEBUG) System.out.println("ArrayList.size: Space Heat "+ prosumersWithElecSpaceHeatList.size());
-
-		AgentUtils.assignParameterSingleValue("hasElectricalSpaceHeat", true, prosumersWithElecSpaceHeatList.iterator());
-
-		Iterator iter = prosumersWithElecSpaceHeatList.iterator();
-
-		while (iter.hasNext()) {
-			((HouseholdProsumer) iter.next()).initializeElecSpaceHeatPar();
+			}
 		}
 	}
+	
+	private void initializeWithoutGasHHProsumersElecWaterHeat() {
 
+		IndexedIterable <HouseholdProsumer> spaceHeatedProsumersIter = cascadeMainContext.getObjects(HouseholdProsumer.class);
+		
+		for (HouseholdProsumer hhPros: spaceHeatedProsumersIter) {
+			if (!hhPros.isHasGas()) {
+				hhPros.setHasElectricalWaterHeat(true);
+				hhPros.initializeElectWaterHeatPar();
+
+			}
+		}
+	}
 
 	/**
 	 * This method uses rule set as described in Boait et al draft paper to assign
@@ -389,10 +441,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				pAgent.hasChestFreezer = true;
 			}
 			
-			if (Consts.DEBUG) System.out.println("Fridge; FridgeFreezer; Freezer: "+  pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+ (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)); 
+			//if (Consts.DEBUG) System.out.println("Fridge; FridgeFreezer; Freezer: "+  pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+ (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)); 
 
 			//pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer && pAgent.hasChestFreezer));
-			pAgent.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(1, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)));
+			pAgent.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.NB_OF_DAYS_LOADED_DEMAND, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)));
 		}
 		
 		if(cascadeMainContext.verbose)
@@ -448,7 +500,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		if(Consts.DEBUG)
 		{
-			System.out.println("CascadeContextBuilder: There are " + IterableUtils.count(cat1Agents) + " category 1 agents");
+			//System.out.println("CascadeContextBuilder: There are " + IterableUtils.count(cat1Agents) + " category 1 agents");
 		}
 
 		for (HouseholdProsumer prAgent : cat1Agents)
@@ -623,7 +675,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 	}
 
-	private void populateContext_test() {
+	/*private void populateContext_test() {
 		
 		createTestHHProsumersAndAddThemToContext();
 		
@@ -634,7 +686,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		buildSocialNetwork(); 
 
 		buildOtherNetworks(firstRecoAggregator);
-	}
+	} */
 
 
 	private void populateContext() {
@@ -650,10 +702,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			initializeHHProsumersColdAppliancesPar4All();
 
 		if (Consts.HHPRO_HAS_ELEC_WATER_HEAT)
-			setHHProsumersElecWaterHeatBasedOnFraction();
+			initializeWithoutGasHHProsumersElecWaterHeat();
 
 		if (Consts.HHPRO_HAS_ELEC_SPACE_HEAT)
-			setHHProsumersElecSpaceHeatBasedOnFraction();
+			initializeWithoutGasHHProsumersElecSpaceHeat();
 
 		//Add aggregator(s), currently one;  (TODO should become a separate method later)
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorFactory(this.cascadeMainContext);
@@ -676,8 +728,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	 */
 	public CascadeContext build(Context context) {
 
-		Market.defaultM = new Market();
-		RunEnvironment.getInstance().endAt(7007);		
+		//Market.defaultM = new Market();
+		//RunEnvironment.getInstance().endAt(7007);		
 		//if (Consts.DEBUG) System.out.println("CascadeContextBuilder");
 		
 		cascadeMainContext = new CascadeContext(context); //build CascadeContext by passing the context
@@ -689,19 +741,22 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		populateContext();
 		
+		//-------------------
+		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
+		HouseholdProsumer hh = householdProsumers.get(1);
+		
+		//-------------------------
+		
 		PopulationUtils.testAndPrintHouseholdApplianceProportions(cascadeMainContext);
 
 		// (20/01/12) Comment to speed up space heat test
-		cranfieldMarketModelIntegrationTest();
+		//cranfieldMarketModelIntegrationTest();
 
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
 
 		return cascadeMainContext;
 	}
-
-
-
 
 }
 

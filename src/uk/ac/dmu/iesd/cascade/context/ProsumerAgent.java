@@ -31,10 +31,6 @@ import uk.ac.dmu.iesd.cascade.Consts;
  */
 public abstract class ProsumerAgent implements ICognitiveAgent {
 
-	/*
-	 * Agent properties
-	 */
-
 	/**
 	 * a prosumer agent's ID
 	 * This field is automatically assigned by constructor 
@@ -125,7 +121,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	/*
 	 * Imported signals and profiles.
 	 */
-	protected double[] baseDemandProfile;
+	protected double[] arr_otherDemandProfile;
 	protected double[] predictedCostSignal;
 	protected int predictionValidTime;
 
@@ -350,7 +346,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param validTime - the time (in ticks) from which the signal is valid
 	 */
 	public boolean receiveValueSignal(double[] signal, int length) {
-		if (Consts.DEBUG) System.out.println("ProsumerAgent:: receiveValueSignal()");
+		//if (Consts.DEBUG) System.out.println("ProsumerAgent:: receiveValueSignal()");
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();
@@ -369,19 +365,17 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 			//if (Consts.DEBUG) System.out.println("time: "+time+ " validTime"+validTime);
 			if (signalOffset != 0)
 			{
-				if (Consts.DEBUG)
-				{
-					if (Consts.DEBUG) System.out.println("ProsumerAgent: Signal valid from time other than current time");
-				}
+
+				System.out.println("ProsumerAgent: Signal valid from time other than current time");
+
 				newSignalLength = newSignalLength - signalOffset;
 			}
 
 			if ((getPredictedCostSignal() == null) || (newSignalLength != predictedCostSignal.length))
 			{
-				if (Consts.DEBUG)
-				{
-					if (Consts.DEBUG) System.out.println("ProsumerAgent: Re-defining length of signal in agent" + agentID);
-				}
+			
+				 System.out.println("ProsumerAgent: Re-defining length of signal in agent" + agentID);
+			
 				setPredictedCostSignal(new double[newSignalLength]);
 			}
 
