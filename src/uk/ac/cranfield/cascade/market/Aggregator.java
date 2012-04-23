@@ -460,7 +460,7 @@ public abstract class Aggregator {
 	
 	//Get the generation and demand in this time step
 	abstract public ArrayList<Prediction> getPrediction();
-	abstract public ArrayList<Prediction> getPredictionShortMarket();
+	//abstract public ArrayList<Prediction> getPredictionShortMarket();
 	abstract public double currentSupply();
 	abstract public double currentDemand();
 	
