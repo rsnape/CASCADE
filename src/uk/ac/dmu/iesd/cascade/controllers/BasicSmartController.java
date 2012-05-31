@@ -5,7 +5,7 @@ package uk.ac.dmu.iesd.cascade.controllers;
 
 import java.util.WeakHashMap;
 
-import uk.ac.dmu.iesd.cascade.context.ProsumerAgent;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 
 /**
  * @author jsnape

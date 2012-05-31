@@ -1,15 +1,12 @@
-/**
- * 
- */
 package uk.ac.dmu.iesd.cascade.controllers;
 
 import java.util.*;
 
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.RandomHelper;
-import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 /**
@@ -22,6 +19,12 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
  * projected load for the following day
  * 
  * @author jrsnape
+ * 
+ * Version history (for intermediate steps see Git repository history)
+ * - Modified to receive and treate separate related loads for composite wet and cold (Babak Mahdavi)
+ * - Re-written #OptimiseWetProfile method (Babak Mahdavi)
+ * - Re-wirtten #OptimiseColdProfile method (Babak Mahdavi)
+ *   
  */
 public class WattboxController implements ISmartController{
 
@@ -337,6 +340,8 @@ public class WattboxController implements ISmartController{
 	 * which owns this Wattbox. It expects wet profiles to be 
 	 * 'discrete' (i.e. many/most timeslots contain zero values)
 	 * 
+	 * Re-written (Babak Mahdavi)
+	 * 
 	 */
 	private void optimiseWetProfile(int timeStep) 
 	{
@@ -523,7 +528,9 @@ public class WattboxController implements ISmartController{
 	 * The cold demands (generated using Melody's algorithm) is a 'continuous' demand (at least at half/hour resolution). 
 	 * Currently, the cold loads are shifted randomly forward between one or two timeslots using the same 
 	 * single drawn timeShift value. This can potentially be changed if we want to apply different 'tolerance', 
-	 * to each different appliance e.g. the load of fridge may be shifted forward for longer hours comparing to say, a freezer. 
+	 * to each different appliance e.g. the load of fridge may be shifted forward for longer hours comparing to say, a freezer.
+	 * 
+	 * Re-written (Babak Mahdavi)
 	 */
 	private void optimiseColdProfile(int timeStep) 
 	{	

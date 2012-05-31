@@ -6,9 +6,9 @@ package uk.ac.dmu.iesd.cascade.controllers;
 import java.util.Arrays;
 import java.util.WeakHashMap;
 
-import uk.ac.dmu.iesd.cascade.Consts;
-import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
-import uk.ac.dmu.iesd.cascade.context.ProsumerAgent;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 /**

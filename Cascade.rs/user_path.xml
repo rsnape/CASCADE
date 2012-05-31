@@ -1,14 +1,16 @@
 <model name="Cascade">
 <classpath>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.ProsumerAgent"/>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.HouseholdProsumer"/>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.AggregatorAgent"/>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.context.RECO"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator"/>
+
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.test.HHProsumer"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.test.PAgent"/>
-<agents path="../../Cascade/bin" filter="uk.ac.cranfield.cascade.market.Market"/>
-<agents path="../../Cascade/bin" filter="uk.ac.cranfield.cascade.market.testAggregator"/>
-<agents path="../../Cascade/bin" filter="uk.ac.cranfield.cascade.market.Aggregator"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.SettlementCompany"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator"/>
 <entry path="../../Cascade/ExternalLib/commons-math-2.2.jar"/>
 </classpath>
 </model>

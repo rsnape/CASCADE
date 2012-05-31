@@ -18,11 +18,15 @@ import repast.simphony.context.*;
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
+import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.projection.*;
 import repast.simphony.ui.widget.SnapshotTaker;
 import repast.simphony.engine.environment.RunEnvironment;
 
-import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.base.Consts;
+import uk.ac.dmu.iesd.cascade.market.IBMTrader;
+import uk.ac.dmu.iesd.cascade.market.IPxTrader;
+import uk.ac.dmu.iesd.cascade.market.ITrader;
 
 /**
  * <em>CascadeContext</em> is the main context for the <em>Cascade</em> framework.
@@ -81,15 +85,15 @@ public class CascadeContext extends DefaultContext{
 	
 	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
 	protected static boolean chartSnapshotOn = false;  // use
-	protected int ticksPerDay;
+	public int ticksPerDay;
 	protected int chartSnapshotInterval;
 	
-	protected int signalMode=-1;
+	public int signalMode=-1;
 	
 	private Network<?> socialNetwork;
 	private Network<?> economicNetwork;
 	
-	protected GregorianCalendar simulationCalendar;
+	public GregorianCalendar simulationCalendar;
 	
 	SnapshotTaker snapshotTaker1;
 	Collection<JComponent> chartCompCollection;
@@ -584,4 +588,113 @@ public class CascadeContext extends DefaultContext{
 		
 
 	}
+	
+	//----------------
+	
+	private Network networkOfRegisteredPxTraders;
+	private Network networkOfRegisteredBMTraders;
+
+	
+	public boolean isFirstDay() {
+		if (getDayCount() == 0)
+			return true;
+		else return false;
+	}
+	
+	public boolean isMarketFirstDay() {		
+		if ((getDayCount() - ((Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP)/48)) == 0)
+			return true;
+		else return false;
+	}
+	
+	public boolean isSecondDay() {
+		if (getDayCount() == 1)
+			return true;
+		else return false;
+	}
+	
+	public boolean isMarketSecondDay() {
+		if (getDayCount() == ((Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP)/48)+1 )
+			return true;
+		else return false;
+	}
+	
+	public int getSettlementPeriod(){
+		return getTimeslotOfDay();
+	}
+	
+	/*public Network getNetworkOfRegisteredPxTraders(){
+		return this.networkOfRegisteredPxTraders;
+	}
+	
+	public Network getNetworkOfRegisteredBMTraders(){
+		return this.networkOfRegisteredBMTraders;
+	}
+	
+	public ArrayList<IPxTrader> getListOfRegisteredPxTraders() {
+		ArrayList<IPxTrader> aListOfPxTranders = new ArrayList<IPxTrader>();
+
+		Network pxTradersNet = getNetworkOfRegisteredPxTraders();
+		Iterable<RepastEdge> edgeIter = pxTradersNet.getEdges();
+		if(verbose) 
+			System.out.println("There are "+ pxTradersNet.size() + " registered PxTraders");
+		for (RepastEdge edge : edgeIter) {
+			Object obj = edge.getTarget();
+			if (obj instanceof IPxTrader)
+				aListOfPxTranders.add((IPxTrader) obj);    		
+			else
+				System.err.println(this.getClass()+"::Wrong Class Type: IPxTrader agent is expected");
+		}
+		return aListOfPxTranders;
+	} 
+	
+	
+	public ArrayList<IBMTrader> getListOfRegisteredBMTraders() {
+		ArrayList<IBMTrader> aListOfBMTranders = new ArrayList<IBMTrader>();
+
+		Network bmTradersNet = getNetworkOfRegisteredBMTraders();
+		Iterable<RepastEdge> edgeIter = bmTradersNet.getEdges();
+		if(verbose) 
+			System.out.println("There are "+ bmTradersNet.size() + " registered BMTraders");
+		for (RepastEdge edge : edgeIter) {
+			Object obj = edge.getTarget();
+			if (obj instanceof IBMTrader)
+				aListOfBMTranders.add((IBMTrader) obj);    		
+			else
+				System.err.println(this.getClass()+"::Wrong Class Type: IBMTrader agent is expected");
+		}
+		return aListOfBMTranders;
+	}	
+	
+	*/
+	
+	public ArrayList<IPxTrader> getListOfPxTraders() {
+		ArrayList<IPxTrader> aListOfPxTraders = new ArrayList<IPxTrader>();
+		Iterable<IPxTrader> pxTraderIter = (Iterable<IPxTrader>) (this.getObjects(IPxTrader.class));
+		for (IPxTrader pxTrader: pxTraderIter) 
+			aListOfPxTraders.add(pxTrader);    	
+
+		return aListOfPxTraders;	
+	}
+	
+	public ArrayList<IBMTrader> getListOfBMTraders() {
+		ArrayList<IBMTrader> aListOfBMTraders = new ArrayList<IBMTrader>();
+		Iterable<IBMTrader> bmTraderIter = (Iterable<IBMTrader>) (this.getObjects(IBMTrader.class));
+		for (IBMTrader bmTrader: bmTraderIter) 
+			aListOfBMTraders.add(bmTrader);    	
+
+		return aListOfBMTraders;	
+	} 
+	
+	public ArrayList<ITrader> getListOfTraders() {
+		ArrayList<ITrader> aListOfTraders = new ArrayList<ITrader>();
+		Iterable<ITrader> traderIter = (Iterable<ITrader>) (this.getObjects(ITrader.class));
+		for (ITrader trader: traderIter) 
+			aListOfTraders.add(trader);    	
+
+		return aListOfTraders;	
+	}
+	
+	
+	
 }

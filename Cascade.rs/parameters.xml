@@ -13,7 +13,7 @@
 									
 		/>
 				<parameter name="systemBaseDemandFile" displayName="systemBaseDemandFile" type="java.lang.String" 
-						defaultValue="macroDemand_1Y.csv" 
+						defaultValue="macroDemand_1W.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -38,13 +38,13 @@
 									
 		/>
 				<parameter name="householdOtherDemandFile" displayName="householdOtherDemandFile" type="java.lang.String" 
-						defaultValue="hhOtherDemandProfiles_1Y.csv" 
+						defaultValue="hhOtherDemandProfiles_1W.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
 				<parameter name="defaultProsumersPerFeeder" displayName="defaultProsumersPerFeeder" type="java.lang.Integer" 
-						defaultValue="100" 
+						defaultValue="11" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									

@@ -6,9 +6,9 @@ package uk.ac.dmu.iesd.cascade.util;
 import repast.simphony.query.PropertyEquals;
 import repast.simphony.query.Query;
 import repast.simphony.util.collections.IndexedIterable;
-import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
 
 /**
  * Provides utilities to perform operations across a population in a simulation

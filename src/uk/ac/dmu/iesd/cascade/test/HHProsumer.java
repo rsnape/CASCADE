@@ -5,7 +5,7 @@ import java.math.*;
 import java.util.*;
 
 import javax.measure.unit.*;
-import org.apache.tools.ant.taskdefs.Sync.MyCopy;
+//import org.apache.tools.ant.taskdefs.Sync.MyCopy;
 import org.hsqldb.lib.ArrayUtil;
 import org.jfree.util.ArrayUtilities;
 import org.jscience.mathematics.number.*;
@@ -28,9 +28,9 @@ import repast.simphony.ui.RSApplication;
 import repast.simphony.ui.RSGui;
 import repast.simphony.visualization.ProbeEvent;
 import repast.simphony.visualizationOGL2D.DisplayOGL2D;
-import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.context.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.controllers.*;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
@@ -1196,7 +1196,7 @@ public class HHProsumer extends ProsumerAgent{
 	 * Input variables: none
 	 * 
 	 ******************/
-	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_SECOND)
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 	public void step() {
 		
 		//if (Consts.DEBUG) System.out.println("pppppppppppppp HHProsumer::step() pppppppppppp");

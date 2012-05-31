@@ -38,8 +38,8 @@ import repast.simphony.util.collections.IndexedIterable;
 import repast.simphony.visualization.ProbeEvent;
 import repast.simphony.visualization.ProbeListener;
 
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.context.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.ChartUtils;
@@ -74,6 +74,10 @@ public class ProsumerProbeListener implements ProbeListener {
 	}
 
 
+	/**
+	 * Modification: modified and added new probing elements such as pie and line charts for
+	 * monitoring the electricity consumption (Babak Mahdavi) 
+	 */
 	@Override
 	public void objectProbed(ProbeEvent evt) {
 		// TODO Auto-generated method stub
@@ -232,14 +236,21 @@ public class ProsumerProbeListener implements ProbeListener {
 		return result;
 	}
 	
-	private  DefaultCategoryDataset createLoadsProfileDataset(HouseholdProsumer thisAgent) {
+	/**
+	 * Creates and returns a category dataset of the demand of a given HHProsumer to 
+	 * be used in a line chart.
+	 * @author Babak Mahdavi
+	 * @param hhAgent
+	 * @return
+	 */
+	private  DefaultCategoryDataset createLoadsProfileDataset(HouseholdProsumer hhAgent) {
 		DefaultCategoryDataset dcDataset = new DefaultCategoryDataset();
 
-		double[] arr_spaceHeat = thisAgent.getHistoricalSpaceHeatDemand();
-		double[] arr_hotWater = thisAgent.getHistoricalWaterHeatDemand();
-		double[] arr_otherDemand = thisAgent.getHistoricalOtherDemand();
-		double[] arr_cold = thisAgent.getHistoricalColdDemand();
-		double[] arr_wet = thisAgent.getHistoricalWetDemand();
+		double[] arr_spaceHeat = hhAgent.getHistoricalSpaceHeatDemand();
+		double[] arr_hotWater = hhAgent.getHistoricalWaterHeatDemand();
+		double[] arr_otherDemand = hhAgent.getHistoricalOtherDemand();
+		double[] arr_cold = hhAgent.getHistoricalColdDemand();
+		double[] arr_wet = hhAgent.getHistoricalWetDemand();
 
 
 		for (int i = 0; i < arr_otherDemand.length ; i++)	{
@@ -255,15 +266,21 @@ public class ProsumerProbeListener implements ProbeListener {
 	}
 	
 
-	private  DefaultPieDataset createPieDataset(HouseholdProsumer thisAgent) {
+	/**
+	 * Creates and returns a pie chart dataset using the demand of a given HHProsumer
+	 * @author Babak Mahdavi
+	 * @param hhAgent
+	 * @return
+	 */
+	private  DefaultPieDataset createPieDataset(HouseholdProsumer hhAgent) {
 		
 		DefaultPieDataset pieDataset = new DefaultPieDataset();
 
-		double[] arr_spaceHeat = thisAgent.getHistoricalSpaceHeatDemand();
-		double[] arr_hotWater = thisAgent.getHistoricalWaterHeatDemand();
-		double[] arr_otherDemand = thisAgent.getHistoricalOtherDemand();
-		double[] arr_cold = thisAgent.getHistoricalColdDemand();
-		double[] arr_wet = thisAgent.getHistoricalWetDemand();
+		double[] arr_spaceHeat = hhAgent.getHistoricalSpaceHeatDemand();
+		double[] arr_hotWater = hhAgent.getHistoricalWaterHeatDemand();
+		double[] arr_otherDemand = hhAgent.getHistoricalOtherDemand();
+		double[] arr_cold = hhAgent.getHistoricalColdDemand();
+		double[] arr_wet = hhAgent.getHistoricalWetDemand();
 
 		pieDataset.setValue("SH", ArrayUtils.sum(arr_spaceHeat));
 		pieDataset.setValue("WH", ArrayUtils.sum(arr_hotWater));
@@ -271,11 +288,18 @@ public class ProsumerProbeListener implements ProbeListener {
 		pieDataset.setValue("C", ArrayUtils.sum(arr_cold));
 		pieDataset.setValue("W", ArrayUtils.sum(arr_wet));
 		
-
 		return pieDataset;
 
 	}
 	
+
+	
+	/**
+	 * Creates and returns a pie chart dataset using the demand of all HHProsumers
+	 * @author Babak Mahdavi
+	 * @param list_hhProsumers
+	 * @return
+	 */
 	@Deprecated
 	private  DefaultPieDataset createPieDataset4AllHHProsumers(List<HouseholdProsumer> list_hhProsumers) {
 
@@ -305,6 +329,12 @@ public class ProsumerProbeListener implements ProbeListener {
 
 	}
 	
+	/**
+	 * Creates and returns a pie chart dataset using the average demand of all HHProsumers
+	 * @author Babak Mahdavi
+	 * @param list_hhProsumers
+	 * @return
+	 */
 	private  DefaultPieDataset createPieDataset4AvgDemandOfAllHHPros(List<HouseholdProsumer> list_hhProsumers) {
 
 		DefaultPieDataset pieDataset = new DefaultPieDataset();
@@ -342,6 +372,13 @@ public class ProsumerProbeListener implements ProbeListener {
 	}
 	
 
+	/**
+	 * Creates and returns a pie chart (of JFreeChart) with customized label 
+	 * @author Babak Mahdavi
+	 * @param dataset
+	 * @param title
+	 * @return
+	 */
 	private JFreeChart createPieChart(DefaultPieDataset dataset, String title) {
 
 		//final JFreeChart pieChart = ChartFactory.createPieChart3D(
@@ -357,9 +394,7 @@ public class ProsumerProbeListener implements ProbeListener {
         PiePlot plot = (PiePlot) pieChart.getPlot();        
         plot.setLabelGenerator(new StandardPieSectionLabelGenerator(" {0}: {1} ({2})"));
 		return pieChart;
-
 	}
-
 
 	/**
 	 * Creates a chart
@@ -383,6 +418,15 @@ public class ProsumerProbeListener implements ProbeListener {
 
 	}
 
+	/**
+	 * Creates and returns a line chart (of JFreeChart type) using a given category dataset, title and y-axis label.
+	 * @author Babak Mahdavi 
+	 * @param dataset
+	 * @param title
+	 * @param xLabel
+	 * @param yLabel
+	 * @return
+	 */
 	private JFreeChart createLineChart(DefaultCategoryDataset dataset, String title, String xLabel, String yLabel) {
 
 		JFreeChart chart = ChartFactory.createLineChart(
@@ -404,6 +448,11 @@ public class ProsumerProbeListener implements ProbeListener {
 	
 
 
+	/**
+	 *
+	 * Modification: modified and added the pie chart update (Babak Mahdavi) 
+	 */
+	
 	//@ScheduledMethod(start = 0, interval = 48, shuffle = true, priority = Consts.PROBE_PRIORITY)
 	public void scheduledUpdate()
 	{

@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package uk.ac.dmu.iesd.cascade.util;
 
 import java.util.Arrays;
@@ -8,7 +6,7 @@ import java.util.WeakHashMap;
 
 import cern.jet.random.Normal;
 import repast.simphony.random.RandomHelper;
-import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
@@ -373,6 +371,7 @@ public abstract class InitialProfileGenUtils {
 
 
 	/**
+	 * This version modifies the Melody's initial 'continious' function to 'discrete' loads (Babak Mahdavi)
 	 * @param numDays
 	 * @param i
 	 * @param j

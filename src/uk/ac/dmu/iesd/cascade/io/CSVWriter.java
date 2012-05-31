@@ -3,7 +3,7 @@ package uk.ac.dmu.iesd.cascade.io;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 
 /**
  * 
@@ -181,8 +181,8 @@ public class CSVWriter {
 			//writer.flush();
 			writer.close();
 			System.getProperty("user.dir");
-			if (Consts.DEBUG)
-				System.out.println("CSVWriter: File created: "+System.getProperty("user.dir")+"\\"+fileName);
+			//if (Consts.DEBUG)
+				//System.out.println("CSVWriter: File created: "+System.getProperty("user.dir")+"\\"+fileName);
 		}
 		catch(IOException e) {
 			e.printStackTrace();
