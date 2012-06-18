@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <sweep runs="1">
-<parameter name="randomSeed" type="list" value_type="int" values="1 2 3 4 5 6 7 8 9 10">
+<parameter name="randomSeed" type="list" value_type="int" values="1 2 3 4 5 6 7 8 9 10"><!-- -->
 <parameter name="signalMode" type="list" value_type="int" values="0 1"/>
 <parameter name="dataFileFolder" type="constant" constant_type="string" value="dataFiles" />
 <parameter name="startDate" type="constant" constant_type="string" value="01/01/2000" />

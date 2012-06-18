@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 
-import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 
 /**
  * Parses comma-separated variable (CSV) files and reads them into string arrays.

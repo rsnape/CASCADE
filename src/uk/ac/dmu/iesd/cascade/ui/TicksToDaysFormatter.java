@@ -4,7 +4,7 @@
 package uk.ac.dmu.iesd.cascade.ui;
 
 import repast.simphony.ui.plugin.TickCountFormatter;
-import uk.ac.dmu.iesd.cascade.Consts;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**

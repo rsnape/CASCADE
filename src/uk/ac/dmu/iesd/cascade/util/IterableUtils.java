@@ -11,6 +11,7 @@ import java.util.*;
  * Helper methods to deal with groups returned as Iterables
  *
  */
+
 public class IterableUtils {
 	
 	/**
@@ -46,18 +47,22 @@ public class IterableUtils {
 		return count;
 	}
 	
+	
+	/**
+	 * This method returns an arrayList of a given iterable 
+	 * @author Babak Mahdavi
+	 * @param anIterable
+	 * @return an ArrayList
+	 */
 	public static ArrayList Iterable2ArrayList(Iterable anIterable) {
 		
 		ArrayList iterableItems = new ArrayList();
 		Iterator iterable = anIterable.iterator();
 		
 		while(iterable.hasNext())
-		{
 			iterableItems.add(iterable.next());
-		}
-
+	
 		return iterableItems;
-		
 	}
 
 }
