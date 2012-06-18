@@ -389,6 +389,12 @@ public class ArrayUtils {
 
 	public static double[] multiply(double[] array, double multiplier)
 	{
+		//Early return if the multiplier is 1
+		if (multiplier == 1)
+		{
+			return Arrays.copyOf(array, array.length);
+		}
+		
 		double[] returnArray = new double [array.length];
 
 		for (int i = 0; i < array.length; i++)
