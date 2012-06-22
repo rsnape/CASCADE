@@ -757,7 +757,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else myDemand = baseDemandProfile[time % baseDemandProfile.length];  */
 		
 		myDemand = arr_otherDemandProfile[time % arr_otherDemandProfile.length];
-		//if (Consts.DEBUG) System.out.println("myDemand: "+myDemand); 
+		//if (myDemand <0) 
+			//System.out.println("*myDemand: "+myDemand); 
 
 		// Adapt behaviour somewhat.  Note that this does not enforce total demand the same over a day.
 		// Note, we can only moderate based on cost signal
@@ -777,18 +778,38 @@ public class HouseholdProsumer extends ProsumerAgent{
 			//myE = myE + eChange;
 			//myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay]));
 			
-			//System.out.println("myDemand (before): "+myDemand);
+			double initialDemand = myDemand;
 			myDemand = myDemand * (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * myE));
 
-			//System.out.println("myDemand: "+myDemand +", costSignal:"+predictedCostSignal);
+			if (myDemand <0) {
+				System.out.println("=================time: "+this.timeOfDay+ ", id: "+this.agentID + ", occ: "+ this.numOccupants);
+				System.out.println("pos: "+ time % arr_otherDemandProfile.length);
+				
+				System.out.println("myElast: "+ myE);
+				System.out.println("costSig: "+ predictedCostSignal);
+				System.out.println("myDemand (before): "+ initialDemand);
+				System.out.println("myDemand (befor2): "+ arr_otherDemandProfile[time % arr_otherDemandProfile.length]);
+				System.out.println("myDemand (after ): "+myDemand +", costSignal:"+predictedCostSignal);
+				System.out.println();
+				System.out.println("myDemand (all): "+ Arrays.toString(arr_otherDemandProfile));
+
+				System.out.println("====================== ");
+			}
+		
+
 			if (Consts.DEBUG)
 			{
-				//System.out.println("dailyElasticity: "+ Arrays.toString(dailyElasticity));
-				//System.out.println("predictedCostSignal (all): "+ Arrays.toString(getPredictedCostSignal()));
-				//System.out.println("predictedCostSignal: "+predictedCostSignal);
-				//System.out.println("predictedCostNow * myE: "+predictedCostSignal * myE);
-				//System.out.println("dailyElasticity[time % ticksPerDay]: "+dailyElasticity[time % ticksPerDay]);
-				//System.out.println("HouseholdProsumer:: Based on predicted cost = " + predictedCostSignal + " demand set to " + (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) + " of initial " );
+				if (mainContext.isBeginningOfDay()) {
+					
+					//System.out.println("============================");
+					//System.out.println("dailyDemand: "+ Arrays.toString(arr_otherDemandProfile));
+					//System.out.println("dailyElasticity: "+ Arrays.toString(dailyElasticity));
+					//System.out.println("predictedCostSignal: "+ Arrays.toString(getPredictedCostSignal()));
+					//System.out.println("predictedCostSignal: "+predictedCostSignal);
+					//System.out.println("predictedCostNow * myE: "+predictedCostSignal * myE);
+					//System.out.println("dailyElasticity[time % ticksPerDay]: "+dailyElasticity[time % ticksPerDay]);
+					//System.out.println("HouseholdProsumer:: Based on predicted cost = " + predictedCostSignal + " demand set to " + (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) + " of initial " );
+				}
 			}
 		}
 
@@ -1387,7 +1408,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		
 		System.arraycopy(otherDemandProfile, 0, this.arr_otherDemandProfile, 0, lengthOfDemandProfile);
 
-		
 		//Initialise the smart optimised profile to be the same as base demand
 		//smart controller will alter this
 		//this.smartOptimisedProfile = new double [otherDemandProfile.length];

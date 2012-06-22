@@ -2,7 +2,7 @@ package uk.ac.dmu.iesd.cascade.market.astem.operators;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.WeakHashMap;
+import java.util.LinkedHashMap;
 
 import org.apache.commons.math.stat.inference.TestUtils;
 
@@ -33,8 +33,8 @@ public class SettlementCompany {
 	//private ArrayList<BOD> list_histBOA;
 	//private HashMap map_dmuID2ListOf_BODs;
 	
-	private WeakHashMap <Integer, double[]> map_IBMTraderID2PreviousDayPNs;
-	private WeakHashMap <IBMTrader, ArrayList<BOD>> map_IBMTrader2listBOAs;
+	private LinkedHashMap <Integer, double[]> map_IBMTraderID2PreviousDayPNs;
+	private LinkedHashMap <IBMTrader, ArrayList<BOD>> map_IBMTrader2listBOAs;
 	private double[] arr_previousDayIMBAL;
 	private double[] arr_mainPrice;
 	private double[] arr_reversePrice;
@@ -84,11 +84,11 @@ public class SettlementCompany {
 	}
 	
 	
-	public WeakHashMap<Integer, double[]> fetchPreviousDayPNs(ArrayList<ITrader> listOfTraders){
+	public LinkedHashMap<Integer, double[]> fetchPreviousDayPNs(ArrayList<ITrader> listOfTraders){
 		
 		//System.out.println("sc:: fetchPreviousDayPNs()");
 		
-		WeakHashMap<Integer, double[]> mapOfOldPNs = new WeakHashMap<Integer, double[]>();
+		LinkedHashMap<Integer, double[]> mapOfOldPNs = new LinkedHashMap<Integer, double[]>();
 		for (ITrader bmu : listOfTraders)
 			mapOfOldPNs.put(bmu.getID(), bmu.getPreviousDayPN());
 		
@@ -107,10 +107,10 @@ public class SettlementCompany {
 		this.so= so;
 	} */
 	
-	/*private WeakHashMap<BMU, ArrayList<BOD>>  fetchHistoricalBOA(ArrayList<BMU> listOfBMUs) {
+	/*private LinkedHashMap<BMU, ArrayList<BOD>>  fetchHistoricalBOA(ArrayList<BMU> listOfBMUs) {
 		System.out.println("SC: fetchHistoricalBOA() is called");
 		
-		WeakHashMap<BMU, ArrayList<BOD>> mapOfListOfHistBOAs = new WeakHashMap<BMU, ArrayList<BOD>>();
+		LinkedHashMap<BMU, ArrayList<BOD>> mapOfListOfHistBOAs = new LinkedHashMap<BMU, ArrayList<BOD>>();
 				
 		for (BMU bmu : listOfBMUs)
 			mapOfListOfHistBOAs.put(bmu, bmu.getHistoricalBOA());
@@ -118,12 +118,12 @@ public class SettlementCompany {
 		return mapOfListOfHistBOAs;
 	} */
 	
-	public void recieveBOAs(WeakHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {
+	public void recieveBOAs(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {
 		map_IBMTrader2listBOAs = mapOfIBMTrader2ListOfBOAs;
 	}
 	
 	
-	private SysPriceVolData calculateSSP(WeakHashMap <IBMTrader, ArrayList<BOD>> mapOfIBMTraders2ListOfBOAs) {
+	private SysPriceVolData calculateSSP(LinkedHashMap <IBMTrader, ArrayList<BOD>> mapOfIBMTraders2ListOfBOAs) {
 		
 		ArrayList<BOD> listOfBODs = new ArrayList<BOD>();
 		
@@ -152,7 +152,7 @@ public class SettlementCompany {
 	}
 	
 	
-	private SysPriceVolData calculateSBP(WeakHashMap <IBMTrader, ArrayList<BOD>> mapOfIBMTraders2ListOfBOAs) {
+	private SysPriceVolData calculateSBP(LinkedHashMap <IBMTrader, ArrayList<BOD>> mapOfIBMTraders2ListOfBOAs) {
 		
 	ArrayList<BOD> listOfBODs = new ArrayList<BOD>();
 		

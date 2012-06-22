@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.LinkedHashMap;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
@@ -40,7 +40,7 @@ public class PowerExchange {
 	private ArrayList<PxPD> list_PxPD;
 	//private HashMap<Integer, ArrayList<BSOD>> map_dmuID2ListOfBSOD;
 	
-	private WeakHashMap<IPxTrader, ArrayList<BSOD>> map_dmu2ListOfBSOD;
+	private LinkedHashMap<IPxTrader, ArrayList<BSOD>> map_dmu2ListOfBSOD;
 
 	private ArrayList<PxPD> list_PX_products; //make sure if needed 
 	
@@ -65,10 +65,10 @@ public class PowerExchange {
 		return aListOfBMUs;
 	} */
 
-	private  WeakHashMap<IPxTrader, ArrayList<BSOD>> fetchBSOfromIPxTraders(List<IPxTrader> listOfIPxTraders){
+	private  LinkedHashMap<IPxTrader, ArrayList<BSOD>> fetchBSOfromIPxTraders(List<IPxTrader> listOfIPxTraders){
 		//System.out.println("------ PX: fetchBSOD");
 		//Received BSOD are in the form of list
-        WeakHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSOD = new  WeakHashMap<IPxTrader, ArrayList<BSOD>>();
+        LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSOD = new  LinkedHashMap<IPxTrader, ArrayList<BSOD>>();
 		
 		for (IPxTrader bmu : listOfIPxTraders)			
 			mapOfIPxTrader2ListOfBSOD.put(bmu, bmu.getListOfBSOD());
@@ -93,7 +93,7 @@ public class PowerExchange {
 		return bsodList;
 	} */
 	
-	private WeakHashMap<IPxTrader, ArrayList<BSOD>> generateAcceptance(WeakHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTraders2ListOfBSODs){
+	private LinkedHashMap<IPxTrader, ArrayList<BSOD>> generateAcceptance(LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTraders2ListOfBSODs){
 
 		//System.out.println("Px:: generateAcceptance()");
 		ArrayList<ArrayList <BSOD>> buyersListOfBSODList = new ArrayList <ArrayList <BSOD>>();
@@ -226,7 +226,7 @@ public class PowerExchange {
 
 	}
 	
-	private void sendAcceptanceToEachIPxTrader(WeakHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSODs) {	
+	private void sendAcceptanceToEachIPxTrader(LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSODs) {	
 		//System.out.println("PX: sendAcceptanceToEachBMU() called");
 		//System.out.println("size of listOfBMUs: "+listOfBMUs.size());
 		//System.out.println("size of sendAcceptanceToEachBMU: "+mapOfBMU2ListOfBSODs.size());
@@ -243,7 +243,7 @@ public class PowerExchange {
 		
 	}
 	
-	private void calculatePartialMIP(WeakHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTraders2ListOfBSODs, double[] sumOfProducts, double[] sumOfVolumes) {
+	private void calculatePartialMIP(LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTraders2ListOfBSODs, double[] sumOfProducts, double[] sumOfVolumes) {
 			
 		ArrayList<BSOD> listOfBSODs = new ArrayList<BSOD>();
 		

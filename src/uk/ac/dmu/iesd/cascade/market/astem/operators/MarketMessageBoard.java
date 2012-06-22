@@ -1,9 +1,7 @@
 package uk.ac.dmu.iesd.cascade.market.astem.operators;
 
 import java.util.ArrayList;
-import java.util.WeakHashMap;
-import repast.simphony.engine.schedule.ScheduledMethod;
-import uk.ac.dmu.iesd.cascade.base.Consts;
+import java.util.LinkedHashMap;
 import uk.ac.dmu.iesd.cascade.market.IMarket;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.data.ImbalData;
@@ -69,7 +67,7 @@ public class MarketMessageBoard implements IMarket {
 	}
 	
 
-	protected void setPxProductList(WeakHashMap<Integer, ArrayList<ImbalData>> mapOfImbalType2ImbalData) {
+	protected void setPxProductList(LinkedHashMap<Integer, ArrayList<ImbalData>> mapOfImbalType2ImbalData) {
 		list_PX_products = new ArrayList<PxPD>();
 		
 		ArrayList<ImbalData> listOfImbalDataFor2h = mapOfImbalType2ImbalData.get(ASTEMConsts.PX_PRODUCT_ID_2H);
