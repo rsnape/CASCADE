@@ -102,6 +102,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected double insolation; //current insolation at the given half hour tick
 	protected double windSpeed; //current wind speed at the given half hour tick
 	protected double airTemperature; // outside air temperature
+	protected double airDensity; // air density
 
 
 	/*
@@ -442,6 +443,10 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		return airTemperature;
 	}
 	
+	public double getAirDensity() {
+		return airDensity;
+	}
+	
 	/*
 	 * TODO: is this how the prosumer should get updated about the whether 
 	 * This methods needs to be changed/removed; this will done by the SmartDevice class
@@ -454,6 +459,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		insolation = mainContext.getInsolation(time);
 		windSpeed = mainContext.getWindSpeed(time);
 		airTemperature = mainContext.getAirTemperature(time);		
+		airDensity = mainContext.getAirDensity(time);
 	}
 
 	/**

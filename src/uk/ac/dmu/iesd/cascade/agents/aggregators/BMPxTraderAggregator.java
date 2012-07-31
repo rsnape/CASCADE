@@ -815,4 +815,13 @@ private double getExperiment() {
 		
 	}
 	
+	public BMPxTraderAggregator(CascadeContext context, MarketMessageBoard mb, BMU_CATEGORY cat, BMU_TYPE type,  double maxGen) {
+		super(context, cat, type, maxGen);
+		
+		messageBoard = mb;
+		arr_Margin = new double[this.ticksPerDay];
+
+		
+	}
+	
 }

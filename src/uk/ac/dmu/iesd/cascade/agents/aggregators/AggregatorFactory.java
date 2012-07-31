@@ -44,6 +44,14 @@ public class AggregatorFactory implements IAggregatorFactory{
 		return asCO;
 	}
 	
+	public WindFarmAggregator createWindFarmAggregator(){
+		//SupplierCo asCO = new SupplierCo(cascadeMainContext,  baseProfile);
+		double maxGen = 50000000; //in W
+		WindFarmAggregator wFA = new WindFarmAggregator(cascadeMainContext, messageBoard, BMU_CATEGORY.GEN_T, BMU_TYPE.GEN_WIND, maxGen);
+		
+		return wFA;
+	}
+	
 	public BMPxTraderAggregator createGenericBMPxTraderAggregator(BMU_TYPE type, double[] baseLoadProfile){
 		BMPxTraderAggregator bmuAgent =null;
 		

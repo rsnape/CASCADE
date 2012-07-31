@@ -76,6 +76,7 @@ public class CascadeContext extends DefaultContext{
 	double[] windSpeedArray;// instantaneous value
 	double[] windDirectionArray; // Direction in degrees from North.  May not be needed as yet, but useful to have potentially
 	double[] airTemperatureArray; // instantaneous value
+	double[] airDensityArray; // instantaneous value
 	double[] systemPriceSignalDataArray;
 	int systemPriceSignalDataLength;
 	
@@ -92,6 +93,7 @@ public class CascadeContext extends DefaultContext{
 	
 	private Network<?> socialNetwork;
 	private Network<?> economicNetwork;
+	private Network<?> windNetwork;
 	
 	public GregorianCalendar simulationCalendar;
 	
@@ -131,11 +133,11 @@ public class CascadeContext extends DefaultContext{
 	
 	
 	/**
-	 * This method return the social network 
+	 * This method return the economic network 
 	 * @return <tt>economicNetwork</tt> associated to the context
 	 * @see #setEconomicNetwork
 	 */
-	public Network<?> getEconomicNetwork(){
+	public Network getEconomicNetwork(){
 		return this.economicNetwork;
 	}
 	
@@ -147,6 +149,7 @@ public class CascadeContext extends DefaultContext{
 	public void setEconomicNetwork(Network<?> n){
 		this.economicNetwork = n;
 	}
+	
 	
 	/**
 	 * This method returns the tick time. 
@@ -297,6 +300,16 @@ public class CascadeContext extends DefaultContext{
 	{
 		return airTemperatureArray[time % weatherDataLength];
 	}
+	
+	/**
+	 * @param time - the time in ticks for which to get the air density
+	 * @return the air density at the time (in ticks) passed in
+	 */
+	public double getAirDensity(int time)
+	{
+		return airDensityArray[time % weatherDataLength];
+	}
+	
 	/**
 	 * @param time - the time in ticks for which to get the insolation
 	 * @return the insolation at the time (in ticks) passed in
@@ -329,6 +342,15 @@ public class CascadeContext extends DefaultContext{
 		return Arrays.copyOfRange(airTemperatureArray, start, start + length);
 	}
 	
+	/**
+	 * @param time - the time in ticks for which to get the air density
+	 * @return the air density at the time (in ticks) passed in
+	 */
+	public double[] getAirDensity(int time, int length)
+	{
+		int start = time % weatherDataLength;
+		return Arrays.copyOfRange(airDensityArray,start, start+length);
+	}
 	
 	/**
 	 * @return the weatherDataLength

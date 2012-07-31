@@ -20,6 +20,7 @@ import uk.ac.dmu.iesd.cascade.market.data.PxPD;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.market.data.BSOD;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
@@ -618,7 +619,10 @@ public class SupplierCo extends BMPxTraderAggregator{
 			Object linkSource = edge.getTarget();
 			//if (Consts.DEBUG) System.out.println("RECO linkSource " + linkSource);
 			if (linkSource instanceof ProsumerAgent){
-				customers.add((ProsumerAgent) linkSource);    		
+				//if (!(linkSource instanceof WindGeneratorProsumer)){ // ignore wind farms in economic network
+					customers.add((ProsumerAgent) linkSource);
+				//}
+				    		
 			}
 			else	{
 				throw (new WrongCustomerTypeException(linkSource));
@@ -1724,6 +1728,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 					writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 			}
 		}
+		
 		
 		calculateAndSetNetDemand(customers);
 
