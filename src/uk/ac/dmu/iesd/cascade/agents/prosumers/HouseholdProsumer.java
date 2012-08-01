@@ -1223,6 +1223,35 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return isEndOfProfilBuilding;	
 	}
 	
+	/**
+	 * (23/04/12) DF
+	 * Method to call for returning the household space heat demand. The calculated space heat demand
+	 * assumes there is NO smart controller to optimise the load, i.e. the demands are static throughout 
+	 * a year.
+	 *  
+	 * Re-paste into the new framework from old one
+	 *  
+	 * @return a one-dimensional array of size [ticksPerDay * Consts.NB_OF_DAYS_LOADED_DEMAND]
+	 */
+	public double[] getSpaceHeatDemandwithoutOptimise() {
+		
+		int lengthOfProfileArrays = ticksPerDay * Consts.NB_OF_DAYS_LOADED_DEMAND; 
+		double[] spaceHeatDemand = new double[lengthOfProfileArrays];
+		
+		for (int i=0; i<lengthOfProfileArrays; i++) {
+			if(hasElectricalSpaceHeat) {
+				// this assumes only space heat always uses heat pump
+				spaceHeatDemand[i] = calculateHeatPumpDemandAndInternalTemp(i) / Consts.DOMESTIC_HEAT_PUMP_SPACE_COP;
+			}
+			else {
+				// not interested in gas - make this 0
+				spaceHeatDemand[i] = 0d;
+			}
+		}
+		
+		return spaceHeatDemand;
+	}
+	
 	/******************
 	 * This method defines the step behaviour of a prosumer agent
 	 * 

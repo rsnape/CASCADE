@@ -24,7 +24,8 @@ public final class ASTEMConsts {
 	
 	//datFiles directory is supposed to be find under the current directory which
 	// would be normally where this project resides in Eclipse working space   
-	public static String DATA_FILES_FOLDER_NAME = "\\dataFiles"; //data files are us
+	//public static String DATA_FILES_FOLDER_NAME = "\\dataFiles"; //data files are us
+	public static String DATA_FILES_FOLDER_NAME = "/dataFiles"; //data files are us
 	
 	public static String BMU_BASE_PROFILES_FILENAME = "BMU_BaseProfiles.csv";  //DEM and GEN profiles
 	

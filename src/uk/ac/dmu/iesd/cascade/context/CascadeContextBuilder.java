@@ -39,6 +39,7 @@ import uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.SingleNonDomesticAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
@@ -688,6 +689,14 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		SupplierCo firstRecoAggregator = aggregatorFactory.createSupplierCo(cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(firstRecoAggregator);
+		
+		/**
+		 * (02/07/12) DF
+		 * 
+		 * Add a simple single non domestic aggregator into <code>cascadeMainContext</code>
+		 */
+		SingleNonDomesticAggregator singleNonDomestic = aggregatorFactory.createSingleNonDomesticAggregator(cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(singleNonDomestic);
 		
 		buildSocialNetwork(); 
 

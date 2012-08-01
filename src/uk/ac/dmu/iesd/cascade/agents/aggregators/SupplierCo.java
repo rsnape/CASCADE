@@ -1713,8 +1713,9 @@ public class SupplierCo extends BMPxTraderAggregator{
 		}
 		else if (!isTrainingPeriodCompleted()) {
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, arr_hist_ij_D);
-
+			
 			if (mainContext.isEndOfDay(timeslotOfDay)) 	{
+				
 				double[] arr_last_training_D = ArrayUtils.rowCopy(arr_hist_ij_D, mainContext.getDayCount());
 				double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
 				
@@ -1723,6 +1724,8 @@ public class SupplierCo extends BMPxTraderAggregator{
 				if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2) 
 					writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 			}
+			
+			// 
 		}
 		
 		calculateAndSetNetDemand(customers);
@@ -1796,6 +1799,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 
 		
 		//+++++++++++++++++++++++++++++++++++++++++++
+		
 	}
 
 }
