@@ -110,6 +110,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	private CascadeContext cascadeMainContext;  // cascade main context
 	private Parameters params; // parameters for the model run environment 	
 	private int numProsumers; //number of Prosumers
+	private File dataDirectory;
 	private int percentageOfHHProsWithGas;
 	private WeakHashMap <Integer, double[]> map_nbOfOccToOtherDemand;
 	
@@ -166,7 +167,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		/*
 		 * Read in the necessary data files and store to the context
 		 */
-		File dataDirectory = new File(dataFileFolderPath);
+		dataDirectory = new File(dataFileFolderPath);
 		File weatherFile = new File(dataDirectory, weatherFileName);
 		CSVReader weatherReader = null;
 		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
@@ -706,10 +707,12 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	
 	private WeakHashMap readGenericAggBaseProfileFiles() {
 
-		String currentDirectory = System.getProperty("user.dir"); //this suppose to be the Eclipse project working space
-		String pathToDataFiles = currentDirectory+ASTEMConsts.DATA_FILES_FOLDER_NAME;
-		File parentDataFilesDirectory = new File(pathToDataFiles);
-		File dmu_BaseProfiles_File = new File(parentDataFilesDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
+		//String currentDirectory = System.getProperty("user.dir"); //this suppose to be the Eclipse project working space
+		//String pathToDataFiles = currentDirectory+ASTEMConsts.DATA_FILES_FOLDER_NAME;
+		//File parentDataFilesDirectory = new File(pathToDataFiles);		
+		//File dmu_BaseProfiles_File = new File(parentDataFilesDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
+		
+		File dmu_BaseProfiles_File = new File(dataDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
 		
 		WeakHashMap<String, double[]> mapOfTypeName2BaseProfileArray = new WeakHashMap<String, double[]> ();
 		

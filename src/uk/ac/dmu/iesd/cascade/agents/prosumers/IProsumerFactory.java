@@ -1,6 +1,3 @@
-/**
- * 
- */
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
 import java.util.ArrayList;
@@ -16,8 +13,6 @@ import java.util.ArrayList;
  * 
  */
 public interface IProsumerFactory {
-	//public ProsumerAgent creatProsumer();
 	public HouseholdProsumer createHouseholdProsumer(double[] otherDemandProfile, int numOfOccupant, boolean addNoise, boolean hasGas);
 
-	//public ArrayList<ProsumerAgent> createDEFRAHouseholds(int number, String categoryFile, String profileFile);
 }
