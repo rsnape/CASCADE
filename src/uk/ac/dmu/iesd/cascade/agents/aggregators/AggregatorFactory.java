@@ -88,6 +88,18 @@ public class AggregatorFactory implements IAggregatorFactory{
 		return bmuAgent;
 	}
 	
+	/**
+	 * (02/06/12) DF
+	 *  
+	 * Creating a single non domestic aggregator
+	 */
+	public SingleNonDomesticAggregator createSingleNonDomesticAggregator(double[] baseProfile){
+		
+		double maxDem =  ASTEMConsts.BMU_LARGEDEM_MAXDEM;;
+		double minDem =  ASTEMConsts.BMU_LARGEDEM_MINDEM;
+		SingleNonDomesticAggregator singleNonDomestic = new SingleNonDomesticAggregator(cascadeMainContext, messageBoard, BMU_CATEGORY.DEM_S, BMU_TYPE.DEM_SMALL, maxDem, minDem, baseProfile);
 
+		return singleNonDomestic;
+	}
 
 }

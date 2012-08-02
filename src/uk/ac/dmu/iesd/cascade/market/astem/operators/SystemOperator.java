@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.LinkedHashMap;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
@@ -57,11 +57,11 @@ public class SystemOperator {
 	private ArrayList<ITrader> list_ITrader;  
 	private ArrayList<BOD> list_BOD;
 
-	private WeakHashMap <Integer, double[]> map_dmuID2PN;
-	private WeakHashMap <IBMTrader, ArrayList<BOD>> map_IBMTrader2ListOfBODs;	
-	private WeakHashMap <IBMTrader, ArrayList<BOD>> map_IBMTrader2ListOfBOAs; //BOA are the same as BODs, except processed for acceptance (T or F)
+	private LinkedHashMap <Integer, double[]> map_dmuID2PN;
+	private LinkedHashMap <IBMTrader, ArrayList<BOD>> map_IBMTrader2ListOfBODs;	
+	private LinkedHashMap <IBMTrader, ArrayList<BOD>> map_IBMTrader2ListOfBOAs; //BOA are the same as BODs, except processed for acceptance (T or F)
 
-	private WeakHashMap <Integer, ArrayList<ImbalData>> map_imbalType2ImbalData;
+	private LinkedHashMap <Integer, ArrayList<ImbalData>> map_imbalType2ImbalData;
 		
 	public double[] getPublishedNDF() {
 		return arr_NDF;
@@ -84,9 +84,9 @@ public class SystemOperator {
 		return aListOfBMUs;
 	} */
 
-	private WeakHashMap fetchPNs(ArrayList<ITrader> listOfITraders) {
+	private LinkedHashMap fetchPNs(ArrayList<ITrader> listOfITraders) {
 		//System.out.println("------ SO: recievePNs");
-        WeakHashMap mapOfPNs = new WeakHashMap();
+        LinkedHashMap mapOfPNs = new LinkedHashMap();
 		for (ITrader bmu : listOfITraders){	
 			mapOfPNs.put(bmu.getID(), bmu.getPN());
 		}
@@ -94,7 +94,7 @@ public class SystemOperator {
 	}
 	
 	
-	private double[] calculateNDF(WeakHashMap <Integer, double[]> mapOfPNs) {
+	private double[] calculateNDF(LinkedHashMap <Integer, double[]> mapOfPNs) {
 		
 		//System.out.println("calculateNDF()");
 		
@@ -111,7 +111,7 @@ public class SystemOperator {
 		return ArraysUtils.sumOfCols2DDoubleArray(arr_ij_pn);
 	}
 
-	private double[] calculateINDGEN(WeakHashMap <Integer, double[]> mapOfPNs) {
+	private double[] calculateINDGEN(LinkedHashMap <Integer, double[]> mapOfPNs) {
 		
 		//System.out.println("calculateINDGEN()");
 
@@ -158,10 +158,10 @@ public class SystemOperator {
 		this.messageBoard.setPreviousDayIMBAL(oldImbalArray);
 	}
 	
-	private WeakHashMap<IBMTrader, ArrayList<BOD>> fetchBODs(List<ITrader> listOfITraders) {
+	private LinkedHashMap<IBMTrader, ArrayList<BOD>> fetchBODs(List<ITrader> listOfITraders) {
 		//System.out.println("------ SO: fetchBOD");
 		//Received BOD are in the form of list
-		WeakHashMap<IBMTrader, ArrayList<BOD>> map_IBMTrader2bod = new WeakHashMap <IBMTrader, ArrayList<BOD>>();
+		LinkedHashMap<IBMTrader, ArrayList<BOD>> map_IBMTrader2bod = new LinkedHashMap <IBMTrader, ArrayList<BOD>>();
 		
 		for (int i=0; i< listOfITraders.size(); i++) {
 			IBMTrader bmu =(IBMTrader) listOfITraders.get(i);
@@ -174,7 +174,7 @@ public class SystemOperator {
 		return map_IBMTrader2bod;
 	}
 	
-	private WeakHashMap<IBMTrader, ArrayList<BOD>> generateBOA(WeakHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBODs, int sp, double[] prevDayIMBALArray) {
+	private LinkedHashMap<IBMTrader, ArrayList<BOD>> generateBOA(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBODs, int sp, double[] prevDayIMBALArray) {
 		
 		ArrayList<BOD> listOfBODs = new ArrayList<BOD>();
 		
@@ -229,7 +229,7 @@ public class SystemOperator {
 	}
 
 
-	private void sendBOAtoEachIBMTrader(WeakHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {	
+	private void sendBOAtoEachIBMTrader(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {	
 		//System.out.println("SO: sendBOAtoEachBMU() called");
 		//System.out.println("size of mapOfBMUID2ListOfBOAs: "+mapOfBMU2ListOfBOAs.size());
 
@@ -240,7 +240,7 @@ public class SystemOperator {
 	
 	}
 	
-	private void sendBOAtoSettlementCo(WeakHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {	
+	private void sendBOAtoSettlementCo(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {	
 		//System.out.println("SO: sendBOAtoSettlementCo() called");
 		this.settlementCo.recieveBOAs(mapOfIBMTrader2ListOfBOAs); // @TODO: send a clone/copy not the original ref
 	}
@@ -355,7 +355,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 		System.arraycopy(currentIMBALArray, 0, oldIMBALArray, 0, currentIMBALArray.length);
 	}  
 	
-	private WeakHashMap <Integer, ArrayList<ImbalData>> calculatePXImbalance(double[] imbalArray) {
+	private LinkedHashMap <Integer, ArrayList<ImbalData>> calculatePXImbalance(double[] imbalArray) {
 
 		double totalImbal= Math.abs(ArraysUtils.sum(imbalArray))/ASTEMConsts.PX_IMBAL_FACTOR; // forTest
 		
@@ -363,7 +363,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 		ArrayList<ImbalData> list_4hImbal = calculate4hImbalance(list_2hImbal, totalImbal);
 		ArrayList<ImbalData> list_8hImbal = calculate8hImbalance(list_2hImbal, list_4hImbal, totalImbal);
 		
-		WeakHashMap <Integer, ArrayList<ImbalData>> map_imbalances = new WeakHashMap <Integer, ArrayList<ImbalData>> (); 
+		LinkedHashMap <Integer, ArrayList<ImbalData>> map_imbalances = new LinkedHashMap <Integer, ArrayList<ImbalData>> (); 
 		
 		map_imbalances.put(ASTEMConsts.PX_PRODUCT_ID_2H, list_2hImbal);
 		map_imbalances.put(ASTEMConsts.PX_PRODUCT_ID_4H, list_4hImbal);
@@ -372,7 +372,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 		return map_imbalances;
 	}
 	
-	private void broadcastPXImbalance(WeakHashMap<Integer, ArrayList<ImbalData>> mapOfImbalType2ImbalData) {
+	private void broadcastPXImbalance(LinkedHashMap<Integer, ArrayList<ImbalData>> mapOfImbalType2ImbalData) {
 		this.messageBoard.setPxProductList(mapOfImbalType2ImbalData);
 	}
 		

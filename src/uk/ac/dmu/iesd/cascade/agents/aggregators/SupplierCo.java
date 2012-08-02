@@ -93,6 +93,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 		private double mean_B;
 		private boolean hasEqualsConstraint = false;
 		private int numEvaluations = 0;
+		private int settlementPeriod; 
 
 		// Not sure why I cannot use methods in ArrayUtils class?
 		// Quick & dirty way: just copy the two methods that I want to use 
@@ -1604,11 +1605,9 @@ public class SupplierCo extends BMPxTraderAggregator{
 	}
 	
 	
-	
-
 	public void marketPreStep() {
 		//System.out.println(" initializeMarketStep (SupplierCo) "+this.id);
-		int settlementPeriod = mainContext.getSettlementPeriod();
+		settlementPeriod = mainContext.getSettlementPeriod();
 	
 		switch (settlementPeriod) {
 		
@@ -1629,20 +1628,18 @@ public class SupplierCo extends BMPxTraderAggregator{
 		//if (Consts.DEBUG) System.out.println(" ============ SupplierCO pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		timeTick = mainContext.getTickCount();	
 		timeslotOfDay = mainContext.getTimeslotOfDay();
-		customers = getCustomersList();
+
+		if (timeTick ==0) customers = getCustomersList();
 
 		if (isAggregateDemandProfileBuildingPeriodCompleted())  { //End of history profile building period 
 			//Set the Baseline demand on the first time through after building period
 			
-			//interactWithMarket();
-
 			if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) 
 				arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(arr_hist_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
 
 			if (!isTrainingPeriodCompleted()) 	{  //training period, signals should be send S=1 for 48 days
 				if (mainContext.isBeginningOfDay(timeslotOfDay)) {	
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
-
 					broadcastSignalToCustomers(arr_i_S, customers);
 				}
 			} //training period completed 
@@ -1652,7 +1649,6 @@ public class SupplierCo extends BMPxTraderAggregator{
 					
 					if (Consts.AGG_RECO_REEA_ON)
 						errorEstimationAndAdjustment(arr_i_B, this.getDayNetDemands(), arr_i_S, arr_i_e, arr_ij_k);
-
 						//errorEstimationAndAdjustment(arr_i_B, arr_hist_day_D, arr_i_S, arr_i_e, arr_ij_k);
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(ArrayUtils.offset(arr_i_C, -(double)ArrayUtils.sum(arr_i_C) / arr_i_C.length));
@@ -1681,9 +1677,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 						   arr_i_S  = messageBoard.getMIP();
 						   arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
 						}
-							
-						//System.out.println(" arr_i_S: "+ Arrays.toString(arr_i_S));
-						
+													
 						break;
 					case 2:	/*Smart signal version*/						
 						arr_i_S = minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
@@ -1692,10 +1686,9 @@ public class SupplierCo extends BMPxTraderAggregator{
 					//System.out.println(" arr_i_S: "+ Arrays.toString(arr_i_S));
 
 					broadcastSignalToCustomers(arr_i_S, customers);
-					/****************************************************/
 					
-					if (Consts.DEBUG) 							
-						writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, this.getDayNetDemands(), arr_i_S, arr_i_e,  arr_ij_k);
+					//if (Consts.DEBUG) 							
+						//writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, this.getDayNetDemands(), arr_i_S, arr_i_e,  arr_ij_k);
 				}
 
 			} //end of begining of normal operation
@@ -1711,22 +1704,24 @@ public class SupplierCo extends BMPxTraderAggregator{
 	public void bizStep() {
 
 		//if (Consts.DEBUG) System.out.println(" ++++++++++++++ SupplierCO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		
 		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, arr_hist_ij_D); 
 		}
 		else if (!isTrainingPeriodCompleted()) {
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, arr_hist_ij_D);
-
+			
 			if (mainContext.isEndOfDay(timeslotOfDay)) 	{
+				
 				double[] arr_last_training_D = ArrayUtils.rowCopy(arr_hist_ij_D, mainContext.getDayCount());
 				double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
 				
 				calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
 
-				if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2) 
-					writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
+				//if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2) 
+					//writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 			}
+			
+			// 
 		}
 		
 		
@@ -1801,6 +1796,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 
 		
 		//+++++++++++++++++++++++++++++++++++++++++++
+		
 	}
 
 }

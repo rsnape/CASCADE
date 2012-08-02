@@ -39,6 +39,7 @@ import uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.SingleNonDomesticAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
@@ -111,6 +112,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	private CascadeContext cascadeMainContext;  // cascade main context
 	private Parameters params; // parameters for the model run environment 	
 	private int numProsumers; //number of Prosumers
+	private File dataDirectory;
 	private int percentageOfHHProsWithGas;
 	private WeakHashMap <Integer, double[]> map_nbOfOccToOtherDemand;
 	
@@ -167,7 +169,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		/*
 		 * Read in the necessary data files and store to the context
 		 */
-		File dataDirectory = new File(dataFileFolderPath);
+		dataDirectory = new File(dataFileFolderPath);
 		File weatherFile = new File(dataDirectory, weatherFileName);
 		CSVReader weatherReader = null;
 		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
@@ -722,6 +724,14 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		SupplierCo firstRecoAggregator = aggregatorFactory.createSupplierCo(cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(firstRecoAggregator);
 		
+		/**
+		 * (02/07/12) DF
+		 * 
+		 * Add a simple single non domestic aggregator into <code>cascadeMainContext</code>
+		 */
+		SingleNonDomesticAggregator singleNonDomestic = aggregatorFactory.createSingleNonDomesticAggregator(cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(singleNonDomestic);
+		
 		buildSocialNetwork(); 
 
 		buildOtherNetworks(firstRecoAggregator);
@@ -746,10 +756,12 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	
 	private WeakHashMap readGenericAggBaseProfileFiles() {
 
-		String currentDirectory = System.getProperty("user.dir"); //this suppose to be the Eclipse project working space
-		String pathToDataFiles = currentDirectory+ASTEMConsts.DATA_FILES_FOLDER_NAME;
-		File parentDataFilesDirectory = new File(pathToDataFiles);
-		File dmu_BaseProfiles_File = new File(parentDataFilesDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
+		//String currentDirectory = System.getProperty("user.dir"); //this suppose to be the Eclipse project working space
+		//String pathToDataFiles = currentDirectory+ASTEMConsts.DATA_FILES_FOLDER_NAME;
+		//File parentDataFilesDirectory = new File(pathToDataFiles);		
+		//File dmu_BaseProfiles_File = new File(parentDataFilesDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
+		
+		File dmu_BaseProfiles_File = new File(dataDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
 		
 		WeakHashMap<String, double[]> mapOfTypeName2BaseProfileArray = new WeakHashMap<String, double[]> ();
 		
