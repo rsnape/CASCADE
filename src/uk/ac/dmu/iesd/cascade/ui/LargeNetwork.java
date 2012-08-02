@@ -9,6 +9,9 @@ package uk.ac.dmu.iesd.cascade.ui;
  */
 
 import uk.ac.dmu.iesd.cascade.*;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.context.*;
 import repast.simphony.visualization.Layout;
 import repast.simphony.visualization.VisualizationProperties;
