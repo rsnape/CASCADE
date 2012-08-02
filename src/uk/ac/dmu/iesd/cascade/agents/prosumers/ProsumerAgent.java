@@ -247,6 +247,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * however it does not have any priority restriction (such as being the last)
 	 * so, it will be executed first (before the Aggregator which has the LAST priority)  
 	 */	
+	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 	abstract public void step();
 
 
