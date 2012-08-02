@@ -322,7 +322,8 @@ public final class Consts {
 	 *++++++++++++*/
 	//public static final Integer[] NUM_OF_OCCUPANTS_ARRAY = {0,1,2,3,4,5,6,7,8}; // NOT currently used
 	public static final double[] OCCUPANCY_PROBABILITY_ARRAY = {0.300206371,0.341735335,0.15506365,0.133630415,0.049359587,0.014498622,0.003377304,0.002128716};
-			
+	
+	
 	/**++++++++++++++++++++++++++
 	 * Energy Consumption Control
 	 *+++++++++++++++++++++++++++*/
@@ -339,6 +340,13 @@ public final class Consts {
 	//public static final int MAX_SUPPLY_CAPACITY = 45;  //Not currently used
 	//public static final int NUM_DEMAND_COLUMNS = 1; //Not currently used
 	
+	/**++++++++++++++++++++++++++
+	 * Single Non Domestic Constant
+	 *+++++++++++++++++++++++++++*/
+	
+	public static final boolean USE_SINGLE_NON_DOMESTIC_AGGREGATOR = true;
+	public static final boolean UPDATE_PHYSICAL_NODE_TO_MARKET = true;
+	public static final double RATIO_AGANIST_HOUSEHOLD = 2d;
 
 }
 

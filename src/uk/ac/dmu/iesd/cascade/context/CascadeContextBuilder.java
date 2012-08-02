@@ -39,8 +39,11 @@ import uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.SingleNonDomesticAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory;
 import uk.ac.dmu.iesd.cascade.base.Consts;
@@ -109,6 +112,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	private CascadeContext cascadeMainContext;  // cascade main context
 	private Parameters params; // parameters for the model run environment 	
 	private int numProsumers; //number of Prosumers
+	private File dataDirectory;
 	private int percentageOfHHProsWithGas;
 	private WeakHashMap <Integer, double[]> map_nbOfOccToOtherDemand;
 	
@@ -165,7 +169,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		/*
 		 * Read in the necessary data files and store to the context
 		 */
-		File dataDirectory = new File(dataFileFolderPath);
+		dataDirectory = new File(dataFileFolderPath);
 		File weatherFile = new File(dataDirectory, weatherFileName);
 		CSVReader weatherReader = null;
 		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
@@ -182,12 +186,14 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			double [] insolationArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("insolation"));
 			double [] windSpeedArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("windSpeed"));
 			double [] airTemperatureArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airTemp"));
+			double [] airDensityArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airDensity"));
 						
-			cascadeMainContext.insolationArray = Arrays.copyOf(insolationArray_all, lengthOfProfileArrays);
-			cascadeMainContext.windSpeedArray =  Arrays.copyOf(windSpeedArray_all, lengthOfProfileArrays);
-			cascadeMainContext.airTemperatureArray = Arrays.copyOf(airTemperatureArray_all, lengthOfProfileArrays);
+			cascadeMainContext.insolationArray =Arrays.copyOf(insolationArray_all, insolationArray_all.length);
+			cascadeMainContext.windSpeedArray =  Arrays.copyOf(windSpeedArray_all, windSpeedArray_all.length);
+			cascadeMainContext.airTemperatureArray = Arrays.copyOf(airTemperatureArray_all, airTemperatureArray_all.length);
+			cascadeMainContext.airDensityArray = Arrays.copyOf(airDensityArray_all, airDensityArray_all.length);
 			
-			cascadeMainContext.weatherDataLength = lengthOfProfileArrays;
+			cascadeMainContext.weatherDataLength = windSpeedArray_all.length;//lengthOfProfileArrays;
 			
 
 		} catch (FileNotFoundException e) {
@@ -271,6 +277,30 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			cascadeMainContext.add(hhProsAgent);			
 		} 
 	}  */
+	
+	private void createWindFarmsAndAddThemToContext(){
+		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
+		
+		//ProsumerAgent genProsAgent = prosumerFactory.createPureGenerator(50000000, Consts.GENERATOR_TYPE.WIND);
+		
+		WindGeneratorProsumer genProsAgent = prosumerFactory.createWindGenerator(2, Consts.GENERATOR_TYPE.WIND, 20);
+		
+		for (int numWindFarms = 0; numWindFarms < 1; numWindFarms++){
+			genProsAgent.offset = 0;
+			double [] hubHeights = new double[] {75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0};
+			double [] cp = new double[] {0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3};
+			double [] minWindSpeed = new double[] {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5};
+			double [] maxWindSpeed = new double[] {25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25};
+			double [] capacity = new double[] {2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6};
+			double [] bladeLength = new double[] {40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40};
+			genProsAgent.setUpWindFarm(50.0, 0.0, 20, 1, 1, hubHeights, cp, minWindSpeed, maxWindSpeed, capacity, bladeLength);
+		
+			if (!cascadeMainContext.add(genProsAgent))	{
+				System.err.println("Failed to add wind farm to context!!");
+			}
+		
+		}
+	}
 
 	private void createHouseholdProsumersAndAddThemToContext(int occupancyModeOrNb) {
 
@@ -666,9 +696,14 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 
 	private void populateContext() {
+		/* 
+		 * TODO: NEED TO CREATE A MORE GENERIC SETUP STRUCTURE FOR ALL NETWORKS, AGGREGATORS, PROSUMERS, ETC.. 
+		 */
 
 		//createHouseholdProsumersAndAddThemToContext(1); //pass in parameter nb of occupants, or random
 		createHouseholdProsumersAndAddThemToContext(Consts.RANDOM);
+		
+		//TODO: Add method that creates wind farm generators and adds them to the context..
 
 		//@TODO: these 4 methods below will eventually be included in the first method (createHousholdPro...)
 		if (Consts.HHPRO_HAS_WET_APPL)
@@ -689,19 +724,44 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		SupplierCo firstRecoAggregator = aggregatorFactory.createSupplierCo(cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(firstRecoAggregator);
 		
+		/**
+		 * (02/07/12) DF
+		 * 
+		 * Add a simple single non domestic aggregator into <code>cascadeMainContext</code>
+		 */
+		SingleNonDomesticAggregator singleNonDomestic = aggregatorFactory.createSingleNonDomesticAggregator(cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(singleNonDomestic);
+		
 		buildSocialNetwork(); 
 
 		buildOtherNetworks(firstRecoAggregator);
+		
+		//Add wind farms to the context
+		//TODO: Add functionality to allow greater flexibility in the creation of wind farms
+		createWindFarmsAndAddThemToContext();
+		
+		// Add Wind Farm Aggregator to context here..
+		WindFarmAggregator wFA = aggregatorFactory.createWindFarmAggregator();
+		cascadeMainContext.add(wFA);
+		
+		for (ProsumerAgent prAgent:(Iterable<ProsumerAgent>) (cascadeMainContext.getObjects(ProsumerAgent.class)) )
+			{
+				if (prAgent instanceof WindGeneratorProsumer) {
+					cascadeMainContext.getEconomicNetwork().addEdge(wFA, prAgent);
+				}
+			}
 
 	}
 	
 	
 	private WeakHashMap readGenericAggBaseProfileFiles() {
 
-		String currentDirectory = System.getProperty("user.dir"); //this suppose to be the Eclipse project working space
-		String pathToDataFiles = currentDirectory+ASTEMConsts.DATA_FILES_FOLDER_NAME;
-		File parentDataFilesDirectory = new File(pathToDataFiles);
-		File dmu_BaseProfiles_File = new File(parentDataFilesDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
+		//String currentDirectory = System.getProperty("user.dir"); //this suppose to be the Eclipse project working space
+		//String pathToDataFiles = currentDirectory+ASTEMConsts.DATA_FILES_FOLDER_NAME;
+		//File parentDataFilesDirectory = new File(pathToDataFiles);		
+		//File dmu_BaseProfiles_File = new File(parentDataFilesDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
+		
+		File dmu_BaseProfiles_File = new File(dataDirectory, ASTEMConsts.BMU_BASE_PROFILES_FILENAME);
 		
 		WeakHashMap<String, double[]> mapOfTypeName2BaseProfileArray = new WeakHashMap<String, double[]> ();
 		
@@ -798,7 +858,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		map_dmuTypeNameToBaseProfiles = readGenericAggBaseProfileFiles();
 		
 		createAndAddGenericAggregators(map_dmuTypeNameToBaseProfiles);
-	
+		
 
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());

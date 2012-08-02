@@ -185,6 +185,30 @@ public class ProsumerFactory implements IProsumerFactory {
 	}
 	
 	/*
+	 * Specifically create a windGeneratorProsumer and return it.
+	 */
+	
+	public WindGeneratorProsumer createWindGenerator(double capacity, Consts.GENERATOR_TYPE genType, int nTurbines){
+		WindGeneratorProsumer thisAgent = null;
+		// Create a prosumer with zero base demand
+		// TODO: Should this be null? or zero as implemented?
+		double[] nilDemand = new double[48];
+		for (int i=0; i<48; i++){
+			nilDemand[i] = 0;
+		}
+		switch (genType){
+		case WIND:
+			thisAgent = new WindGeneratorProsumer(cascadeMainContext, nilDemand, capacity, nTurbines);
+			break;
+		}
+		
+		return thisAgent;
+
+	}
+	
+	
+	
+	/*
 
 	public ArrayList<ProsumerAgent> createDEFRAHouseholds(int number, String categoryFile, String profileFile)
 	{
