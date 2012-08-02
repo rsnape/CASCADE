@@ -1,10 +1,10 @@
 <model name="Cascade">
 <classpath>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent"/>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"/>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent"/>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo"/>
-<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.*"/>
+<!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"/> -->
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.*"/>
+<!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo"/> -->
+<!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator"/> -->
 
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.test.HHProsumer"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.test.PAgent"/>
