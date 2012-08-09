@@ -4,55 +4,51 @@
 package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
+import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 
 /**
- * Very simple aggregator which passes a one value price signal to its prosumers (i.e. "real time")
- * This value is simply calculated from the demand of the timestep before in this very simple model
- * 
  * @author jsnape
  *
  */
-public class EquationBasedPriceAggregator extends AggregatorAgent {
-
+public class PassThroughAggregatorWithLag extends BMPxTraderAggregator  {
+	
 	/**
-	 * @param context
+	 * Parameters characterising this aggregator's behaviour
 	 */
-	public EquationBasedPriceAggregator(CascadeContext context) {
-		super(context);
-		this.priceSignal = new double [1];
-		context.add(this);
+	double[] laggedPrice;
+	
+	protected String paramStringReport(){
+		String str="";
+		return str;
+	}	
+	
+	public double getCurrPrice()
+	{
+		return this.laggedPrice[0];
 	}
-
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#paramStringReport()
-	 */
-	@Override
-	protected String paramStringReport() {
-		return this.getAgentName();
+	
+	public String priceTitle()
+	{
+		return this.getAgentName()+" current price";
 	}
-
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#bizPreStep()
-	 */
-	@Override
-	public void bizPreStep() {
-		System.out.println("At tick "+RepastEssentials.GetTickCount()+" demand = "+this.getNetDemand());
-		ArrayList<ProsumerAgent> customers = getCustomersList();
-		broadcastSignalToCustomers(calculatePrice(this.getNetDemand()), customers);
+	
+	public String demandTitle()
+	{
+		return this.getAgentName()+" current demand";
 	}
-
+	
 	private boolean broadcastSignalToCustomers(double val, List<ProsumerAgent> customerList) {
 		double[] tmp = new double[]{val};
 		return broadcastSignalToCustomers(tmp,customerList);
@@ -82,34 +78,26 @@ public class EquationBasedPriceAggregator extends AggregatorAgent {
 		}
 		return allSignalsSentSuccesfully;
 	}
-
-	/**
-	 * @param netDemand
-	 * @return
-	 */
-	private double calculatePrice(double netDemand) {
-		// From Roscoe and Ault
-		// Co-efficients estimated from Figure 4 in Roscoe and Ault
-		// Note this was used in Cascade version checked in on 
-		// commit commit aef4743a1c085b17ce14559f21066cf7ce6de643
-		double A = 0.0006; 
-		double B = 12.0;
-		double C = 40.0; 
-		double supplyCap = this.mainContext.getObjects(ProsumerAgent.class).size()*0.75;
-		double biggestGen = supplyCap / 100;
-		double x = (netDemand/(supplyCap - biggestGen));
-		double calcPrice = (A * Math.exp(B * x) + C);
-		if (calcPrice > 1000)
+	
+	public void bizPreStep() {
+		
+		System.out.println("At tick "+RepastEssentials.GetTickCount()+" demand = "+this.getNetDemand());
+		ArrayList<ProsumerAgent> customers = getCustomersList();
+		broadcastSignalToCustomers(this.getCurrPrice(), customers);
+		for (int i = 0; i < this.laggedPrice.length - 1; i++)
 		{
-			calcPrice = 1000;
+			this.laggedPrice[i] = this.laggedPrice[i+1];
+			
 		}
-		return calcPrice+20;
+		double[] mip = this.messageBoard.getMIP();
+		if (mip != null)
+		{
+		this.laggedPrice[this.laggedPrice.length - 1] = mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay];
+		System.out.println("Added MIP to lagged array = "+mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay]);
+		System.out.println("BMP = "+this.messageBoard.getBMP());
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#bizStep()
-	 */
-	@Override
+	
 	public void bizStep() {
 		ArrayList<? extends ProsumerAgent> customers = getCustomersList();
 		float totalDemand = 0;
@@ -119,6 +107,30 @@ public class EquationBasedPriceAggregator extends AggregatorAgent {
 		}
 		System.out.println(this.getAgentName() + " has total demand "+totalDemand);
 		this.setNetDemand(totalDemand);
+	}
+	
+	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxGen, double[] baselineProfile) {
+		//Default to zero lag
+		this(context, mb, maxGen, baselineProfile,0);
+	}
+	
+	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxDem, double minDem, double[] baselineProfile) {
+		//default to zero lag
+		this(context, mb, maxDem, minDem, baselineProfile,0);
+	}
+	
+	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxGen, double[] baselineProfile, int lag) {
+		super(context, mb, BMU_CATEGORY.DEM_S, BMU_TYPE.DEM_SMALL, maxGen, baselineProfile);
+		this.laggedPrice = new double [lag+1];
+		Arrays.fill(this.laggedPrice, 125);
+		context.add(this);
+	}
+	
+	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxDem, double minDem, double[] baselineProfile, int lag) {
+		super(context, mb, BMU_CATEGORY.DEM_S, BMU_TYPE.DEM_SMALL, maxDem, minDem, baselineProfile);
+		this.laggedPrice = new double [lag+1];
+		Arrays.fill(this.laggedPrice, 125);
+		context.add(this);
 	}
 
 	/**
@@ -145,5 +157,6 @@ public class EquationBasedPriceAggregator extends AggregatorAgent {
 		}
 		return c;
 	}
+
 
 }

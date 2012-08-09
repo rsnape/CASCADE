@@ -14,6 +14,7 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 public class ConstantPlusElasticityProsumer extends ConstantLoadProsumer {
     private static double DEFAULT_ELASTICITY = -0.07;
     private double p0;
+    private double nextBaseD;
     
 	/**
 	 * @param context
@@ -46,7 +47,7 @@ public class ConstantPlusElasticityProsumer extends ConstantLoadProsumer {
 		}
 		this.e_factor = elasticity;
 		System.out.println("Created prosumer with elasticity = "+this.e_factor);
-		this.p0 = 50;
+		this.p0 = 125;
 		this.hasSmartMeter = true;
 	}
 	
@@ -57,8 +58,8 @@ public class ConstantPlusElasticityProsumer extends ConstantLoadProsumer {
 	public void step() {
 		// simply alter the net demand based on price for this step
 		// efactor = (p-p0) / (d-d0)
-		double d0 = this.getBaseConstLoad(); //Should this always reference base, or last demand?
-		d0 = this.getNetDemand();
+		double d0 = this.getBaseConstLoad()*(0.5+RandomHelper.nextDouble()); //Should this always reference base, or last demand?
+		//d0 = this.getNetDemand();
 		
 		double percentChangeP = (this.getCurrentPrediction() - p0) / ((this.getCurrentPrediction() + p0)/2);
 		double percentChangeD = (this.e_factor*(0.5+RandomHelper.nextDouble())) * percentChangeP;

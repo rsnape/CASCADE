@@ -41,6 +41,7 @@ import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.EquationBasedPriceAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.EquationBasedPriceAggregatorWithLag;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ConstantPlusElasticityProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
@@ -97,7 +98,7 @@ import uk.ac.dmu.iesd.cascade.util.*;
  * @param context
  * @return the built context.
  */
-public class BasicTestContextBuilder implements ContextBuilder<Object> {
+public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object> {
 
 	private CascadeContext cascadeMainContext;  // cascade main context
 	private Parameters params; // parameters for the model run environment 	
@@ -307,8 +308,9 @@ public class BasicTestContextBuilder implements ContextBuilder<Object> {
 	}
 
 	private void populateContext() {
-
-		EquationBasedPriceAggregatorWithLag a1 = new EquationBasedPriceAggregatorWithLag(cascadeMainContext,47,true);
+		double[] flatBaseline = new double[48];
+		Arrays.fill(flatBaseline,numProsumers*0.5);
+		PassThroughAggregatorWithLag a1 = new PassThroughAggregatorWithLag(cascadeMainContext,messageBoard,numProsumers*1.0,flatBaseline,0);
 		
 		for (int i = 0; i < this.numProsumers; i++)
 		{
