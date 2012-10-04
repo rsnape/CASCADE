@@ -92,8 +92,9 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 			}
 			//sum_e = sum_e+a.getElasticityFactor();
 		}
-
-		setNetDemand(sumDemand);
+		//The Aggregators deal in MW, but the Wind Farm Prosumers calculate generation in Watts.
+		//A conversion is therefore carried out here.
+		setNetDemand((sumDemand/1E6));
 		//if (Consts.DEBUG) System.out.println("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
 		
 		return sumDemand;
