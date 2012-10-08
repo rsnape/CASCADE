@@ -407,7 +407,12 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		int timeOfDay = (time % ticksPerDay);
 		CascadeContext myContext = this.getContext();
 
-		checkWeather(time - offset);
+		if ((time - offset) < 0 ) {
+			checkWeather(0);
+		}
+		else {
+			checkWeather(time - offset);
+		}
 		/*
 		 * Set wind speed at each turbines hub height
 		 */
