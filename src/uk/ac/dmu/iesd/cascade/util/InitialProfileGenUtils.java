@@ -8,6 +8,7 @@ import cern.jet.random.Normal;
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.MSHalfHourProfile;
 
 /**
  * A suite of profile generating methods for various appliance types.
@@ -206,7 +207,7 @@ public abstract class InitialProfileGenUtils {
 		// TODO Auto-generated method stub
 		return 	melodyStokesWetApplianceGenWithWeekends(context, numDays, washMachine ? 1 : 0, washerDryer ? 1:0, dishWasher ? 1:0, tumbleDryer ? 1:0);
 	}
-
+	
 	/**
 	 * @param daysPerYear
 	 * @param hasWashingMachine
@@ -710,9 +711,7 @@ public abstract class InitialProfileGenUtils {
 		return d_lights;
 	}
 	
-	
-	
-//  this submodule calculates the one minute demands for washing from the specif (ic half-hourly demand)
+	//  this submodule calculates the one minute demands for washing from the specif (ic half-hourly demand)
 
 	public static double[] trend_year_wash = new double[] {1970, 1990, 1998, 2000, 2005, 2010, 2015, 2020}; 
 	public static double[] forty_trend = new double[] {0.30, 0.58, 0.64, 0.66, 0.68, 0.68, 0.68, 0.68}; 

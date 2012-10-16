@@ -100,7 +100,6 @@ public class PowerExchange {
 		ArrayList<ArrayList <BSOD>> sellersListOfBSODList = new ArrayList <ArrayList <BSOD>>();
 
 		Set<IPxTrader> bmuSet = mapOfIPxTraders2ListOfBSODs.keySet();
-
 		for (IPxTrader bmu : bmuSet) {
 			/*if (bmu.getType() == Consts.BMU_TYPE_T_GEN) 
 				sellersListOfBSODList.add(mapOfBMUs2ListOfBSODs.get(bmu));
@@ -235,6 +234,7 @@ public class PowerExchange {
 		
 		for (IPxTrader bmu: bmuSet) 
 			bmu.recieveBSOA((ArrayList<BSOD>)mapOfIPxTrader2ListOfBSODs.get(bmu));
+			
 	}
 	
 	private ArrayList<PxPD> getImbalDataFromSOMessageBoard() {

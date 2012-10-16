@@ -315,7 +315,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 
 		int pairID1m=-1;
 		double level1m = marginArray[sp] * getMarginPC(pairID1m);
-		double[] arr_BO1m = createAndIntializeArray(10, 2);;
+		double[] arr_BO1m = createAndIntializeArray(10, 2);
 		double[] arr_propensities1m = createAndIntializeArray(20, 0); 
 		listOfBOD.add(new BOD(this.id, sp, pairID1m, level1m, arr_BO1m, arr_propensities1m));
 
@@ -456,6 +456,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 				}
 			}
 		}
+		// Note this return is in some ways redundant as this is working on the array directly JRS
 		return arr_PN;
 	}
 	

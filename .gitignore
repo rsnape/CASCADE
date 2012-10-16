@@ -11,3 +11,5 @@ Repast.settings
 *.pdf
 !cascade.rs/*
 !dataFiles/*
+!cascade.rs/*
+java*

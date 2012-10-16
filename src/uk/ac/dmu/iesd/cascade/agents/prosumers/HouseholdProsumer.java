@@ -1284,6 +1284,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 
 	public void step() {
+		System.out.println("Random seed is " + RandomHelper.getSeed());
+
 		// Note the simulation time if needed.
 		// Note - Repast can cope with fractions of a tick (a double is returned)
 		// but I am assuming here we will deal in whole ticks and alter the resolution should we need

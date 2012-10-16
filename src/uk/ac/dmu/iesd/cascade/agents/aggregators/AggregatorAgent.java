@@ -273,7 +273,10 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable {
 	 */
 	public void setNetDemand(double nd) {
 		this.netDemand = nd;
-		this.arr_day_D[(int) RepastEssentials.GetTickCount() % ticksPerDay] = nd;
+		if (this.arr_day_D != null)
+		{
+			this.arr_day_D[(int) RepastEssentials.GetTickCount() % ticksPerDay] = nd;
+		}
 	}
 
 	/**

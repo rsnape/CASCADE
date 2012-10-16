@@ -613,7 +613,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	 * used in this model. 
 	 */
 	private void initializeProbabilityDistributions() {
-
+		System.out.println("Random seed is" + RandomHelper.getSeed());
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
 		//if (Consts.DEBUG) System.out.println("  ArrayUtils.sum(drawOffDist)"+ ArrayUtils.sum(drawOffDist));
 		cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);

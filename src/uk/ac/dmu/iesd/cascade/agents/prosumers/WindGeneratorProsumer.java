@@ -392,7 +392,6 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	 * Return variables: none
 	 ******************/
 	//@ScheduledMethod(start = 0, interval = 1, priority = Consts.PROSUMER_PRIORITY_FIFTH) //shuffle = true)
-	@ScheduledMethod(start=0, interval=1, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 	public void step() {
 		// Define the return value variable. Set this false if errors
 		// encountered.
