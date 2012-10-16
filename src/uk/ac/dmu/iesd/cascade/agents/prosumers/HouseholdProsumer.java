@@ -782,7 +782,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			myDemand = myDemand * (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * myE));
 
 			if (myDemand <0) {
-				System.out.println("=================time: "+this.timeOfDay+ ", id: "+this.agentID + ", occ: "+ this.numOccupants);
+/*				System.out.println("=================time: "+this.timeOfDay+ ", id: "+this.agentID + ", occ: "+ this.numOccupants);
 				System.out.println("pos: "+ time % arr_otherDemandProfile.length);
 				
 				System.out.println("myElast: "+ myE);
@@ -794,6 +794,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 				System.out.println("myDemand (all): "+ Arrays.toString(arr_otherDemandProfile));
 
 				System.out.println("====================== ");
+*/
 			}
 		
 

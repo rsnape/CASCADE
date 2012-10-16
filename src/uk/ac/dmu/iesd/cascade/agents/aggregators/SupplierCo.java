@@ -611,7 +611,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
 		//List<RepastEdge> linkages = RepastEssentials.GetOutEdges("CascadeContextMain/economicNetwork", this); //Ideally this must be avoided, changing the context name, will create a bug difficult to find
 		Network economicNet = this.mainContext.getEconomicNetwork();
-		Iterable<RepastEdge> iter = economicNet.getEdges();
+		Iterable<RepastEdge> iter = economicNet.getEdges(this);
 		if(Consts.DEBUG) {
 			//System.out.println(This.class+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
 		}
@@ -722,6 +722,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 		double sumDemand = 0;
 		//if (Consts.DEBUG) System.out.println(" custmoers list size: "+customers.size());
 		for (ProsumerAgent a : customers)	{
+			
 			//if (Consts.DEBUG) System.out.println(" id: "+a.agentID+" ND: "+a.getNetDemand());
 			sumDemand = sumDemand + a.getNetDemand();
 			//sum_e = sum_e+a.getElasticityFactor();
@@ -1617,8 +1618,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 			else 
 				//System.arraycopy(ArrayUtils.negate(arr_hist_day_D), 0, arr_PN, 0, arr_hist_day_D.length);
 		    	System.arraycopy(ArrayUtils.negate(this.getDayNetDemands()), 0, arr_PN, 0, this.getDayNetDemands().length);
-
-			break;
+				break;
 		}
 	}
 

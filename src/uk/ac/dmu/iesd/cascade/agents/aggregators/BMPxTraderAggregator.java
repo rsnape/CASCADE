@@ -325,7 +325,6 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	private ArrayList<BSOD>  generateBSOforPX(ArrayList<PxPD> listOfPxProduct, double[] arrayPN) {
 		
 		ArrayList<BSOD> listOfBSOD = new ArrayList<BSOD>();
-		
 		for (PxPD pxPD : listOfPxProduct) {
 			
 			int spIndex = pxPD.getStartSPIndex();
@@ -627,6 +626,7 @@ private double getExperiment() {
 				boa.isAccepted = false;		
 			}			
 		}
+		
 		return listOfBOA;		
 	}
 	
@@ -653,20 +653,20 @@ private double getExperiment() {
 		
 		switch (this.type) {
 		case GEN_COAL: 
-			initializedArray= calculateStochasticPN(baselineProfile, 0.01);
+			initializedArray= baselineProfile;//calculateStochasticPN(baselineProfile, 0.01);
 			//System.out.println("initializedArray GENCOAL: "+Arrays.toString(baselineProfile));
 			break;
 		case GEN_CCGT: 
-			initializedArray= calculateStochasticPN(baselineProfile, 0.01);
+			initializedArray= baselineProfile; //calculateStochasticPN(baselineProfile, 0.01);
 			break;
 		case GEN_WIND: 
-			initializedArray = calculateStochasticPN(baselineProfile, 0.2);
+			initializedArray = baselineProfile; //calculateStochasticPN(baselineProfile, 0.2);
 			break;
 		case DEM_LARGE: 
-			initializedArray = calculateStochasticPN(baselineProfile, 0.02);
+			initializedArray = baselineProfile; //calculateStochasticPN(baselineProfile, 0.02);
 			break;
 		case DEM_SMALL: 
-			initializedArray = calculateStochasticPN(baselineProfile, 0.02);
+			initializedArray = baselineProfile;//calculateStochasticPN(baselineProfile, 0.02);
 			break;
 		}
 		
@@ -682,20 +682,20 @@ private double getExperiment() {
 		
 		switch (this.type) {
 		case GEN_COAL: 
-			initializedArray= calculateStochasticPN(baselineProfile, 0);
+			initializedArray= baselineProfile;//calculateStochasticPN(baselineProfile, 0);
 			//System.out.println("initializedArray GENCOAL: "+Arrays.toString(baselineProfile));
 			break;
 		case GEN_CCGT: 
-			initializedArray= calculateStochasticPN(baselineProfile, 0);
+			initializedArray= baselineProfile;//calculateStochasticPN(baselineProfile, 0);
 			break;
 		case GEN_WIND: 
-			initializedArray = calculateStochasticPN(baselineProfile, 0);
+			initializedArray = baselineProfile;//calculateStochasticPN(baselineProfile, 0);
 			break;
 		case DEM_LARGE: 
-			initializedArray = calculateStochasticPN(baselineProfile, 0);
+			initializedArray = baselineProfile;//calculateStochasticPN(baselineProfile, 0);
 			break;
 		case DEM_SMALL: 
-			initializedArray = calculateStochasticPN(baselineProfile, 0);
+			initializedArray = baselineProfile;//calculateStochasticPN(baselineProfile, 0);
 			break;
 		}
 		
