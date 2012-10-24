@@ -32,13 +32,13 @@
 									
 		/>
 				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
-						defaultValue="weatherProfiles_1Y.csv" 
+						defaultValue="weatherProfiles_1D.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
 				<parameter name="householdOtherDemandFile" displayName="householdOtherDemandFile" type="java.lang.String" 
-						defaultValue="hhOtherDemandProfiles_1W.csv" 
+						defaultValue="hhOtherDemandProfiles_1D.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -76,10 +76,10 @@
 									
 		/>
 				<parameter name="signalMode" displayName="signal mode (0=fixed, 1=price, 2=smart)" type="int" 
-						defaultValue="1" 
+						defaultValue="2" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-									values="0 1 2 "
+									values="0 1 2 3 "
 						
 		/>
 				<parameter name="hhWithGasPercentage" displayName="householdsWithGas%" type="int" 
