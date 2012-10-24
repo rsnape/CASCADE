@@ -310,7 +310,7 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 	private void populateContext() {
 		double[] flatBaseline = new double[48];
 		Arrays.fill(flatBaseline,numProsumers*0.5);
-		PassThroughAggregatorWithLag a1 = new PassThroughAggregatorWithLag(cascadeMainContext,messageBoard,numProsumers*1.0,flatBaseline,0);
+		PassThroughAggregatorWithLag a1 = new PassThroughAggregatorWithLag(cascadeMainContext,messageBoard,numProsumers*1.0,flatBaseline,48);
 		
 		for (int i = 0; i < this.numProsumers; i++)
 		{
@@ -335,6 +335,8 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 			economicNet.addEdge(a1, prAgent);
 		}
 
+		economicNet.addProjectionListener(a1); //Aggregator listens for changes to its network
+		
 		this.cascadeMainContext.setEconomicNetwork(economicNet);
 
 	}
