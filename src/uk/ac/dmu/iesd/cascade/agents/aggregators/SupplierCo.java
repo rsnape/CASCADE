@@ -28,6 +28,8 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.SIGNAL_TYPE;
 import flanagan.*;
 import flanagan.math.*;
 import flanagan.analysis.*;
@@ -65,8 +67,8 @@ import org.jgap.impl.DoubleGene;
  * 
  * Version history (for intermediate steps see Git repository history)
  * 
- * 1.0 -  created the concrete class of AggregatorAgent kind after the latter was made abstract upon my suggestion
- * 1.1 - Class name changed to SupplierCo (2012/05/18)
+ * 1.0 - created the concrete class of AggregatorAgent kind after the latter was made abstract upon my suggestion
+ * 1.1 - Class name changed to SupplierCo (previously named RECO) (2012/05/18)
  *  
  */
 
@@ -341,61 +343,6 @@ public class SupplierCo extends BMPxTraderAggregator{
 
 	} //End of RecoMinimisationFunction class
 
-	/**
-	 * Babak test implementation
-	 **/
-
-
-	/*	class  RecoMultivariateRealFunction implements MultivariateRealFunction /*,  RealConvergenceChecker  {
-
-		private double[] arr_C;
-		private double[] arr_B;
-		private double[] arr_e;		
-		private double[][] arr_k;
-
-		public double value (double[] arr_S) {
-			double m =0d;
-
-			for (int i=0; i<arr_S.length; i++){
-
-				double sumOf_SjkijBi =0;
-				for (int j=0; j<arr_S.length; j++){
-					if (i != j)
-						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
-				}
-
-				m+= arr_C[i] * (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
-			}
-
-			return m;
-		} 
-
-		public void set_C(double [] c) {
-			arr_C = c;
-		}
-
-		public void set_B(double [] b) {
-			arr_B = b;
-		}
-
-		public void set_e(double [] e) {
-			arr_e = e;
-		}
-
-		public void set_k(double [][] k ) {
-			arr_k = k;
-		}
-
-		public boolean converged(int iteration, RealPointValuePair previous, RealPointValuePair current) {
-
-			return true;
-
-		} 
-
-	} */
-	
-	
-   
 
 	/**
 	 * the aggregator agent's base name  
@@ -454,6 +401,8 @@ public class SupplierCo extends BMPxTraderAggregator{
 	int timeTick;
 	int timeslotOfDay;
 	int dayOfWeek;
+
+	private TrainingSignalFactory trainingSigFactory;
 	
 	/**
 	 * This method calculates and returns the price (Pi) per kWh 
@@ -611,7 +560,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
 		//List<RepastEdge> linkages = RepastEssentials.GetOutEdges("CascadeContextMain/economicNetwork", this); //Ideally this must be avoided, changing the context name, will create a bug difficult to find
 		Network economicNet = this.mainContext.getEconomicNetwork();
-		Iterable<RepastEdge> iter = economicNet.getEdges();
+		Iterable<RepastEdge> iter = economicNet.getEdges(this);
 		if(Consts.DEBUG) {
 			//System.out.println(This.class+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
 		}
@@ -657,7 +606,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 	 * @see Consts#AGGREGATOR_TRAINING_PERIODE
 	 * @see Consts#AGGREGATOR_PROFILE_BUILDING_PERIODE
 	 * @see #isAggregateDemandProfileBuildingPeriodCompleted()
-	 * @return true if the profile building period is completed, false otherwise 
+	 * @return true if the training period is completed, false otherwise 
 	 */
 	private boolean isTrainingPeriodCompleted() {
 		boolean isEndOfTraining = true;
@@ -756,7 +705,14 @@ public class SupplierCo extends BMPxTraderAggregator{
 			 */
 			int daysSoFar = mainContext.getDayCount();
 			int indexFor1 = (daysSoFar - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)%this.ticksPerDay; 
-			sArr[indexFor1] = 1d;
+			
+			double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.IMPULSE,ticksPerDay);
+			//double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.PBORIGINAL,ticksPerDay);
+
+			System.arraycopy(t, 0, sArr, indexFor1, t.length - indexFor1);
+			System.arraycopy(t, t.length - indexFor1, sArr, 0, indexFor1);
+			
+/*			sArr[indexFor1] = 1d;
 			if (indexFor1 > 0) {
 				for (int i = 0; i < indexFor1; i++) {
 					sArr[i] = (-1d/(this.ticksPerDay-1));
@@ -768,7 +724,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 					sArr[i] = (-1d/(this.ticksPerDay-1));
 					//sArr[i] = 0;
 				}
-			}
+			}*/
 			break;
 
 		default:  //
@@ -1653,8 +1609,8 @@ public class SupplierCo extends BMPxTraderAggregator{
 
 					arr_i_norm_C = ArrayUtils.normalizeValues(ArrayUtils.offset(arr_i_C, -(double)ArrayUtils.sum(arr_i_C) / arr_i_C.length));
 
-					double [] priceSignalTest = {-0.050175966,-0.057895417,-0.061784662,-0.065208969,-0.069459832,-0.072087102,-0.072957939,-0.073762356,-0.074522493,-0.079503974,-0.0777623,-0.07263322,-0.054729409,-0.03354889,-0.007357371,0.010029843,0.022435575,0.028472392,0.035785944,0.038582953,0.040154887,0.043564434,0.045438947,0.045948165,0.046730442,0.045254448,0.045350387,0.044066272,0.041741581,0.040664105,0.040420566,0.042907617,0.04468619,0.047040401,0.046730442,0.041778481,0.035321006,0.030568304,0.024295328,0.019601666,0.014900624,0.010568581,0.01084902,0.010384081,0.005727319,-0.009194983,-0.026139398,-0.04127572};	
-					double [] priceSignalTestSq = {-0.05214123,-0.058519428,-0.061637587,-0.064330107,-0.067603658,-0.069588738,-0.070240282,-0.070839287,-0.071402807,-0.075035391,-0.073777246,-0.069997708,-0.055933952,-0.037548357,-0.012193205,0.006238673,0.020170176,0.027184535,0.035888531,0.039277016,0.041195863,0.045393732,0.047722565,0.048357764,0.04933571,0.047492691,0.047612207,0.046015744,0.043143309,0.041819699,0.041521206,0.044581234,0.046785581,0.049723912,0.04933571,0.043188725,0.035328476,0.029655829,0.022314676,0.016930452,0.011631015,0.006830171,0.007138559,0.006627465,0.001558774,-0.014066632,-0.030669314,-0.044475072};
+					//double [] priceSignalTest = {-0.050175966,-0.057895417,-0.061784662,-0.065208969,-0.069459832,-0.072087102,-0.072957939,-0.073762356,-0.074522493,-0.079503974,-0.0777623,-0.07263322,-0.054729409,-0.03354889,-0.007357371,0.010029843,0.022435575,0.028472392,0.035785944,0.038582953,0.040154887,0.043564434,0.045438947,0.045948165,0.046730442,0.045254448,0.045350387,0.044066272,0.041741581,0.040664105,0.040420566,0.042907617,0.04468619,0.047040401,0.046730442,0.041778481,0.035321006,0.030568304,0.024295328,0.019601666,0.014900624,0.010568581,0.01084902,0.010384081,0.005727319,-0.009194983,-0.026139398,-0.04127572};	
+					//double [] priceSignalTestSq = {-0.05214123,-0.058519428,-0.061637587,-0.064330107,-0.067603658,-0.069588738,-0.070240282,-0.070839287,-0.071402807,-0.075035391,-0.073777246,-0.069997708,-0.055933952,-0.037548357,-0.012193205,0.006238673,0.020170176,0.027184535,0.035888531,0.039277016,0.041195863,0.045393732,0.047722565,0.048357764,0.04933571,0.047492691,0.047612207,0.046015744,0.043143309,0.041819699,0.041521206,0.044581234,0.046785581,0.049723912,0.04933571,0.043188725,0.035328476,0.029655829,0.022314676,0.016930452,0.011631015,0.006830171,0.007138559,0.006627465,0.001558774,-0.014066632,-0.030669314,-0.044475072};
 
 					//arr_i_S = minimise_CD_Genetic_Algorithm(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
 					//arr_i_S = minimise_CD_Apache(normalizedCosts, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
@@ -1794,7 +1750,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 
 		this.arr_day_D = new double[ticksPerDay];
 
-		
+		this.trainingSigFactory = new TrainingSignalFactory(ticksPerDay);
 		//+++++++++++++++++++++++++++++++++++++++++++
 		
 	}
