@@ -741,6 +741,7 @@ private double getExperiment() {
 			//TestUtils.printListOfPxPD(list_PX_products);
 			list_PX_products = getPxProductFromSOMessageBoard();
 			list_BSOD = generateBSOforPX(list_PX_products, arr_PN);
+			//System.out.println("Printing BSOD list");
 			//TestHelper.printListOfBSOD(list_BSOD);
 
 			break;
