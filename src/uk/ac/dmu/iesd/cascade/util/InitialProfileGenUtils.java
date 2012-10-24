@@ -166,10 +166,9 @@ public abstract class InitialProfileGenUtils {
 		d_fridge_freezer = ArrayUtils.multiply(d_fridge_freezer, Consts.COLD_APP_SCALE_FACTOR_FRIDGEFREEZER);
 		
 		//Convert kW to kWh
-		//TODO: Hard - coded constant!!! Shouldn't do this - fix.
-		d_fridge = ArrayUtils.multiply(d_fridge, 0.5);
-		d_freezer = ArrayUtils.multiply(d_freezer, 0.5);
-		d_fridge_freezer = ArrayUtils.multiply(d_fridge_freezer, 0.5);
+		d_fridge = convertToKWh(d_fridge, true);
+		d_freezer = convertToKWh(d_freezer, true);
+		d_fridge_freezer = convertToKWh(d_fridge_freezer, true);
 		
 		coldProfiles.put(Consts.COLD_APP_FRIDGE, d_fridge);
 		coldProfiles.put(Consts.COLD_APP_FREEZER, d_freezer);

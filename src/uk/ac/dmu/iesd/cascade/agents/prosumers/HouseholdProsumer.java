@@ -373,7 +373,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	public double[] getHistoricalOtherDemand() {
-		// TODO Auto-generated method stub
 		return this.historicalBaseDemand;
 	}
 
@@ -381,7 +380,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	public double[] getHistoricalColdDemand() {
-		// TODO Auto-generated method stub
 		return this.historicalColdDemand;
 	}
 
@@ -389,7 +387,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	public double[] getHistoricalWetDemand() {
-		// TODO Auto-generated method stub
 		return this.historicalWetDemand;
 	}
 
@@ -397,7 +394,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	public double[] getHistoricalSpaceHeatDemand() {
-		// TODO Auto-generated method stub
 		return this.historicalSpaceHeatDemand;
 	}
 
@@ -405,7 +401,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @return
 	 */
 	public double[] getHistoricalWaterHeatDemand() {
-		// TODO Auto-generated method stub
 		return this.historicalWaterHeatDemand;
 	}
 
@@ -562,23 +557,24 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private double heatingDemand() {
 		recordedHeatPumpDemand[timeOfDay] = 0;
 
-		if (hasElectricalSpaceHeat)
+		if (this.isHasElectricalSpaceHeat())
 		{
 			//if (Consts.DEBUG) System.out.println(" ^^^hasElecSpaceheat ");
 			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
 			recordedHeatPumpDemand[timeOfDay] += calculateHeatPumpDemandAndInternalTemp(time) / Consts.DOMESTIC_HEAT_PUMP_SPACE_COP;
 
 		}
-
+		
 		// (20/01/12) Check if sum of <recordedHeatPumpDemand> is consistent at end day 
 		if(timeOfDay == 47 && Consts.DEBUG)
-			//System.out.println("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
-		
-		if (hasElectricalWaterHeat)
 		{
-			// TODO: this assumes only space heat and always uses heat pump - expand for other forms of electrical heating
+			//System.out.println("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
+		}
+		
+		if (this.isHasElectricalWaterHeat())
+		{
+			// TODO: expand for other forms of electrical heating
 			recordedHeatPumpDemand[timeOfDay] += getWaterHeatProfile()[timeOfDay];
-
 		}
 
 		return recordedHeatPumpDemand[timeOfDay];
@@ -662,15 +658,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 				this.currentInternalTemp = this.currentInternalTemp + ((demand - maintenanceEnergy) / this.buildingThermalMass);
 				if (Consts.DEBUG)
 				{
-				//System.out.println("HouseholdProsumer:: Heatpump on max, can't regain set point currentInternalTemp2: "+ currentInternalTemp);
+				   System.out.println("HouseholdProsumer:: Heatpump on max, can't regain set point currentInternalTemp2: "+ currentInternalTemp);
 				}
 
 			}
 			else
 			{
 				this.currentInternalTemp = this.setPoint;
-				
-
 			}
 		}
 		//System.out.println("demand: "+ demand);
@@ -832,7 +826,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// Evaluate behaviour applies elasticity behaviour to the base
 		// (non-displaceable) load.
 		double currentBase = evaluateElasticBehaviour(time);
-
 		double currentCold = coldApplianceDemand();
 		
 		//if (Consts.DEBUG) System.out.println("currentColdDemand is: "+currentCold);
@@ -843,18 +836,24 @@ public class HouseholdProsumer extends ProsumerAgent{
 		currentHeat = heatingDemand();
 
 
-		historicalBaseDemand[time % ticksPerDay] = currentBase;
-		historicalWetDemand[time % ticksPerDay] = currentWet;
-		historicalColdDemand[time % ticksPerDay] = currentCold;
+		historicalBaseDemand[timeOfDay] = currentBase;
+		historicalWetDemand[timeOfDay] = currentWet;
+		historicalColdDemand[timeOfDay] = currentCold;
 
 		//if (this.getHasElectricalSpaceHeat())
 		if (this.isHasElectricalSpaceHeat() && this.isHasElectricalWaterHeat())
-			historicalSpaceHeatDemand[time % ticksPerDay] = currentHeat - getWaterHeatProfile()[time % ticksPerDay]; //Verify this!
+		{
+			historicalSpaceHeatDemand[timeOfDay] = currentHeat - getWaterHeatProfile()[timeOfDay]; //Verify this!
+		}
 		else if (this.isHasElectricalSpaceHeat())
-			historicalSpaceHeatDemand[time % ticksPerDay] = currentHeat;
+		{
+			historicalSpaceHeatDemand[timeOfDay] = currentHeat;
+		}
 
 		if (this.isHasElectricalWaterHeat())
-			historicalWaterHeatDemand[time % ticksPerDay] = getWaterHeatProfile()[time % ticksPerDay];
+		{
+			historicalWaterHeatDemand[timeOfDay] = getWaterHeatProfile()[timeOfDay];
+		}
 
 		double returnAmount = currentBase + currentCold + currentWet + currentHeat;
 
@@ -1199,18 +1198,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 		Arrays.fill(spaceHeatPumpOn, 1);
 		
 		
-		setBuildingHeatLossRate/*(225f);//For test*/(mainContext.buildingLossRateGenerator.nextDouble());
-		setBuildingThermalMass/*(10f);//For test*/(mainContext.thermalMassGenerator.nextDouble());
+		setBuildingHeatLossRate(mainContext.buildingLossRateGenerator.nextDouble());
+		setBuildingThermalMass(mainContext.thermalMassGenerator.nextDouble());
 		
 		tau = (buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / buildingHeatLossRate;
 		
-		freeRunningTemperatureLossPerTickMultiplier = (buildingHeatLossRate / buildingThermalMass) / (Consts.KWH_TO_JOULE_CONVERSION_FACTOR / (Consts.SECONDS_PER_DAY / mainContext.ticksPerDay));
+		freeRunningTemperatureLossPerTickMultiplier = (Consts.SECONDS_PER_DAY / mainContext.ticksPerDay) / tau;
 		
 	}
 	
-	public void setWattboxController() {
-	
-		this.mySmartController = new WattboxController(this, this.mainContext);
+	public void setWattboxController() {	
+		//this.mySmartController = new WattboxController(this, this.mainContext);
+		this.mySmartController = new ProportionalWattboxController(this, this.mainContext);
 	}
 	
 	private double[] calculateCombinedColdAppliancesProfile(WeakHashMap<String,double[]> coldProfiles) {
@@ -1283,8 +1282,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 
 	public void step() {
-		System.out.println("Random seed is " + RandomHelper.getSeed());
-
 		// Note the simulation time if needed.
 		// Note - Repast can cope with fractions of a tick (a double is returned)
 		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
