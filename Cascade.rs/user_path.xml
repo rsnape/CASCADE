@@ -11,6 +11,8 @@
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.SettlementCompany"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard"/>
+
 <entry path="../../Cascade/ExternalLib/commons-math-2.2.jar"/>
 </classpath>
 </model>
