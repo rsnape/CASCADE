@@ -77,6 +77,10 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator {
 	 * Assume <code>Household</code> is fixed for 7 days * 48 time slot long, each week has exactly
 	 * the same profile, i.e. week1 = week2 = week3, ..., and so forth
 	 * 
+	 * TODO: Note this is not very agent based.  Just works because this is a "place holder"
+	 * TODO: for industrial and commercial load.  In reality, this agent would not know about
+	 * TODO: about householders!
+	 * 
 	 * @param context
 	 */
 	private void CalHouseholdPower(CascadeContext context) {
@@ -194,7 +198,7 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator {
 			int i = 0;
 			//System.out.println("[updateSingleNonDomesticPower()] From: " + start + " to: " + end);
 			for(int j=start; j<end; j++) {
-				SubsetOfNormaliseINDOPower[i] = NormaliseINDOPower[j];
+				SubsetOfNormaliseINDOPower[i] = NormaliseINDOPower[j%lengthOfProfile];
 				i++;
 			}
 			this.k = (Consts.RATIO_AGANIST_HOUSEHOLD + 1) * ArrayUtils.sum(HouseholdPower) / ArrayUtils.sum(SubsetOfNormaliseINDOPower);
