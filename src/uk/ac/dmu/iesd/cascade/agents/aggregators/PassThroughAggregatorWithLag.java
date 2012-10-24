@@ -9,20 +9,26 @@ import java.util.List;
 
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
+import repast.simphony.space.graph.NetworkEvent;
+import repast.simphony.space.graph.NetworkListener;
 import repast.simphony.space.graph.RepastEdge;
+import repast.simphony.space.projection.ProjectionEvent;
+import repast.simphony.space.projection.ProjectionEvent.Type;
+import repast.simphony.space.projection.ProjectionListener;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
+import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 
 /**
  * @author jsnape
  *
  */
-public class PassThroughAggregatorWithLag extends BMPxTraderAggregator  {
+public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implements ProjectionListener  {
 	
 	/**
 	 * Parameters characterising this aggregator's behaviour
@@ -105,7 +111,8 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator  {
 		{
 			totalDemand += c.getNetDemand();
 		}
-		System.out.println(this.getAgentName() + " has total demand "+totalDemand);
+		System.out.println(this.getAgentName() + this.getID()+" has total demand "+totalDemand);
+
 		this.setNetDemand(totalDemand);
 	}
 	
@@ -129,18 +136,27 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator  {
 	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxDem, double minDem, double[] baselineProfile, int lag) {
 		super(context, mb, BMU_CATEGORY.DEM_S, BMU_TYPE.DEM_SMALL, maxDem, minDem, baselineProfile);
 		this.laggedPrice = new double [lag+1];
-		Arrays.fill(this.laggedPrice, 125);
+		Arrays.fill(this.laggedPrice, 40);
 		context.add(this);
 	}
 
+	ArrayList<ProsumerAgent> c;
+	boolean custListDirty = true;
+	
 	/**
 	 * @return ArrayList of ProsumerAgents that are this aggregators' customers
 	 */
 	private ArrayList<ProsumerAgent> getCustomersList() {
-		ArrayList<ProsumerAgent> c = new ArrayList<ProsumerAgent>();
+		
+		if (!custListDirty)
+		{
+			return c;
+		}
+		
+		c = new ArrayList<ProsumerAgent>();
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		
-		Iterable<RepastEdge> iter = economicNet.getEdges();
+		Iterable<RepastEdge> iter = economicNet.getEdges(this);
 		if(Consts.DEBUG) {
 			//System.out.println(This.class+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
 		}
@@ -155,7 +171,48 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator  {
 				throw (new WrongCustomerTypeException(linkSource));
 			}
 		}
+		custListDirty = false;
+		
 		return c;
+	}
+
+	/* (non-Javadoc)
+	 * @see repast.simphony.space.projection.ProjectionListener#projectionEventOccurred(repast.simphony.space.projection.ProjectionEvent)
+	 */
+	@Override
+	public void projectionEventOccurred(ProjectionEvent evt) {
+		if (evt.getType()== Type.EDGE_ADDED || evt.getType()==Type.EDGE_REMOVED)
+		{
+			RepastEdge subject = (RepastEdge) evt.getSubject();
+			if (subject.getSource()==this || subject.getTarget()==this)
+			{
+				custListDirty = true;
+			}
+		}
+			
+		
+	}
+	
+	public String getINDMARTitle()
+	{
+		return "INDMAR";
+	}
+	
+	public String getIMBALTitle()
+	{
+		return "IMBAL";
+	}
+	
+	public double getINDMAR()
+	{
+		return messageBoard.getINDMAR()[this.mainContext.getTickCount() % this.mainContext.ticksPerDay];
+		
+	}
+	
+	public double getIMBAL()
+	{
+		return messageBoard.getIMBAL()[this.mainContext.getTickCount() % this.mainContext.ticksPerDay];
+		
 	}
 
 
