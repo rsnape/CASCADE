@@ -31,9 +31,10 @@ public final class Consts {
 	
 	/*This is to control the length of initialized demand profile 
 	 *it can be set to 1 day [presumably necessary for smart signal] up to one year (365 days) [usually by default]
-	 * this currently affects the size of all profile arrays, except heat space and hot water (along with historical arrays) 
+	 * this currently affects the size of all profile arrays, except heat space and hot water (along with historical arrays)
+	 * TODO: Remove this - should be gleaned from the input data - shouldn't have to set it!! 
 	 */
-	public static int NB_OF_DAYS_LOADED_DEMAND = 7;  // should be ideally 365 days (1 year) 
+	public static int NB_OF_DAYS_LOADED_DEMAND = 1;  // should be ideally 365 days (1 year) 
 	
 	//Controlling HHProsumers electricity consumption/usage
 	public static boolean HHPRO_HAS_ELEC_SPACE_HEAT = true;
@@ -250,11 +251,10 @@ public final class Consts {
 	public static final double DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE = 0.9d;
 
 	//The typical heat pump coefficient of performance for heating water in a domestic dwelling
-	public static final double DOMESTIC_HEAT_PUMP_WATER_COP = 1.0d; //
+	public static final double DOMESTIC_HEAT_PUMP_WATER_COP = 2.0d; //
 
 	//Maximum domestic heat pump power (in kW)
-	public static final double MAX_DOMESTIC_IMMERSION_POWER = 3;
-	public static final double TEMP_CHANGE_TOLERANCE = 1e-3d;
+	public static final double TEMP_CHANGE_TOLERANCE = 0;//1e-3d;
 	public static final double NORMALIZING_MAX_COST = 1;
 
 	public static final double HEAT_PUMP_THRESHOLD_TEMP_DIFF = 3;
@@ -310,6 +310,7 @@ public final class Consts {
 	public static final double[] EST_DRAWOFF = {2.25d, 2.25d, 1.4d,1.4d,1.15d,1.15d,0.95d,0.95d,1.6d,1.6d,2.15d,2.15d,5.3d,5.3d,10.8d,10.8d,9.1d,9.1d,7.25d,7.25d,6.85d,6.85d,6d,6d,5.25d,5.25d,4.35d,4.35d,3.6d,3.6d,3.65d,3.65d,4.45d,4.45d,6.5d,6.5d,9d,9d,8.7d,8.7d,7.2d,7.2d,6.1d,6.1d,5d,5d,3d,3d};
 	
 	public static final double IMMERSION_HEATER_COP = 0.9d;  //Used by Wattbox
+	public static final double MAX_DOMESTIC_IMMERSION_POWER = 3;
 	
 	/**++++++++++++++++
 	 * Wet Appliances
@@ -347,6 +348,7 @@ public final class Consts {
 	public static final boolean USE_SINGLE_NON_DOMESTIC_AGGREGATOR = true;
 	public static final boolean UPDATE_PHYSICAL_NODE_TO_MARKET = true;
 	public static final double RATIO_AGANIST_HOUSEHOLD = 2d;
+	public static final int MAX_ALLOWED_WET_APP_MOVE = 8;
 
 }
 

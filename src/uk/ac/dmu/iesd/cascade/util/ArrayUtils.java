@@ -174,7 +174,7 @@ public class ArrayUtils {
 	 */
 	public static double[] mtimes(double[]... arrays)
 	{
-		double [] returnArray = new double[arrays[1].length];
+		double [] returnArray = new double[arrays[0].length];
 		Arrays.fill(returnArray, 1d);
 
 		for (double[] nextArray : arrays)
@@ -500,12 +500,14 @@ public class ArrayUtils {
 	 */
 	public static double[] offset (double[] array, double offset)
 	{
+		double[] returnArr = new double[array.length];
+		
 		for(int i = array.length - 1; i >= 0; --i)
 		{
-			array[i] = array[i] + offset;			
+			returnArr[i] = array[i] + offset;			
 		}
 
-		return array;
+		return returnArr;
 	}
 
 	/**
@@ -517,12 +519,13 @@ public class ArrayUtils {
 	 */
 	public static float[] offset (float[] array, float offset)
 	{
+		float[] returnArr = new float[array.length];
 		for(int i = array.length - 1; i >= 0; --i)
 		{
-			array[i] = array[i] + offset;			
+			returnArr[i] = array[i] + offset;			
 		}
 
-		return array;
+		return returnArr;
 	}
 
 	/**
@@ -1275,6 +1278,24 @@ public class ArrayUtils {
 		}
 
 		return returnArray;
+	}
+
+	/**
+	 * @param kneg
+	 * @param kpos
+	 * @return
+	 */
+	public static double[][] zip(double[]... arrs) {
+		double[][] returnArr = new double[arrs.length][arrs[0].length];
+		
+		int i = 0;
+		while (i<arrs.length)
+		{
+			returnArr[i] = arrs[i].clone();
+			i++;
+		}
+		
+		return returnArr;
 	}
 
 

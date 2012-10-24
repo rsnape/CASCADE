@@ -41,6 +41,7 @@ import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SingleNonDomesticAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
@@ -721,7 +722,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		//Add aggregator(s), currently one;  (TODO should become a separate method later)
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorTraderFactory(this.cascadeMainContext, this.messageBoard);
 		
-		SupplierCo firstRecoAggregator = aggregatorFactory.createSupplierCo(cascadeMainContext.systemPriceSignalDataArray);
+		SupplierCoAdvancedModel firstRecoAggregator = aggregatorFactory.createSupplierCoAdvanced(cascadeMainContext.systemPriceSignalDataArray);
 		cascadeMainContext.add(firstRecoAggregator);
 		
 		/**

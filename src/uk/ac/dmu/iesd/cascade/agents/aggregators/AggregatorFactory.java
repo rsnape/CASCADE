@@ -44,6 +44,16 @@ public class AggregatorFactory implements IAggregatorFactory{
 		return asCO;
 	}
 	
+	public SupplierCoAdvancedModel createSupplierCoAdvanced(double[] baseProfile){
+		//SupplierCo asCO = new SupplierCo(cascadeMainContext,  baseProfile);
+		
+		double maxDem =  ASTEMConsts.BMU_SMALLDEM_MAXDEM;
+		double minDem =  ASTEMConsts.BMU_SMALLDEM_MINDEM;
+		SupplierCoAdvancedModel asCO = new SupplierCoAdvancedModel(cascadeMainContext, messageBoard, BMU_CATEGORY.DEM_S, BMU_TYPE.DEM_SMALL, maxDem, minDem, baseProfile);
+
+		return asCO;
+	}
+	
 	public WindFarmAggregator createWindFarmAggregator(){
 		//SupplierCo asCO = new SupplierCo(cascadeMainContext,  baseProfile);
 		double maxGen = 50000000; //in W
