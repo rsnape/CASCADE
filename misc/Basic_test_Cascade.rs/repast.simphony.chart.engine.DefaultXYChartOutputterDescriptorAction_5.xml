@@ -1,36 +1,42 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Air Temperature</name>
+  <name>A Chart</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>weather</string>
+      <string>aggData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">weather</dataSetId>
-  <showLegend>false</showLegend>
+  <dataSetId class="string">aggData</dataSetId>
+  <showLegend>true</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>144.0</visibleXRange>
+  <visibleXRange>100.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
   <yMin>0.0</yMin>
   <yMax>0.0</yMax>
-  <precisionValue>0</precisionValue>
-  <maxHistory>1500</maxHistory>
+  <precisionValue>3</precisionValue>
+  <maxHistory>500</maxHistory>
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>Air Temperature</seriesID>
-      <valueColumn>Air Temperature</valueColumn>
-      <hashCode>-1994405155</hashCode>
-      <proxy>true</proxy>
+      <seriesID>IMBALTitle</seriesID>
+      <valueColumn>IMBAL</valueColumn>
+      <hashCode>-835235107</hashCode>
+      <proxy>false</proxy>
+    </repast.simphony.chart.Series>
+    <repast.simphony.chart.Series>
+      <seriesID>INDMARTitle</seriesID>
+      <valueColumn>INDMAR</valueColumn>
+      <hashCode>-1981929083</hashCode>
+      <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>

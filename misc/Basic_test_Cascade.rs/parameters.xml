@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<parameters>
+					<parameter name="startDate" displayName="startDate" type="java.lang.String" 
+						defaultValue="01/01/2000" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="randomSeed" displayName="Default Random Seed" type="int" 
+						defaultValue="__NULL__"
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
+				<parameter name="systemBaseDemandFile" displayName="systemBaseDemandFile" type="java.lang.String" 
+						defaultValue="macroDemand_1W.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="ticksPerDay" displayName="ticksPerDay" type="java.lang.Integer" 
+						defaultValue="48" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									values="24 48 "
+						
+		/>
+				<parameter name="smartControlDecisionThreshold" displayName="smartControlDecisionThreshold" type="java.lang.Double" 
+						defaultValue="0.9" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
+						defaultValue="weatherProfiles_1Y.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="householdOtherDemandFile" displayName="householdOtherDemandFile" type="java.lang.String" 
+						defaultValue="hhOtherDemandProfiles_1W.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="defaultProsumersPerFeeder" displayName="defaultProsumersPerFeeder" type="java.lang.Integer" 
+						defaultValue="11" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
+				<parameter name="defaultSignalLength" displayName="defaultSignalLength" type="java.lang.Integer" 
+						defaultValue="48" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									values="24 48 96 "
+						
+		/>
+				<parameter name="chartSnapshotInterval" displayName="chartSnapshotInterval" type="int" 
+						defaultValue="144" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									values="48 96 144 192 240 288 336 "
+						
+		/>
+				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
+						defaultValue="dataFiles" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
+						defaultValue="false" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
+									
+		/>
+				<parameter name="signalMode" displayName="signal mode (0=fixed, 1=price, 2=smart)" type="int" 
+						defaultValue="1" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									values="0 1 2 "
+						
+		/>
+				<parameter name="hhWithGasPercentage" displayName="householdsWithGas%" type="int" 
+						defaultValue="0" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
+				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
+						defaultValue="false" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
+									
+		/>
+		</parameters>
+
+

@@ -1,0 +1,144 @@
+<repast.simphony.data.engine.DefaultDataGathererDescriptor>
+  <name>aggData</name>
+  <dataSetId class="string">aggData</dataSetId>
+  <scheduleParameters>
+    <start>1.0</start>
+    <interval>1.0</interval>
+    <priority>-Infinity</priority>
+    <duration>-1.0</duration>
+    <frequency>REPEAT</frequency>
+  </scheduleParameters>
+  <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
+    <nameMappingTable>
+      <entry>
+        <string>CurrPrice</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag</class>
+            <name>getCurrPrice</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>IMBALTitle</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag</class>
+            <name>getIMBALTitle</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>INDMAR</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag</class>
+            <name>getINDMAR</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>INDMARTitle</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag</class>
+            <name>getINDMARTitle</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>NetDemand</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent</class>
+            <name>getNetDemand</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>priceTitle</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag</class>
+            <name>priceTitle</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>Tick</string>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
+      </entry>
+      <entry>
+        <string>demandTitle</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag</class>
+            <name>demandTitle</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+      <entry>
+        <string>IMBAL</string>
+        <repast.simphony.data.logging.gather.MethodMapping>
+          <method>
+            <class>uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag</class>
+            <name>getIMBAL</name>
+            <parameter-types/>
+          </method>
+        </repast.simphony.data.logging.gather.MethodMapping>
+      </entry>
+    </nameMappingTable>
+    <mappingNameTable>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>IMBALTitle</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[6]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>priceTitle</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[8]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>demandTitle</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry[7]/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>CurrPrice</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[4]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>INDMARTitle</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>INDMAR</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[9]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>IMBAL</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.MethodMapping reference="../../../nameMappingTable/entry[5]/repast.simphony.data.logging.gather.MethodMapping"/>
+        <string>NetDemand</string>
+      </entry>
+    </mappingNameTable>
+  </dataMappingContainer>
+  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
+    <nameMappingTable/>
+    <mappingNameTable/>
+    <alternatedNameTable/>
+    <nameAlternatedTable/>
+  </aggregateContainer>
+  <agentClass>uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag</agentClass>
+</repast.simphony.data.engine.DefaultDataGathererDescriptor>

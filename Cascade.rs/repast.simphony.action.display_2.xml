@@ -3,21 +3,21 @@
   <type>TWO_D</type>
   <styles>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
+      <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent</string>
       <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
     </entry>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.RECO</string>
+      <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent</string>
       <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
+      <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent</string>
       <null/>
     </entry>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.RECO</string>
+      <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent</string>
       <null/>
     </entry>
   </editedStyles>
@@ -36,21 +36,21 @@
   <frequency>ON_NEW</frequency>
   <schedParams>
     <start>1.0</start>
-    <interval>0.0</interval>
+    <interval>1.0</interval>
     <priority>-Infinity</priority>
     <duration>-1.0</duration>
-    <frequency>ONE_TIME</frequency>
+    <frequency>REPEAT</frequency>
   </schedParams>
   <layoutClassName>repast.simphony.visualization.visualization2D.Random2DLayout</layoutClassName>
   <layoutProjection>economicNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.HouseholdProsumer</string>
+      <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent</string>
       <int>0</int>
     </entry>
     <entry>
-      <string>uk.ac.dmu.iesd.cascade.context.RECO</string>
+      <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent</string>
       <int>1</int>
     </entry>
   </layerOrder>

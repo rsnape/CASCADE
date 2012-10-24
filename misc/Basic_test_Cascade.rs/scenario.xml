@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Scenario>
+<repast.simphony.data.logging.outputter.engine.DefaultOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.data.logging.outputter.engine.DefaultOutputterDescriptorAction_0.xml" />
+<repast.simphony.data.engine.DefaultDataGathererDescriptorAction context="CascadeContextMain" file="repast.simphony.data.engine.DefaultDataGathererDescriptorAction_1.xml" />
+<repast.simphony.dataLoader.engine.ClassNameDataLoaderAction context="CascadeContextMain" file="repast.simphony.dataLoader.engine.ClassNameDataLoaderAction_2.xml" />
+<repast.simphony.action.display context="CascadeContextMain" file="repast.simphony.action.display_3.xml" />
+<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_4.xml" />
+<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_5.xml" />
+<model.initializer class="uk.ac.dmu.iesd.cascade.base.Initializer" />
+</Scenario>

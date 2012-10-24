@@ -1,0 +1,7 @@
+<context id="CascadeContextMain">  
+  <projection id="socialNetwork" type="network"/>
+  <projection id="geography" type="geography"/>
+  <projection id="economicNetwork" type="network"/>
+  <projection id="electricalNetwork" type="network"/>
+  <projection id="infoNetwork" type="network"/>
+</context>
