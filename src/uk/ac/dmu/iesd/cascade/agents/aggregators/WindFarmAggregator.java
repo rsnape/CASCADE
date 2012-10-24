@@ -61,10 +61,10 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 		// This needs to be recoded to allow for multiple aggregators owning different wind farms.
 		Network windFarmNet = this.mainContext.getEconomicNetwork();
 		Iterable<RepastEdge> iter = windFarmNet.getEdges();
-		if(Consts.DEBUG) {
+/*		if(Consts.DEBUG) {
 				System.out.println(this.getAgentName()+" " +this.toString()+ " has "+ windFarmNet.size() + " links in wind farm network");
 			}
-		
+*/		
 		for (RepastEdge edge : iter) {
 			Object linkSource = edge.getTarget();
 			if (linkSource instanceof ProsumerAgent){
@@ -92,8 +92,9 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 			}
 			//sum_e = sum_e+a.getElasticityFactor();
 		}
-
-		setNetDemand(sumDemand);
+		//The Aggregators deal in MW, but the Wind Farm Prosumers calculate generation in Watts.
+		//A conversion is therefore carried out here.
+		setNetDemand((sumDemand/1E6));
 		//if (Consts.DEBUG) System.out.println("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
 		
 		return sumDemand;
@@ -142,7 +143,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 	@Override
 	public void bizPreStep() {
 		// TODO Auto-generated method stub
-		if (Consts.DEBUG) System.out.println(" ============ WindFarmAggregator pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+//		if (Consts.DEBUG) System.out.println(" ============ WindFarmAggregator pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		timeTick = mainContext.getTickCount();	
 		timeslotOfDay = mainContext.getTimeslotOfDay();
 		customers = getCustomersList();
@@ -168,7 +169,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 		// TODO Auto-generated method stub
 		calculateAndSetNetDemand(customers);
 		
-		if (mainContext.getTickCount() % 48 == 47) {
+/*		if (mainContext.getTickCount() % 48 == 47) {
 			System.out.print("WD"+ mainContext.getTickCount() % 48 + ", ");
 			
 			for (int i=0; i<this.arr_day_D.length; i++) {
@@ -176,7 +177,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 				}
 			System.out.println("");
 		}
-		
+*/		
 	}
 
 	/**

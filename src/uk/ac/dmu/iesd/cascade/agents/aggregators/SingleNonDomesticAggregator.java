@@ -219,7 +219,7 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator {
 			totalSpaceHeatDemand = ArrayUtils.add(totalSpaceHeatDemand, SpaceHeatDemand);
 		}
 		for(int i=0; i<lengthOfProfile; i++) {
-			System.out.print(totalSpaceHeatDemand[i] + ",");
+		//	System.out.print(totalSpaceHeatDemand[i] + ",");
 		}
 		System.out.println("\n");
 		

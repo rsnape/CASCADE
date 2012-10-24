@@ -282,15 +282,14 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	private void createWindFarmsAndAddThemToContext(){
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 		
-		//ProsumerAgent genProsAgent = prosumerFactory.createPureGenerator(50000000, Consts.GENERATOR_TYPE.WIND);
-		
-		WindGeneratorProsumer genProsAgent = prosumerFactory.createWindGenerator(2, Consts.GENERATOR_TYPE.WIND, 20);
-		
-		for (int numWindFarms = 0; numWindFarms < 1; numWindFarms++){
-			genProsAgent.offset = 0;
+		for (int numWindFarms = 0; numWindFarms < 11; numWindFarms++){
+			
+			WindGeneratorProsumer genProsAgent = prosumerFactory.createWindGenerator(2, Consts.GENERATOR_TYPE.WIND, 20);
+			
+			genProsAgent.offset = 0;//96/(numWindFarms+1);
 			double [] hubHeights = new double[] {75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0};
 			double [] cp = new double[] {0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3};
-			double [] minWindSpeed = new double[] {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5};
+			double [] minWindSpeed = new double[] {2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5};
 			double [] maxWindSpeed = new double[] {25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25};
 			double [] capacity = new double[] {2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6,2.0E6};
 			double [] bladeLength = new double[] {40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40};
@@ -730,10 +729,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		 * 
 		 * Add a simple single non domestic aggregator into <code>cascadeMainContext</code>
 		 */
-		SingleNonDomesticAggregator singleNonDomestic = aggregatorFactory.createSingleNonDomesticAggregator(cascadeMainContext.systemPriceSignalDataArray);
-		cascadeMainContext.add(singleNonDomestic);
+//		SingleNonDomesticAggregator singleNonDomestic = aggregatorFactory.createSingleNonDomesticAggregator(cascadeMainContext.systemPriceSignalDataArray);
+//		cascadeMainContext.add(singleNonDomestic);
 		
-		buildSocialNetwork(); 
+//		buildSocialNetwork(); 
 
 		buildOtherNetworks(firstRecoAggregator);
 		
@@ -800,11 +799,11 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		double[] arr_baseline_GEN_CCGT  =  mapOfDMUtypeName2BaselineProfileArray.get("GEN_CCGT");
 		double[] arr_baseline_GEN_WIND  =  mapOfDMUtypeName2BaselineProfileArray.get("GEN_WIND");
 
-		int numOfDEM_LARGE = 5;
-		int numOfDEM_SMALL = 2;
-		int numOfGEN_COAL  = 2;
-		int numOfGEN_CCGT  = 3;
-		int numOfGEN_WIND  = 44;
+		int numOfDEM_LARGE = 1;
+		int numOfDEM_SMALL = 1;
+		int numOfGEN_COAL  = 1;
+		int numOfGEN_CCGT  = 1;
+		int numOfGEN_WIND  = 0; 
 
 
 		for (int i=0; i< numOfDEM_LARGE; i++) {

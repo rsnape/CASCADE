@@ -26,7 +26,7 @@ public final class ASTEMConsts {
 	// would be normally where this project resides in Eclipse working space   
 	//public static String DATA_FILES_FOLDER_NAME = "\\dataFiles"; //data files are us
 	
-	public static String BMU_BASE_PROFILES_FILENAME = "BMU_BaseProfiles.csv";  //DEM and GEN profiles
+	public static String BMU_BASE_PROFILES_FILENAME = "BMU_BaseProfilesMINDEMAND.csv";  //DEM and GEN profiles
 	
 	/*---------------------
 	 * Units of Measurements
@@ -58,15 +58,15 @@ public final class ASTEMConsts {
 
 	public static int BMU_BO_NUM_OF_CHOICE= 10;
 	
-	public static int BMU_COAL_MAXCAP= 1200;
-	public static int BMU_CCGT_MAXCAP= 800;
-	public static int BMU_WIND_MAXCAP= 150;
+	public static int BMU_COAL_MAXCAP= 800;//1200
+	public static int BMU_CCGT_MAXCAP= 800;//800
+	public static int BMU_WIND_MAXCAP= 440;
 	
-	public static int BMU_LARGEDEM_MAXDEM = -1000;
-	public static int BMU_SMALLDEM_MAXDEM = -500;
+	public static int BMU_LARGEDEM_MAXDEM = -400;//-1000;
+	public static int BMU_SMALLDEM_MAXDEM = -1;//-500
 	
-	public static int BMU_LARGEDEM_MINDEM = -300;
-	public static int BMU_SMALLDEM_MINDEM = -100;
+	public static int BMU_LARGEDEM_MINDEM = -400;//-300;
+	public static int BMU_SMALLDEM_MINDEM = -1;//-100
 	
 	public static double BMU_MARGINPC_GEN_ = 0.05;
 	

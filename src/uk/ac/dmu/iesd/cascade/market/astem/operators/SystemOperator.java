@@ -469,7 +469,6 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 			updateOldIMBAL(arr_IMBAL, arr_oldIMBAL);
 			broadcastIMBALandINDMARInfo(arr_IMBAL, arr_oldIMBAL, arr_INDMAR);
 
-
 			break;
 		
 		}//end of switch		
@@ -487,6 +486,13 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 			sendBOAtoSettlementCo(map_IBMTrader2ListOfBODs);
 
 			//sendBOAtoEachBMU(list_BMU, map_dmuID2ListOf_BODs);
+		}
+		
+		if (settlementPeriod == 47) {
+			System.out.println("DEMAND: " + Arrays.toString(arr_NDF));
+			System.out.println("GENERATION: " + Arrays.toString(arr_INDGEN));
+			System.out.println("IMBALANCE: " + Arrays.toString(arr_IMBAL));
+			//TestHelper.printMapListOfBODs(map_IBMTrader2ListOfBOAs);
 		}
 
 	}

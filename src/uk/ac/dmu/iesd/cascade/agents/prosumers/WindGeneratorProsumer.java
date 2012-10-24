@@ -406,7 +406,12 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		int timeOfDay = (time % ticksPerDay);
 		CascadeContext myContext = this.getContext();
 
-		checkWeather(time - offset);
+		if ((time - offset) < 0 ) {
+			checkWeather(0);
+		}
+		else {
+			checkWeather(time - offset);
+		}
 		/*
 		 * Set wind speed at each turbines hub height
 		 */
@@ -441,11 +446,12 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		for (int i=0; i<this.numTurbines; i++){
 			returnAmount = returnAmount + windGeneration(i, bladeLength[i], efficiency[i], cutInWindSpeed[i], shutDownWindSpeed[i], maxPower[i]);
 		}
-		if (Consts.DEBUG) {
+/*		if (Consts.DEBUG) {
 			if (returnAmount != 0) {
-				if (Consts.DEBUG) System.out.println("WindGeneratorProsumer: Generating " + returnAmount);
+				 System.out.println("WindGeneratorProsumer: Generating " + returnAmount);
 			}
 		}
+*/
 		return returnAmount;
 	}
 
@@ -539,7 +545,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 	    
 	    this.obsHeight = 10;
 	   
-	    this.offset = 0; // All wind farms currently have same offset so located in same region (i.e. same weather profile).
+	    //this.offset = 0; // All wind farms currently have same offset so located in same region (i.e. same weather profile).
 		
 		/*
 		 * Set location of wind farm

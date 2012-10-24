@@ -1,6 +1,7 @@
 package uk.ac.dmu.iesd.cascade.market.astem.operators;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
@@ -238,7 +239,10 @@ public class SettlementCompany {
 			//System.out.print(this.getSBPforEachSP());
 			
 			//System.out.println(", "+this.getSSPforEachSP());
-			
+			if (settlementPeriod == 47) {
+				System.out.println("SSP" + mainContext.getDayCount() + ": " + Arrays.toString(arr_SSP));
+				System.out.println("SBP" + mainContext.getDayCount() + ": " + Arrays.toString(arr_SBP));
+			}
 		}
 		
 		//TestHelper.writeOutput("SO_sp", true, arr_IMBAL);
