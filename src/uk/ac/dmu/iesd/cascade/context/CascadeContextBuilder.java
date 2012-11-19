@@ -885,6 +885,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		createAndAddGenericAggregators(map_dmuTypeNameToBaseProfiles);
 		
+		//If we want to stop a batch run at a given time - put it here.
 
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());

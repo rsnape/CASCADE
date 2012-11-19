@@ -7,7 +7,7 @@
 									
 		/>
 				<parameter name="randomSeed" displayName="Default Random Seed" type="int" 
-						defaultValue="1" 
+						defaultValue="1"
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
