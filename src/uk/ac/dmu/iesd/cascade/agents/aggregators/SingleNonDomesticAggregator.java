@@ -282,7 +282,7 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator {
 		 * */
 		
 		if(Consts.USE_SINGLE_NON_DOMESTIC_AGGREGATOR) {
-			this.updateSingleNonDomesticPower();
+			//this.updateSingleNonDomesticPower();
 			this.updateSingleNonDomesticDemand();
 		}
 		
