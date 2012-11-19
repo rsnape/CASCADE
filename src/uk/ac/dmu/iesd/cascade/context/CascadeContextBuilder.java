@@ -384,7 +384,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	
 			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.NB_OF_DAYS_LOADED_DEMAND, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
 			/*JRS TEST - REMOVE REMOVE REMOVE */
-			//setWetAppsPerPBMatlabPrototype(thisAgent);
+			setWetAppsPerPBMatlabPrototype(thisAgent);
 
 		}
 		
