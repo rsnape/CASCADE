@@ -157,7 +157,7 @@ public class ProsumerProbeListener implements ProbeListener {
 				loadsProfilesLineChartButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						//IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
-						DefaultCategoryDataset loadsDataset = createLoadsProfileDataset(thisAgent);
+						DefaultCategoryDataset loadsDataset = createDataset(thisAgent);
 						JFreeChart loadsChart = createLineChart(loadsDataset, "Demand Profiles Chart (hh_"+thisAgent.getAgentID()+", @t="+mainContext.getTickCount()+")", "Half hour", "Load (KWh)");
 						ChartUtils.showChart(loadsChart);
 					}
@@ -179,6 +179,23 @@ public class ProsumerProbeListener implements ProbeListener {
 				});
 				
 				agentProbeFrame.getContentPane().add(allPieChartButton);
+				
+				JButton allBarChartButton = new JButton("Click here to see demands Stacked Bar of  ALL HHPros");
+				allBarChartButton.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+					   //System.out.println(" mouseClicked: ");
+						IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
+						ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
+						DefaultCategoryDataset barDatasetOfAllHHProsConsumption = createStackedBarDataset4DemandOfAllHHPros(list_hhProsumers);
+						int now = mainContext.getTickCount();
+						int start = now - (now % mainContext.ticksPerDay);
+						JFreeChart barChart4AllHHProsConsumption = createChart(barDatasetOfAllHHProsConsumption, "Total Demands Proportion of All HHPros (from " + start + " to " + (start+mainContext.ticksPerDay) + " evaluated @t=" +now+")");
+						ChartUtils.showChart(barChart4AllHHProsConsumption);
+						
+					}
+				});
+				
+				agentProbeFrame.getContentPane().add(allBarChartButton);
 	
 				//Display the window.
 				agentProbeFrame.pack();
@@ -326,6 +343,45 @@ public class ProsumerProbeListener implements ProbeListener {
 		pieDataset.setValue("W", sum_wet);
 
 		return pieDataset;
+
+	}
+	
+	/**
+	 * Creates and returns a pie chart dataset using the average demand of all HHProsumers
+	 * @author Babak Mahdavi
+	 * @param list_hhProsumers
+	 * @return
+	 */
+	private  DefaultCategoryDataset createStackedBarDataset4DemandOfAllHHPros(List<HouseholdProsumer> list_hhProsumers) {
+
+		DefaultCategoryDataset totalDemandPerType = new DefaultCategoryDataset();
+
+		double[] tot_spaceHeat=new double[48];
+		double[] tot_hotWater=new double[48];;
+		double[] tot_other=new double[48];
+		double[] tot_cold=new double[48];
+		double[] tot_wet=new double[48];
+		
+		double nbOfHHPros = list_hhProsumers.size();
+
+		for (HouseholdProsumer hhAgent : list_hhProsumers) {
+			tot_spaceHeat = ArrayUtils.add(tot_spaceHeat,hhAgent.getHistoricalSpaceHeatDemand());
+			tot_hotWater = ArrayUtils.add(tot_hotWater,hhAgent.getHistoricalWaterHeatDemand());
+			tot_other = ArrayUtils.add(tot_other,hhAgent.getHistoricalOtherDemand());
+			tot_cold = ArrayUtils.add(tot_cold,hhAgent.getHistoricalColdDemand());
+			tot_wet = ArrayUtils.add(tot_wet,hhAgent.getHistoricalWetDemand());
+		}
+
+		for (int i = 0; i < tot_cold.length; i++)
+		{
+		totalDemandPerType.addValue((Number)tot_spaceHeat[i], "Space Heat",i);
+		totalDemandPerType.addValue((Number)tot_hotWater[i], "Hot Water",i);
+		totalDemandPerType.addValue((Number)tot_other[i], "Other",i);
+		totalDemandPerType.addValue((Number)tot_cold[i], "Cold",i);
+		totalDemandPerType.addValue((Number)tot_wet[i], "Wet",i);
+		}
+
+		return totalDemandPerType;
 
 	}
 	
