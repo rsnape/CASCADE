@@ -14,7 +14,7 @@ public class TrainingSignalFactory {
 	private double[] PBsigFromMatlab = new double[]{0,0.166666667,0.25,0.333333333,0.416666667,0.5,0.583333333,0.666666667,0.75,0.833333333,0.916666667,1,1,0.916666667,0.833333333,0.75,0.666666667,0.583333333,0.5,0.416666667,0.333333333,0.25,0.166666667,0,0,-0.166666667,-0.25,-0.333333333,-0.416666667,-0.5,-0.583333333,-0.666666667,-0.75,-0.833333333,-0.916666667,-1,-1,-0.916666667,-0.833333333,-0.75,-0.666666667,-0.583333333,-0.5,-0.416666667,-0.333333333,-0.25,-0.166666667,0};
 
 	private int signalLength;
-	public static enum SIGNAL_TYPE {IMPULSE, TRIANGLE, SQUARE, SINE, PBORIGINAL};
+	public static enum SIGNAL_TYPE {IMPULSE, TRIANGLE, SQUARE, SINE, PBORIGINAL, COSINE};
 		
 	public void setSignalLength(int n)
 	{
@@ -47,6 +47,9 @@ public class TrainingSignalFactory {
 			case SINE:
 				ret =  genSineSignal(n);
 				break;
+			case COSINE:
+				ret =  genCosineSignal(n);
+				break;
 			case PBORIGINAL:
 				ret = Arrays.copyOf(this.PBsigFromMatlab, this.PBsigFromMatlab.length);
 				break;
@@ -63,6 +66,21 @@ public class TrainingSignalFactory {
 	 * @param n
 	 * @return
 	 */
+	private double[] genCosineSignal(int n)
+	{
+		double[] ret = new double[n];
+		double[] t = genSineSignal(n);
+		int indexFor1 = n/4;
+		System.arraycopy(t, indexFor1, ret, 0, t.length - indexFor1);
+		System.arraycopy(t, 0, ret, t.length - indexFor1, indexFor1);
+
+		return ret;
+	}
+
+	/**
+	 * @param n
+	 * @return
+	 */
 	private double[] genSquareSignal(int n) {
 		double[] ret = new double[n];
 		Arrays.fill(ret, 1);
@@ -71,16 +89,23 @@ public class TrainingSignalFactory {
 	}
 
 	/**
+	 * Note that slightly awkward way of doing this is to get a true zero at the mid point
+	 * rather than a "nearly zero" due to double precision.
+	 * 
 	 * @param n
 	 * @return
 	 */
 	private double[] genSineSignal(int n) {
+		int halfWave = n / 2;
 		double deltaT = 2*Math.PI / n;
 		double[] ret = new double[n];
-		for (int t = 0; t < n; t++)
+		for (int t = 0; t < halfWave; t++)
 		{
-			ret[t] = Math.sin(t*deltaT);
+			double val = Math.sin(t*deltaT);
+			ret[t] = val;
+			ret[t+halfWave] = -val;
 		}
+		//ret[halfWave-1] = 0; 
 		return ret;
 	}
 
