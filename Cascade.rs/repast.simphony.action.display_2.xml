@@ -36,10 +36,10 @@
   <frequency>ON_NEW</frequency>
   <schedParams>
     <start>1.0</start>
-    <interval>1.0</interval>
+    <interval>0.0</interval>
     <priority>-Infinity</priority>
     <duration>-1.0</duration>
-    <frequency>REPEAT</frequency>
+    <frequency>ONE_TIME</frequency>
   </schedParams>
   <layoutClassName>repast.simphony.visualization.visualization2D.Random2DLayout</layoutClassName>
   <layoutProjection>economicNetwork</layoutProjection>
