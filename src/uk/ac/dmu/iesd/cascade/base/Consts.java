@@ -254,7 +254,7 @@ public final class Consts {
 	public static final double DOMESTIC_HEAT_PUMP_WATER_COP = 2.0d; //
 
 	//Maximum domestic heat pump power (in kW)
-	public static final double TEMP_CHANGE_TOLERANCE = 0;//1e-3d;
+	public static final double TEMP_CHANGE_TOLERANCE = 0.05d;
 	public static final double NORMALIZING_MAX_COST = 1;
 
 	public static final double HEAT_PUMP_THRESHOLD_TEMP_DIFF = 3;
@@ -317,6 +317,7 @@ public final class Consts {
 	 *+++++++++++++++++*/	
 	
 	public static final double[] WET_APPLIANCE_PDF = {18.91,16.45,13.49,12.52,16.80,14.41,11.13,9.99,13.90,10.18,13.30,15.53,18.79,17.65,21.79,25.72,36.83,43.13,43.94,46.43,49.61,52.02,49.30,45.71,42.85,42.42,39.08,39.67,41.19,40.16,37.68,37.56,37.67,38.10,38.19,37.10,36.46,37.32,39.44,37.77,37.05,35.09,35.13,34.19,29.75,26.68,26.01,21.30};
+	public static final int MAX_ALLOWED_WET_APP_MOVE = 12;
 	
 	/**+++++++++++
 	 * Occupancy
@@ -345,10 +346,10 @@ public final class Consts {
 	 * Single Non Domestic Constant
 	 *+++++++++++++++++++++++++++*/
 	
-	public static final boolean USE_SINGLE_NON_DOMESTIC_AGGREGATOR = true;
+	public static final boolean USE_SINGLE_NON_DOMESTIC_AGGREGATOR = false;
 	public static final boolean UPDATE_PHYSICAL_NODE_TO_MARKET = true;
 	public static final double RATIO_AGANIST_HOUSEHOLD = 2d;
-	public static final int MAX_ALLOWED_WET_APP_MOVE = 8;
+
 
 }
 
