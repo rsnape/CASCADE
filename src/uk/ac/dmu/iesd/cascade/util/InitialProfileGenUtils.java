@@ -1169,12 +1169,12 @@ public abstract class InitialProfileGenUtils {
 		double temp2 = ArrayUtils.sum(d_dryer)/Nspan;
 		double temp3 = ArrayUtils.sum(d_dish)/Nspan;
 		
-		//System.out.print("[" + temp1 + "," + temp2 + "," + temp3 + "];");
-		//System.out.println(Arrays.toString(d_washer));
-		//System.out.println(Arrays.toString(d_dryer));
-		//System.out.println(Arrays.toString(d_dish));
+		System.out.print("[" + temp1 + "," + temp2 + "," + temp3 + "];");
+		System.out.println(Arrays.toString(d_washer));
+		System.out.println(Arrays.toString(d_dryer));
+		System.out.println(Arrays.toString(d_dish));
 
-		//System.out.println(ArrayUtils.sum(Arrays.copyOfRange(D_min_wash, 20000, D_min_wash.length)));
+		System.out.println(ArrayUtils.sum(D_min_wash));
 		
 		
 		WeakHashMap<String,double[]> wetProfiles = new WeakHashMap<String,double[]>();

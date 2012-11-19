@@ -381,11 +381,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			{
 				thisAgent.hasDishWasher = true;
 			}
-
-			//populate the initial heating profile from the above baseline demand for hot water
-			//thisAgent.wetApplianceProfile = InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.DAYS_PER_YEAR, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer);
-			
+	
 			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.NB_OF_DAYS_LOADED_DEMAND, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
+			/*JRS TEST - REMOVE REMOVE REMOVE */
+			//setWetAppsPerPBMatlabPrototype(thisAgent);
 
 		}
 		
@@ -407,6 +406,33 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		}
 	}
 	
+	public void setWetAppsPerPBMatlabPrototype(HouseholdProsumer thisAgent)
+	{
+
+	
+	WeakHashMap<String,double[]> PB_wash_approx = new WeakHashMap<String, double[]>();
+	double[] basicWashProfile = new double[48];
+	if (RandomHelper.nextDouble() < 0.57)
+	{
+		int startSlot = (int) (RandomHelper.nextDouble()*47);
+		basicWashProfile[startSlot] = 1;
+		basicWashProfile[startSlot+1] = 1;
+	}
+	
+	thisAgent.hasDishWasher = false;
+	thisAgent.hasTumbleDryer = false;
+	thisAgent.hasWasherDryer = false;
+	PB_wash_approx.put(Consts.WET_APP_DRYER,new double[48]);
+	PB_wash_approx.put(Consts.WET_APP_DISHWASHER,new double[48]);
+	PB_wash_approx.put(Consts.WET_APP_DISHWASHER_ORIGINAL,new double[48]);
+	PB_wash_approx.put(Consts.WET_APP_DRYER_ORIGINAL,new double[48]);
+	PB_wash_approx.put(Consts.WET_APP_WASHER,basicWashProfile);
+	PB_wash_approx.put(Consts.WET_APP_WASHER_ORIGINAL,basicWashProfile.clone());
+
+	
+	thisAgent.setWetAppliancesProfiles(PB_wash_approx);	
+	}
+
   /*
 	private void initializeHHProsumersElecWaterHeat() {
 
@@ -700,7 +726,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		 * TODO: NEED TO CREATE A MORE GENERIC SETUP STRUCTURE FOR ALL NETWORKS, AGGREGATORS, PROSUMERS, ETC.. 
 		 */
 
-		//createHouseholdProsumersAndAddThemToContext(1); //pass in parameter nb of occupants, or random
+		//createHouseholdProsumersAndAddThemToContext(2); //pass in parameter nb of occupants, or random
 		createHouseholdProsumersAndAddThemToContext(Consts.RANDOM);
 		
 		//TODO: Add method that creates wind farm generators and adds them to the context..
