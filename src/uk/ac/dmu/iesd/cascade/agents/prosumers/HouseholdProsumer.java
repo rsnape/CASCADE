@@ -483,7 +483,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 			// TODO: get a realistic model of solar production - this just assumes
 			// linear relation between insolation and some arbitrary maximum insolation
 			// at which the PV cell produces its rated power
-			return (getInsolation() / Consts.MAX_INSOLATION) * ratedPowerPV;
+			double p = (getInsolation() / Consts.MAX_INSOLATION) * ratedPowerPV;
+			
+			return  (p * Consts.HOURS_PER_DAY) / ticksPerDay ; // convert power to kWh per tick
 		} 
 		else 
 		{
@@ -633,7 +635,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//demand is the local variable holding the energy demand
 
 		double demand = 0;
-		double deltaT = this.currentInternalTemp - this.getContext().getAirTemperature(timeStep);
+		double deltaT = this.setPoint/*currentInternalTemp*/ - this.getContext().getAirTemperature(timeStep);
 
 		double requiredTempChange = this.setPoint - currentInternalTemp;
 		
@@ -667,9 +669,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 				this.currentInternalTemp = this.setPoint;
 			}
 		}
-		//System.out.println("demand: "+ demand);
-		//System.out.println("buildingHeatLossRate: " + buildingHeatLossRate);
-		//System.out.println("buildingThermalMass: " + this.buildingThermalMass);
+		
+/*		if (this.agentID == 1)
+		{
+			System.out.println("==================");
+			System.out.println("Tick " + this.time + "; " + this.agentName + " internal temperature: " + this.currentInternalTemp);
+			System.out.println("demand: "+ demand);
+			System.out.println("buildingHeatLossRate: " + buildingHeatLossRate);
+			System.out.println("buildingThermalMass: " + this.buildingThermalMass);
+		}*/
 
 		return demand;
 	}
@@ -1279,7 +1287,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * Input variables: none
 	 * 
 	 ******************/
-	@ScheduledMethod(start = 0, interval = 1, priority = Consts.PROSUMER_PRIORITY_FIFTH)
+	//@ScheduledMethod(start = 0, interval = 1, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 
 	public void step() {
@@ -1377,7 +1385,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//Every step we do these actions
        
 		if (hasSmartControl){
-			setNetDemand(smartDemand(time));
+			setNetDemand(smartDemand(time) - currentGeneration());
 		}
 		
 		else if (hasSmartMeter && exercisesBehaviourChange) {
@@ -1461,6 +1469,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 		
 		this.coldApplianceProfiles = new WeakHashMap<String, double[]>();
 		
+		if (RandomHelper.nextDouble() < 0)
+		{
+			this.hasPV = true;
+			this.ratedPowerPV = 3;
+		}
 		
 		//Richard test - just to monitor evolution of one agent
 		/*if (this.agentID == 1)
