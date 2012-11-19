@@ -142,10 +142,10 @@ public class ProportionalWattboxController implements ISmartController
 		{
 			// optimiseSetPointProfile();
 			assignSetPointsProbabilistic();
-			if (Consts.DEBUG)
+			/*if (Consts.DEBUG)
 			{
-				System.out.println("Optimised set point profile = " + Arrays.toString(this.heatPumpOnOffProfile));
-			}
+				System.out.println("Optimised set point profile = " + Arrays.toString(this.setPointProfile));
+			}*/
 		}
 
 		if (waterHeatingControlled && owner.isHasElectricalWaterHeat())
@@ -168,7 +168,7 @@ public class ProportionalWattboxController implements ISmartController
 	 */
 	private void gapColdLoadProbabilistic(int timeStep)
 	{
-		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0)
+		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
 		{
 			// No point doing anything if the cost signal is null (flat == all
 			// zeros)
@@ -258,8 +258,8 @@ public class ProportionalWattboxController implements ISmartController
 		}
 
 		double[] ExtTemp = this.priorDayExternalTempProfile.clone();
-		double Tex = ArrayUtils.sum(ExtTemp) / ExtTemp.length;
-		double Trm = 20; // %Fixed room temperature at this stage
+		double Tex = ArrayUtils.max(ExtTemp);//ArrayUtils.sum(ExtTemp) / ExtTemp.length;
+		double Trm = ArrayUtils.max(owner.getSetPointProfile());//20; // %Fixed room temperature at this stage
 		int Nt = 2;// Consts.HEAT_PUMP_MIN_SWITCHOFF; // %Fixed no of timeslots
 					// to
 					// 'gap' at this stage
@@ -273,7 +273,22 @@ public class ProportionalWattboxController implements ISmartController
 			if (S[i] < 0)
 				S[i] = 0;
 		}
-
+		
+/*		// Start of test.  this looks at signal over whole switch off period, not just start
+		double[] Stemp = new double[S.length];
+		for (int j = 0; j < S.length - Nt+1; j++)
+		{
+			double p = 0;
+			for (int k = 0; k < Nt; k++)
+			{
+				p+=S[j+k];
+			}
+			p /= Nt;
+			Stemp[j] = p;
+		}
+		S=Stemp;
+		// end of test
+*/
 		S = ArrayUtils.normalizeValues(S, 1, false); // Normalise values
 		for (int i = 1; i < 48; i++)
 		{
@@ -324,7 +339,7 @@ public class ProportionalWattboxController implements ISmartController
 			{
 				this.setPointProfile[i] += addedBefore;
 				totDrop += Tdrop;
-				this.setPointProfile[i] = 0;// -=totDrop; // For test
+				this.setPointProfile[i] -=totDrop; // set to =0 For test
 
 			}
 			for (int i = k + Nt; i < 48; i++)
@@ -345,6 +360,13 @@ public class ProportionalWattboxController implements ISmartController
 	 */
 	private void placeWaterHeatingProportional()
 	{
+		
+		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
+		{
+			// If null signal, do nothing
+			return;
+		}
+
 		// Note! This should be constant as yet, because
 		// hotWaterVolumeDemandProfile =owner.baseHotWaterVolumeDemProfile
 		// which is changed only on initialisation
@@ -491,6 +513,12 @@ public class ProportionalWattboxController implements ISmartController
 		// System.out.println("dayPredictedCostSignal: "+
 		// Arrays.toString(dayPredictedCostSignal));
 
+		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
+		{
+			// No point doing anything if passed a null signal
+			return;
+		}
+		
 		WeakHashMap<String, double[]> wetApplianceProfiles = owner.getWetAppliancesProfiles();
 		double[] washer_loads = wetApplianceProfiles.get(Consts.WET_APP_WASHER_ORIGINAL);
 		double[] dryer_loads = wetApplianceProfiles.get(Consts.WET_APP_DRYER_ORIGINAL);
@@ -612,7 +640,7 @@ public class ProportionalWattboxController implements ISmartController
 		ArrayUtils.replaceRange(wetApplianceProfiles.get(Consts.WET_APP_DRYER), newDry, timeStep % dryer_loads.length);
 
 		ArrayUtils.replaceRange(wetApplianceProfiles.get(Consts.WET_APP_DISHWASHER), newDish, timeStep % dishwasher_loads.length);
-
+		
 		owner.setWetAppliancesProfiles(wetApplianceProfiles);
 
 	}
