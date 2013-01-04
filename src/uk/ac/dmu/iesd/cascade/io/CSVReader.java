@@ -48,7 +48,79 @@ public class CSVReader {
 	ArrayList<String>[] dataArray;
 	WeakHashMap<String, String[]> contentsByColumn;
 	String CSVFileName = null;
+	int maxCols = 0;
 
+	public void parseRaw()
+	{
+		boolean hasNextLine = true;
+		String thisLine = null;
+		ArrayList<ArrayList<String>> rawData = new ArrayList<ArrayList<String>>();
+
+		while (hasNextLine)
+		{
+			try
+			{
+				thisLine = myReader.readLine();
+			} catch (IOException e)
+			{
+				System.err.println("IO Exception occured whilst reading CSV line");
+				e.printStackTrace();
+			}
+
+			hasNextLine = (thisLine != null);
+			if (hasNextLine)
+			{
+				ArrayList<String> thisRow = new ArrayList<String>();
+
+				StringTokenizer s = new StringTokenizer(thisLine, this.mySeperator);
+				if (s.countTokens() > maxCols)
+				{
+					maxCols = s.countTokens();
+				}
+				while (s.hasMoreTokens())
+				{
+					thisRow.add(s.nextToken());
+				}
+				rawData.add(thisRow);
+				numRows++;
+			}
+
+			numCols = maxCols;
+			colHeaders = new String[numCols];
+			dataArray = new ArrayList[numCols];
+			for (int i =0; i < numCols; i++)
+			{
+				colHeaders[i] = "Column"+i;
+				ArrayList<String> col = new ArrayList<String>();
+				for (int r = 0; r < numRows; r++)
+				{
+					ArrayList<String> rr = rawData.get(r);
+					if (rr.size() > i)
+					{
+						col.add(rr.get(i));
+					}
+					else
+					{
+						col.add("");
+					}
+				}
+				dataArray[i]=col;
+			}
+
+
+			contentsByColumn = new WeakHashMap<String, String[]>();
+			for (int k = 0; k < numCols; k++)
+			{
+				contentsByColumn.put(colHeaders[k], dataArray[k].toArray(new String[numRows]));
+			}
+		}
+
+		if(Consts.DEBUG)
+		{
+			if (Consts.DEBUG) System.out.println("Parsed file - " + numCols + " columns and " + numRows + " rows.");
+		}
+	}
+	
 	/*
 	 * methods
 	 */

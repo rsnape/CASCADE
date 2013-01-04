@@ -190,5 +190,23 @@ public class CSVWriter {
 
 	}
 
+	/**
+	 * @param writeB
+	 */
+	public void appendRow(String[] s)
+	{
+		try {
+			for (int i=0; i<s.length; i++){
+				writer.append(s[i]);
+				writer.append(',');
+			}
+			writer.append('\n');
+			writer.flush();
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}		
+	}
+
 }
 
