@@ -1,5 +1,5 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Signal</name>
+  <name>Demand</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
@@ -28,8 +28,8 @@
   <series>
     <repast.simphony.chart.Series>
       <seriesID>AgentName</seriesID>
-      <valueColumn>CurrentPriceSignal</valueColumn>
-      <hashCode>908755569</hashCode>
+      <valueColumn>NetDemand</valueColumn>
+      <hashCode>913364577</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

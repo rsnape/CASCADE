@@ -41,10 +41,10 @@ public class ProsumerFactory implements IProsumerFactory {
 	 * @param addNoise - boolean specifying whether or not to add noise to the profile
 	 * @param numOfOccupants - number of occupancy per household, if Consts.RANDOM is passed, it will done randomly  
 	 */
-
 	public HouseholdProsumer createHouseholdProsumer(double[] otherDemandProfileArray,  int numOfOccupants, boolean addNoise, boolean hasGas) {
 		
 		HouseholdProsumer hhProsAgent;
+
 		
 		int ticksPerDay = cascadeMainContext.getNbOfTickPerDay();
 		

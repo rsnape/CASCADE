@@ -1,5 +1,6 @@
 package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
+import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
@@ -85,7 +87,7 @@ import org.joone.io.StreamInputSynapse;
  *  
  */
 
-public class SupplierCoAdvancedModel extends BMPxTraderAggregator{
+public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregator*/{
 
 	// New class member to test out Peter B's demand flattening approach with smart signal
 	// Same as class member RecoMinimisationFunction, apart from the function method is different
@@ -1457,6 +1459,27 @@ public class SupplierCoAdvancedModel extends BMPxTraderAggregator{
 
 		priceSignalChanged = false;
 	}
+	
+	/**
+	 * This methods writes the parameters passed by arguments into CSV file format.
+	 * @param fileName
+	 * @param C
+	 * @param NC
+	 * @param B
+	 * @param D
+	 * @param S
+	 * @param e
+	 * @param k
+	 */
+	private void writeOutput(String dirName, String fileName, boolean addInfoHeader, double[] C, double[] NC, double[] B, double[] D, double[] S, double[] e, double[][] k) {
+		File dir = new File(dirName);
+		if (!dir.exists()){
+			dir.mkdir();
+		}
+		String fullPath = dirName.concat(File.separator).concat(fileName);
+		writeOutput(fullPath,addInfoHeader,C,NC,B,D,S,e,k);
+	}
+	
 
 	/**
 	 * This methods writes the parameters passed by arguments into CSV file format.
@@ -1596,7 +1619,7 @@ public class SupplierCoAdvancedModel extends BMPxTraderAggregator{
 	}
 	
 	
-	public void marketPreStep() {
+/*	public void marketPreStep() {
 		//System.out.println(" initializeMarketStep (SupplierCo) "+this.id);
 		settlementPeriod = mainContext.getSettlementPeriod();
 	
@@ -1612,7 +1635,7 @@ public class SupplierCoAdvancedModel extends BMPxTraderAggregator{
 			break;
 		}
 	}
-
+*/
 
 	public void bizPreStep() {
 
@@ -1745,13 +1768,13 @@ public class SupplierCoAdvancedModel extends BMPxTraderAggregator{
 						arr_i_S = fixedPrice;
 						break;
 					case 1:	/*Differential Price version (actual cost - average cost)*/
-						//arr_i_S = arr_i_norm_C;
-						Arrays.fill(arr_i_S,0);
+						arr_i_S = arr_i_norm_C;
+/*						Arrays.fill(arr_i_S,0);
 						
 						if (messageBoard.getMIP() != null) {
 						   arr_i_S  = messageBoard.getMIP();
 						   arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
-						}
+						}*/
 													
 						break;
 					case 2:	/*Smart signal version*/
@@ -1787,7 +1810,7 @@ public class SupplierCoAdvancedModel extends BMPxTraderAggregator{
 
 					//if (Consts.DEBUG)
 					
-					writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, this.getDayNetDemands(), arr_i_S, Cavge,  ArrayUtils.zip(Kneg,Kpos));
+					writeOutput("output".concat(File.separator).concat("Seed".concat(Integer.toString(mainContext.getRandomSeedValue())).concat("GasFrac").concat(Double.toString(mainContext.getGasPercentage()))),"output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, this.getDayNetDemands(), arr_i_S, Cavge,  ArrayUtils.zip(Kneg,Kpos));
 				}
 
 			} //end of begining of normal operation
@@ -1912,11 +1935,82 @@ public class SupplierCoAdvancedModel extends BMPxTraderAggregator{
 	//public SupplierCo(CascadeContext context, MarketMessageBoard mb, double[] baseDemand, BMU_CATEGORY cat, BMU_TYPE type, double maxDem, double minDem) {
 	public SupplierCoAdvancedModel(CascadeContext context, MarketMessageBoard mb, BMU_CATEGORY cat, BMU_TYPE type, double maxDem, double minDem, double[] baseDemand) {
 
-		super(context, mb, cat, type, maxDem, minDem, baseDemand);
-		//super(context);
+		//super(context, mb, cat, type, maxDem, minDem, baseDemand);
+		super(context);
 
 		this.ticksPerDay = context.getNbOfTickPerDay();
 		
+		if (baseDemand.length % ticksPerDay != 0)	{
+			System.err.print("SupplierCoAdvancedModel: Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
+			System.err.println("SupplierCoAdvancedModel:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");
+		}
+		this.priceSignal = new double [baseDemand.length];
+		this.overallSystemDemand = new double [baseDemand.length];
+		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemand.length);
+
+		//Start initially with a flat price signal of 12.5p per kWh
+		//Arrays.fill(priceSignal,125f);
+		Arrays.fill(priceSignal,0f);
+
+		// Very basic configuration of predicted customer demand as 
+		// a Constant.  We could be more sophisticated than this or 
+		// possibly this gives us an aspirational target...
+		this.predictedCustomerDemand = new double[ticksPerDay];
+	
+		//arr_hist_day_D = new double[ticksPerDay];
+		
+		this.dailyPredictedCost = new ArrayList<Double>();
+		this.dailyActualCost = new ArrayList<Double>();
+
+		///+++++++++++++++++++++++++++++++++++++++
+		this.arr_i_B = new double [ticksPerDay];
+		this.arr_i_e = new double [ticksPerDay];
+		this.arr_i_S = new double [ticksPerDay];
+		this.arr_i_C = new double [ticksPerDay];
+		this.arr_i_norm_C = new double [ticksPerDay];
+		this.arr_ij_k = new double [ticksPerDay][ticksPerDay];
+		this.arr_hist_ij_D = new double [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
+				
+		arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand),100); //all costs (equivalent to size of baseDemand, usually 1 week)
+		
+		//Set up basic learning factor
+		this.alpha = 0.1d;
+		//this.alpha = 1d;
+
+		this.arr_day_D = new double[ticksPerDay];
+
+		this.trainingSigFactory = new TrainingSignalFactory(ticksPerDay);
+		//+++++++++++++++++++++++++++++++++++++++++++
+		
+		
+		try
+		{
+			map = NeuralUtils.buildNetwork(new int[]{48,48,48}, new Class[]{LinearLayer.class,SigmoidLayer.class,LinearLayer.class}, new Class[]{FullSynapse.class,FullSynapse.class});
+			map.getNet().getMonitor().setLearningRate(0.3);
+			map.getNet().getMonitor().setMomentum(0.3);
+		} catch (IllegalArgumentException e)
+		{
+			System.err.println("Can't construct aggregator Neural Net map due to Illegal argument");
+			e.printStackTrace();
+			System.exit(1);
+		} catch (Exception e)
+		{
+			System.err.println("Can't construct aggregator Neural Net map");
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public SupplierCoAdvancedModel(AdoptionContext context) {
+
+		//super(context,null,null,null,0);
+		super(context);
+
+
+		
+		this.ticksPerDay = context.getNbOfTickPerDay();
+		double[] baseDemand = new double[ticksPerDay];
 		if (baseDemand.length % ticksPerDay != 0)	{
 			System.err.print("SupplierCoAdvancedModel: Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
 			System.err.println("SupplierCoAdvancedModel:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");

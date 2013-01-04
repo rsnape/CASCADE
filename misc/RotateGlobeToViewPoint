@@ -1,0 +1,44 @@
+
+I am sending a response to my own query.
+
+Here is how to rotate the GIS3D display from the Java code to a chosen
+vantage point, for example 85km above Chicago:
+
+    public void rotate_globe() {
+        try {
+            //geography.
+            GUIRegistry gr              =
+RunState.getInstance().getGUIRegistry();
+            List <IDisplay> displays    = gr.getDisplays();
+            IDisplay earth_display      = displays.get(0);
+            assert earth_display instanceof NewDisplayGIS;
+            WorldWindowGLCanvas wwc     =
+((NewDisplayGIS)earth_display).getWwglCanvas();
+           
+            LatLon ll = LatLon.fromDegrees(41.9,-87.7);
+            wwc.getView().goTo(new Position(ll, 0), 85e3);  //85,000m
+above the surface
+   
+        } catch (Exception e) {
+            System.out.println("Globe rotation failed on tic: " +
+RunEnvironment.getInstance().getCurrentSchedule().getTickCount() );
+            e.printStackTrace();
+        }
+       
+
+    }
+
+
+
+The rotation should be scheduled after the display has been created. 
+For example, using the command:
+        ScheduleParameters rotate_params =
+ScheduleParameters.createOneTime(-0.9);
+        schedule.schedule(rotate_params, this, "rotate_globe");
+
+
+The simulation still starts with the full globe.  The rotation occurs
+when we step the simulation.
+
+Cheers,
+-Sasha.

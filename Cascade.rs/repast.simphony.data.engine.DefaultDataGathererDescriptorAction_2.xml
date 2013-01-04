@@ -1,0 +1,49 @@
+<repast.simphony.data.engine.DefaultDataGathererDescriptor>
+  <name>PVCount</name>
+  <dataSetId class="string">PVCount</dataSetId>
+  <scheduleParameters>
+    <start>1.0</start>
+    <interval>336.0</interval>
+    <priority>-Infinity</priority>
+    <duration>-1.0</duration>
+    <frequency>REPEAT</frequency>
+  </scheduleParameters>
+  <dataMappingContainer class="repast.simphony.data.logging.gather.DefaultDataMappingContainer">
+    <nameMappingTable/>
+    <mappingNameTable/>
+  </dataMappingContainer>
+  <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
+    <nameMappingTable>
+      <entry>
+        <string>Tick</string>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
+      </entry>
+      <entry>
+        <string>Count</string>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping>
+          <type>Sum</type>
+          <decorated class="repast.simphony.data.logging.gather.MethodMapping">
+            <method>
+              <class>uk.ac.dmu.iesd.cascade.agents.prosumers.Household</class>
+              <name>getHasPVNum</name>
+              <parameter-types/>
+            </method>
+          </decorated>
+        </repast.simphony.data.logging.gather.aggregate.SumMapping>
+      </entry>
+    </nameMappingTable>
+    <mappingNameTable>
+      <entry>
+        <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
+        <string>Tick</string>
+      </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
+        <string>Count</string>
+      </entry>
+    </mappingNameTable>
+    <alternatedNameTable/>
+    <nameAlternatedTable/>
+  </aggregateContainer>
+  <agentClass>uk.ac.dmu.iesd.cascade.agents.prosumers.Household</agentClass>
+</repast.simphony.data.engine.DefaultDataGathererDescriptor>

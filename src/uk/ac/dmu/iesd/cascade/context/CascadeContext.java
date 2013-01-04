@@ -92,7 +92,7 @@ public class CascadeContext extends DefaultContext{
 	public int signalMode=-1;
 	
 	private Network<?> socialNetwork;
-	private Network<?> economicNetwork;
+	protected Network<?> economicNetwork;
 	private Network<?> windNetwork;
 	
 	public GregorianCalendar simulationCalendar;
@@ -585,6 +585,10 @@ public class CascadeContext extends DefaultContext{
 		//if (Consts.DEBUG) System.out.println("calendarStep()");
 		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);		
 	}
+	
+	public Date getDateTime() {
+		return simulationCalendar.getTime();
+	}
 
 	/**
      * Constructs the cascade context 
@@ -615,6 +619,7 @@ public class CascadeContext extends DefaultContext{
 	
 	private Network networkOfRegisteredPxTraders;
 	private Network networkOfRegisteredBMTraders;
+	private int gasHeatedPercentage;
 
 	
 	public boolean isFirstDay() {
@@ -715,6 +720,21 @@ public class CascadeContext extends DefaultContext{
 			aListOfTraders.add(trader);    	
 
 		return aListOfTraders;	
+	}
+
+	/**
+	 * @param percentageOfHHProsWithGas
+	 */
+	public void setGasPercentage(int percentageOfHHProsWithGas)
+	{
+		this.gasHeatedPercentage = percentageOfHHProsWithGas;
+		
+	}
+	
+	public int getGasPercentage()
+	{
+		return this.gasHeatedPercentage;
+		
 	}
 	
 	

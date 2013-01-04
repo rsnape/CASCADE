@@ -1396,8 +1396,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		else
 		{
-			//No adaptation case
-			setNetDemand(arr_otherDemandProfile[time % arr_otherDemandProfile.length] - currentGeneration());
+			//No adaptation case - Note that as there has been no adaptation above, smartDemand will simply return the base
+			//setNetDemand(arr_otherDemandProfile[time % arr_otherDemandProfile.length] - currentGeneration());
+			setNetDemand(smartDemand(time) - currentGeneration());
 
 			learnSmartAdoptionDecision(time);
 		}

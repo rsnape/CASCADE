@@ -2,8 +2,10 @@
 <Scenario>
 <repast.simphony.dataLoader.engine.ClassNameDataLoaderAction context="CascadeContextMain" file="repast.simphony.dataLoader.engine.ClassNameDataLoaderAction_0.xml" />
 <repast.simphony.data.engine.DefaultDataGathererDescriptorAction context="CascadeContextMain" file="repast.simphony.data.engine.DefaultDataGathererDescriptorAction_1.xml" />
-<repast.simphony.action.display context="CascadeContextMain" file="repast.simphony.action.display_2.xml" />
-<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_3.xml" />
+<repast.simphony.data.engine.DefaultDataGathererDescriptorAction context="CascadeContextMain" file="repast.simphony.data.engine.DefaultDataGathererDescriptorAction_2.xml" />
+<repast.simphony.action.display context="CascadeContextMain" file="repast.simphony.action.display_3.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_4.xml" />
+<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_5.xml" />
+<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_6.xml" />
 <model.initializer class="uk.ac.dmu.iesd.cascade.base.Initializer" />
 </Scenario>

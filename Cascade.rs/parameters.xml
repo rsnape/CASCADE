@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <parameters>
-					<parameter name="startDate" displayName="startDate" type="java.lang.String" 
+					<parameter name="ObservedRadiusMean" displayName="ObservedRadiusMean" type="double" 
+						defaultValue="5.0" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+				<parameter name="startDate" displayName="startDate" type="java.lang.String" 
 						defaultValue="01/01/2000" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
@@ -25,6 +31,12 @@
 									values="24 48 "
 						
 		/>
+				<parameter name="RootDir" displayName="RootDir" type="java.lang.String" 
+						defaultValue="C:\RepastSimphony-2.0-beta\workspace\Cascade" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
 				<parameter name="smartControlDecisionThreshold" displayName="smartControlDecisionThreshold" type="java.lang.Double" 
 						defaultValue="0.9" 
 						isReadOnly="false" 
@@ -41,6 +53,12 @@
 						defaultValue="hhOtherDemandProfiles_1D_half.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="ObservedRadiusStd" displayName="ObservedRadiusStd" type="double" 
+						defaultValue="2.5" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
 				<parameter name="defaultProsumersPerFeeder" displayName="defaultProsumersPerFeeder" type="java.lang.Integer" 

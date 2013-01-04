@@ -43,6 +43,7 @@ import uk.ac.dmu.iesd.cascade.agents.aggregators.SingleNonDomesticAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
@@ -151,7 +152,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		cascadeMainContext.signalMode = (Integer)params.getValue("signalMode");
 		
 		cascadeMainContext.setRandomSeedValue((Integer)params.getValue("randomSeed"));
-		
+		cascadeMainContext.setGasPercentage(percentageOfHHProsWithGas);
 	
 		// RunEnvironment.getInstance().
 		Date startDate;
@@ -633,8 +634,8 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			infoNet.addEdge(firstAggregator, prAgent);
 		}
 	}
-
-
+	
+	
 	/**
 	 * This method initialize the probability distributions
 	 * used in this model. 
@@ -877,7 +878,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		readParamsAndInitializeArrays();
 		initializeProbabilityDistributions();
 				
-		buildMarket();
+		//buildMarket();
 		
 		populateContext();
 		
@@ -886,6 +887,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		createAndAddGenericAggregators(map_dmuTypeNameToBaseProfiles);
 		
 		//If we want to stop a batch run at a given time - put it here.
+		if (RunEnvironment.getInstance().isBatch())
+		{
+			RunEnvironment.getInstance().endAt(3000);
+		}
 
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
