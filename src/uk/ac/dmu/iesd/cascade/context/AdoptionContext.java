@@ -62,6 +62,7 @@ import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 
 public class AdoptionContext extends CascadeContext{
 	
+	public static final double FIT_EXPORT_TARIFF = 45;
 	public Poisson nextThoughtGenerator = RandomHelper.createPoisson(30.0);
 	
 	private class CountUpdater implements ContextListener {
@@ -271,7 +272,7 @@ public class AdoptionContext extends CascadeContext{
 		{
 			logger = Logger.getLogger("AdoptionLogger");
 	
-		logger.setLevel(Level.TRACE);
+		logger.setLevel(Level.INFO); //Set this to TRACE for full log files
 		ConsoleAppender console = new ConsoleAppender(new AdoptionLogLayout());
 		console.setName("ConsoleOutput");
 		console.setThreshold(Level.DEBUG);

@@ -88,7 +88,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	public boolean hasSmartMeter = false; 
 	// the agent acts on "smart" information but not via automatic control
 	// action on information is mediated by human input
-	protected boolean exercisesBehaviourChange = false; 
+	public boolean exercisesBehaviourChange = false; 
 	public boolean hasSmartControl = false; //i.e. the agent allows automatic "smart" control of its demand / generation based on "smart" information
 	protected boolean receivesCostSignal = false; //we may choose to model some who remain outside the smart signal system
 

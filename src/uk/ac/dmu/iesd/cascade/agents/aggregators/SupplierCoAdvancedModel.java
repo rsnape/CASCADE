@@ -111,7 +111,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		private boolean hasEqualsConstraint = false;
 		private int numEvaluations = 0;
 		private int settlementPeriod; 
-		
+		boolean printD = false;
 
 		public double function (double[] arr_S) {
 			double m =0d;
@@ -132,11 +132,28 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 				//m += Math.abs(di - mean_B);
 			}
 			
+			
 			m=ArrayUtils.sum(ArrayUtils.absoluteValues(ArrayUtils.offset(d, -ArrayUtils.avg(d))));
+			
+			//For overnight wind - use this
+			/*double[] windDesire = new double[48];
+			Arrays.fill(windDesire, -1d/34);
+			for (int i = 0; i < 15; i++)
+			{
+				windDesire[i] = 1d/14;
+			}
+			if (printD)
+			{
+			System.err.println(Arrays.toString(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d))));
+			}
+			
+			m = ArrayUtils.sum(ArrayUtils.add(d,ArrayUtils.negate(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d)))));
+			*/
+			
 			//m=(ArrayUtils.max(d)/ArrayUtils.avg(d))*1000;
 			numEvaluations++;
-			//m += checkPlusMin1Constraint(arr_S);
-			m += checkPosNegConstraint(arr_S);
+			m += checkPlusMin1Constraint(arr_S);
+			//m += checkPosNegConstraint(arr_S);
 
 			return m;
 		} 
@@ -738,9 +755,9 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			int daysSoFar = mainContext.getDayCount();
 			int indexFor1 = (daysSoFar - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)%this.ticksPerDay; 
 			
-			double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.IMPULSE,ticksPerDay);
+			//double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.IMPULSE,ticksPerDay);
 			//double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.SINE,ticksPerDay);
-			//double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.PBORIGINAL,ticksPerDay);
+			double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.PBORIGINAL,ticksPerDay);
 
 			System.arraycopy(t, 0, sArr, indexFor1, t.length - indexFor1);
 			System.arraycopy(t, t.length - indexFor1, sArr, 0, indexFor1);
@@ -1234,6 +1251,9 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		//double[] newOpt_S= param;
 		double[] newOpt_S= minValue.getPoint();
+		minFunct.printD =true;
+		minFunct.function(newOpt_S);
+		minFunct.printD =false;
 
 		return newOpt_S;
 	}
@@ -1801,7 +1821,11 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 						break;
 					case 3: /* Play back scaled version of base demand*/
 						arr_i_S = ArrayUtils.normalizeValues(ArrayUtils.offset(arr_i_B, -ArrayUtils.avg(arr_i_B)));
-						break;						
+						break;	
+					case 4:
+						double[] sysDem = mainContext.getSystemPriceSignalData();
+						arr_i_S = ArrayUtils.normalizeValues(ArrayUtils.offset(sysDem, -ArrayUtils.avg(sysDem)));
+						break;
 					}
 					//System.out.println(" arr_i_S: "+ Arrays.toString(arr_i_S));
 
@@ -1913,7 +1937,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		
 		
 		calculateAndSetNetDemand(customers);
-		
+		if (isTrainingPeriodCompleted())
+		{
+		updateTotalCO2Avoided();
+		}
 		if (mainContext.isEndOfDay(timeslotOfDay)) 	
 			costSavingCalculation(arr_i_C, this.getDayNetDemands(), arr_i_B, arr_i_S, arr_i_e);
 		
@@ -1925,6 +1952,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		//if (Consts.DEBUG) System.out.println(" ++++++++++ SupplierCO: END ++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 	}
 	
+
+
 
 	/**
 	 * Constructs a SupplierCO agent with the context in which is created and its
@@ -2071,6 +2100,21 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		}
 		
 		
+	}
+	
+	private double totalCO2saving;
+	
+	public double getTotalCO2saving()
+	{
+		return this.totalCO2saving;
+	}
+	
+	/**
+	 * 
+	 */
+	private void updateTotalCO2Avoided()
+	{
+		totalCO2saving += (this.arr_i_B[this.timeslotOfDay]-this.getNetDemand())*Consts.AVERAGE_GRID_CO2_INTENSITY[this.timeslotOfDay];
 	}
 
 }
