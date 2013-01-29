@@ -48,11 +48,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 	// Biomass, nuclear or fossil fuel generation in the future
 	// what do we think?
 	boolean hasThermalGeneration = false;
-	boolean hasPV = false;
+	public boolean hasPV = false;
 	boolean hasSolarWaterHeat = false;
 	private boolean hasElectricalWaterHeat = false;
 	boolean hasElectricalSpaceHeat = false;
-	boolean hasElectricVehicle = false;
+	public boolean hasElectricVehicle = false;
 	boolean hasElectricalStorage = false; // Do we need to break out various storage technologies?
 	boolean hasHotWaterStorage = false;
 	boolean hasSpaceHeatStorage = false;
@@ -72,7 +72,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	double ratedPowerWind;
 	double ratedPowerHydro;
 	double ratedPowerThermalGeneration;
-	double ratedPowerPV;
+	public double ratedPowerPV;
 	double ratedPowerSolarWaterHeat;
 	public double ratedPowerHeatPump;
 	double ratedCapacityElectricVehicle; // Note kWh rather than kW
@@ -144,7 +144,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	// Learner adoptSmartMeterLearner;
 	// Learner adoptSmartControlLearner;
 	// Learner consumptionPatternLearner;
-	double transmitPropensitySmartControl;
+	public double transmitPropensitySmartControl;
 	double transmitPropensityProEnvironmental;
 	double visibilityMicrogen;
 
@@ -152,7 +152,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * This may or may not be used, but is a threshold cost above which actions
 	 * take place for the household
 	 */
-	double costThreshold;
+	public double costThreshold;
 
 	/**
 	 * Richard hack to get DEFRA profiles going
@@ -160,9 +160,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 	double microgenPropensity;
 	double insulationPropensity;
 	double HEMSPropensity;
-	double EVPropensity;
-	double habit;
-	int defraCategory;
+	public double EVPropensity;
+	public double habit;
+	public int defraCategory;
 	public double[] spaceHeatPumpOn; 
 	private boolean waterHeaterOn;
 
@@ -197,6 +197,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private double[] historicalColdDemand;
 	private double[] historicalWetDemand;
 	private double[] historicalSpaceHeatDemand;
+	private double[] historicalEVDemand;
 
 	/**
 	 * Building heat flow time constant (thermal mass or specific heat capacity / heat loss rate)
@@ -206,6 +207,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private double[] historicalExtTemp;
 	private double[] historicalWaterHeatDemand;
 	public double freeRunningTemperatureLossPerTickMultiplier;
+
+	private double[] electricVehicleProfile;
+	private double[] optimisedEVProfile;
+
+
 
 	/**
 	 * Accessor functions (NetBeans style)
@@ -403,6 +409,14 @@ public class HouseholdProsumer extends ProsumerAgent{
 	public double[] getHistoricalWaterHeatDemand() {
 		return this.historicalWaterHeatDemand;
 	}
+	
+	/**
+	 * @return
+	 */
+	public double[] getHistoricalEVDemand()
+	{
+		return this.historicalEVDemand;
+	}
 
 	/**
 	 * @return
@@ -477,7 +491,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	/**
 	 * @return
 	 */
-	private double PVGeneration() {
+	protected double PVGeneration() {
 		if (hasPV) 
 		{
 			// TODO: get a realistic model of solar production - this just assumes
@@ -590,6 +604,16 @@ public class HouseholdProsumer extends ProsumerAgent{
 			return this.wetApplianceProfile[time % wetApplianceProfile.length];
 		else return 0d;
 	}
+	
+	/**
+	 * @return
+	 */
+	private double getOptimisedEVDemand() {
+		if (this.hasElectricVehicle)
+			return this.optimisedEVProfile[time % electricVehicleProfile.length];
+		else return 0d;
+	}
+
 
 	/**
 	 * @return
@@ -840,6 +864,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//if (Consts.DEBUG) System.out.println("currentColdDemand is: "+currentCold);
 
 		double currentWet = wetApplianceDemand();
+		double currentEV = getOptimisedEVDemand();
 
 		double currentHeat= 0;
 		currentHeat = heatingDemand();
@@ -848,6 +873,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		historicalBaseDemand[timeOfDay] = currentBase;
 		historicalWetDemand[timeOfDay] = currentWet;
 		historicalColdDemand[timeOfDay] = currentCold;
+		historicalEVDemand[timeOfDay] = currentEV;
 
 		//if (this.getHasElectricalSpaceHeat())
 		if (this.isHasElectricalSpaceHeat() && this.isHasElectricalWaterHeat())
@@ -864,7 +890,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			historicalWaterHeatDemand[timeOfDay] = getWaterHeatProfile()[timeOfDay];
 		}
 
-		double returnAmount = currentBase + currentCold + currentWet + currentHeat;
+		double returnAmount = currentBase + currentCold + currentWet + currentHeat+currentEV;
 
      
 		if (Consts.DEBUG)
@@ -1400,7 +1426,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			//setNetDemand(arr_otherDemandProfile[time % arr_otherDemandProfile.length] - currentGeneration());
 			setNetDemand(smartDemand(time) - currentGeneration());
 
-			learnSmartAdoptionDecision(time);
+			//learnSmartAdoptionDecision(time);
 		}
 
 		//After the heat input has been calculated, re-calculate the internal temperature of the house
@@ -1463,6 +1489,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.historicalWetDemand = new double[ticksPerDay];
 		this.historicalColdDemand = new double[ticksPerDay];
 		this.historicalSpaceHeatDemand = new double[ticksPerDay];
+		this.historicalEVDemand = new double[ticksPerDay];
 		this.historicalWaterHeatDemand = new double[ticksPerDay];
 		this.historicalIntTemp = new double[ticksPerDay];
 		this.historicalExtTemp = new double[ticksPerDay];
@@ -1483,5 +1510,32 @@ public class HouseholdProsumer extends ProsumerAgent{
 		} */
 		
 	}
+
+	/**
+	 * @param generateBEVProfile
+	 */
+	public void setEVProfile(double[] EVProfile)
+	{
+		this.electricVehicleProfile = EVProfile;
+		this.optimisedEVProfile = EVProfile;
+	}
+	
+	/**
+	 * @param generateBEVProfile
+	 */
+	public void setOptimisedEVProfile(double[] EVProfile)
+	{
+		this.optimisedEVProfile = EVProfile;
+	}
+
+	/**
+	 * @return
+	 */
+	public double[] getEVProfile()
+	{
+		return Arrays.copyOf(this.electricVehicleProfile, this.electricVehicleProfile.length);
+	}
+
+
 
 }

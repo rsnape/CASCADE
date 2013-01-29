@@ -13,6 +13,7 @@ import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.Normal;
 import cern.jet.random.Binomial;
 import cern.jet.random.Uniform;
+import cern.jet.random.Poisson;
 
 import repast.simphony.context.*;
 import repast.simphony.engine.schedule.*;
@@ -102,6 +103,8 @@ public class CascadeContext extends DefaultContext{
 	ArrayList<SnapshotTaker> snapshotTakerArrList;
 	public EmpiricalWalker drawOffGenerator;
 	public EmpiricalWalker occupancyGenerator;
+	public EmpiricalWalker vehicleArrivalGenerator;
+	public Poisson journeyLengthGenerator;
 	public Normal waterUsageGenerator;
 	
 	public Normal buildingLossRateGenerator;

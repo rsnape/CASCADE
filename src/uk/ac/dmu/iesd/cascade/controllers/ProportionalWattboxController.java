@@ -132,6 +132,11 @@ public class ProportionalWattboxController implements ISmartController
 		{
 			optimiseWetProfileProbabilistic(timeStep);
 		}
+		
+		if (eVehicleControlled && owner.hasElectricVehicle)
+		{
+			optimiseElecVehicleProfileProbabilistic(timeStep);
+		}
 
 		// Note - optimise space heating first. This is so that we can look for
 		// absolute
@@ -161,6 +166,62 @@ public class ProportionalWattboxController implements ISmartController
 		// At the end of the step, set the temperature profile for today's
 		// (which will be yesterday's when it is used)
 		this.priorDayExternalTempProfile = owner.getContext().getAirTemperature(timeStep, ticksPerDay);
+	}
+
+	/**
+	 * @param timeStep
+	 */
+	private void optimiseElecVehicleProfileProbabilistic(int timeStep)
+	{
+		double[] baseRequirement = owner.getEVProfile();
+
+		double[] baseDay = Arrays.copyOfRange(baseRequirement, (timeStep % baseRequirement.length), (timeStep % baseRequirement.length) + ticksPerDay);
+		// Check for null EV Profile - possible if owner just acquired an EV
+		if (this.EVChargingProfile == null)
+		{
+			this.EVChargingProfile = Arrays.copyOf(baseDay, baseDay.length);
+		}
+		double Qtot = ArrayUtils.sum(baseDay);
+		
+		//Given the design, it is possible that the owner has an electric vehicle, but is
+		//not making a journey.
+		if (Qtot==0)
+		{
+			return;
+		}
+		
+		int loadStart = 14;
+		while (baseDay[loadStart]==0)
+		{
+			loadStart++;
+		}
+		
+		double[] endOfSig = Arrays.copyOfRange(this.dayPredictedCostSignal, loadStart, this.dayPredictedCostSignal.length);
+		double[] EVattractivity = new double[endOfSig.length+14];
+		System.arraycopy(endOfSig,0,EVattractivity,0,endOfSig.length);
+		System.arraycopy(this.dayPredictedCostSignal,0,EVattractivity,endOfSig.length,14);
+		
+		double Smax = ArrayUtils.max(EVattractivity);
+		for (int i  = 0; i < EVattractivity.length; i++)
+		{
+			EVattractivity[i]=Smax-EVattractivity[i];
+		}
+
+		double Asum = ArrayUtils.sum(EVattractivity);
+
+		int attIndex = 0;
+		for (int i = loadStart; i < baseDay.length; i++)
+		{
+			this.EVChargingProfile[i] = Qtot*EVattractivity[attIndex]/Asum;
+			attIndex++;
+		}
+		for (int i = 0; i < 14; i++)
+		{
+			this.EVChargingProfile[i] = Qtot*EVattractivity[attIndex]/Asum;
+		}
+		
+		owner.setOptimisedEVProfile(this.EVChargingProfile);
+				
 	}
 
 	/**
@@ -297,6 +358,9 @@ public class ProportionalWattboxController implements ISmartController
 		}
 		S = ArrayUtils.normalizeValues(S, 1, false); // Normalise values for CDF
 
+		//if (this.owner.getAgentID()==1 || this.owner.getAgentID() == 100)
+			//System.err.println("CDF ="+Arrays.toString(S));
+		
 		double[] AggL = new double[48];// zeros(1,48); %Initialise total
 										// responsive load
 		double[] BaseL = new double[48];// %Initialise total baseline load
@@ -460,6 +524,8 @@ public class ProportionalWattboxController implements ISmartController
 		}
 		return Wd;
 	}
+	
+
 
 	/**
 	 * A method to allow Wattbox to be dynamic in the sense of monitoring its
@@ -835,11 +901,21 @@ public class ProportionalWattboxController implements ISmartController
 		Arrays.fill(priorDayExternalTempProfile, Consts.INITIALISATION_EXTERNAL_TEMP);
 
 		if (owner.isHasElectricalSpaceHeat())
+		{
 			this.heatPumpOnOffProfile = Arrays.copyOf(owner.spaceHeatPumpOn, owner.spaceHeatPumpOn.length);
+		}
 
 		if (owner.isHasElectricalWaterHeat())
+		{
 			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(), ((Math.max(0, (int) RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length), ((Math.max(0, (int) RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
+		}
 
+		if (owner.hasElectricVehicle)
+		{
+			double[] baseEVProfile = owner.getEVProfile();
+			this.EVChargingProfile = Arrays.copyOf(baseEVProfile, baseEVProfile.length);
+		}
+		
 		this.maxHeatPumpElecDemandPerTick = (owner.ratedPowerHeatPump * (double) 24 / ticksPerDay);
 		this.maxImmersionHeatPerTick = Consts.MAX_DOMESTIC_IMMERSION_POWER * (double) 24 / ticksPerDay;
 

@@ -54,6 +54,7 @@ import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.test.HHProsumer;
 import uk.ac.dmu.iesd.cascade.util.*;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
 
 
 /**
@@ -656,7 +657,10 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		cascadeMainContext.coldAndWetApplTimeslotDelayRandDist = RandomHelper.createUniform(); 
 		
 		cascadeMainContext.wetApplProbDistGenerator = RandomHelper.createEmpiricalWalker(Consts.WET_APPLIANCE_PDF, Empirical.NO_INTERPOLATION);
-		
+
+		cascadeMainContext.journeyLengthGenerator = RandomHelper.createPoisson(Consts.MEAN_JOURNEY_LENGTH);
+		cascadeMainContext.vehicleArrivalGenerator = RandomHelper.createEmpiricalWalker(Consts.CAR_ARRIVAL_PROBABILITY, Empirical.NO_INTERPOLATION);
+
 		//ChartUtils.testProbabilityDistAndShowHistogram(cascadeMainContext.wetApplProbDistGenerator, 10000, 48);  //test to make sure the prob dist generate desired outcomes
 
 		//cascadeMainContext.hhProsumerElasticityTest = RandomHelper.createBinomial(1, 0.005);
@@ -721,7 +725,41 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		buildOtherNetworks(firstRecoAggregator);
 	} */
 
+	private void initializeElectricVehicles()
+	{
+	IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
 
+	/*----------------
+	 * Richard's occupancy test code
+	 * 
+	 * Note that this in effect is assuming that occupancy is independent of 
+	 * any of the other assigned variables.  This may not, of course, be true.
+	 */
+
+	//assign wet appliance ownership.  Based on statistical representation of the BERR 2006 ownership stats
+	// with a bias based on occupancy which seems reasonable.
+	// TODO: break this out into a separate method.  Store constants somewhere?  Should they read from file?
+	for (HouseholdProsumer thisAgent : householdProsumers)
+	{
+		if (RandomHelper.nextDouble() < 0.25)
+		{
+			double [] EVprofile;
+			if (RandomHelper.nextDouble() < 0.5)
+			{
+				EVprofile = EVProfileGenerator.generateBEVProfile(cascadeMainContext,Consts.NB_OF_DAYS_LOADED_DEMAND);
+			}
+			else
+			{
+				EVprofile = EVProfileGenerator.generatePHEVProfile(cascadeMainContext,Consts.NB_OF_DAYS_LOADED_DEMAND);
+			}
+			thisAgent.hasElectricVehicle=true;
+			thisAgent.setEVProfile(EVprofile);
+			
+
+		}
+	}
+	}
+	
 	private void populateContext() {
 		/* 
 		 * TODO: NEED TO CREATE A MORE GENERIC SETUP STRUCTURE FOR ALL NETWORKS, AGGREGATORS, PROSUMERS, ETC.. 
@@ -744,6 +782,9 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		if (Consts.HHPRO_HAS_ELEC_SPACE_HEAT)
 			initializeWithoutGasHHProsumersElecSpaceHeat();
+		
+		if (Consts.HHPRO_HAS_ELEC_VEHICLE)
+			initializeElectricVehicles();
 
 		//Add aggregator(s), currently one;  (TODO should become a separate method later)
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorTraderFactory(this.cascadeMainContext, this.messageBoard);
@@ -878,7 +919,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		readParamsAndInitializeArrays();
 		initializeProbabilityDistributions();
 				
-		//buildMarket();
+		buildMarket();
 		
 		populateContext();
 		

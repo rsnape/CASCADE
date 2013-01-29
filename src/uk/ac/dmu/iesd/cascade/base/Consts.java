@@ -42,6 +42,8 @@ public final class Consts {
 	public static boolean HHPRO_HAS_ELEC_WATER_HEAT = true;
 	public static boolean HHPRO_HAS_COLD_APPL = true;
 	public static boolean HHPRO_HAS_WET_APPL = true;
+	public static boolean HHPRO_HAS_ELEC_VEHICLE = true;
+
 	
 	//Controlling REEA operation
 	public static boolean AGG_RECO_REEA_ON = false;
@@ -179,7 +181,7 @@ public final class Consts {
 
 	public static final int MELODY_MODELS_TICKS_PER_DAY = 48; //used for cold and wet appliances
 	
-	public static final double MAX_INSOLATION = 170d; //Used for PV generation
+	public static final double MAX_INSOLATION = 500d; //Used for PV generation
 
 	//Defines the type of a storage Prosumer, can take values (NOT Currently used!!!)
 	public static enum STORAGE_TYPE {
@@ -241,6 +243,12 @@ public final class Consts {
 	// Babak: used for behavioral change purpose (not Space Heating), although currently does nothing!
 	public static final double HOUSEHOLD_MAX_SETPOINT = 28;
 	
+	//Electric vehicle constants
+    public static final double[] CAR_ARRIVAL_PROBABILITY={0.003042436, 0.003042436, 0.000368881, 0.000368881, 0.000131171, 0.000131171, 9.09E-05, 9.09E-05, 0.000206242, 0.000206242, 0.000463641, 0.000463641, 0.001392982, 0.001392982, 0.003822591, 0.003822591, 0.007449823, 0.007449823, 0.010642317, 0.010642317, 0.012474827, 0.012474827, 0.012970487, 0.012970487, 0.01916083, 0.01916083, 0.030109165, 0.030109165, 0.049430865, 0.049430865, 0.068433727, 0.068433727, 0.072868541, 0.072868541, 0.071423073, 0.071423073, 0.052685389, 0.052685389, 0.028696649, 0.028696649, 0.019140672, 0.019140672, 0.01324127, 0.01324127, 0.012780752, 0.012780752, 0.008972774, 0.008972774};
+	public static final double MEAN_JOURNEY_LENGTH = 27;
+	public static final double JOURNEY_MADE_PROBABILITY = 0.74;
+
+
 	/**++++++++++++++++++++++
 	 * Electrical Space Heat
 	 *+++++++++++++++++++++++*/
@@ -332,6 +340,7 @@ public final class Consts {
 	 *+++++++++++++++++++++++++++*/
 	//public static boolean CONSUME_HOT_WATER = false; 
 
+	public static final double[] AVERAGE_GRID_CO2_INTENSITY = {397, 394.5, 392, 389.5, 387, 385.5, 384, 386, 388, 397, 406, 418.5, 431, 440.5, 450, 454, 458, 460.5, 463, 463.5, 464, 464, 464, 464, 464, 463, 462, 461, 460, 460.5, 461, 460.5, 460, 459, 458, 456, 454, 453.5, 453, 451, 449, 444, 439, 428.5, 418, 409.5, 401, 399};
 	
 	/****************************************
 	 * Not currently used (To Delete?)

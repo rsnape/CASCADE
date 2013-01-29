@@ -216,6 +216,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		double[] arr3 = thisAgent.getHistoricalOtherDemand();
 		double[] arr4 = thisAgent.getHistoricalColdDemand();
 		double[] arr5 = thisAgent.getHistoricalWetDemand();
+		double[] arr6 = thisAgent.getHistoricalEVDemand();
 
 		for (int i = 0; i < 48 ; i++)
 		{
@@ -224,6 +225,8 @@ public class ProsumerProbeListener implements ProbeListener {
 			result.addValue((Number)arr3[i], "Other", i);
 			result.addValue((Number)arr4[i], "Cold", i);
 			result.addValue((Number)arr5[i], "Wet", i);
+			result.addValue((Number)arr6[i],"EV", i);
+
 
 		}
 
@@ -268,7 +271,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		double[] arr_otherDemand = hhAgent.getHistoricalOtherDemand();
 		double[] arr_cold = hhAgent.getHistoricalColdDemand();
 		double[] arr_wet = hhAgent.getHistoricalWetDemand();
-
+		double[] arr_elecVehicle = hhAgent.getHistoricalEVDemand();
 
 		for (int i = 0; i < arr_otherDemand.length ; i++)	{
 			dcDataset.addValue((Number)arr_spaceHeat[i], "SH", i);
@@ -276,6 +279,8 @@ public class ProsumerProbeListener implements ProbeListener {
 			dcDataset.addValue((Number)arr_otherDemand[i], "O", i);
 			dcDataset.addValue((Number)arr_cold[i], "C", i);
 			dcDataset.addValue((Number)arr_wet[i], "W", i);
+			dcDataset.addValue((Number)arr_elecVehicle[i],"EV", i);
+
 
 		}
 
@@ -298,12 +303,15 @@ public class ProsumerProbeListener implements ProbeListener {
 		double[] arr_otherDemand = hhAgent.getHistoricalOtherDemand();
 		double[] arr_cold = hhAgent.getHistoricalColdDemand();
 		double[] arr_wet = hhAgent.getHistoricalWetDemand();
+		double[] arr_elecVehicle = hhAgent.getHistoricalEVDemand();
 
-		pieDataset.setValue("SH", ArrayUtils.sum(arr_spaceHeat));
+
+		pieDataset.setValue("SH", ArrayUtils.sum(arr_spaceHeat));		
 		pieDataset.setValue("WH", ArrayUtils.sum(arr_hotWater));
 		pieDataset.setValue("O", ArrayUtils.sum(arr_otherDemand));
 		pieDataset.setValue("C", ArrayUtils.sum(arr_cold));
 		pieDataset.setValue("W", ArrayUtils.sum(arr_wet));
+		pieDataset.setValue("EV", ArrayUtils.sum(arr_elecVehicle));
 		
 		return pieDataset;
 
@@ -327,6 +335,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		double sum_other=0;
 		double sum_cold=0;
 		double sum_wet=0;
+		double sum_EV=0;
 
 		for (HouseholdProsumer hhAgent : list_hhProsumers) {
 			sum_spaceHeat += ArrayUtils.sum(hhAgent.getHistoricalSpaceHeatDemand());
@@ -334,6 +343,8 @@ public class ProsumerProbeListener implements ProbeListener {
 			sum_other += ArrayUtils.sum(hhAgent.getHistoricalOtherDemand());
 			sum_cold += ArrayUtils.sum(hhAgent.getHistoricalColdDemand());
 			sum_wet += ArrayUtils.sum(hhAgent.getHistoricalWetDemand());
+			sum_EV += ArrayUtils.sum(hhAgent.getHistoricalEVDemand());
+
 		}
 
 		pieDataset.setValue("SH", sum_spaceHeat);
@@ -341,6 +352,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		pieDataset.setValue("O", sum_other);
 		pieDataset.setValue("C", sum_cold);
 		pieDataset.setValue("W", sum_wet);
+		pieDataset.setValue("EV", sum_EV);
 
 		return pieDataset;
 
@@ -361,6 +373,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		double[] tot_other=new double[48];
 		double[] tot_cold=new double[48];
 		double[] tot_wet=new double[48];
+		double[] tot_EV=new double[48];
 		
 		double nbOfHHPros = list_hhProsumers.size();
 
@@ -370,6 +383,7 @@ public class ProsumerProbeListener implements ProbeListener {
 			tot_other = ArrayUtils.add(tot_other,hhAgent.getHistoricalOtherDemand());
 			tot_cold = ArrayUtils.add(tot_cold,hhAgent.getHistoricalColdDemand());
 			tot_wet = ArrayUtils.add(tot_wet,hhAgent.getHistoricalWetDemand());
+			tot_EV = ArrayUtils.add(tot_EV,hhAgent.getHistoricalEVDemand());
 		}
 
 		for (int i = 0; i < tot_cold.length; i++)
@@ -379,6 +393,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		totalDemandPerType.addValue((Number)tot_other[i], "Other",i);
 		totalDemandPerType.addValue((Number)tot_cold[i], "Cold",i);
 		totalDemandPerType.addValue((Number)tot_wet[i], "Wet",i);
+		totalDemandPerType.addValue((Number)tot_EV[i], "EV",i);
 		}
 
 		return totalDemandPerType;
@@ -400,6 +415,8 @@ public class ProsumerProbeListener implements ProbeListener {
 		double sum_other=0;
 		double sum_cold=0;
 		double sum_wet=0;
+		double sum_EV=0;
+
 		
 		double nbOfHHPros = list_hhProsumers.size();
 
@@ -409,6 +426,8 @@ public class ProsumerProbeListener implements ProbeListener {
 			sum_other += ArrayUtils.sum(hhAgent.getHistoricalOtherDemand());
 			sum_cold += ArrayUtils.sum(hhAgent.getHistoricalColdDemand());
 			sum_wet += ArrayUtils.sum(hhAgent.getHistoricalWetDemand());
+			sum_EV += ArrayUtils.sum(hhAgent.getHistoricalEVDemand());
+
 		}
 		
 		double avg_spaceHeat= sum_spaceHeat/nbOfHHPros;
@@ -416,12 +435,14 @@ public class ProsumerProbeListener implements ProbeListener {
 		double avg_other= sum_other/nbOfHHPros;
 		double avg_cold= sum_cold/nbOfHHPros;
 		double avg_wet= sum_wet/nbOfHHPros;
+		double avg_EV = sum_EV/nbOfHHPros;
 
 		pieDataset.setValue("SH", avg_spaceHeat);
 		pieDataset.setValue("WH", avg_hotWater);
 		pieDataset.setValue("O", avg_other);
 		pieDataset.setValue("C", avg_cold);
 		pieDataset.setValue("W", avg_wet);
+		pieDataset.setValue("EV", avg_EV);
 
 		return pieDataset;
 
