@@ -6,7 +6,9 @@ package uk.ac.dmu.iesd.cascade.util;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
@@ -51,11 +53,67 @@ public class OutputCollator
 			case 0:
 				collateBandD(baseDir,fileToCollat);
 				break;
+			case 1:
+				collateAggregateDemand(baseDir,fileToCollat);
 			default:
 				break;
 		}
 			
 
+	}
+
+	/**
+	 * @param baseDir
+	 * @param fileToCollat
+	 */
+	private static void collateAggregateDemand(String baseDir,
+			String fileToCollat)
+	{
+		File d = new File(baseDir);
+		if (!d.exists() || !d.isDirectory())
+		{
+			usage(new FileNotFoundException("The directory you specified is not available"));
+		}
+		
+		FilenameFilter filter = new NameStartsFilter(fileToCollat);
+		File[] subFiles = d.listFiles(filter);
+		System.out.println(Arrays.toString(subFiles));
+		CSVWriter out = new CSVWriter(baseDir.concat(File.separator).concat("CollatedOutput.csv"), false);
+		String[][] writeDS = null;
+		int fileNum=0;
+		for (File sd : subFiles)
+		{
+			CSVReader in =  null;
+			try
+			{
+				in  = new CSVReader(sd.getAbsolutePath());
+			} catch (FileNotFoundException e)
+			{
+				usage(e);
+			}
+			in.parseByColumn();
+			String[] D = in.getColumn("NetDemand");
+			String[] S = in.getColumn("CurrentPriceSignal");
+			
+
+			if (fileNum==0)
+			{
+				writeDS = new String[subFiles.length*2+1][S.length+1];
+				String [] tick = in.getColumn("Tick");
+				writeDS[0] = tick;
+			}
+			
+			System.arraycopy(D,0,writeDS[fileNum*2+1],1,D.length);
+			System.arraycopy(S,0,writeDS[fileNum*2+2],1,S.length);
+
+			
+			writeDS[fileNum*2+1][0] = "D : ".concat(sd.getName());
+			writeDS[fileNum*2+2][0] = "S : ".concat(sd.getName());
+			fileNum++;
+		}
+		out.appendCols(writeDS);
+		
+		
 	}
 
 	/**
