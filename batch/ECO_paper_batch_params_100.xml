@@ -11,7 +11,7 @@
 <parameter name="defraCategories" type="constant" constant_type="string" value="DEFRA_pro_env_categories.csv" />
 <parameter name="smartControlDecisionThreshold" type="constant" constant_type="number" value="0.9" />
 <parameter name="weatherFile" type="constant" constant_type="string" value="oneFlatDayWeather.csv" />
-<parameter name="defaultProsumersPerFeeder" type="constant" constant_type="number" value="10000" />
+<parameter name="defaultProsumersPerFeeder" type="constant" constant_type="number" value="100" />
 <parameter name="householdOtherDemandFile" type="constant" constant_type="string" value="hhOtherDemandProfiles_1D_half.csv" />
 <parameter name="defaultSignalLength" type="constant" constant_type="number" value="48" />
 <parameter name="electricalNetworkLayoutFile" type="constant" constant_type="string" value="networkTopology.csv" />
