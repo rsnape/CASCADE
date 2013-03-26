@@ -9,7 +9,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.WeakHashMap;
+
+import org.jgroups.tests.Probe;
 
 import cern.jet.random.Empirical;
 import repast.simphony.context.Context;
@@ -19,7 +22,9 @@ import repast.simphony.context.space.graph.NetworkFactoryFinder;
 import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
+import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ISchedule;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.parameter.Parameters;
@@ -29,7 +34,11 @@ import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
+import repast.simphony.ui.RSApplication;
 import repast.simphony.util.collections.IndexedIterable;
+import repast.simphony.visualization.IDisplay;
+import repast.simphony.visualization.ProbeEvent;
+import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
@@ -53,6 +62,7 @@ import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.test.HHProsumer;
+import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
 import uk.ac.dmu.iesd.cascade.util.*;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
 
@@ -284,11 +294,11 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	private void createWindFarmsAndAddThemToContext(){
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 		
-		for (int numWindFarms = 0; numWindFarms < 11; numWindFarms++){
+		for (int numWindFarms = 0; numWindFarms < 1500; numWindFarms++){
 			
-			WindGeneratorProsumer genProsAgent = prosumerFactory.createWindGenerator(2, Consts.GENERATOR_TYPE.WIND, 20);
+			WindGeneratorProsumer genProsAgent = prosumerFactory.createWindGenerator(100, Consts.GENERATOR_TYPE.WIND, 20);
 			
-			genProsAgent.offset = 0;//96/(numWindFarms+1);
+			genProsAgent.offset = RandomHelper.nextIntFromTo(0,96);//0;//96/(numWindFarms+1);
 			double [] hubHeights = new double[] {75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0,75.0};
 			double [] cp = new double[] {0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3};
 			double [] minWindSpeed = new double[] {2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5};
@@ -930,7 +940,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		//If we want to stop a batch run at a given time - put it here.
 		if (RunEnvironment.getInstance().isBatch())
 		{
-			RunEnvironment.getInstance().endAt(3000);
+			RunEnvironment.getInstance().endAt(3024);
 		}
 
 		if (cascadeMainContext.verbose)	
