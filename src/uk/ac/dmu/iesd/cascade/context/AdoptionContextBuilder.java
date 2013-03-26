@@ -225,7 +225,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 			thisHousehold.HEMSPropensity = Double.parseDouble(defraCategories.getColumn("HEMS_propensity")[custSegment - 1]);
 			thisHousehold.EVPropensity = Double.parseDouble(defraCategories.getColumn("EV_propensity")[custSegment - 1]);
 			thisHousehold.habit = Double.parseDouble(defraCategories.getColumn("Habit_factor")[custSegment - 1]);
-			thisHousehold.hasPV = (RandomHelper.nextDouble() / 25 < thisHousehold.microgenPropensity);
+			thisHousehold.hasPV = (RandomHelper.nextDouble() / 125 < thisHousehold.microgenPropensity);
 			//thisHousehold.hasPV=false; //pre-initialise No PV
 			if (thisHousehold.hasPV) thisHousehold.ratedPowerPV=3;
 
