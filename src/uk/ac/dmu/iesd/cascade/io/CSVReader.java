@@ -154,7 +154,9 @@ public class CSVReader {
 			{
 				try
 				{
-					tempArray.add(myTokenizer.nextToken());
+					String thisHeader = myTokenizer.nextToken();
+					thisHeader = thisHeader.replaceAll("^\"|\"$", "");
+					tempArray.add(thisHeader);
 				}
 				catch (NoSuchElementException e)
 				{
@@ -224,14 +226,13 @@ public class CSVReader {
 			}
 			else
 			{
-				System.err.println("File does not contain that column!  Available columns are :");
-				System.err.println(Arrays.toString(colHeaders));
+				System.err.println("File does not contain that column! ("+colName+") Available columns are :");
+				System.err.println(contentsByColumn.keySet().toString());//Arrays.toString(colHeaders));
 			}
 		}
 		else
 		{
 			System.err.println("CSVReader contentsByColumn is null!!  Check Parse output and file contents!");
-			System.err.println("Reader name is " + CSVFileName);
 			System.err.println("Number of columns is " + numCols + " with names " + Arrays.toString(colHeaders));
 		}
 
