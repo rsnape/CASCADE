@@ -1,5 +1,5 @@
 <repast.simphony.visualization.engine.DefaultDisplayDescriptor>
-  <name>A Display</name>
+  <name>EcNetworkDisplay</name>
   <type>TWO_D</type>
   <styles>
     <entry>
@@ -41,7 +41,7 @@
     <duration>-1.0</duration>
     <frequency>ONE_TIME</frequency>
   </schedParams>
-  <layoutClassName>repast.simphony.visualization.visualization2D.Random2DLayout</layoutClassName>
+  <layoutClassName>uk.ac.dmu.iesd.cascade.ui.LargeNetwork</layoutClassName>
   <layoutProjection>economicNetwork</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>

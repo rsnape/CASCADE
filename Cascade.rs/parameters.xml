@@ -44,7 +44,7 @@
 									
 		/>
 				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
-						defaultValue="weatherProfiles_1Y_realWindAndInsolation_flat_temp.csv" 
+						defaultValue="oneFlatDayWeather.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
