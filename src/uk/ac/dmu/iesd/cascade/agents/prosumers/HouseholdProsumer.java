@@ -2,10 +2,13 @@ package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
 import java.util.*;
 
+import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.*;
 import repast.simphony.space.graph.*;
+import repast.simphony.visualization.IDisplay;
+import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.controllers.*;
@@ -1305,6 +1308,24 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		
 		return spaceHeatDemand;
+	}
+	
+	@ScheduledMethod(start = 0, interval = 0, priority = Consts.PROSUMER_PRIORITY_FIFTH)
+	public void probeSpecificAgent()
+	{
+	if (this.getAgentID() == 691)
+	{
+		ArrayList probed = new ArrayList();
+		probed.add(this);
+		List<IDisplay> listOfDisplays = RunState.getInstance().getGUIRegistry().getDisplays();
+		for (IDisplay display : listOfDisplays) {
+
+			if (display instanceof DisplayOGL2D)
+			{
+				((DisplayOGL2D) display).getProbeSupport().fireProbeEvent(this, probed);
+			}
+		}
+	}
 	}
 	
 	/******************
