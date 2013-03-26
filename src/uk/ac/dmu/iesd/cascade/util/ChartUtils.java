@@ -9,8 +9,11 @@ import java.awt.GradientPaint;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
@@ -56,6 +59,16 @@ public class ChartUtils {
 	public static void showChart(JFreeChart chart) {
 
 		final ChartAppFrame chartAppFrame = new ChartAppFrame("ChartUtils", chart);
+		chartAppFrame.pack();
+		RefineryUtilities.centerFrameOnScreen(chartAppFrame);
+		chartAppFrame.setVisible(true);
+	
+	}
+	
+	public static void showChart(JFreeChart chart, JButton button) {
+
+		final ChartAppFrame chartAppFrame = new ChartAppFrame("ChartUtils", chart);
+		chartAppFrame.getContentPane().add(button);
 		chartAppFrame.pack();
 		RefineryUtilities.centerFrameOnScreen(chartAppFrame);
 		chartAppFrame.setVisible(true);
@@ -108,6 +121,24 @@ public class ChartUtils {
 
 	 }
 	 
+	 public static void saveChartAsPNG(JFreeChart chart, String name) {
+
+		 int width = 500;
+		 int height = 300; 
+
+		 saveChartAsPNG( chart,  name,  width,  height);
+
+	 }
+	 
+	 public static void saveChartAsPNG(JFreeChart chart, String name, int width, int height) {
+
+		 try {
+			 OutputStream fileIO = new FileOutputStream(new File(name));
+			 chart.removeLegend();
+			 ChartUtilities.writeScaledChartAsPNG(fileIO, chart, width, height, 8, 8);
+		 } catch (IOException e) {} 
+
+	 }
 
 	 public static JFreeChart createBarChart(final CategoryDataset dataset) {
 	        

@@ -15,16 +15,29 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import org.jfree.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.CategoryTableXYDataset;
+import org.jfree.ui.RectangleInsets;
 import org.jfree.util.Rotation;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.TickUnit;
+import org.jfree.chart.axis.TickUnits;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
 
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.IAction;
@@ -132,10 +145,18 @@ public class ProsumerProbeListener implements ProbeListener {
 					agentProbeFrame.getContentPane().add(tempChartPanel);
 				}
 
-				DefaultCategoryDataset dataset = createDataset(thisAgent);
+				CategoryTableXYDataset dataset = createDataset(thisAgent);
 				// based on the dataset we create the chart
-				JFreeChart chart = createChart(dataset, "Previous day demand by type");
-				chart.getCategoryPlot().getRangeAxis().setRange(0, 4.5);
+				final JFreeChart chart = createChart(dataset, "Previous day demand by type");
+				chart.getXYPlot().getRangeAxis().setRange(0, 4.0);
+				TickUnits onekwh = new TickUnits();
+				onekwh.add(new NumberTickUnit(1.0));
+				chart.getXYPlot().getRangeAxis().setStandardTickUnits(onekwh);
+				TickUnits fourTicks = new TickUnits();
+				fourTicks.add(new NumberTickUnit(4));
+				chart.getXYPlot().getDomainAxis().setStandardTickUnits(fourTicks);
+				
+				
 				charts.add(chart);
 				
 				// we put the chart into a panel
@@ -145,6 +166,15 @@ public class ProsumerProbeListener implements ProbeListener {
 
 				agentProbeFrame.getContentPane().add(chartPanel);
 				
+				JButton saveAsButton = new JButton("Click to Save as PNG");
+				saveAsButton.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						String name = thisAgent.getAgentName()+"_demand_at_tick_"+mainContext.getTickCount()+".png";
+						ChartUtils.saveChartAsPNG(chart, name);
+					}
+				});
+				
+				agentProbeFrame.getContentPane().add(saveAsButton);
 
 				DefaultPieDataset pieDataset = createPieDataset(thisAgent);
 				JFreeChart pieChart = createPieChart(pieDataset, "Demands Proportion");
@@ -157,9 +187,10 @@ public class ProsumerProbeListener implements ProbeListener {
 				loadsProfilesLineChartButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						//IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
-						DefaultCategoryDataset loadsDataset = createDataset(thisAgent);
-						JFreeChart loadsChart = createLineChart(loadsDataset, "Demand Profiles Chart (hh_"+thisAgent.getAgentID()+", @t="+mainContext.getTickCount()+")", "Half hour", "Load (KWh)");
-						ChartUtils.showChart(loadsChart);
+						//DefaultCategoryDataset loadsDataset = createDataset(thisAgent);
+						CategoryTableXYDataset loadsDataset = createDataset(thisAgent);
+						//JFreeChart loadsChart = createLineChart(loadsDataset, "Demand Profiles Chart (hh_"+thisAgent.getAgentID()+", @t="+mainContext.getTickCount()+")", "Half hour", "Load (KWh)");
+						//ChartUtils.showChart(loadsChart);
 					}
 				});
 				
@@ -186,11 +217,26 @@ public class ProsumerProbeListener implements ProbeListener {
 					   //System.out.println(" mouseClicked: ");
 						IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
 						ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
-						DefaultCategoryDataset barDatasetOfAllHHProsConsumption = createStackedBarDataset4DemandOfAllHHPros(list_hhProsumers);
+						CategoryTableXYDataset barDatasetOfAllHHProsConsumption = createStackedBarDataset4DemandOfAllHHPros(list_hhProsumers);
 						int now = mainContext.getTickCount();
 						int start = now - (now % mainContext.ticksPerDay);
-						JFreeChart barChart4AllHHProsConsumption = createChart(barDatasetOfAllHHProsConsumption, "Total Demands Proportion of All HHPros (from " + start + " to " + (start+mainContext.ticksPerDay) + " evaluated @t=" +now+")");
-						ChartUtils.showChart(barChart4AllHHProsConsumption);
+						final JFreeChart barChart4AllHHProsConsumption = createChart(barDatasetOfAllHHProsConsumption, "Total Demands Proportion of All HHPros (from " + start + " to " + (start+mainContext.ticksPerDay) + " evaluated @t=" +now+")");
+						TickUnits fourTicks = new TickUnits();
+						fourTicks.add(new NumberTickUnit(4));
+						TickUnits kwhTicks = new TickUnits();
+						kwhTicks.add(new NumberTickUnit(200));
+						barChart4AllHHProsConsumption.getXYPlot().getDomainAxis().setStandardTickUnits(fourTicks);
+						barChart4AllHHProsConsumption.getXYPlot().getRangeAxis().setRange(0, 1700);
+						barChart4AllHHProsConsumption.getXYPlot().getRangeAxis().setStandardTickUnits(kwhTicks);
+
+						JButton saveAsButton = new JButton("Click to Save as PNG");
+						saveAsButton.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								String name = "all_households_demand_at_tick_"+mainContext.getTickCount()+".png";
+								ChartUtils.saveChartAsPNG(barChart4AllHHProsConsumption, name);
+							}
+						});
+						ChartUtils.showChart(barChart4AllHHProsConsumption, saveAsButton);
 						
 					}
 				});
@@ -208,8 +254,8 @@ public class ProsumerProbeListener implements ProbeListener {
 	/**
 	 * Creates a sample dataset 
 	 */
-	private  DefaultCategoryDataset createDataset(HouseholdProsumer thisAgent) {
-		DefaultCategoryDataset result = new DefaultCategoryDataset();
+	private  CategoryTableXYDataset createDataset(HouseholdProsumer thisAgent) {
+		CategoryTableXYDataset result = new CategoryTableXYDataset();
 
 		double[] arr1 = thisAgent.getHistoricalSpaceHeatDemand();
 		double[] arr2 = thisAgent.getHistoricalWaterHeatDemand();
@@ -220,12 +266,18 @@ public class ProsumerProbeListener implements ProbeListener {
 
 		for (int i = 0; i < 48 ; i++)
 		{
-			result.addValue((Number)arr1[i], "Space Heat", i);
+			result.add(i,arr1[i], "Space Heat");
+			result.add(i,arr2[i], "Water Heat");
+			result.add(i, arr3[i], "Other");
+			result.add(i, arr4[i], "Cold");
+			result.add(i, arr5[i], "Wet");
+			result.add(i, arr6[i],"EV");
+			/*result.addValue((Number)arr1[i], "Space Heat", i);
 			result.addValue((Number)arr2[i], "Water Heat", i);
 			result.addValue((Number)arr3[i], "Other", i);
 			result.addValue((Number)arr4[i], "Cold", i);
 			result.addValue((Number)arr5[i], "Wet", i);
-			result.addValue((Number)arr6[i],"EV", i);
+			result.addValue((Number)arr6[i],"EV", i);*/
 
 
 		}
@@ -364,9 +416,9 @@ public class ProsumerProbeListener implements ProbeListener {
 	 * @param list_hhProsumers
 	 * @return
 	 */
-	private  DefaultCategoryDataset createStackedBarDataset4DemandOfAllHHPros(List<HouseholdProsumer> list_hhProsumers) {
+	private CategoryTableXYDataset createStackedBarDataset4DemandOfAllHHPros(List<HouseholdProsumer> list_hhProsumers) {
 
-		DefaultCategoryDataset totalDemandPerType = new DefaultCategoryDataset();
+		CategoryTableXYDataset totalDemandPerType = new CategoryTableXYDataset();
 
 		double[] tot_spaceHeat=new double[48];
 		double[] tot_hotWater=new double[48];;
@@ -388,12 +440,12 @@ public class ProsumerProbeListener implements ProbeListener {
 
 		for (int i = 0; i < tot_cold.length; i++)
 		{
-		totalDemandPerType.addValue((Number)tot_spaceHeat[i], "Space Heat",i);
-		totalDemandPerType.addValue((Number)tot_hotWater[i], "Hot Water",i);
-		totalDemandPerType.addValue((Number)tot_other[i], "Other",i);
-		totalDemandPerType.addValue((Number)tot_cold[i], "Cold",i);
-		totalDemandPerType.addValue((Number)tot_wet[i], "Wet",i);
-		totalDemandPerType.addValue((Number)tot_EV[i], "EV",i);
+		totalDemandPerType.add(i, tot_spaceHeat[i], "Space Heat");
+		totalDemandPerType.add(i, tot_hotWater[i], "Hot Water");
+		totalDemandPerType.add(i, tot_other[i], "Other");
+		totalDemandPerType.add(i, tot_cold[i], "Cold");
+		totalDemandPerType.add(i, tot_wet[i], "Wet");
+		totalDemandPerType.add(i, tot_EV[i], "EV");
 		}
 
 		return totalDemandPerType;
@@ -476,18 +528,29 @@ public class ProsumerProbeListener implements ProbeListener {
 	/**
 	 * Creates a chart
 	 */
-	private JFreeChart createChart(DefaultCategoryDataset dataset, String title) {
+	private JFreeChart createChart(CategoryTableXYDataset dataset, String title) {
 
-		JFreeChart chart = ChartFactory.createStackedBarChart(
-				title, //chart title 
+		JFreeChart chart = ChartFactory.createXYBarChart(
+				null, //chart title 
 				"Half hour", // Domain label
+				false,
 				"kWh", //Range label
 				dataset,                // data
 				PlotOrientation.VERTICAL, 
 				true,                   // include legend
 				true,
-				false
-		);
+				false);
+		
+		StackedXYBarRenderer rend = new StackedXYBarRenderer();
+		chart.getXYPlot().setRenderer(rend);
+		ValueAxis ax = chart.getXYPlot().getRangeAxis();
+		RectangleInsets insets = ax.getLabelInsets();
+		insets.extendWidth(100);
+		ax.setLabelInsets(insets, true);
+
+
+				// OPTIONAL CUSTOMISATION COMPLETED.
+		
 
 		//Alter appearance here
 
@@ -542,14 +605,18 @@ public class ProsumerProbeListener implements ProbeListener {
 			if(hhProbedAgent.isHasElectricalSpaceHeat())
 			{
 				charts.get(i).getCategoryPlot().setDataset(createTemperatureDataset(hhProbedAgent));
-				charts.get(i+1).getCategoryPlot().setDataset(createDataset(hhProbedAgent));				
+				//				charts.get(i+1).getCategoryPlot().setDataset(createDataset(hhProbedAgent));				
+
+				charts.get(i+1).getXYPlot().setDataset(createDataset(hhProbedAgent));				
 			    ((PiePlot) charts.get(i+2).getPlot()).setDataset(this.createPieDataset(hhProbedAgent));
 				
 				i += 3;
 			}
 			else
 			{
-				charts.get(i).getCategoryPlot().setDataset(createDataset(hhProbedAgent));
+				//				charts.get(i).getCategoryPlot().setDataset(createDataset(hhProbedAgent));
+
+				charts.get(i).getXYPlot().setDataset(createDataset(hhProbedAgent));
 			    ((PiePlot) charts.get(i+1).getPlot()).setDataset(this.createPieDataset(hhProbedAgent));
 
 				i += 2;
