@@ -4,55 +4,44 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.WeakHashMap;
 
-import cern.jet.random.Empirical;
 import repast.simphony.context.Context;
-import repast.simphony.context.space.gis.GeographyFactoryFinder;
 import repast.simphony.context.space.graph.NetworkFactory;
 import repast.simphony.context.space.graph.NetworkFactoryFinder;
-import repast.simphony.context.space.graph.NetworkGenerator;
-import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.ISchedule;
-import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.parameter.Parameters;
-import repast.simphony.query.*;
+import repast.simphony.query.PropertyEquals;
 import repast.simphony.random.RandomHelper;
-import repast.simphony.space.gis.Geography;
-import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
-import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.util.collections.IndexedIterable;
-import uk.ac.dmu.iesd.cascade.market.IPxTrader;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
+import uk.ac.dmu.iesd.cascade.base.Consts;
+import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
+import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
+import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.SettlementCompany;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.EquationBasedPriceAggregator;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.EquationBasedPriceAggregatorWithLag;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.ConstantPlusElasticityProsumer;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory;
-import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
-import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
-import uk.ac.dmu.iesd.cascade.io.CSVReader;
-import uk.ac.dmu.iesd.cascade.test.HHProsumer;
-import uk.ac.dmu.iesd.cascade.util.*;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
+import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
+import uk.ac.dmu.iesd.cascade.util.IterableUtils;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
+import cern.jet.random.Empirical;
 
 
 /**
@@ -175,10 +164,14 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 			double [] insolationArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("insolation"));
 			double [] windSpeedArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("windSpeed"));
 			double [] airTemperatureArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airTemp"));
+			double[] airDensityArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airDensity"));
+
 						
 			cascadeMainContext.insolationArray = Arrays.copyOf(insolationArray_all, lengthOfProfileArrays);
 			cascadeMainContext.windSpeedArray =  Arrays.copyOf(windSpeedArray_all, lengthOfProfileArrays);
 			cascadeMainContext.airTemperatureArray = Arrays.copyOf(airTemperatureArray_all, lengthOfProfileArrays);
+			cascadeMainContext.airDensityArray = Arrays.copyOf(airDensityArray_all, airDensityArray_all.length);
+
 			
 			cascadeMainContext.weatherDataLength = lengthOfProfileArrays;
 			
@@ -310,18 +303,45 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 	private void populateContext() {
 		double[] flatBaseline = new double[48];
 		Arrays.fill(flatBaseline,numProsumers*0.5);
-		PassThroughAggregatorWithLag a1 = new PassThroughAggregatorWithLag(cascadeMainContext,messageBoard,numProsumers*1.0,flatBaseline,48);
+		PassThroughAggregatorWithLag a1 = new PassThroughAggregatorWithLag(cascadeMainContext,messageBoard,-numProsumers*1.0,0,flatBaseline,48);
 		
-		for (int i = 0; i < this.numProsumers; i++)
+/*		for (int i = 0; i < this.numProsumers; i++)
 		{
 			//Generate a prosumer with basic constant load somewhere between
 			//0 and 1 kWh per half hour
 			ConstantPlusElasticityProsumer p = new ConstantPlusElasticityProsumer(cascadeMainContext, RandomHelper.nextDouble());
-		}
+		}*/
 		
-		System.out.println("context now has "+cascadeMainContext.getObjects(ConstantPlusElasticityProsumer.class).size()+" prosumers and "+cascadeMainContext.getObjects(EquationBasedPriceAggregator.class).size()+" aggregators");
+		//System.out.println("context now has "+cascadeMainContext.getObjects(ConstantPlusElasticityProsumer.class).size()+" prosumers and "+cascadeMainContext.getObjects(EquationBasedPriceAggregator.class).size()+" aggregators");
 		
 		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);
+		
+		createHouseholdProsumersAndAddThemToContext(Consts.RANDOM);
+		
+		//TODO: Add method that creates wind farm generators and adds them to the context..
+
+		//@TODO: these 4 methods below will eventually be included in the first method (createHousholdPro...)
+		if (Consts.HHPRO_HAS_WET_APPL)
+			initializeHHProsumersWetAppliancesPar4All();
+
+		if (Consts.HHPRO_HAS_COLD_APPL)
+			initializeHHProsumersColdAppliancesPar4All();
+
+		if (Consts.HHPRO_HAS_ELEC_WATER_HEAT)
+			initializeWithoutGasHHProsumersElecWaterHeat();
+
+		if (Consts.HHPRO_HAS_ELEC_SPACE_HEAT)
+			initializeWithoutGasHHProsumersElecSpaceHeat();
+		
+		//if (Consts.HHPRO_HAS_ELEC_VEHICLE)
+			//initializeElectricVehicles();
+
+/*		//Add aggregator(s), currently one;  (TODO should become a separate method later)
+		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorTraderFactory(this.cascadeMainContext, this.messageBoard);
+		
+		SupplierCoAdvancedModel firstRecoAggregator = aggregatorFactory.createSupplierCoAdvanced(cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(firstRecoAggregator);*/
+		
 		
 		// Economic network should be hierarchical aggregator to prosumer 
 		// TODO: Decide what economic network between aggregators looks like?
@@ -387,10 +407,10 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 		double[] arr_baseline_GEN_WIND  =  mapOfDMUtypeName2BaselineProfileArray.get("GEN_WIND");
 
 		int numOfDEM_LARGE = 5;
-		int numOfDEM_SMALL = 2;
-		int numOfGEN_COAL  = 2;
-		int numOfGEN_CCGT  = 3;
-		int numOfGEN_WIND  = 44;
+		int numOfDEM_SMALL = 3;
+		int numOfGEN_COAL  = 1;
+		int numOfGEN_CCGT  = 2;
+		int numOfGEN_WIND  = 64;
 
 
 		for (int i=0; i< numOfDEM_LARGE; i++) {
@@ -445,10 +465,332 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 	
 
 		if (cascadeMainContext.verbose)	
-			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
+			System.out.println("BasicWithMarketTestContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
 
 		return cascadeMainContext;
 	}
+	
+	private void addHousesAndSuppCo() {
+		/* 
+		 * TODO: NEED TO CREATE A MORE GENERIC SETUP STRUCTURE FOR ALL NETWORKS, AGGREGATORS, PROSUMERS, ETC.. 
+		 */
+
+		//createHouseholdProsumersAndAddThemToContext(2); //pass in parameter nb of occupants, or random
+		createHouseholdProsumersAndAddThemToContext(Consts.RANDOM);
+		
+		//TODO: Add method that creates wind farm generators and adds them to the context..
+
+		//@TODO: these 4 methods below will eventually be included in the first method (createHousholdPro...)
+		if (Consts.HHPRO_HAS_WET_APPL)
+			initializeHHProsumersWetAppliancesPar4All();
+
+		if (Consts.HHPRO_HAS_COLD_APPL)
+			initializeHHProsumersColdAppliancesPar4All();
+
+		if (Consts.HHPRO_HAS_ELEC_WATER_HEAT)
+			initializeWithoutGasHHProsumersElecWaterHeat();
+
+		if (Consts.HHPRO_HAS_ELEC_SPACE_HEAT)
+			initializeWithoutGasHHProsumersElecSpaceHeat();
+		
+		if (Consts.HHPRO_HAS_ELEC_VEHICLE)
+			initializeElectricVehicles();
+
+		//Add aggregator(s), currently one;  (TODO should become a separate method later)
+		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorTraderFactory(this.cascadeMainContext, this.messageBoard);
+		
+		SupplierCoAdvancedModel firstRecoAggregator = aggregatorFactory.createSupplierCoAdvanced(cascadeMainContext.systemPriceSignalDataArray);
+		cascadeMainContext.add(firstRecoAggregator);
+		
+		/**
+		 * (02/07/12) DF
+		 * 
+		 * Add a simple single non domestic aggregator into <code>cascadeMainContext</code>
+		 */
+//		SingleNonDomesticAggregator singleNonDomestic = aggregatorFactory.createSingleNonDomesticAggregator(cascadeMainContext.systemPriceSignalDataArray);
+//		cascadeMainContext.add(singleNonDomestic);
+		
+//		buildSocialNetwork(); 
+
+		//buildOtherNetworks(firstRecoAggregator); Do add to economic network
+		
+		//Add wind farms to the context
+		//TODO: Add functionality to allow greater flexibility in the creation of wind farms
+		//createWindFarmsAndAddThemToContext();
+		
+		// Add Wind Farm Aggregator to context here..
+		WindFarmAggregator wFA = aggregatorFactory.createWindFarmAggregator();
+		cascadeMainContext.add(wFA);
+		
+		for (ProsumerAgent prAgent:(Iterable<ProsumerAgent>) (cascadeMainContext.getObjects(ProsumerAgent.class)) )
+			{
+				if (prAgent instanceof WindGeneratorProsumer) {
+					cascadeMainContext.getEconomicNetwork().addEdge(wFA, prAgent);
+				}
+			}
+
+	}
+	
+	private void initializeElectricVehicles()
+	{
+	IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
+
+	for (HouseholdProsumer thisAgent : householdProsumers)
+	{
+		if (RandomHelper.nextDouble() < 0.25)
+		{
+			double [] EVprofile;
+			if (RandomHelper.nextDouble() < 0.5)
+			{
+				EVprofile = EVProfileGenerator.generateBEVProfile(cascadeMainContext,Consts.NB_OF_DAYS_LOADED_DEMAND);
+			}
+			else
+			{
+				EVprofile = EVProfileGenerator.generatePHEVProfile(cascadeMainContext,Consts.NB_OF_DAYS_LOADED_DEMAND);
+			}
+			thisAgent.hasElectricVehicle=true;
+			thisAgent.setEVProfile(EVprofile);
+			
+
+		}
+	}
+	}
+	
+	private void createHouseholdProsumersAndAddThemToContext(int occupancyModeOrNb) {
+
+		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
+		
+		System.out.println("-----------------------------");
+		System.out.println("% Of HHPros With Gas: "+ percentageOfHHProsWithGas+"%");
+		
+		int nbOfHHProsWithGas = (numProsumers * percentageOfHHProsWithGas)/100;
+		int nbOfHHProsWithElectricty = numProsumers - nbOfHHProsWithGas;
+		
+		System.out.println("# of HHPros With Gas: "+ nbOfHHProsWithGas);
+		System.out.println("# of HHPros With Electricty: "+ nbOfHHProsWithElectricty);
+
+		double[] hhOtherDemandArray = null; //Other elastic demand profiles array consists of electricity demand for cooking, lightening, and brown(entertainment, computer and small appliances)
+		
+		for (int i = 0; i < nbOfHHProsWithGas; i++) {
+
+			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(map_nbOfOccToOtherDemand, occupancyModeOrNb, true, true);
+
+			if (!cascadeMainContext.add(hhProsAgent))	{
+				System.err.println("Failed to add agent to context!!");
+			}
+		} 
+		
+		for (int i = 0; i < nbOfHHProsWithElectricty; i++) {
+
+			/***
+			 * TODO: JRS - this was using true on the randomize profile which, in turn, was making demand for a house potentially go -ve!!!
+			 */
+			HouseholdProsumer hhProsAgent = prosumerFactory.createHouseholdProsumer(map_nbOfOccToOtherDemand, occupancyModeOrNb, false, false);
+
+			if (!cascadeMainContext.add(hhProsAgent))	{
+				System.err.println("Failed to add agent to context!!");
+			}
+		} 
+			
+		System.out.println("Total # of HHPros added to context: " + cascadeMainContext.getObjects(HouseholdProsumer.class).size()); 
+		System.out.println("-----------------------------");
+
+	}
+
+	private void initializeHHProsumersWetAppliancesPar4All() {
+
+		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
+
+		/*----------------
+		 * Richard's occupancy test code
+		 * 
+		 * Note that this in effect is assuming that occupancy is independent of 
+		 * any of the other assigned variables.  This may not, of course, be true.
+		 */
+
+		//assign wet appliance ownership.  Based on statistical representation of the BERR 2006 ownership stats
+		// with a bias based on occupancy which seems reasonable.
+		// TODO: break this out into a separate method.  Store constants somewhere?  Should they read from file?
+		for (HouseholdProsumer thisAgent : householdProsumers)
+		{
+			int occupancy = thisAgent.getNumOccupants();
+			double randomVar = RandomHelper.nextDouble();
+			//if (Consts.DEBUG) System.out.println("randomVar: "+randomVar);
+			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
+			{
+				thisAgent.hasWashingMachine = true;
+			}
+
+			randomVar = RandomHelper.nextDouble();
+			if (!(thisAgent.hasWashingMachine) && ((occupancy >= 2 && randomVar < 0.75) || (occupancy == 1 && randomVar < 0.55)))
+			{
+				thisAgent.hasWasherDryer = true;
+			}
+
+			randomVar = RandomHelper.nextDouble();
+			if (!(thisAgent.hasWasherDryer) && ((occupancy >= 3 && randomVar < 0.7) || (occupancy == 2 && randomVar < 0.45) || (occupancy == 1 && randomVar < 0.35)))
+			{
+				thisAgent.hasTumbleDryer = true;
+			}
+
+			randomVar = RandomHelper.nextDouble();
+			if (((occupancy >= 3 && randomVar < 0.55) || (occupancy == 2 && randomVar < 0.25) || (occupancy == 1 && randomVar < 0.2)))
+			{
+				thisAgent.hasDishWasher = true;
+			}
+	
+			thisAgent.setWetAppliancesProfiles(InitialProfileGenUtils.melodyStokesWetApplianceGen(this.cascadeMainContext,Consts.NB_OF_DAYS_LOADED_DEMAND, thisAgent.hasWashingMachine, thisAgent.hasWasherDryer, thisAgent.hasDishWasher, thisAgent.hasTumbleDryer));
+			/*JRS TEST - REMOVE REMOVE REMOVE */
+			setWetAppsPerPBMatlabPrototype(thisAgent);
+
+		}
+		
+		if(cascadeMainContext.verbose)
+		{
+			System.out.println("Percentages:");
+			System.out.println("households with occupancy 1 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",1)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 2 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",2)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 3 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",3)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 4 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",4)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 5 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",5)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 6 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",6)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 7 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",7)).query()) / householdProsumers.size());
+			System.out.println("households with occupancy 8 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",8)).query()) / householdProsumers.size());
+			System.out.println("Washing Mach : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWashingMachine",true)).query()) / householdProsumers.size());
+			System.out.println("Washer Dryer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWasherDryer",true)).query()) / householdProsumers.size());
+			System.out.println("Tumble Dryer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasTumbleDryer",true)).query()) / householdProsumers.size());
+			System.out.println("Dish Washer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
+		}
+	}
+	
+	public void setWetAppsPerPBMatlabPrototype(HouseholdProsumer thisAgent)
+	{
+
+	
+	WeakHashMap<String,double[]> PB_wash_approx = new WeakHashMap<String, double[]>();
+	double[] basicWashProfile = new double[48];
+	if (RandomHelper.nextDouble() < 0.57)
+	{
+		int startSlot = (int) (RandomHelper.nextDouble()*47);
+		basicWashProfile[startSlot] = 1;
+		basicWashProfile[startSlot+1] = 1;
+	}
+	
+	thisAgent.hasDishWasher = false;
+	thisAgent.hasTumbleDryer = false;
+	thisAgent.hasWasherDryer = false;
+	PB_wash_approx.put(Consts.WET_APP_DRYER,new double[48]);
+	PB_wash_approx.put(Consts.WET_APP_DISHWASHER,new double[48]);
+	PB_wash_approx.put(Consts.WET_APP_DISHWASHER_ORIGINAL,new double[48]);
+	PB_wash_approx.put(Consts.WET_APP_DRYER_ORIGINAL,new double[48]);
+	PB_wash_approx.put(Consts.WET_APP_WASHER,basicWashProfile);
+	PB_wash_approx.put(Consts.WET_APP_WASHER_ORIGINAL,basicWashProfile.clone());
+
+	
+	thisAgent.setWetAppliancesProfiles(PB_wash_approx);	
+	}
+
+  /*
+	private void initializeHHProsumersElecWaterHeat() {
+
+		//Iterable waterHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers * (Double) params.getValue("elecWaterFraction")));
+		Iterable waterHeatedProsumersIter = cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long) (numProsumers));
+
+		ArrayList prosumersWithElecWaterHeatList = IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
+
+		//if (Consts.DEBUG) System.out.println("ArrayList.size: WaterHeat "+ prosumersWithElecWaterHeatList.size());
+		AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true, prosumersWithElecWaterHeatList.iterator());
+
+		Iterator iter = prosumersWithElecWaterHeatList.iterator();
+
+		while (iter.hasNext()) {
+			((HouseholdProsumer) iter.next()).initializeElectWaterHeatPar();
+		}
+	} */
+
+	private void initializeWithoutGasHHProsumersElecSpaceHeat() {
+		
+		IndexedIterable <HouseholdProsumer> spaceHeatedProsumersIter = cascadeMainContext.getObjects(HouseholdProsumer.class);
+		
+		for (HouseholdProsumer hhPros: spaceHeatedProsumersIter) {
+			if (!hhPros.isHasGas()) {
+				hhPros.setHasElectricalSpaceHeat(true);
+				hhPros.initializeElecSpaceHeatPar();
+
+			}
+		}
+	}
+	
+	private void initializeWithoutGasHHProsumersElecWaterHeat() {
+
+		IndexedIterable <HouseholdProsumer> spaceHeatedProsumersIter = cascadeMainContext.getObjects(HouseholdProsumer.class);
+		
+		for (HouseholdProsumer hhPros: spaceHeatedProsumersIter) {
+			if (!hhPros.isHasGas()) {
+				hhPros.setHasElectricalWaterHeat(true);
+				hhPros.initializeElectWaterHeatPar();
+
+			}
+		}
+	}
+
+	/**
+	 * This method uses rule set as described in Boait et al draft paper to assign
+	 * cold appliance ownership on a stochastic, but statistically representative, basis.
+	 */
+	private void initializeHHProsumersColdAppliancesPar4All()
+	{
+		IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
+
+		for (HouseholdProsumer pAgent : householdProsumers)
+		{
+			// Set up cold appliance ownership
+			if(RandomHelper.nextDouble() < 0.651)
+			{
+				pAgent.hasFridgeFreezer = true;
+				if (RandomHelper.nextDouble() < 0.15)
+				{
+					pAgent.hasRefrigerator = true;
+				}
+			}
+			else
+			{
+				if (RandomHelper.nextDouble() < 0.95)
+				{
+					pAgent.hasRefrigerator = true;
+				}
+				if (RandomHelper.nextDouble() < 0.835)
+				{
+					pAgent.hasUprightFreezer = true;
+				}
+			}
+
+			if (RandomHelper.nextDouble() < 0.163)
+			{
+				pAgent.hasChestFreezer = true;
+			}
+			
+			//if (Consts.DEBUG) System.out.println("Fridge; FridgeFreezer; Freezer: "+  pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+ (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)); 
+
+			//pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer && pAgent.hasChestFreezer));
+			pAgent.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.NB_OF_DAYS_LOADED_DEMAND, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)));
+		}
+		
+		if(cascadeMainContext.verbose)
+		{
+			System.out.println("HHs with Fridge: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasRefrigerator",true)).query()));
+			System.out.println("HHs with FridgeFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasFridgeFreezer",true)).query()));
+			System.out.println("HHs with UprightFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasUprightFreezer",true)).query()));
+			System.out.println("HHs with ChestFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasChestFreezer",true)).query()));
+
+			System.out.println("HHs with Fridge %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasRefrigerator",true)).query()) / householdProsumers.size());
+			System.out.println("HHs with FridgeFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasFridgeFreezer",true)).query()) / householdProsumers.size());
+			System.out.println("HHs with UprightFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasUprightFreezer",true)).query()) / householdProsumers.size());
+			System.out.println("HHs with ChestFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasChestFreezer",true)).query()) / householdProsumers.size());
+		}
+	}
+
+	
 
 }
 
