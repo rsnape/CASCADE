@@ -4,21 +4,21 @@
   <styles>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
+      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent</string>
-      <null/>
+      <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent.style_1.xml</string>
     </entry>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent</string>
-      <null/>
+      <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent.style_1.xml</string>
     </entry>
   </editedStyles>
   <netStyles>

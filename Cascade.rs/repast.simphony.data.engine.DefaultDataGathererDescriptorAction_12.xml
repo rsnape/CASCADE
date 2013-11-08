@@ -1,9 +1,9 @@
 <repast.simphony.data.engine.DefaultDataGathererDescriptor>
-  <name>PVCount</name>
-  <dataSetId class="string">PVCount</dataSetId>
+  <name>BhutanHHData</name>
+  <dataSetId class="string">BhutanHHData</dataSetId>
   <scheduleParameters>
     <start>1.0</start>
-    <interval>336.0</interval>
+    <interval>1.0</interval>
     <priority>-Infinity</priority>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
@@ -15,13 +15,13 @@
   <aggregateContainer class="repast.simphony.data.logging.gather.DefaultAggregateDataMappingContainer">
     <nameMappingTable>
       <entry>
-        <string>PVCount</string>
+        <string>NumCookersOn</string>
         <repast.simphony.data.logging.gather.aggregate.SumMapping>
           <type>Sum</type>
           <decorated class="repast.simphony.data.logging.gather.MethodMapping">
             <method>
-              <class>uk.ac.dmu.iesd.cascade.agents.prosumers.Household</class>
-              <name>getHasPVNum</name>
+              <class>uk.ac.dmu.iesd.cascade.agents.prosumers.BhutanHousehold</class>
+              <name>getCookerOn</name>
               <parameter-types/>
             </method>
           </decorated>
@@ -32,13 +32,13 @@
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping/>
       </entry>
       <entry>
-        <string>SmartControlCount</string>
+        <string>NetDemSum</string>
         <repast.simphony.data.logging.gather.aggregate.SumMapping>
           <type>Sum</type>
           <decorated class="repast.simphony.data.logging.gather.MethodMapping">
             <method>
-              <class>uk.ac.dmu.iesd.cascade.agents.prosumers.Household</class>
-              <name>getHasSmartControlNum</name>
+              <class>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent</class>
+              <name>getNetDemand</name>
               <parameter-types/>
             </method>
           </decorated>
@@ -48,19 +48,19 @@
     <mappingNameTable>
       <entry>
         <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
-        <string>PVCount</string>
-      </entry>
-      <entry>
-        <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
-        <string>SmartControlCount</string>
+        <string>NumCookersOn</string>
       </entry>
       <entry>
         <repast.simphony.data.logging.gather.DefaultTimeDataMapping reference="../../../nameMappingTable/entry[2]/repast.simphony.data.logging.gather.DefaultTimeDataMapping"/>
         <string>Tick</string>
       </entry>
+      <entry>
+        <repast.simphony.data.logging.gather.aggregate.SumMapping reference="../../../nameMappingTable/entry[3]/repast.simphony.data.logging.gather.aggregate.SumMapping"/>
+        <string>NetDemSum</string>
+      </entry>
     </mappingNameTable>
     <alternatedNameTable/>
     <nameAlternatedTable/>
   </aggregateContainer>
-  <agentClass>uk.ac.dmu.iesd.cascade.agents.prosumers.Household</agentClass>
+  <agentClass>uk.ac.dmu.iesd.cascade.agents.prosumers.BhutanHousehold</agentClass>
 </repast.simphony.data.engine.DefaultDataGathererDescriptor>

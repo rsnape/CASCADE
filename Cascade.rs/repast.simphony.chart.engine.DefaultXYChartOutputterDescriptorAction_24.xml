@@ -1,16 +1,16 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Signal</name>
+  <name>HHDemand</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>aggData</string>
+      <string>PassThroughSignals</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">aggData</dataSetId>
+  <dataSetId class="string">PassThroughSignals</dataSetId>
   <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
@@ -28,8 +28,8 @@
   <series>
     <repast.simphony.chart.Series>
       <seriesID>AgentName</seriesID>
-      <valueColumn>CurrentPriceSignal</valueColumn>
-      <hashCode>908755569</hashCode>
+      <valueColumn>NetDemand</valueColumn>
+      <hashCode>913364577</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

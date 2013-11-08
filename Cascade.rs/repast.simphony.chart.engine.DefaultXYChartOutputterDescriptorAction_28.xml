@@ -1,16 +1,16 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Demand</name>
+  <name>cookersOnChart</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>aggData</string>
+      <string>BhutanHHData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">aggData</dataSetId>
+  <dataSetId class="string">BhutanHHData</dataSetId>
   <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
@@ -27,10 +27,10 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>AgentName</seriesID>
-      <valueColumn>NetDemand</valueColumn>
-      <hashCode>913364577</hashCode>
-      <proxy>false</proxy>
+      <seriesID>NumCookersOn</seriesID>
+      <valueColumn>NumCookersOn</valueColumn>
+      <hashCode>547163859</hashCode>
+      <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>
 </repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
