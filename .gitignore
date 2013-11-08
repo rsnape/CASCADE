@@ -6,6 +6,7 @@ Repast.settings
 *.orig
 *.csv
 *.png
+*.tif
 *.txt
 *.tab
 *.pdf
