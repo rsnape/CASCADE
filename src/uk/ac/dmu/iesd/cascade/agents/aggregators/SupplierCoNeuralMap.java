@@ -1,6 +1,5 @@
 package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,12 +25,7 @@ import org.jgap.Genotype;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
-import org.joone.engine.FullSynapse;
-import org.joone.engine.LinearLayer;
-import org.joone.engine.SigmoidLayer;
 
-import repast.simphony.adaptation.neural.NeuralUtils;
-import repast.simphony.adaptation.neural.RepastNeuralWrapper;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.space.graph.Network;
@@ -71,7 +65,7 @@ import flanagan.math.MinimisationFunction;
  *  
  */
 
-public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregator*/{
+public class SupplierCoNeuralMap extends BMPxTraderAggregator{
 
 	// New class member to test out Peter B's demand flattening approach with smart signal
 	// Same as class member RecoMinimisationFunction, apart from the function method is different
@@ -95,77 +89,47 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		private boolean hasEqualsConstraint = false;
 		private int numEvaluations = 0;
 		private int settlementPeriod; 
-		boolean printD = false;
 
+		// Not sure why I cannot use methods in ArrayUtils class?
+		// Quick & dirty way: just copy the two methods that I want to use 
+		// to here for now
+		public double avg(double[] doubleArray) {
+			double avg=0d;
+			if (doubleArray.length !=0) {
+				double sum = sum(doubleArray);
+				avg = sum/(double)doubleArray.length;
+			}
+			return avg;
+		}
+		
+		public double sum(double[] doubleArray)	{
+			double sum = 0;
+			for (int i = 0; i < doubleArray.length; i++)	{
+				sum = sum + doubleArray[i];
+			}
+			return sum;
+		}
+		//
+		
 		public double function (double[] arr_S) {
-			double m =0d;
-			double[] d = new double[arr_B.length];
-			//mean_B = ArrayUtils.avg(arr_B);
+			double m =0d, di;
+			mean_B = avg(arr_B);
 			
-			//Note - interestingly - this will predict Baseline + Cavge for a zero
-			//signal.  This works.  But if you make it predict Baseline for a zero
-			//signal, it blows up!!  Rather sensitive...
-			for (int i = 0; i < arr_S.length; i++) {
-				if (arr_S[i] < 0) {
-					d[i] = arr_B[i] + (arr_S[i] * Kneg[i] * arr_B[i]) + Cavge[i];
-				}
-				else
-				{
-					d[i] = arr_B[i] + (arr_S[i] * Kpos[i] * arr_B[i]) + Cavge[i];
-				}
-				//m += Math.abs(di - mean_B);
-			}
-			
-			
-			m=ArrayUtils.sum(ArrayUtils.absoluteValues(ArrayUtils.offset(d, -ArrayUtils.avg(d))));
-			
-			//For overnight wind - use this
-			/*double[] windDesire = new double[48];
-			Arrays.fill(windDesire, -1d/34);
-			for (int i = 0; i < 15; i++)
-			{
-				windDesire[i] = 1d/14;
-			}
-			if (printD)
-			{
-			System.err.println(Arrays.toString(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d))));
-			}
-			
-			m = ArrayUtils.sum(ArrayUtils.add(d,ArrayUtils.negate(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d)))));
-			*/
-			
-			//m=(ArrayUtils.max(d)/ArrayUtils.avg(d))*1000;
-			numEvaluations++;
-			m += checkPlusMin1Constraint(arr_S);
-			//m += checkPosNegConstraint(arr_S);
+			for (int i=0; i<arr_S.length; i++){
 
+				double sumOf_SjkijBi =0;
+				for (int j=0; j<arr_S.length; j++){
+					if (i != j)
+						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
+				}
+				
+				di  = arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi;
+				m += Math.abs(di - mean_B);
+			}
+			numEvaluations++;
+			m += checkPosNegConstraint(arr_S);
 			return m;
 		} 
-
-		private double checkPlusMin1Constraint(double[] arr_S) {
-			double penalty = 0;
-			double posValueSum = 0;
-			double negValueSum = 0;
-			for (int i = 0; i < arr_S.length; i++)
-			{
-				if (arr_S[i] > 1 && arr_S[i] > posValueSum)		{
-					posValueSum = arr_S[i];
-				}
-				else if (arr_S[i] < -1 && arr_S[i] < negValueSum) {
-					negValueSum = arr_S[i];
-				}
-			}
-
-			if (posValueSum > 1)	{
-				penalty += this.penaltyWeight * Math.pow((posValueSum - 1), 2);
-			}
-			
-			if (negValueSum < -1)	{
-				penalty += this.penaltyWeight * Math.pow((-1 - negValueSum), 2);
-			}
-			
-			return penalty;
-		}
 
 		/**
 		 * Enforce the constraint that all positive values of S must sum to (maximum) of 1
@@ -187,15 +151,13 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 				}
 			}
 
-		/*	if (posValueSum > 1)	{
+			if (posValueSum > 1)	{
 				penalty += this.penaltyWeight * Math.pow((posValueSum - 1), 2);
 			}
 			
 			if (negValueSum < -1)	{
 				penalty += this.penaltyWeight * Math.pow((-1 - negValueSum), 2);
-			}*/
-			
-			penalty += this.penaltyWeight * Math.pow((posValueSum + negValueSum), 2);
+			}
 			
 			return penalty;
 		}
@@ -374,8 +336,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 	} //End of RecoMinimisationFunction class
 
-	
-	private RepastNeuralWrapper map; 
 
 	/**
 	 * the aggregator agent's base name  
@@ -568,20 +528,20 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 	}
 
-/*	private void setB_and_e(List<ProsumerAgent> customers, int time, boolean isTraining) {
+	private void setB_and_e(List<ProsumerAgent> customers, int time, boolean isTraining) {
 		double sumDemand = 0;
 		double sum_e =0;
 		for (ProsumerAgent agent : customers) {
 			sumDemand = sumDemand + agent.getNetDemand();
 			if (!isTraining)
-				sum_e = sum_e+agent.getElasticityFactor();
+				sum_e = sum_e;//+agent.getElasticityFactor(); TODO: Check this
 		}
 
 		this.arr_i_B[time]=sumDemand;
 
 		if (!isTraining)
 			this.arr_i_e[time]= sum_e;
-	}*/
+	}
 
 
 	/**
@@ -678,7 +638,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		}
 		else {
-			System.err.println("SupplierCoAdvancedModel:: Trying to add demand for day " + dayCount + " but training array is only " + hist_arr_B.length + " days long.");
+			System.err.println("RECO:: Trying to add demand for day " + dayCount + " but training array is only " + hist_arr_B.length + " days long.");
 		}
 	}
 
@@ -704,6 +664,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		double sumDemand = 0;
 		//if (Consts.DEBUG) System.out.println(" custmoers list size: "+customers.size());
 		for (ProsumerAgent a : customers)	{
+			
 			//if (Consts.DEBUG) System.out.println(" id: "+a.agentID+" ND: "+a.getNetDemand());
 			sumDemand = sumDemand + a.getNetDemand();
 			//sum_e = sum_e+a.getElasticityFactor();
@@ -739,16 +700,28 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			int daysSoFar = mainContext.getDayCount();
 			int indexFor1 = (daysSoFar - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)%this.ticksPerDay; 
 			
-			//double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.IMPULSE,ticksPerDay);
-			//double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.SINE,ticksPerDay);
-			double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.PBORIGINAL,ticksPerDay);
+			double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.IMPULSE,ticksPerDay);
+			//double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.PBORIGINAL,ticksPerDay);
 
 			System.arraycopy(t, 0, sArr, indexFor1, t.length - indexFor1);
 			System.arraycopy(t, t.length - indexFor1, sArr, 0, indexFor1);
-
+			
+/*			sArr[indexFor1] = 1d;
+			if (indexFor1 > 0) {
+				for (int i = 0; i < indexFor1; i++) {
+					sArr[i] = (-1d/(this.ticksPerDay-1));
+					//sArr[i] = 0;
+				}
+			}
+			if (indexFor1 < this.ticksPerDay) {
+				for (int i = indexFor1+1; i < sArr.length; i++) {
+					sArr[i] = (-1d/(this.ticksPerDay-1));
+					//sArr[i] = 0;
+				}
+			}*/
 			break;
 
-		default: 
+		default:  //
 			break;
 		}
 
@@ -1191,9 +1164,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			for (int k = 0; k < start.length; k++)	{
 				start[k] = - Math.cos(2 * Math.PI * k / start.length) / 16;
 			}
-			//the line below can feed in the baseline demand, appropriately scaled, to the
-			//optimisation routine first time
-			//start = ArrayUtils.normalizeValues(ArrayUtils.offset(arr_i_B, -ArrayUtils.avg(arr_i_B)));
 			firstTimeMinimisation = false;
 		}
 		else {
@@ -1213,18 +1183,13 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		}
 		catch (@SuppressWarnings("deprecation") OptimizationException e) {
-			System.err.println("Optimization Exception");
 			if (Consts.DEBUG) System.out.println( "RECO: Apache Optim Exc (Optim exc): "+e.getCause() );
 		} 
 		catch ( FunctionEvaluationException e) {
-			System.err.println("Functino eval Exception");
-
 			if (Consts.DEBUG) System.out.println( "RECO: Apache Optim Exc (Funct eval exc): "+e.getCause() );
 		}
 
 		catch (IllegalArgumentException e) {
-			System.err.println("Illegal arg exception");
-
 			if (Consts.DEBUG) System.out.println( "RECO: Apache Optim Exc (Illegal arg exc): "+e.getCause() );
 		}
 		
@@ -1235,9 +1200,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		//double[] newOpt_S= param;
 		double[] newOpt_S= minValue.getPoint();
-		minFunct.printD =true;
-		minFunct.function(newOpt_S);
-		minFunct.printD =false;
 
 		return newOpt_S;
 	}
@@ -1246,9 +1208,9 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	private double[] minimise_CD(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) {
 
 		Minimisation min = new Minimisation();
-		RecoMinimisationFunction_DemandFlattening minFunct = new RecoMinimisationFunction_DemandFlattening();
+		RecoMinimisationFunction minFunct = new RecoMinimisationFunction();
 
-		//minFunct.set_C(arr_C);
+		minFunct.set_C(arr_C);
 		minFunct.set_B(arr_B);
 		minFunct.set_e(arr_e);
 		minFunct.set_k(arr_ij_k);
@@ -1275,7 +1237,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		//double[] step = new double[arr_S.length];
 
 
-		double ftol = 1e-10; //1e-15;   // convergence tolerance
+		double ftol = 1e-1; //1e-15;   // convergence tolerance
 
 		int[] pIndices = new int[this.ticksPerDay];
 		int[] plusOrMinus = new int[this.ticksPerDay];
@@ -1286,15 +1248,13 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		}
 
 		int direction =0;
-		double boundary =1d;
+		double boundary =0d;
 
-		min.setNmax(1000000);
+		min.setNmax(100000);
 		min.addConstraint(pIndices, plusOrMinus, direction, boundary);
 		min.setConstraintTolerance(1e-3);
-		
+
 		min.nelderMead(minFunct, start, ftol);
-		
-		System.out.println("Flanagan iterated "+ min.getNiter() + "times");
 
 		// get the minimum value
 		double minimum = min.getMinimum();
@@ -1338,9 +1298,9 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		// by the user.
 		// ------------------------------------------------------------
 
-		RecoMinimisationFunction_DemandFlattening geneticMinFunc =  new RecoMinimisationFunction_DemandFlattening();
+		RecoMinimisationFunction geneticMinFunc =  new RecoMinimisationFunction();
 		geneticMinFunc.set_B(arr_B);
-		//geneticMinFunc.set_C(arr_C);
+		geneticMinFunc.set_C(arr_C);
 		geneticMinFunc.set_e(arr_e);
 		geneticMinFunc.set_k(arr_ij_k);
 		geneticMinFunc.addSimpleSumEqualsConstraintForApache(0, 0.01);
@@ -1382,7 +1342,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			}
 		} catch (InvalidConfigurationException e) {
 			// TODO Auto-generated catch block
-			System.err.println("SupplierCoAdvancedModel:: Invalid configuration for genetic algorithm");
+			System.err.println("RECO:: Invalid configuration for genetic algorithm");
 			e.printStackTrace();
 		}
 		return returnArray;
@@ -1395,15 +1355,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			this.cumulativeCostSaving += savingAmount;
 
 	}
-	
-	private double[] Cavge = new double[ticksPerDay];
-	private double[][] DeltaBm = new double[Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
-	private double[][] SBprodm = new double[Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
-	private double[] Kpos=new double[ticksPerDay];
-	private double[][] Kposm=new double[ticksPerDay][ticksPerDay];
-	private double[] Kneg=new double[ticksPerDay];
-	private double[][] Knegm = new double[ticksPerDay][ticksPerDay];
-	
+
+
 	//temp funciton - to be removed
 	private double calculateNetDemand(List customersList) {	
 
@@ -1463,27 +1416,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		priceSignalChanged = false;
 	}
-	
-	/**
-	 * This methods writes the parameters passed by arguments into CSV file format.
-	 * @param fileName
-	 * @param C
-	 * @param NC
-	 * @param B
-	 * @param D
-	 * @param S
-	 * @param e
-	 * @param k
-	 */
-	private void writeOutput(String dirName, String fileName, boolean addInfoHeader, double[] C, double[] NC, double[] B, double[] D, double[] S, double[] e, double[][] k) {
-		File dir = new File(dirName);
-		if (!dir.exists()){
-			dir.mkdir();
-		}
-		String fullPath = dirName.concat(File.separator).concat(fileName);
-		writeOutput(fullPath,addInfoHeader,C,NC,B,D,S,e,k);
-	}
-	
 
 	/**
 	 * This methods writes the parameters passed by arguments into CSV file format.
@@ -1623,7 +1555,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	}
 	
 	
-/*	public void marketPreStep() {
+	public void marketPreStep() {
 		//System.out.println(" initializeMarketStep (SupplierCo) "+this.id);
 		settlementPeriod = mainContext.getSettlementPeriod();
 	
@@ -1635,11 +1567,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			else 
 				//System.arraycopy(ArrayUtils.negate(arr_hist_day_D), 0, arr_PN, 0, arr_hist_day_D.length);
 		    	System.arraycopy(ArrayUtils.negate(this.getDayNetDemands()), 0, arr_PN, 0, this.getDayNetDemands().length);
-
-			break;
+				break;
 		}
 	}
-*/
+
 
 	public void bizPreStep() {
 
@@ -1653,110 +1584,16 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			//Set the Baseline demand on the first time through after building period
 			
 			if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) 
-			{
 				arr_i_B = calculateBADfromHistoryArray(ArrayUtils.subArrayCopy(arr_hist_ij_D,0,Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
-			}
-			
 
 			if (!isTrainingPeriodCompleted()) 	{  //training period, signals should be send S=1 for 48 days
 				if (mainContext.isBeginningOfDay(timeslotOfDay)) {	
 					arr_i_S = buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
 					broadcastSignalToCustomers(arr_i_S, customers);
-					CSVWriter tempWriter = new CSVWriter("NeuralTrainerIn.csv", true);
-					double[] in = new double[96];
-					System.arraycopy(arr_day_D, 0, in, 0, 48);
-					System.arraycopy(this.mainContext.getAirTemperature(this.mainContext.getTickCount()-48, 48), 0, in, 48, 48);
-					tempWriter.appendRow(in);
-					tempWriter.close();
-					tempWriter = new CSVWriter("NeuralTrainerOut.csv", true);
-					tempWriter.appendRow(Arrays.copyOf(arr_i_S, arr_i_S.length));
-					tempWriter.close();
 				}
 			} //training period completed 
 			else { // Begining of the normal operation- both baseline establishing & training periods are completed
-				if (mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE
-						+ Consts.AGGREGATOR_TRAINING_PERIODE) {
-					CSVWriter tempWriter = new CSVWriter("KandSBmatOut.csv", false);
-					tempWriter.appendText("Delta B matrix");
-					tempWriter.appendCols(DeltaBm);
-					tempWriter.appendText("SB product matrix");
-					tempWriter.appendCols(SBprodm);
-					tempWriter.close();
-					
-
-					tempWriter = new CSVWriter("calcProcess.csv", false);
-					tempWriter.appendText("Initial values - should be empty");
-					tempWriter.appendRow(Cavge);
-					tempWriter.appendRow(Kneg);
-					tempWriter.appendRow(Kpos);
-					
-					for (int deltaRow = 0; deltaRow < Consts.AGGREGATOR_TRAINING_PERIODE; deltaRow++) {
-						double cavg = 0;
-						double kneg = 0;
-						double kpos = 0;
-						
-						double[] SBprod = ArrayUtils.colCopy(SBprodm, deltaRow);
-						double[] DeltaB = ArrayUtils.colCopy(DeltaBm, deltaRow);
-						tempWriter.appendText("Extract column"+deltaRow);
-						tempWriter.appendRow(SBprod);
-						tempWriter.appendRow(DeltaB);
-						
-						int div = 0;
-						int kPosDiv = 0;
-						int kNegDiv = 0;
-						for (int i = 0; i < SBprod.length; i++) {
-							if (SBprod[i] == 0) {
-								cavg += DeltaB[i];
-								div += 1;
-								tempWriter.appendText("Adding "+DeltaB[i]);
-							}
-						}
-						cavg /= div;
-						
-						//Approximate cavg by taking those values "on the axis" i.e. where S
-						// was zero.  Obviously doesn't work for S without 0 values
-						
-						tempWriter.appendText("cavg = "+cavg);
-						
-						//Do regression properly
-						
-						double n = SBprod.length;
-						double sumXY=ArrayUtils.sum(ArrayUtils.mtimes(SBprod,DeltaB));
-						double sumX=ArrayUtils.sum(SBprod);
-						double sumY=ArrayUtils.sum(DeltaB);
-						double sumXsq=ArrayUtils.sum(ArrayUtils.mtimes(SBprod,SBprod));
-
-						double m = (n*sumXY - sumX*sumY) / (n*sumXsq - sumX*sumX);
-						cavg = sumY/n - m*(sumX/n);
-						
-						// Regression done, find average slope for pos and neg S
-						
-						for (int i = 0; i < SBprod.length; i++) {
-							if (SBprod[i] < 0) {
-								kpos += (DeltaB[i] - cavg) / SBprod[i];
-								kPosDiv++;
-							}
-							if (SBprod[i] > 0) {
-								kneg += (DeltaB[i] - cavg) / SBprod[i];
-								kNegDiv++;
-							}
-
-						}
-						
-						kneg/=kNegDiv;
-						kpos/=kPosDiv;
-
-						Cavge[deltaRow] = cavg;
-						Kneg[deltaRow] = kneg;
-						Kpos[deltaRow] = kpos;
-						tempWriter.appendRow(Cavge);
-						tempWriter.appendRow(Kneg);
-						tempWriter.appendRow(Kpos);
-					}
-					
-					tempWriter.close();
-					
-				}
+				
 				if (mainContext.isBeginningOfDay(timeslotOfDay)) {
 					
 					if (Consts.AGG_RECO_REEA_ON)
@@ -1782,53 +1619,25 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 						arr_i_S = fixedPrice;
 						break;
 					case 1:	/*Differential Price version (actual cost - average cost)*/
-						arr_i_S = arr_i_norm_C;
-/*						Arrays.fill(arr_i_S,0);
+						//arr_i_S = arr_i_norm_C;
+						Arrays.fill(arr_i_S,0);
 						
 						if (messageBoard.getMIP() != null) {
 						   arr_i_S  = messageBoard.getMIP();
 						   arr_i_S = ArrayUtils.normalizeValues(arr_i_S);
-						}*/
+						}
 													
 						break;
-					case 2:	/*Smart signal version*/
-						/*StreamInputSynapse fn = new MemoryInputSynapse();
-						Vector flatD = new Vector();
-						Pattern d = new Pattern();
-						d.setArray(new double[48]);
-						flatD.addElement(d);
-						fn.setInputPatterns(flatD);
-						try
-						{
-							double [] x = map.retrieve(fn).getArray();
-							x = ArrayUtils.offset(x, -ArrayUtils.avg(x));
-							arr_i_S =  ArrayUtils.normalizeValues(x);
-						} catch (Exception e)
-						{
-							System.err.println("Couldn't retrieve pattern for flat demand");
-							e.printStackTrace();
-						}  //Direct neural net implementation 
-							*/					
+					case 2:	/*Smart signal version*/						
 						arr_i_S = minimise_CD_Apache_Nelder_Mead(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-						//arr_i_S = minimise_CD(arr_i_norm_C, arr_i_B, arr_i_e, arr_ij_k, arr_i_S);
-						// Tried using other minimisation - similar effect with very large S in tick 0 and 1
-						break;
-					case 3: /* Play back scaled version of base demand*/
-						arr_i_S = ArrayUtils.normalizeValues(ArrayUtils.offset(arr_i_B, -ArrayUtils.avg(arr_i_B)));
-						break;	
-					case 4:
-						double[] sysDem = mainContext.getSystemPriceSignalData();
-						arr_i_S = ArrayUtils.normalizeValues(ArrayUtils.offset(sysDem, -ArrayUtils.avg(sysDem)));
 						break;
 					}
 					//System.out.println(" arr_i_S: "+ Arrays.toString(arr_i_S));
 
-					//broadcastSignalToCustomers(ArrayUtils.normalizeValues(arr_i_S), customers);
 					broadcastSignalToCustomers(arr_i_S, customers);
-
-					//if (Consts.DEBUG)
 					
-					writeOutput("output".concat(File.separator).concat("Seed".concat(Integer.toString(mainContext.getRandomSeedValue())).concat("GasFrac").concat(Double.toString(mainContext.getGasPercentage()))),"output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, this.getDayNetDemands(), arr_i_S, Cavge,  ArrayUtils.zip(Kneg,Kpos));
+					//if (Consts.DEBUG) 							
+						//writeOutput("output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, this.getDayNetDemands(), arr_i_S, arr_i_e,  arr_ij_k);
 				}
 
 			} //end of begining of normal operation
@@ -1851,25 +1660,11 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, arr_hist_ij_D);
 			
 			if (mainContext.isEndOfDay(timeslotOfDay)) 	{
-				double[] DeltaB;
-				double[] SBprod;
+				
 				double[] arr_last_training_D = ArrayUtils.rowCopy(arr_hist_ij_D, mainContext.getDayCount());
+				double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
 				
-				/**
-				 * Method to generate k values for positive and negative signal values.
-				 * Based on the original Matlab code preoposed by Peter Boait in prototype.
-				 */
-				int deltaRow = mainContext.getDayCount()-Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE;
-
-				DeltaB = ArrayUtils.add(arr_last_training_D, ArrayUtils.negate(arr_i_B));
-				SBprod = ArrayUtils.mtimes(arr_i_S,arr_i_B);
-				DeltaBm[deltaRow] = DeltaB.clone();
-				SBprodm[deltaRow] = SBprod.clone();	
-				
-			
-				//double e = calculateElasticityFactors_e(arr_last_training_D,arr_i_B,arr_i_S, arr_i_e);
-				
-				//calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
+				calculateDisplacementFactors_k(arr_last_training_D, arr_i_B, arr_i_S, arr_i_e, arr_ij_k);
 
 				//if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2) 
 					//writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
@@ -1878,63 +1673,11 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			// 
 		}
 		
-/*		//Train the neural net and continue to do so...
-		if (mainContext.isEndOfDay(timeslotOfDay) && isAggregateDemandProfileBuildingPeriodCompleted()) 	{
-			double[] arr_last_training_D = this.getDayNetDemands().clone(); //ArrayUtils.rowCopy(arr_hist_ij_D, mainContext.getDayCount());
-			
-			Pattern demand = new Pattern();
-			demand.setArray(ArrayUtils.normalizeValues(arr_last_training_D));
-			Pattern signal = new Pattern();
-			signal.setArray(arr_i_S);			
-			
-			ComparingElement ts = map.getNet().getTeacher();
-			StreamInputSynapse fn = new MemoryInputSynapse();
-			Vector nnIn = new Vector();
-			nnIn.addElement(demand);
-			fn.setInputPatterns(nnIn);
-			
-			
-			StreamInputSynapse nnOutSignal = new MemoryInputSynapse();
-			Vector ii = new Vector();
-			ii.addElement(signal);			
-			nnOutSignal.setInputPatterns(ii);
-			
-
-			
-			try
-			{
-				ts.setDesired(nnOutSignal);
-				map.train(fn);
-			} catch (Exception e)
-			{
-				System.err.println("Neural net training failed");
-				e.printStackTrace();
-			}
-			
-			MemoryInputSynapse flatD = new MemoryInputSynapse();
-			Vector f = new Vector();
-			Pattern p1 = new Pattern();
-			p1.setArray(new double[48]);
-			f.addElement(p1);
-			flatD.setInputPatterns(f);
-			try
-			{
-				System.err.println("Trained net - demand = " + Arrays.toString(demand.getArray()));
-				System.err.println("              signal = " + Arrays.toString(map.retrieve(fn).getArray()));
-			} catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}*/
-		
 		
 		calculateAndSetNetDemand(customers);
-		if (isTrainingPeriodCompleted())
-		{
-		updateTotalCO2Avoided();
-		}
+
+		//arr_hist_day_D[timeslotOfDay] = getNetDemand();
+		
 		if (mainContext.isEndOfDay(timeslotOfDay)) 	
 			costSavingCalculation(arr_i_C, this.getDayNetDemands(), arr_i_B, arr_i_S, arr_i_e);
 		
@@ -1947,8 +1690,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	}
 	
 
-
-
 	/**
 	 * Constructs a SupplierCO agent with the context in which is created and its
 	 * base demand.
@@ -1956,16 +1697,16 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	 * @param baseDemand an array containing the base demand  
 	 */
 	//public SupplierCo(CascadeContext context, MarketMessageBoard mb, double[] baseDemand, BMU_CATEGORY cat, BMU_TYPE type, double maxDem, double minDem) {
-	public SupplierCoAdvancedModel(CascadeContext context, MarketMessageBoard mb, BMU_CATEGORY cat, BMU_TYPE type, double maxDem, double minDem, double[] baseDemand) {
+	public SupplierCoNeuralMap(CascadeContext context, MarketMessageBoard mb, BMU_CATEGORY cat, BMU_TYPE type, double maxDem, double minDem, double[] baseDemand) {
 
-		//super(context, mb, cat, type, maxDem, minDem, baseDemand);
-		super(context);
+		super(context, mb, cat, type, maxDem, minDem, baseDemand);
+		//super(context);
 
 		this.ticksPerDay = context.getNbOfTickPerDay();
 		
 		if (baseDemand.length % ticksPerDay != 0)	{
-			System.err.print("SupplierCoAdvancedModel: Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
-			System.err.println("SupplierCoAdvancedModel:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");
+			System.err.print("SupplierCo: Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
+			System.err.println(" SupplierCo:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 		}
 		this.priceSignal = new double [baseDemand.length];
 		this.overallSystemDemand = new double [baseDemand.length];
@@ -2005,131 +1746,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		this.trainingSigFactory = new TrainingSignalFactory(ticksPerDay);
 		//+++++++++++++++++++++++++++++++++++++++++++
 		
-		
-		try
-		{
-			map = NeuralUtils.buildNetwork(new int[]{48,48,48}, new Class[]{LinearLayer.class,SigmoidLayer.class,LinearLayer.class}, new Class[]{FullSynapse.class,FullSynapse.class});
-			map.getNet().getMonitor().setLearningRate(0.3);
-			map.getNet().getMonitor().setMomentum(0.3);
-		} catch (IllegalArgumentException e)
-		{
-			System.err.println("Can't construct aggregator Neural Net map due to Illegal argument");
-			e.printStackTrace();
-			System.exit(1);
-		} catch (Exception e)
-		{
-			System.err.println("Can't construct aggregator Neural Net map");
-			e.printStackTrace();
-		}
-		
-		
-	}
-	
-	public SupplierCoAdvancedModel(CascadeContext context) {
-
-		//super(context,null,null,null,0);
-		super(context);
-		// Usually a supplier company will be small demand - this can be overridden and is effectively a default here.
-		// TODO: should we default like this?
-		this.category = Consts.BMU_CATEGORY.DEM_S;
-		this.type = Consts.BMU_TYPE.DEM_SMALL;
-
-		
-		this.ticksPerDay = context.getNbOfTickPerDay();
-		double[] baseDemand = new double[ticksPerDay];
-		if (baseDemand.length % ticksPerDay != 0)	{
-			System.err.print("SupplierCoAdvancedModel: Error/Warning message from "+this.toString()+": BaseDemand array imported to aggregator not a whole number of days");
-			System.err.println("SupplierCoAdvancedModel:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");
-		}
-		this.priceSignal = new double [baseDemand.length];
-		this.overallSystemDemand = new double [baseDemand.length];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, overallSystemDemand.length);
-
-		//Start initially with a flat price signal of 12.5p per kWh
-		//Arrays.fill(priceSignal,125f);
-		Arrays.fill(priceSignal,0f);
-
-		// Very basic configuration of predicted customer demand as 
-		// a Constant.  We could be more sophisticated than this or 
-		// possibly this gives us an aspirational target...
-		this.predictedCustomerDemand = new double[ticksPerDay];
-	
-		//arr_hist_day_D = new double[ticksPerDay];
-		
-		this.dailyPredictedCost = new ArrayList<Double>();
-		this.dailyActualCost = new ArrayList<Double>();
-
-		///+++++++++++++++++++++++++++++++++++++++
-		this.arr_i_B = new double [ticksPerDay];
-		this.arr_i_e = new double [ticksPerDay];
-		this.arr_i_S = new double [ticksPerDay];
-		this.arr_i_C = new double [ticksPerDay];
-		this.arr_i_norm_C = new double [ticksPerDay];
-		this.arr_ij_k = new double [ticksPerDay][ticksPerDay];
-		this.arr_hist_ij_D = new double [Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE][ticksPerDay];
-				
-		arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand),100); //all costs (equivalent to size of baseDemand, usually 1 week)
-		
-		//Set up basic learning factor
-		this.alpha = 0.1d;
-		//this.alpha = 1d;
-
-		this.arr_day_D = new double[ticksPerDay];
-
-		this.trainingSigFactory = new TrainingSignalFactory(ticksPerDay);
-		//+++++++++++++++++++++++++++++++++++++++++++
-		
-		
-		try
-		{
-			map = NeuralUtils.buildNetwork(new int[]{48,48,48}, new Class[]{LinearLayer.class,SigmoidLayer.class,LinearLayer.class}, new Class[]{FullSynapse.class,FullSynapse.class});
-			map.getNet().getMonitor().setLearningRate(0.3);
-			map.getNet().getMonitor().setMomentum(0.3);
-		} catch (IllegalArgumentException e)
-		{
-			System.err.println("Can't construct aggregator Neural Net map due to Illegal argument");
-			e.printStackTrace();
-			System.exit(1);
-		} catch (Exception e)
-		{
-			System.err.println("Can't construct aggregator Neural Net map");
-			e.printStackTrace();
-		}
-		
-		
-	}
-	
-	private double totalCO2saving;
-	
-	public double getTotalCO2saving()
-	{
-		return this.totalCO2saving;
-	}
-	
-	/**
-	 * 
-	 */
-	private void updateTotalCO2Avoided()
-	{
-		totalCO2saving += (this.arr_i_B[this.timeslotOfDay]-this.getNetDemand())*Consts.AVERAGE_GRID_CO2_INTENSITY[this.timeslotOfDay];
 	}
 
 }
-
-/**
- * Try using a neural net map
- *//*
-try
-{
-	Pattern in = new Pattern();
-	in.setArray(arr_S.clone());
-	MemoryInputSynapse inL = new MemoryInputSynapse();
-	Vector singleIn = new Vector();
-	singleIn.addElement(in);
-	inL.setInputPatterns(singleIn);
-	d = map.retrieve(inL).getArray();
-} catch (Exception e)
-{
-	// TODO Auto-generated catch block
-	e.printStackTrace();
-}*/
