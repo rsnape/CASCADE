@@ -3,7 +3,10 @@
  */
 package uk.ac.dmu.iesd.cascade.behaviour.psychological.cognitive;
 
-import uk.ac.dmu.iesd.cascade.behaviour.psychological.*;
+import uk.ac.dmu.iesd.cascade.behaviour.psychological.Construct;
+import uk.ac.dmu.iesd.cascade.behaviour.psychological.SimpleConstruct;
+import uk.ac.dmu.iesd.cascade.behaviour.psychological.SimpleModel;
+import uk.ac.dmu.iesd.cascade.behaviour.psychological.SimpleRelationship;
 
 /**
  * @author jsnape

@@ -4,7 +4,6 @@
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
 import repast.simphony.random.RandomHelper;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.EquationBasedPriceAggregator;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
@@ -15,6 +14,35 @@ public class ConstantPlusElasticityProsumer extends ConstantLoadProsumer {
     private static double DEFAULT_ELASTICITY = -0.07;
     private double p0;
     private double nextBaseD;
+    
+	/**
+	 * this prosumer agent's (price) elasticity factor 
+	 * 
+	 * TODO:this should not be here - not generic to all prosumers. JRS
+	 * */
+	protected double e_factor; 
+
+    
+	/**
+	 * Sets the <code>price elasticity factor</code> of this agent  
+	 * @param e (price) elasticity factor
+	 * @see #getElasticityFactor
+	 * 
+	 * TODO: should move this JRS
+	 */
+	public void setElasticityFactor(double e) {
+		this.e_factor = e;
+	}
+	
+	
+	/**
+	 * Get the <code>price elasticity factor</code> of this agent  
+	 * @return e (price) elasticity factor
+	 * @see #getElasticityFactor
+	 */
+	public double getElasticityFactor() {
+		return this.e_factor;
+	}
     
 	/**
 	 * @param context
@@ -46,7 +74,7 @@ public class ConstantPlusElasticityProsumer extends ConstantLoadProsumer {
 			elasticity = 0 - elasticity;
 		}
 		this.e_factor = elasticity;
-		System.out.println("Created prosumer with elasticity = "+this.e_factor);
+		System.out.println("Created prosumer with base load " + this.netDemand+ "kWh / timestep and elasticity = "+this.e_factor);
 		this.p0 = 125;
 		this.hasSmartMeter = true;
 	}

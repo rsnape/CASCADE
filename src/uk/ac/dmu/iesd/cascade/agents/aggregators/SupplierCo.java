@@ -5,35 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-import cern.colt.list.DoubleArrayList;
-import bsh.This;
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.ScheduleParameters;
-import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.parameter.Parameters;
-import repast.simphony.random.RandomHelper;
-import repast.simphony.space.graph.Network;
-import repast.simphony.space.graph.RepastEdge;
-import uk.ac.dmu.iesd.cascade.market.data.PxPD;
-import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
-import uk.ac.dmu.iesd.cascade.market.data.BSOD;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
-import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
-import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.io.CSVWriter;
-import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
-import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
-import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
-import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.SIGNAL_TYPE;
-import flanagan.*;
-import flanagan.math.*;
-import flanagan.analysis.*;
-import flanagan.math.Matrix;
+
 import org.apache.commons.mathforsimplex.FunctionEvaluationException;
 import org.apache.commons.mathforsimplex.analysis.MultivariateRealFunction;
 import org.apache.commons.mathforsimplex.linear.ArrayRealVector;
@@ -53,6 +25,27 @@ import org.jgap.Genotype;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
+
+import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.parameter.Parameters;
+import repast.simphony.space.graph.Network;
+import repast.simphony.space.graph.RepastEdge;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
+import uk.ac.dmu.iesd.cascade.base.Consts;
+import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
+import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
+import uk.ac.dmu.iesd.cascade.context.CascadeContext;
+import uk.ac.dmu.iesd.cascade.io.CSVWriter;
+import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
+import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.SIGNAL_TYPE;
+import cern.colt.list.DoubleArrayList;
+import flanagan.math.Fmath;
+import flanagan.math.Matrix;
+import flanagan.math.Minimisation;
+import flanagan.math.MinimisationFunction;
 
 
 /**
@@ -541,7 +534,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 		for (ProsumerAgent agent : customers) {
 			sumDemand = sumDemand + agent.getNetDemand();
 			if (!isTraining)
-				sum_e = sum_e+agent.getElasticityFactor();
+				sum_e = sum_e;//+agent.getElasticityFactor(); TODO: Check this
 		}
 
 		this.arr_i_B[time]=sumDemand;

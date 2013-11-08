@@ -9,8 +9,6 @@ import java.util.List;
 
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
-import repast.simphony.space.graph.NetworkEvent;
-import repast.simphony.space.graph.NetworkListener;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.projection.ProjectionEvent;
 import repast.simphony.space.projection.ProjectionEvent.Type;
@@ -21,7 +19,7 @@ import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
-import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 
 /**
@@ -89,7 +87,8 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		
 		System.out.println("At tick "+RepastEssentials.GetTickCount()+" demand = "+this.getNetDemand());
 		ArrayList<ProsumerAgent> customers = getCustomersList();
-		broadcastSignalToCustomers(this.getCurrPrice(), customers);
+		//broadcastSignalToCustomers(this.getCurrPrice(), customers);
+		broadcastSignalToCustomers(ArrayUtils.normalizeValues(this.laggedPrice), customers);
 		for (int i = 0; i < this.laggedPrice.length - 1; i++)
 		{
 			this.laggedPrice[i] = this.laggedPrice[i+1];
@@ -110,27 +109,17 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		for (ProsumerAgent c : customers)
 		{
 			totalDemand += c.getNetDemand();
+			//System.out.println("Prosumer " + c.getAgentName() + " adds " + c.getNetDemand() + ".  Has smart control = " + ((HouseholdProsumer) c).getHasSmartControl());
 		}
 		System.out.println(this.getAgentName() + this.getID()+" has total demand "+totalDemand);
 
-		this.setNetDemand(totalDemand);
-	}
-	
-	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxGen, double[] baselineProfile) {
-		//Default to zero lag
-		this(context, mb, maxGen, baselineProfile,0);
+		this.arr_baselineProfile[this.mainContext.getTimeslotOfDay()] = totalDemand;
+		this.setNetDemand(-totalDemand); //Convention in CASCADE is becoming demand is viewed as -ve, generation +ve
 	}
 	
 	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxDem, double minDem, double[] baselineProfile) {
 		//default to zero lag
 		this(context, mb, maxDem, minDem, baselineProfile,0);
-	}
-	
-	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxGen, double[] baselineProfile, int lag) {
-		super(context, mb, BMU_CATEGORY.DEM_S, BMU_TYPE.DEM_SMALL, maxGen, baselineProfile);
-		this.laggedPrice = new double [lag+1];
-		Arrays.fill(this.laggedPrice, 125);
-		context.add(this);
 	}
 	
 	public PassThroughAggregatorWithLag(CascadeContext context, MarketMessageBoard mb, double maxDem, double minDem, double[] baselineProfile, int lag) {

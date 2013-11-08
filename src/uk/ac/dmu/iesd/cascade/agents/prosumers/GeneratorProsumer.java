@@ -1,8 +1,8 @@
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
-import java.util.*;
+import java.util.Arrays;
+
 import repast.simphony.essentials.RepastEssentials;
-import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
@@ -119,7 +119,7 @@ public abstract class GeneratorProsumer extends ProsumerAgent{
 	 */
 	private double calculateFixedDayTotalDemand(int time) {
 		int baseProfileIndex = time % arr_otherDemandProfile.length;
-		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
+		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+this.mainContext.ticksPerDay - 1));
 	}
 	
 

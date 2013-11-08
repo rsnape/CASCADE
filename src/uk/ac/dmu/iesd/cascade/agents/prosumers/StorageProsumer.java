@@ -1,6 +1,5 @@
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
-import repast.simphony.random.*;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
@@ -104,10 +103,9 @@ public class StorageProsumer extends ProsumerAgent{
 	 */
 	public StorageProsumer(CascadeContext context, double[] baseDemand) {
 		super(context);
-		this.percentageMoveableDemand = RandomHelper.nextDoubleFromTo(0, 0.5);
-		setElasticityFactor(percentageMoveableDemand);
-		this.ticksPerDay = context.getNbOfTickPerDay();
-		if (baseDemand.length % ticksPerDay != 0)
+		//this.percentageMoveableDemand = RandomHelper.nextDoubleFromTo(0, 0.5);
+		//setElasticityFactor(percentageMoveableDemand);
+		if (baseDemand.length % this.mainContext.ticksPerDay != 0)
 		{
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("StorageProsumer:  Will be truncated and may cause unexpected behaviour");

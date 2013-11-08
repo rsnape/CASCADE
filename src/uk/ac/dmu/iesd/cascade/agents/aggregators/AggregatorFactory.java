@@ -54,10 +54,11 @@ public class AggregatorFactory implements IAggregatorFactory{
 		return asCO;
 	}
 	
-	public WindFarmAggregator createWindFarmAggregator(){
+	public WindFarmAggregator createWindFarmAggregator()
+	{
 		//SupplierCo asCO = new SupplierCo(cascadeMainContext,  baseProfile);
 		double maxGen = ASTEMConsts.BMU_WIND_MAXCAP; //in MW
-		WindFarmAggregator wFA = new WindFarmAggregator(cascadeMainContext, messageBoard, BMU_CATEGORY.GEN_T, BMU_TYPE.GEN_WIND, maxGen);
+		WindFarmAggregator wFA = new WindFarmAggregator(cascadeMainContext, messageBoard, maxGen);
 		
 		return wFA;
 	}

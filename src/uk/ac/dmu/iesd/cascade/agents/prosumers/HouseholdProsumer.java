@@ -1,20 +1,26 @@
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
-import java.util.*;
+import static repast.simphony.essentials.RepastEssentials.FindNetwork;
+import static repast.simphony.essentials.RepastEssentials.GetParameter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.WeakHashMap;
 
 import repast.simphony.engine.environment.RunState;
-import repast.simphony.engine.schedule.*;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.random.*;
-import repast.simphony.space.graph.*;
+import repast.simphony.random.RandomHelper;
+import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.visualization.IDisplay;
 import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.controllers.*;
+import uk.ac.dmu.iesd.cascade.controllers.ISmartController;
+import uk.ac.dmu.iesd.cascade.controllers.ProportionalWattboxController;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
-import static repast.simphony.essentials.RepastEssentials.*;
 
 /**
  * @author J. Richard Snape
@@ -485,7 +491,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		{
 			if (returnAmount != 0 && Consts.DEBUG)
 			{
-				//System.out.println("HouseholdProsumer:: Generating " + returnAmount);
+				System.out.println("HouseholdProsumer:: Generating " + returnAmount);
 			}
 		}
 		return returnAmount;
@@ -502,7 +508,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			// at which the PV cell produces its rated power
 			double p = (getInsolation() / Consts.MAX_INSOLATION) * ratedPowerPV;
 			
-			return  (p * Consts.HOURS_PER_DAY) / ticksPerDay ; // convert power to kWh per tick
+			return  (p * Consts.HOURS_PER_DAY) / this.mainContext.ticksPerDay ; // convert power to kWh per tick
 		} 
 		else 
 		{
@@ -666,7 +672,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		double requiredTempChange = this.setPoint - currentInternalTemp;
 		
-		double maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((double)(Consts.SECONDS_PER_DAY / ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
+		double maintenanceEnergy =  ((deltaT * (this.buildingHeatLossRate)) * ((double)(Consts.SECONDS_PER_DAY / this.mainContext.ticksPerDay))) / Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
 
 		double heatingEnergy = requiredTempChange * this.buildingThermalMass / Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE;	// refer to Peter's email (24/01/12)
 		
@@ -681,9 +687,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 		else
 		{
 			demand = maintenanceEnergy + heatingEnergy;
-			if (demand > ((this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) *(double) 24 / ticksPerDay))
+			if (demand > ((this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) *(double) 24 / this.mainContext.ticksPerDay))
 			{
-				demand = (this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * ((double) 24 / ticksPerDay);
+				demand = (this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * ((double) 24 / this.mainContext.ticksPerDay);
 				this.currentInternalTemp = this.currentInternalTemp + ((demand - maintenanceEnergy) / this.buildingThermalMass);
 				if (Consts.DEBUG)
 				{
@@ -748,8 +754,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		int baseProfileIndex = time % arr_otherDemandProfile.length;
 		//if (Consts.DEBUG) System.out.println(" baseDemandProfile "+ Arrays.toString(baseDemandProfile));
 		//if (Consts.DEBUG) System.out.println(" baseProfileIndex "+ baseProfileIndex);
-		//if (Consts.DEBUG) System.out.println("  calculateFixedDayTotalDemand: array2Sum: "+ Arrays.toString(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1)));
-		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
+		//if (Consts.DEBUG) System.out.println("  calculateFixedDayTotalDemand: array2Sum: "+ Arrays.toString(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+this.mainContext.ticksPerDay - 1)));
+		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+this.mainContext.ticksPerDay - 1));
 	}
 
 	/*
@@ -801,11 +807,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 			//if (mainContext.getDayCount() >  Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+ Consts.AGGREGATOR_TRAINING_PERIODE)
 				//predictedCostNow = predictedCostNow *1000;
 			
-			double myE = dailyElasticity[time % ticksPerDay];
+			double myE = dailyElasticity[time % this.mainContext.ticksPerDay];
 			//double eChange = mainContext.hhProsumerElasticityTest.nextDouble();
 			//if (Consts.DEBUG) System.out.println("eChange: "+ eChange);
 			//myE = myE + eChange;
-			//myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay]));
+			//myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % this.mainContext.ticksPerDay]));
 			
 			double initialDemand = myDemand;
 			myDemand = myDemand * (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * myE));
@@ -829,20 +835,23 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 			if (Consts.DEBUG)
 			{
-				if (mainContext.isBeginningOfDay()) {
+				if (false) {
+				//if (mainContext.isBeginningOfDay()) {
 					
-					//System.out.println("============================");
-					//System.out.println("dailyDemand: "+ Arrays.toString(arr_otherDemandProfile));
-					//System.out.println("dailyElasticity: "+ Arrays.toString(dailyElasticity));
-					//System.out.println("predictedCostSignal: "+ Arrays.toString(getPredictedCostSignal()));
-					//System.out.println("predictedCostSignal: "+predictedCostSignal);
-					//System.out.println("predictedCostNow * myE: "+predictedCostSignal * myE);
-					//System.out.println("dailyElasticity[time % ticksPerDay]: "+dailyElasticity[time % ticksPerDay]);
-					//System.out.println("HouseholdProsumer:: Based on predicted cost = " + predictedCostSignal + " demand set to " + (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % ticksPerDay])) + " of initial " );
+					System.out.println("============================");
+					System.out.println("dailyDemand: "+ Arrays.toString(arr_otherDemandProfile));
+					System.out.println("dailyElasticity: "+ Arrays.toString(dailyElasticity));
+					System.out.println("predictedCostSignal: "+ Arrays.toString(getPredictedCostSignal()));
+					System.out.println("predictedCostSignal: "+predictedCostSignal);
+					System.out.println("predictedCostNow * myE: "+predictedCostSignal * myE);
+					System.out.println("dailyElasticity[time % this.mainContext.ticksPerDay]: "+dailyElasticity[time % this.mainContext.ticksPerDay]);
+					System.out.println("HouseholdProsumer:: Based on predicted cost = " + predictedCostSignal + " demand set to " + (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % this.mainContext.ticksPerDay])) + " of initial " );
 				}
 			}
 		}
 
+		
+		
 		return myDemand;
 	}
 
@@ -919,15 +928,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 		// in lieu of knowledge of what can "switch off" and "switch on", we assume that
 		// the percentage moveable of the day's consumption is what may be time shifted
 		double moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
-		double [] daysCostSignal = new double [ticksPerDay];
-		double [] daysOptimisedDemand = new double [ticksPerDay];
+		double [] daysCostSignal = new double [this.mainContext.ticksPerDay];
+		double [] daysOptimisedDemand = new double [this.mainContext.ticksPerDay];
 		if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 		{
-			System.out.println("HouseholdProsumer: predictedCostSignal "+getPredictedCostSignal()+" time "+time+ " predictionValidTime "+predictionValidTime+" daysCostSignal "+ daysCostSignal +" ticksPerDay "+ticksPerDay);
+			System.out.println("HouseholdProsumer: predictedCostSignal "+getPredictedCostSignal()+" time "+time+ " predictionValidTime "+predictionValidTime+" daysCostSignal "+ daysCostSignal +" this.mainContext.ticksPerDay "+this.mainContext.ticksPerDay);
 		}
-		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, this.mainContext.ticksPerDay);
 
-		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
+		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, this.mainContext.ticksPerDay);
 
 		double [] tempArray = ArrayUtils.mtimes(daysCostSignal, daysOptimisedDemand);
 
@@ -950,7 +959,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
 		}
-		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, ticksPerDay);
+		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, this.mainContext.ticksPerDay);
 		if (Consts.DEBUG)
 		{
 			if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
@@ -974,7 +983,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		Iterable<?> socialConnections = FindNetwork("socialNetwork").getInEdges(this);
 		// Get social influence - note communication is not every tick
 		// hence the if clause
-		if ((time % (21 * ticksPerDay)) == 0)
+		if ((time % (21 * this.mainContext.ticksPerDay)) == 0)
 		{
 
 			for (Object thisConn: socialConnections)
@@ -1032,7 +1041,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		if (Consts.DEBUG) System.out.println("    ---iiii----- HouseholdProsumer: init() ---iii------ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 
 		time = (int) RepastEssentials.GetTickCount();
-		timeOfDay = (time % ticksPerDay);
+		timeOfDay = (time % this.mainContext.ticksPerDay);
 
 		checkWeather(time);
 
@@ -1061,7 +1070,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 				sampleOutput.appendText("timeStep " + time);
 				sampleOutput.appendText(Arrays.toString(baseDemandProfile));
 				sampleOutput.writeColHeaders(new String[]{"pumpSwitching", "wetApp","coldApp"});
-				String[][] outputBuilder = new String[4][this.ticksPerDay];
+				String[][] outputBuilder = new String[4][this.this.mainContext.ticksPerDay];
 				if (this.getHasElectricalSpaceHeat()) {
 					outputBuilder[0] = ArrayUtils.convertDoubleArrayToString(spaceHeatPumpOn);
 					outputBuilder[1] = ArrayUtils.convertDoubleArrayToString(recordedHeatPumpDemand);
@@ -1076,7 +1085,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		
 		if (this.getHasElectricalSpaceHeat())
-			this.setPoint = this.optimisedSetPointProfile[time % ticksPerDay];
+			this.setPoint = this.optimisedSetPointProfile[time % this.mainContext.ticksPerDay];
 
 		if (Consts.DEBUG)
 		{
@@ -1165,7 +1174,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		 */
 		
 		//double[] hotWaterNeededProfile = new double[this.lengthOfDemandProfile];
-		double[] hotWaterNeededProfile = new double[mainContext.ticksPerDay];
+		double[] hotWaterNeededProfile = new double[this.mainContext.ticksPerDay];
 		
 				
 		//share the needed water equally between occupants
@@ -1198,7 +1207,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			this.setWaterHeatProfile(ArrayUtils.multiply(hotWaterNeededProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
 		}
 		else {
-			double[] noWaterHeating = new double[mainContext.ticksPerDay];
+			double[] noWaterHeating = new double[this.mainContext.ticksPerDay];
 			//double[] noWaterHeating = new double[this.lengthOfDemandProfile];
 			Arrays.fill(noWaterHeating,0);
 			this.setWaterHeatProfile(noWaterHeating);
@@ -1221,7 +1230,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		 * This needs to be addressed at later stage. 
 		 * 
 		 */
-		this.setPointProfile = new double[ticksPerDay];
+		this.setPointProfile = new double[this.mainContext.ticksPerDay];
 		//this.setPointProfile = new double[this.lengthOfDemandProfile];
 
 		Arrays.fill(setPointProfile, 20); // This puts in a flat set point through the day set by the consumer
@@ -1232,7 +1241,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.currentInternalTemp = this.setPoint;
 		
 		// Initialise the base case where heat pump is on all day
-		spaceHeatPumpOn = new double[ticksPerDay];
+		spaceHeatPumpOn = new double[this.mainContext.ticksPerDay];
 		Arrays.fill(spaceHeatPumpOn, 1);
 		
 		
@@ -1241,7 +1250,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		
 		tau = (buildingThermalMass  * Consts.KWH_TO_JOULE_CONVERSION_FACTOR) / buildingHeatLossRate;
 		
-		freeRunningTemperatureLossPerTickMultiplier = (Consts.SECONDS_PER_DAY / mainContext.ticksPerDay) / tau;
+		freeRunningTemperatureLossPerTickMultiplier = (Consts.SECONDS_PER_DAY / this.mainContext.ticksPerDay) / tau;
 		
 	}
 	
@@ -1289,11 +1298,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 *  
 	 * Re-paste into the new framework from old one
 	 *  
-	 * @return a one-dimensional array of size [ticksPerDay * Consts.NB_OF_DAYS_LOADED_DEMAND]
+	 * @return a one-dimensional array of size [this.mainContext.ticksPerDay * Consts.NB_OF_DAYS_LOADED_DEMAND]
 	 */
 	public double[] getSpaceHeatDemandwithoutOptimise() {
 		
-		int lengthOfProfileArrays = ticksPerDay * Consts.NB_OF_DAYS_LOADED_DEMAND; 
+		int lengthOfProfileArrays = this.mainContext.ticksPerDay * Consts.NB_OF_DAYS_LOADED_DEMAND; 
 		double[] spaceHeatDemand = new double[lengthOfProfileArrays];
 		
 		for (int i=0; i<lengthOfProfileArrays; i++) {
@@ -1345,7 +1354,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//if (Consts.DEBUG) System.out.println("  -------- HouseholdProsumer(" +this.getAgentID()+") step() ---------- DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		
 		time = (int) RepastEssentials.GetTickCount();
-		timeOfDay = (time % ticksPerDay);
+		timeOfDay = (time % this.mainContext.ticksPerDay);
 
 		//if (Consts.DEBUG) System.out.println("checkWeather");
 		checkWeather(time);
@@ -1373,7 +1382,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			if (hasSmartControl){
 				
 				//if (Consts.DEBUG) System.out.println("--beforCallToUpdate; time: "+time);
-				//double [] cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + ticksPerDay);
+				//double [] cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + this.mainContext.ticksPerDay);
 				//if (Consts.DEBUG) System.out.println("BEFORE cold_1day: "+ Arrays.toString(cold_1day));
 
 				mySmartController.update(time);
@@ -1384,7 +1393,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 				if (this.isHasWetAppliances())
 					this.wetApplianceProfile = calculateCombinedWetAppliancesProfile(this.wetApplianceProfiles);
 
-				//cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + ticksPerDay);
+				//cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + this.mainContext.ticksPerDay);
 				//if (Consts.DEBUG) System.out.println("AFTER cold_1day: "+ Arrays.toString(cold_1day));
 
 				currentSmartProfiles = mySmartController.getCurrentProfiles();
@@ -1409,7 +1418,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 				//sampleOutput.appendText(Arrays.toString(wetApplianceProfile));
 				
 				sampleOutput.writeColHeaders(new String[]{"spaceHeatPumpOn", "recordedHeatPumpDemand", "wetApp","coldApp"});
-				String[][] outputBuilder = new String[4][ticksPerDay];
+				String[][] outputBuilder = new String[4][this.mainContext.ticksPerDay];
 				if (this.isHasElectricalSpaceHeat()) {
 					//String[][] outputBuilder = new String[4][spaceHeatPumpOn.length];
 					outputBuilder[0] = ArrayUtils.convertDoubleArrayToString(spaceHeatPumpOn);
@@ -1473,13 +1482,13 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//miscDemand includes aggregate of ligtening, entertainment, computers, & small appliances (Kettle, Toaster, Microwave)
 		
 		this.setAgentName("Household_" + agentID);
-		this.ticksPerDay = context.getNbOfTickPerDay();
+		this.mainContext.ticksPerDay = context.getNbOfTickPerDay();
 		
-		 this.lengthOfDemandProfile = ticksPerDay*Consts.NB_OF_DAYS_LOADED_DEMAND;
+		 this.lengthOfDemandProfile = this.mainContext.ticksPerDay*Consts.NB_OF_DAYS_LOADED_DEMAND;
         // this.lengthOfDemandProfile = context.getLengthOfDemandProfiles();
 		
 		
-		if (otherDemandProfile.length % ticksPerDay != 0) {
+		if (otherDemandProfile.length % this.mainContext.ticksPerDay != 0) {
 			System.err.println("HouseholdProsumer: baseDemand array not a whole number of days");
 			System.err.println("HouseholdProsumer: Will be truncated and may cause unexpected behaviour");
 		}
@@ -1502,19 +1511,19 @@ public class HouseholdProsumer extends ProsumerAgent{
 		//System.arraycopy(otherDemandProfile, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
 		System.arraycopy(otherDemandProfile, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
 		
-		//this.dailyElasticity = new double[ticksPerDay];
+		//this.dailyElasticity = new double[this.mainContext.ticksPerDay];
 		this.dailyElasticity = new double[lengthOfDemandProfile];
 		
 		//Arrays to hold some history - mainly for gui purposes
-		this.historicalBaseDemand = new double[ticksPerDay];
-		this.historicalWetDemand = new double[ticksPerDay];
-		this.historicalColdDemand = new double[ticksPerDay];
-		this.historicalSpaceHeatDemand = new double[ticksPerDay];
-		this.historicalEVDemand = new double[ticksPerDay];
-		this.historicalWaterHeatDemand = new double[ticksPerDay];
-		this.historicalIntTemp = new double[ticksPerDay];
-		this.historicalExtTemp = new double[ticksPerDay];
-		this.recordedHeatPumpDemand = new double[ticksPerDay];
+		this.historicalBaseDemand = new double[this.mainContext.ticksPerDay];
+		this.historicalWetDemand = new double[this.mainContext.ticksPerDay];
+		this.historicalColdDemand = new double[this.mainContext.ticksPerDay];
+		this.historicalSpaceHeatDemand = new double[this.mainContext.ticksPerDay];
+		this.historicalEVDemand = new double[this.mainContext.ticksPerDay];
+		this.historicalWaterHeatDemand = new double[this.mainContext.ticksPerDay];
+		this.historicalIntTemp = new double[this.mainContext.ticksPerDay];
+		this.historicalExtTemp = new double[this.mainContext.ticksPerDay];
+		this.recordedHeatPumpDemand = new double[this.mainContext.ticksPerDay];
 		
 		this.coldApplianceProfiles = new WeakHashMap<String, double[]>();
 		

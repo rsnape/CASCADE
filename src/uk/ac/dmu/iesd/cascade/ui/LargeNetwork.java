@@ -8,14 +8,13 @@ package uk.ac.dmu.iesd.cascade.ui;
  *
  */
 
-import uk.ac.dmu.iesd.cascade.*;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
-import uk.ac.dmu.iesd.cascade.context.*;
+import repast.simphony.space.projection.Projection;
 import repast.simphony.visualization.Layout;
 import repast.simphony.visualization.VisualizationProperties;
-import repast.simphony.space.projection.Projection;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 
 public class LargeNetwork implements Layout {
 	float x, y;
@@ -63,6 +62,11 @@ public class LargeNetwork implements Layout {
 		{
 			returnPosition[0] = (float) Math.random() * x;
 			returnPosition[1] = (float) Math.random() * y / 2;
+		}
+		else if (obj instanceof GenericBMPxTraderAggregator)
+		{
+			returnPosition[0] = 3*x / 4 + (float) Math.random() * x/4;
+			returnPosition[1] = 3*y / 4 + (float) Math.random() * y/4;
 		}
 		else if (obj instanceof ProsumerAgent)
 		{

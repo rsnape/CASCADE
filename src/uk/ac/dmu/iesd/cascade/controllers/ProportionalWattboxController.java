@@ -1,8 +1,8 @@
 package uk.ac.dmu.iesd.cascade.controllers;
 
-import java.util.*;
-
-import org.apache.poi.hssf.record.formula.functions.Days360;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.WeakHashMap;
 
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.RandomHelper;
@@ -311,9 +311,15 @@ public class ProportionalWattboxController implements ISmartController
 	 */
 	private void assignSetPointsProbabilistic()
 	{
-		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
+		if (ArrayUtils.max(this.dayPredictedCostSignal) == ArrayUtils.min(this.dayPredictedCostSignal))
 		{
-			// signal is null - do nothing
+			// If flat signal, do nothing.  Note that this can't work if the demand was elastic, but this purely deals with WITHIN DAY
+			// allocation.
+			
+			if (Consts.DEBUG)
+			{
+				System.out.println("Flat signal - do nothing");
+			}
 			this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
 			return;
 		}
@@ -425,9 +431,10 @@ public class ProportionalWattboxController implements ISmartController
 	private void placeWaterHeatingProportional()
 	{
 		
-		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
+		if (ArrayUtils.max(this.dayPredictedCostSignal) == ArrayUtils.min(this.dayPredictedCostSignal))
 		{
-			// If null signal, do nothing
+			// If null signal, do nothing.  Note that this can't work if the demand was elastic, but this purely deals with WITHIN DAY
+			// allocation.
 			return;
 		}
 
@@ -464,8 +471,19 @@ public class ProportionalWattboxController implements ISmartController
 				int k = 0;
 				while (k < Wd.length && Wd[k] < n)
 					k++;// %find k value in which to do this water heating
+				
 
-				this.waterHeatDemandProfile[k] += baseArray[i];
+				try
+				{
+					this.waterHeatDemandProfile[k] += baseArray[i];
+				}
+				catch (ArrayIndexOutOfBoundsException e)
+				{
+					System.err.println("k="+k+";i="+i+"; baselength="+waterHeatDemandProfile.length+": "+Wd.length+Arrays.toString(Wd));
+					System.err.println(Arrays.toString(this.dayPredictedCostSignal)); 
+					System.err.println("On day" + this.mainContext.getDayCount());
+				}
+				
 				for (int m = k; m < i; m++)
 				{
 					this.waterHeatDemandProfile[m] += (Sk / (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)) * 0.5);// %Top

@@ -8,8 +8,6 @@ import javax.swing.border.TitledBorder;
 
 import org.w3c.dom.Document;
 
-import uk.ac.dmu.iesd.cascade.context.CascadeConfigContextBuilder;
-
 /**
  * @author jsnape
  *

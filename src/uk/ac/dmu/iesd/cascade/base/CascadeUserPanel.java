@@ -3,18 +3,24 @@
  */
 package uk.ac.dmu.iesd.cascade.base;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
-import uk.ac.dmu.iesd.cascade.configwizard.*;
+import uk.ac.dmu.iesd.cascade.configwizard.WizardFrame;
 import uk.ac.dmu.iesd.cascade.context.CascadeConfigContextBuilder;
 
 /**

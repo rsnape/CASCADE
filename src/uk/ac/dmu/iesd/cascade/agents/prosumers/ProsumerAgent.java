@@ -2,13 +2,13 @@ package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
 import java.util.Arrays;
 
-import repast.simphony.engine.schedule.*;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.parameter.*;
-import repast.simphony.ui.probe.*;
+import repast.simphony.ui.probe.ProbeID;
+import repast.simphony.util.ContextUtils;
+import uk.ac.dmu.iesd.cascade.agents.ICognitiveAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.agents.ICognitiveAgent;
 
 /**
  *  A <em>ProsumerAgent</em> is an object which can both consume and generate 
@@ -19,7 +19,7 @@ import uk.ac.dmu.iesd.cascade.agents.ICognitiveAgent;
  * 
  * @author J. Richard Snape
  * @author Babak Mahdavi
- * @version $Revision: 1.3 $ $Date: 2011/05/17 12:00:00 $
+ * @version $Revision: 1.4 $ $Date: 2013/08/17 12:00:00 $
  * 
  * Version history (for intermediate steps see Git repository history
  * 
@@ -28,11 +28,18 @@ import uk.ac.dmu.iesd.cascade.agents.ICognitiveAgent;
  * 1.2. - implements ICognitiveAgent (Babak)
  * 1.3. - changed constructor, modified/added/removed methods, made the class properly abstract,
  *        sub-classes will/should not override the methodes defined here, except those made abstract (Babak) 
+ * 
+ * 1.4 - cleanup (JRS)
  *    
  *        ----Extra comment added to test git ignore----
  */
 public abstract class ProsumerAgent implements ICognitiveAgent {
 
+	/**
+	 * serialVersionUID - a unique identifier if this class is serialized
+	 */
+	protected static final long serialVersionUID = 1L;  // TODO: to make sure this class will be serialized, if not remove this.
+	
 	/**
 	 * a prosumer agent's ID
 	 * This field is automatically assigned by constructor 
@@ -67,29 +74,41 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 */
 	protected boolean nameExplicitlySet = false;
 
+	/**
+	 * Reference to the @link CascadeContext within which this ProsumerAgent exists. 
+	 * 	
+	 * @see CascadeContext 
+	 */
 	protected CascadeContext mainContext;
 	
+
 	/**
-	 * a prosumer agent's (price) elasticity factor 
-	 * e in Peter Boait formula
-	 * */
-	protected double e_factor; 
-
-	protected int ticksPerDay; //TODO: This needs to be removed 
-
-	/*
 	 * Configuration options
 	 * 
 	 * All are set false initially - they can be set true on instantiation to
 	 * allow fine-grained control of agent properties
 	 */
 
-	// the agent can see "smart" information
+	/**
+	 * Does the agent have the ability to send and receive "smart" information
+	 */
 	public boolean hasSmartMeter = false; 
-	// the agent acts on "smart" information but not via automatic control
-	// action on information is mediated by human input
+	
+	/**
+	 * does this agent change its behaviour in response to information it gathers?
+	 */
 	public boolean exercisesBehaviourChange = false; 
+	
+	/**
+	 * Does this agent have a form of smart control - i.e. automated control in
+	 * response to information gathered from its smart meter (either information about
+	 * itself or received information about the system
+	 */
 	public boolean hasSmartControl = false; //i.e. the agent allows automatic "smart" control of its demand / generation based on "smart" information
+	
+	/**
+	 * Does this agent receive a smart cost signal?
+	 */
 	protected boolean receivesCostSignal = false; //we may choose to model some who remain outside the smart signal system
 
 
@@ -103,6 +122,8 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected double windSpeed; //current wind speed at the given half hour tick
 	protected double airTemperature; // outside air temperature
 	protected double airDensity; // air density
+	
+	//protected int ticksPerDay; //TODO: JRS This needs to be removed - get it from the context if needed 
 
 
 	/*
@@ -128,33 +149,22 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	protected double[] predictedCostSignal;
 	protected int predictionValidTime;
 
-	/*
-	 * Exported signals and profiles.
-	 */
-	//protected double[] currentDemandProfile;
-	//protected double[] predictedPriceSignal;
-	//protected int predictedPriceSignalLength;
-
-	/*
+	/**
 	 * This is net demand, may be +ve (consumption), 0, or -ve (generation)
+	 * 
+	 * TODO: JRS MUST reach agreement of sign for Demand vs. Generation and units - even if we introduce a factor
+	 * such that we can translate between average kW in a timestep to kWh per timestep (kWaverage = kWh * 24 / ticks per day)
 	 */
 	protected double netDemand; // (note in kW)
-	//protected double availableGeneration; // Generation Capability at this instant (note in kW)
+
 
 	/*
 	 * Economic variables which all prosumers will wish to calculate.
 	 */
-	//protected double actualCost; // The demand multiplied by the cost signal.  Note that this may be in "real" currency, or not
 	protected double inelasticTotalDayDemand;
+	
+	//TODO : JRS - should this be here?  Used only in HouseholdProsumer and NonDomesticProsumer - set to zero otherwise
 	protected double[] smartOptimisedProfile;
-
-
-	/**
-	 * serialVersionUID
-	 */
-	protected static final long serialVersionUID = 1L;  // TODO: to make sure this class will be serialized, if not remove this.
-
-
 
 	/**
 	 * Returns a string representation of this agent and its key values 
@@ -176,7 +186,6 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @return  a string representation of this agent's state parameters
 	 */
 	protected abstract String paramStringReport();
-
 
 	/**
 	 * Returns the agent's ID. 
@@ -252,24 +261,6 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	abstract public void step();
 
 
-	/**
-	 * Sets the <code>price elasticity factor</code> of this agent  
-	 * @param e (price) elasticity factor
-	 * @see #getElasticityFactor
-	 */
-	public void setElasticityFactor(double e) {
-		this.e_factor = e;
-	}
-	
-	/**
-	 * Get the <code>price elasticity factor</code> of this agent  
-	 * @return e (price) elasticity factor
-	 * @see #getElasticityFactor
-	 */
-	public double getElasticityFactor() {
-		return this.e_factor;
-	}
-	
 	
 	//---------------------------------------------------------------
 	//TODO: methodes declcared from here until the end of this class 
@@ -449,7 +440,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	}
 	
 	/*
-	 * TODO: is this how the prosumer should get updated about the whether 
+	 * TODO: is this how the prosumer should get updated about the weather 
 	 * This methods needs to be changed/removed; this will done by the SmartDevice class
 	 */
 	protected void checkWeather(int time)
@@ -487,5 +478,18 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 		this.mainContext = context;
 	}
 
+	@ScheduledMethod(start = 0, interval = 0, priority = Consts.PRE_INITIALISE_FIRST_TICK)
+	private void initContext()
+	{
+		if (this.mainContext == null)
+		{
+			this.mainContext = (CascadeContext) ContextUtils.getContext(this);
+		}
+	}
+	
+	public ProsumerAgent()
+	{
+		this.agentID = agentIDCounter++;
+	}
 
 }

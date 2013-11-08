@@ -1,7 +1,6 @@
 package uk.ac.dmu.iesd.cascade.base;
 
 
-import repast.simphony.essentials.RepastEssentials;
 
 /**
  * Class to hold all the variable structures etc that are available to 
@@ -103,6 +102,7 @@ public final class Consts {
 	/*------------------------
 	 * Scheduling Priorities  
 	 *-------------------------*/
+	public static final double PRE_INITIALISE_FIRST_TICK = 700;
 	public static final double AGGREGATOR_PRE_STEP_PRIORITY_FIRST = 600;
 	public static final double AGGREGATOR_INIT_MARKET_STEP_PRIORITY_FIRST = 570;
 	public static final double AGGREGATOR_MARKET_STEP_PRIORITY_FIRST = 550;
@@ -359,6 +359,7 @@ public final class Consts {
 	public static final boolean USE_SINGLE_NON_DOMESTIC_AGGREGATOR = false;
 	public static final boolean UPDATE_PHYSICAL_NODE_TO_MARKET = true;
 	public static final double RATIO_AGANIST_HOUSEHOLD = 2d;
+
 
 
 }

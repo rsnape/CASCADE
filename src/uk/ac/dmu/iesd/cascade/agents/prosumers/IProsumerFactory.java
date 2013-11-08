@@ -1,6 +1,5 @@
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
-import java.util.ArrayList;
 
 
 /**

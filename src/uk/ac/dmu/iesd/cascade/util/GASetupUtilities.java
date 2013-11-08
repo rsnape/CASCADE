@@ -3,7 +3,8 @@
  */
 package uk.ac.dmu.iesd.cascade.util;
 
-import org.jgap.*;
+import org.jgap.Chromosome;
+import org.jgap.Gene;
 import org.jgap.impl.DoubleGene;
 
 /**

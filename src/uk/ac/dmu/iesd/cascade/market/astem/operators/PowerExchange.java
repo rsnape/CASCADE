@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.LinkedHashMap;
+
 import repast.simphony.engine.schedule.ScheduledMethod;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
+import uk.ac.dmu.iesd.cascade.market.astem.util.SortComparatorUtils;
 import uk.ac.dmu.iesd.cascade.market.data.BSOD;
 import uk.ac.dmu.iesd.cascade.market.data.PxPD;
-import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
-import uk.ac.dmu.iesd.cascade.market.astem.util.SortComparatorUtils;
 
 
 /**
@@ -243,6 +243,16 @@ public class PowerExchange {
 		
 	}
 	
+	/***
+	 * calculates the sum of price*volume and volumes already traded in this round of the market operation (i.e. this day for the day ahead as currently configured
+	 * 
+	 * these are needed to calculate the Market index price for each settlement period of the following day as well as the imbalance to be resolved
+	 * by the balancing market.
+	 * 
+	 * @param mapOfIPxTraders2ListOfBSODs
+	 * @param sumOfProducts
+	 * @param sumOfVolumes
+	 */
 	private void calculatePartialMIP(LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTraders2ListOfBSODs, double[] sumOfProducts, double[] sumOfVolumes) {
 			
 		ArrayList<BSOD> listOfBSODs = new ArrayList<BSOD>();
@@ -260,6 +270,16 @@ public class PowerExchange {
 		}		
 	}
 	
+	/***
+	 * This calculates the Market index prices based on the volumes of accepted bids and offers and the volume*price
+	 * 
+	 * We get a volume-weighted average market price of electricity.  This is used at the end of one day to give the 
+	 * market price of electricity in each settlement period of the following day.
+	 * 
+	 * @param sumOfProducts
+	 * @param sumOfVolumes
+	 * @return
+	 */
 	private double[] calculateMIP(double[] sumOfProducts, double[] sumOfVolumes) {
 		
 		double[] arr_MIP= new double[mainContext.ticksPerDay];
@@ -326,6 +346,11 @@ public class PowerExchange {
 
 			break;
 		case 47: 
+			/***
+			 * this step calculates the market index price at the end of the day to give the Market index price
+			 * (a.k.a. the reverse price) for each settlement period of the following day.  This is used as the
+			 * reverse price by the settlement company to cash out following the balancing mechanism
+			 */
 			this.arr_reversePrice = calculateMIP(arr_sumOfProductsTraded, arr_sumOfVolumesTraded);
 			messageBoard.setMIP(arr_reversePrice);
 			//System.out.println(arr_reversePrice[settlementPeriod]);

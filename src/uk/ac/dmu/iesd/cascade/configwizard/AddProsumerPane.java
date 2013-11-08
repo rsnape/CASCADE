@@ -23,9 +23,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
-import uk.ac.dmu.iesd.cascade.context.CascadeConfigContextBuilder;
 
 /**
  * @author jsnape

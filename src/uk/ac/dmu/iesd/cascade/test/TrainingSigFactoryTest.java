@@ -3,27 +3,13 @@
  */
 package uk.ac.dmu.iesd.cascade.test;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Label;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
 
 import uk.ac.dmu.iesd.cascade.util.ChartUtils;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;

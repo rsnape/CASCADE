@@ -9,22 +9,17 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JFrame;
-
-import repast.simphony.ui.RSApplication;
-import repast.simphony.util.ClassUtilities;
-import repast.simphony.util.ContextUtils;
-import repast.simphony.visualization.gui.DisplayConfigurationWizard;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
-import uk.ac.dmu.iesd.cascade.context.CascadeConfigContextBuilder;
 import javax.swing.JList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.reflections.Reflections;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import repast.simphony.ui.RSApplication;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 
 /**
  * @author jsnape

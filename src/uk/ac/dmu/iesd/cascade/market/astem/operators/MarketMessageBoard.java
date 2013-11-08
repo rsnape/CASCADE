@@ -2,6 +2,7 @@ package uk.ac.dmu.iesd.cascade.market.astem.operators;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
 import uk.ac.dmu.iesd.cascade.market.IMarket;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.data.ImbalData;
@@ -32,11 +33,22 @@ public class MarketMessageBoard implements IMarket {
 		return arr_mip;
 	}
 	
+	/*
+	 * 
+	 * (non-Javadoc)
+	 * @see uk.ac.dmu.iesd.cascade.market.IMarket#getBMP()
+	 */
 	public double getBMP() {
 		return 0;
 	}
 
-	
+	/***
+	 * set the Market index price array.
+	 * 
+	 * As configured (Day ahead market), this is called at the end of each day to set the MIP for 
+	 * each settlement period of the following day.  This is then available to all while that day executes
+	 * before being reset again at the end of the day.
+	 */
 	public void setMIP(double[] mip) {
 		this.arr_mip = mip;
 	}

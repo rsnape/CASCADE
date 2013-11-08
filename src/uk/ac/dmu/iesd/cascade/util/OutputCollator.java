@@ -4,7 +4,6 @@
 package uk.ac.dmu.iesd.cascade.util;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.ArrayList;

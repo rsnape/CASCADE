@@ -50,6 +50,8 @@ public class CSVReader {
 	String CSVFileName = null;
 	int maxCols = 0;
 
+	
+	
 	public void parseRaw()
 	{
 		boolean hasNextLine = true;

@@ -11,11 +11,8 @@ import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 
@@ -57,6 +54,8 @@ public class EquationBasedPriceAggregatorWithLag extends AggregatorAgent {
 		this.laggedPrice = new double [lag+1];
 		Arrays.fill(this.laggedPrice, 125);
 		this.addNoise = noise;
+		this.category = Consts.BMU_CATEGORY.DEM_S;
+		this.type = Consts.BMU_TYPE.DEM_SMALL;
 		context.add(this);
 	}
 	

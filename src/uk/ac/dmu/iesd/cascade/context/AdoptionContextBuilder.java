@@ -2,72 +2,41 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 
-import cern.jet.random.Empirical;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-
 import repast.simphony.context.Context;
-import repast.simphony.context.space.gis.ContextGeography;
-import repast.simphony.context.space.gis.GeographyFactoryFinder;
 import repast.simphony.context.space.graph.NetworkFactory;
 import repast.simphony.context.space.graph.NetworkFactoryFinder;
 import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
-import repast.simphony.context.space.grid.GridFactoryFinder;
 import repast.simphony.dataLoader.ContextBuilder;
-import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.environment.RunState;
-import repast.simphony.engine.schedule.Schedule;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.PropertyEquals;
 import repast.simphony.query.Query;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.DefaultGeography;
-import repast.simphony.space.gis.Geography;
-import repast.simphony.space.gis.GeographyParameters;
-import repast.simphony.space.gis.ShapefileLoader;
-import repast.simphony.space.gis.ShapefileWriter;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.space.grid.GridBuilderParameters;
-import repast.simphony.space.grid.RandomGridAdder;
-import repast.simphony.space.grid.StickyBorders;
-import repast.simphony.ui.RSApplication;
 import repast.simphony.util.collections.IndexedIterable;
-import repast.simphony.visualization.IDisplay;
-import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
-//import uk.ac.dmu.iesd.cascade.styles.HouseholdTwoDStyle;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
+import cern.jet.random.Empirical;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 public class AdoptionContextBuilder implements ContextBuilder<Household>
 {

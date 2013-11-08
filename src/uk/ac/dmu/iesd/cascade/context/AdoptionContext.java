@@ -6,41 +6,24 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.spi.LoggingEvent;
-
-import cern.jet.random.EmpiricalWalker;
-import cern.jet.random.Normal;
-import cern.jet.random.Poisson;
-import cern.jet.random.Uniform;
 
 import repast.simphony.context.Context;
 import repast.simphony.context.ContextEvent;
 import repast.simphony.context.ContextEvent.EventType;
 import repast.simphony.context.ContextListener;
-import repast.simphony.context.DefaultContext;
-import repast.simphony.engine.environment.GUIRegistry;
-import repast.simphony.engine.environment.GUIRegistryType;
-import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
@@ -48,17 +31,10 @@ import repast.simphony.query.PropertyEquals;
 import repast.simphony.query.Query;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
-import repast.simphony.space.projection.Projection;
-import repast.simphony.util.collections.IndexedIterable;
-import repast.simphony.visualization.DefaultDisplayData;
-import repast.simphony.visualization.DisplayData;
-import repast.simphony.visualization.IDisplay;
 import repast.simphony.visualization.gis.DisplayGIS;
-import repast.simphony.visualizationOGL2D.DisplayOGL2D;
-import repast.simphony.visualizationOGL2D.StyledDisplayLayerOGL2D;
-//import uk.ac.dmu.iesd.cascade.styles.HouseholdTwoDStyle;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
+import cern.jet.random.Poisson;
 
 public class AdoptionContext extends CascadeContext{
 	

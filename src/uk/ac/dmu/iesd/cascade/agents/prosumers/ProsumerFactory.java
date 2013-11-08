@@ -6,8 +6,6 @@ package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
 import java.util.WeakHashMap;
 
-import org.apache.commons.lang.ArrayUtils;
-
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;

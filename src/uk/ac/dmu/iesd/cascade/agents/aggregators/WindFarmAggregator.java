@@ -3,17 +3,11 @@
  */
 package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.parameter.Parameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.base.Consts;
@@ -185,9 +179,9 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 	 * 
 	 * @param context the context in which this agent is situated 
 	 */
-	public WindFarmAggregator(CascadeContext context, MarketMessageBoard messageBoard, BMU_CATEGORY cat, BMU_TYPE type, double maxGen) {
+	public WindFarmAggregator(CascadeContext context, MarketMessageBoard messageBoard, double maxGen) {
 
-		super(context, messageBoard, cat, type, maxGen);
+		super(context, messageBoard, BMU_CATEGORY.GEN_T, BMU_TYPE.GEN_WIND, maxGen);
 		if (Consts.DEBUG) System.out.println("Wind Farm Aggregator created ");
 
 		this.ticksPerDay = context.getNbOfTickPerDay();

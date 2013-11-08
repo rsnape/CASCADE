@@ -13,9 +13,7 @@ import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.util.ContextUtils;
 import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
-import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
-import uk.ac.dmu.iesd.cascade.base.*;
 
 public class Household extends HouseholdProsumer {
 	private int PVCapital = 5000000;        // Cost in tenths of pence
@@ -117,7 +115,7 @@ public class Household extends HouseholdProsumer {
 		}
 		
 		
-		if (ArrayUtils.sum(this.baseProfile)*RandomHelper.nextDouble()*365*100 > smartContCapital)
+		if (false)//(ArrayUtils.sum(this.baseProfile)*RandomHelper.nextDouble()*365*100 > smartContCapital)
 		{
 			this.hasSmartControl = true;
 			this.setWattboxController();

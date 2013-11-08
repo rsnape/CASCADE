@@ -3,8 +3,7 @@
  */
 package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
-import java.util.ArrayList;
-
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 //import uk.ac.cranfield.market.SupplyPrediction;
@@ -72,10 +71,17 @@ public class ESCO extends AggregatorAgent{
 	public ESCO(CascadeContext context, double[] baseDemand) {
 
 		super(context);
+		
+		// By definition, an ESCO will be small demand
+		this.category = Consts.BMU_CATEGORY.DEM_S;
+		this.type = Consts.BMU_TYPE.DEM_SMALL;
 	}
 
 
-
+	public ESCO()
+	{
+		System.out.println("Constructed an unparameterised ESCO");
+	}
 	
 
 }

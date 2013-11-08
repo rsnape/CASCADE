@@ -3,7 +3,6 @@
  */
 package uk.ac.dmu.iesd.cascade.util.profilegenerators;
 
-import java.util.WeakHashMap;
 
 /**
  * 

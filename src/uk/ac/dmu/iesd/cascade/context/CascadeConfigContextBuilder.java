@@ -5,9 +5,7 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -22,15 +20,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-
-import cern.jet.random.Empirical;
 
 import repast.simphony.context.Context;
 import repast.simphony.context.space.graph.NetworkFactory;
@@ -42,7 +33,6 @@ import repast.simphony.query.PropertyEquals;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.util.collections.IndexedIterable;
-import simphony.util.messages.MessageCenter;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
@@ -53,7 +43,6 @@ import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory;
 import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
@@ -64,6 +53,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
+import cern.jet.random.Empirical;
 
 /**
  * @author jsnape

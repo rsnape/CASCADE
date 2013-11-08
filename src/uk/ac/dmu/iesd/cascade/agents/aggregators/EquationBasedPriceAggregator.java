@@ -9,11 +9,8 @@ import java.util.List;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 
@@ -32,6 +29,8 @@ public class EquationBasedPriceAggregator extends AggregatorAgent {
 	public EquationBasedPriceAggregator(CascadeContext context) {
 		super(context);
 		this.priceSignal = new double [1];
+		this.category = Consts.BMU_CATEGORY.DEM_S;
+		this.type = Consts.BMU_TYPE.DEM_SMALL;
 		context.add(this);
 	}
 

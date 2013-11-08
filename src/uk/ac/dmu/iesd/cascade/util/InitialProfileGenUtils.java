@@ -4,11 +4,9 @@ package uk.ac.dmu.iesd.cascade.util;
 import java.util.Arrays;
 import java.util.WeakHashMap;
 
-import cern.jet.random.Normal;
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.util.profilegenerators.MSHalfHourProfile;
 
 /**
  * A suite of profile generating methods for various appliance types.

@@ -5,16 +5,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-import org.apache.commons.math.stat.inference.TestUtils;
-
 import repast.simphony.engine.schedule.ScheduledMethod;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BOD;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.ITrader;
-import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
-import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
 
 /**
  *
@@ -80,7 +76,6 @@ public class SettlementCompany {
 	}
 	
 	public double getPrevDayIMBALforEachSP() {
-		
 		return this.arr_previousDayIMBAL[mainContext.getSettlementPeriod()];
 	}
 	
@@ -199,7 +194,7 @@ public class SettlementCompany {
 
 		if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP)/48)) { // second day
 			if (settlementPeriod == 0)
-				arr_reversePrice = PowerExchange.getReversePrice();
+				arr_reversePrice = PowerExchange.getReversePrice();  //JRS TODO: Why do we get this from PowerExchange, not MessageBoard?
 			
 			SysPriceVolData spvd_SBP = null; 
 			SysPriceVolData spvd_SSP = null;
@@ -225,6 +220,13 @@ public class SettlementCompany {
 
 			}
 
+			
+			/***
+			 * this makes sure that if the sell price is higher than the buy price, they equalise
+			 * if either goes to zero, they both go to zero.
+			 * 
+			 * If they're both happen to be zero - they're both set to an average of the prior two periods.
+			 */
 			if (arr_SSP[settlementPeriod] > arr_SBP[settlementPeriod] && arr_SBP[settlementPeriod] != 0) 
 				arr_SSP[settlementPeriod] = arr_SBP[settlementPeriod];
 			else if (arr_SBP[settlementPeriod] == 0.0 && arr_SSP[settlementPeriod] != 0.0)
@@ -255,7 +257,10 @@ public class SettlementCompany {
 		arr_mainPrice = new double[context.ticksPerDay];
 		arr_SSP = new double[context.ticksPerDay];
 		arr_SBP = new double[context.ticksPerDay];
-	
+		Arrays.fill(arr_mainPrice, 0);
+		Arrays.fill(arr_SSP, 0);
+		Arrays.fill(arr_SBP, 0);
+
 	}
 
 }

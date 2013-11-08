@@ -1,54 +1,17 @@
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
-import java.io.*;
-import java.math.*;
-import java.util.*;
-import javax.measure.unit.*;
+import static repast.simphony.essentials.RepastEssentials.FindNetwork;
+import static repast.simphony.essentials.RepastEssentials.GetParameter;
 
-//import org.apache.tools.ant.taskdefs.Sync.MyCopy;
-import org.hsqldb.lib.ArrayUtil;
-import org.jfree.util.ArrayUtilities;
-import org.jscience.mathematics.number.*;
-import org.jscience.mathematics.vector.*;
-import org.jscience.physics.amount.*;
+import java.util.Arrays;
 
-//import cern.colt.Arrays;
-import repast.simphony.adaptation.neural.*;
-import repast.simphony.adaptation.regression.*;
-import repast.simphony.context.*;
-import repast.simphony.context.space.continuous.*;
-import repast.simphony.context.space.gis.*;
-import repast.simphony.context.space.graph.*;
-import repast.simphony.context.space.grid.*;
-import repast.simphony.engine.environment.*;
-import repast.simphony.engine.schedule.*;
-import repast.simphony.engine.watcher.*;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
-import repast.simphony.groovy.math.*;
-import repast.simphony.integration.*;
-import repast.simphony.matlab.link.*;
-import repast.simphony.query.*;
-import repast.simphony.query.space.continuous.*;
-import repast.simphony.query.space.gis.*;
-import repast.simphony.query.space.graph.*;
-import repast.simphony.query.space.grid.*;
-import repast.simphony.query.space.projection.*;
-import repast.simphony.parameter.*;
-import repast.simphony.random.*;
-import repast.simphony.space.continuous.*;
-import repast.simphony.space.gis.*;
-import repast.simphony.space.graph.*;
-import repast.simphony.space.grid.*;
-import repast.simphony.space.projection.*;
-import repast.simphony.ui.probe.*;
-import repast.simphony.util.*;
-import simphony.util.messages.*;
+import repast.simphony.random.RandomHelper;
+import repast.simphony.space.graph.RepastEdge;
 import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.Consts.*;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
-import static java.lang.Math.*;
-import static repast.simphony.essentials.RepastEssentials.*;
 
 
 /**
@@ -204,7 +167,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		// Note - Repast can cope with fractions of a tick (a double is returned)
 		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
 		int time = (int) RepastEssentials.GetTickCount();
-		int timeOfDay = (time % ticksPerDay);
+		int timeOfDay = (time % this.mainContext.ticksPerDay);
 		CascadeContext myContext = this.getContext();
 
 		checkWeather(time);
@@ -311,7 +274,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 	 */
 	private double calculateFixedDayTotalDemand(int time) {
 		int baseProfileIndex = time % arr_otherDemandProfile.length;
-		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+ticksPerDay - 1));
+		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+this.mainContext.ticksPerDay - 1));
 	}
 
 	/*
@@ -387,11 +350,11 @@ public class NonDomesticProsumer extends ProsumerAgent{
 	{
 		// simplest smart controller implementation - perfect division of load through the day
 		double moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
-		double [] daysCostSignal = new double [ticksPerDay];
-		double [] daysOptimisedDemand = new double [ticksPerDay];
-		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+		double [] daysCostSignal = new double [this.mainContext.ticksPerDay];
+		double [] daysOptimisedDemand = new double [this.mainContext.ticksPerDay];
+		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, this.mainContext.ticksPerDay);
 
-		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
+		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, this.mainContext.ticksPerDay);
 
 		double [] tempArray = ArrayUtils.mtimes(daysCostSignal, daysOptimisedDemand);
 
@@ -404,11 +367,11 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		double swapAmount = -1;
 		while (movedLoad < moveableLoad && movedThisTime != 0)
 		{
-			Arrays.fill(daysOptimisedDemand, inelasticTotalDayDemand / ticksPerDay);
+			Arrays.fill(daysOptimisedDemand, inelasticTotalDayDemand / this.mainContext.ticksPerDay);
 			movedThisTime = 0;
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
 		}
-		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, ticksPerDay);
+		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, this.mainContext.ticksPerDay);
 		if (Consts.DEBUG)
 		{
 			if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
@@ -428,11 +391,11 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		// in lieu of knowledge of what can "switch off" and "switch on", we assume that
 		// the percentage moveable of the day's consumption is what may be time shifted
 		double moveableLoad = inelasticTotalDayDemand * percentageMoveableDemand;
-		double [] daysCostSignal = new double [ticksPerDay];
-		double [] daysOptimisedDemand = new double [ticksPerDay];
-		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, ticksPerDay);
+		double [] daysCostSignal = new double [this.mainContext.ticksPerDay];
+		double [] daysOptimisedDemand = new double [this.mainContext.ticksPerDay];
+		System.arraycopy(getPredictedCostSignal(), time - this.predictionValidTime, daysCostSignal, 0, this.mainContext.ticksPerDay);
 
-		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, ticksPerDay);
+		System.arraycopy(smartOptimisedProfile, time % smartOptimisedProfile.length, daysOptimisedDemand, 0, this.mainContext.ticksPerDay);
 
 		double [] tempArray = ArrayUtils.mtimes(daysCostSignal, daysOptimisedDemand);
 
@@ -458,7 +421,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 			}
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
 		}
-		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, ticksPerDay);
+		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, this.mainContext.ticksPerDay);
 		if (Consts.DEBUG)
 		{
 			if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
@@ -488,7 +451,7 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		Iterable socialConnections = FindNetwork("socialNetwork").getInEdges(this);
 		// Get social influence - note communication is not every tick
 		// hence the if clause
-		if ((time % (21 * ticksPerDay)) == 0)
+		if ((time % (21 * this.mainContext.ticksPerDay)) == 0)
 		{
 
 			for (Object thisConn: socialConnections)
@@ -520,8 +483,8 @@ public class NonDomesticProsumer extends ProsumerAgent{
 	
 		this.percentageMoveableDemand = RandomHelper.nextDoubleFromTo(0, 0.5);
 		setElasticityFactor(percentageMoveableDemand);
-		this.ticksPerDay = context.getNbOfTickPerDay();
-		if (baseDemand.length % ticksPerDay != 0)
+		this.mainContext.ticksPerDay = context.getNbOfTickPerDay();
+		if (baseDemand.length % this.mainContext.ticksPerDay != 0)
 		{
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("NonDomesticProsumer: Will be truncated and may cause unexpected behaviour");
@@ -532,6 +495,15 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		//smart controller will alter this
 		this.smartOptimisedProfile = new double [baseDemand.length];
 		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, smartOptimisedProfile.length);
+	}
+
+
+	/**
+	 * @param percentageMoveableDemand2
+	 */
+	private void setElasticityFactor(double percentageMoveableDemand2)
+	{
+		
 	}
 
 

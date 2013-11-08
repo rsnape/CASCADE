@@ -3,9 +3,6 @@
  */
 package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
-import javax.accessibility.AccessibleContext;
-
-import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 
 
 /**

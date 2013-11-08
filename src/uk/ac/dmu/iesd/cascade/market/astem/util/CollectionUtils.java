@@ -1,7 +1,6 @@
 package uk.ac.dmu.iesd.cascade.market.astem.util;
 
 import java.util.Collection;
-import uk.ac.dmu.iesd.cascade.market.astem.util.ArraysUtils;
 
 /**
  * Utility class applicable to collection types.

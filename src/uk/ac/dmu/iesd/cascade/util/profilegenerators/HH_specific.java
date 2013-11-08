@@ -1,9 +1,10 @@
 package uk.ac.dmu.iesd.cascade.util.profilegenerators;
 
-import repast.simphony.random.RandomHelper;
-import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import java.util.Arrays;
 import java.util.Date;
+
+import repast.simphony.random.RandomHelper;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 class HH_specific
 {

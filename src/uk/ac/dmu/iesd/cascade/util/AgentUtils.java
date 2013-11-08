@@ -6,16 +6,9 @@ package uk.ac.dmu.iesd.cascade.util;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.WeakHashMap;
 
 import repast.simphony.random.RandomHelper;
-import repast.simphony.util.collections.FilteredIterator;
-import repast.simphony.util.collections.IndexedIterable;
 import cern.jet.random.Empirical;
 
 /**

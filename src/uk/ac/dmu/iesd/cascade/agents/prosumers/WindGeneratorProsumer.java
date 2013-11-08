@@ -1,14 +1,7 @@
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
-import java.util.*;
-import repast.simphony.engine.schedule.*;
 import repast.simphony.essentials.RepastEssentials;
-import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
-import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 /**
  * @author J. Richard Snape
@@ -403,7 +396,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		// but I am assuming here we will deal in whole ticks and alter the
 		// resolution should we need
 		int time = (int) RepastEssentials.GetTickCount();
-		int timeOfDay = (time % ticksPerDay);
+		int timeOfDay = (time % this.mainContext.ticksPerDay);
 		CascadeContext myContext = this.getContext();
 
 		if ((time - offset) < 0 ) {
@@ -516,8 +509,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		this.numTurbines = turbines;
 		this.percentageMoveableDemand = 0;
 		this.maxTimeShift = 0;
-		this.ticksPerDay = context.getNbOfTickPerDay();
-		if (baseDemand.length % ticksPerDay != 0) {
+		if (baseDemand.length % this.mainContext.ticksPerDay != 0) {
 			System.err.print("Error/Warning message from "+this.getClass()+": BaseDemand array not a whole number of days.");
 			System.err.println("WindGeneratorProsumer: Will be truncated and may cause unexpected behaviour");
 		}

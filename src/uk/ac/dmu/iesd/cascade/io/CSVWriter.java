@@ -3,8 +3,6 @@ package uk.ac.dmu.iesd.cascade.io;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import uk.ac.dmu.iesd.cascade.base.Consts;
-
 /**
  * 
  * This class can be used to create CSV (Comma Separated Values)files.

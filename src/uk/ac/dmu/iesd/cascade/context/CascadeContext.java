@@ -2,32 +2,36 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.io.File;
 import java.io.IOException;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 import javax.swing.JComponent;
 
 import org.jfree.chart.ChartPanel;
 
-import cern.jet.random.EmpiricalWalker;
-import cern.jet.random.Normal;
-import cern.jet.random.Binomial;
-import cern.jet.random.Uniform;
-import cern.jet.random.Poisson;
-
-import repast.simphony.context.*;
-import repast.simphony.engine.schedule.*;
+import repast.simphony.context.Context;
+import repast.simphony.context.DefaultContext;
+import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.ISchedule;
+import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
-import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.space.projection.*;
+import repast.simphony.space.projection.Projection;
 import repast.simphony.ui.widget.SnapshotTaker;
-import repast.simphony.engine.environment.RunEnvironment;
-
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
 import uk.ac.dmu.iesd.cascade.market.ITrader;
+import cern.jet.random.Binomial;
+import cern.jet.random.EmpiricalWalker;
+import cern.jet.random.Normal;
+import cern.jet.random.Poisson;
+import cern.jet.random.Uniform;
 
 /**
  * <em>CascadeContext</em> is the main context for the <em>Cascade</em> framework.
@@ -729,7 +733,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param percentageOfHHProsWithGas
 	 */
 	public void setGasPercentage(int percentageOfHHProsWithGas)
-	{
+	{ 
 		this.gasHeatedPercentage = percentageOfHHProsWithGas;
 		
 	}

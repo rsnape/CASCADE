@@ -3,7 +3,6 @@ package uk.ac.dmu.iesd.cascade.market.astem.util;
 import java.util.Comparator;
 
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BOD;
-import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.market.data.BSOD;
 
 /**

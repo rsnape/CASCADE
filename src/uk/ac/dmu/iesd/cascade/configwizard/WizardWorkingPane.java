@@ -3,9 +3,6 @@
  */
 package uk.ac.dmu.iesd.cascade.configwizard;
 
-import java.util.ArrayList;
-
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.w3c.dom.Element;

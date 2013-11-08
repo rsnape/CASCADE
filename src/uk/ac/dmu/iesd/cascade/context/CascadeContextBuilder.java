@@ -4,17 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
 import java.util.WeakHashMap;
 
-import org.jgroups.tests.Probe;
-
-import cern.jet.random.Empirical;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
 import repast.simphony.context.space.graph.NetworkFactory;
@@ -22,49 +16,41 @@ import repast.simphony.context.space.graph.NetworkFactoryFinder;
 import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
-import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ISchedule;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.parameter.Parameters;
-import repast.simphony.query.*;
+import repast.simphony.query.PropertyEquals;
+import repast.simphony.query.Query;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.ui.RSApplication;
 import repast.simphony.util.collections.IndexedIterable;
-import repast.simphony.visualization.IDisplay;
-import repast.simphony.visualization.ProbeEvent;
-import repast.simphony.visualizationOGL2D.DisplayOGL2D;
-import uk.ac.dmu.iesd.cascade.market.IPxTrader;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
+import uk.ac.dmu.iesd.cascade.base.Consts;
+import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
+import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
+import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.SettlementCompany;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.SingleNonDomesticAggregator;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory;
-import uk.ac.dmu.iesd.cascade.base.Consts;
-import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
-import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
-import uk.ac.dmu.iesd.cascade.io.CSVReader;
-import uk.ac.dmu.iesd.cascade.test.HHProsumer;
-import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
-import uk.ac.dmu.iesd.cascade.util.*;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
+import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
+import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
+import cern.jet.random.Empirical;
 
 
 /**
@@ -739,16 +725,6 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 	{
 	IndexedIterable<HouseholdProsumer> householdProsumers = cascadeMainContext.getObjects(HouseholdProsumer.class);
 
-	/*----------------
-	 * Richard's occupancy test code
-	 * 
-	 * Note that this in effect is assuming that occupancy is independent of 
-	 * any of the other assigned variables.  This may not, of course, be true.
-	 */
-
-	//assign wet appliance ownership.  Based on statistical representation of the BERR 2006 ownership stats
-	// with a bias based on occupancy which seems reasonable.
-	// TODO: break this out into a separate method.  Store constants somewhere?  Should they read from file?
 	for (HouseholdProsumer thisAgent : householdProsumers)
 	{
 		if (RandomHelper.nextDouble() < 0.25)
@@ -800,6 +776,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		AggregatorFactory aggregatorFactory = FactoryFinder.createAggregatorTraderFactory(this.cascadeMainContext, this.messageBoard);
 		
 		SupplierCoAdvancedModel firstRecoAggregator = aggregatorFactory.createSupplierCoAdvanced(cascadeMainContext.systemPriceSignalDataArray);
+
 		cascadeMainContext.add(firstRecoAggregator);
 		
 		/**
@@ -816,7 +793,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		
 		//Add wind farms to the context
 		//TODO: Add functionality to allow greater flexibility in the creation of wind farms
-		createWindFarmsAndAddThemToContext();
+		//createWindFarmsAndAddThemToContext();
 		
 		// Add Wind Farm Aggregator to context here..
 		WindFarmAggregator wFA = aggregatorFactory.createWindFarmAggregator();
@@ -877,11 +854,11 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		double[] arr_baseline_GEN_CCGT  =  mapOfDMUtypeName2BaselineProfileArray.get("GEN_CCGT");
 		double[] arr_baseline_GEN_WIND  =  mapOfDMUtypeName2BaselineProfileArray.get("GEN_WIND");
 
-		int numOfDEM_LARGE = 1;
-		int numOfDEM_SMALL = 1;
-		int numOfGEN_COAL  = 1;
-		int numOfGEN_CCGT  = 1;
-		int numOfGEN_WIND  = 0; 
+		int numOfDEM_LARGE = 5;
+		int numOfDEM_SMALL = 3;
+		int numOfGEN_COAL  = 3;
+		int numOfGEN_CCGT  = 2;
+		int numOfGEN_WIND  = 27; 
 
 
 		for (int i=0; i< numOfDEM_LARGE; i++) {
@@ -928,7 +905,6 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 
 		readParamsAndInitializeArrays();
 		initializeProbabilityDistributions();
-				
 		buildMarket();
 		
 		populateContext();

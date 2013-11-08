@@ -26,8 +26,9 @@ public final class ASTEMConsts {
 	// would be normally where this project resides in Eclipse working space   
 	//public static String DATA_FILES_FOLDER_NAME = "\\dataFiles"; //data files are us
 	
-	public static String BMU_BASE_PROFILES_FILENAME = "BMU_BaseProfilesMINDEMAND.csv";  //DEM and GEN profiles
-	
+	public static String BMU_BASE_PROFILES_FILENAME = "BMU_BaseProfiles.csv";  //DEM and GEN profiles
+
+
 	/*---------------------
 	 * Units of Measurements
 	 *----------------------*/	
@@ -58,15 +59,15 @@ public final class ASTEMConsts {
 
 	public static int BMU_BO_NUM_OF_CHOICE= 10;
 	
-	public static int BMU_COAL_MAXCAP= 800;//1200
-	public static int BMU_CCGT_MAXCAP= 800;//800
-	public static int BMU_WIND_MAXCAP= 440;
+	public static int BMU_COAL_MAXCAP= 1200;
+	public static int BMU_CCGT_MAXCAP= 800;
+	public static int BMU_WIND_MAXCAP= 150;
 	
-	public static int BMU_LARGEDEM_MAXDEM = -400;//-1000;
-	public static int BMU_SMALLDEM_MAXDEM = -1;//-500
+	public static int BMU_LARGEDEM_MAXDEM = -1000;
+	public static int BMU_SMALLDEM_MAXDEM = -500;
 	
-	public static int BMU_LARGEDEM_MINDEM = -400;//-300;
-	public static int BMU_SMALLDEM_MINDEM = -1;//-100
+	public static int BMU_LARGEDEM_MINDEM = -300;
+	public static int BMU_SMALLDEM_MINDEM = -100;
 	
 	public static double BMU_MARGINPC_GEN_ = 0.05;
 	
@@ -79,19 +80,21 @@ public final class ASTEMConsts {
 	//public static int BMU_TYPE_I_GENDEM = 3; //[Demand sites]:unites relating to an Interconnector
 	//public static int BMU_TYPE_S_DEM = 4; //[Demand sites]:unites relating to Suppliers (e.g. aggregate demand of suppliers' consumers)
 
+	
+	
+	/*---------------------
+	 * PX Product type IDs 
+	 *---------------------*/
+	public static int PX_PRODUCT_ID_2H = 1;  //12x4 sp = 48
+	public static int PX_PRODUCT_ID_4H = 4;  //6x8  sp = 48
+	public static int PX_PRODUCT_ID_8H = 8; //3x16 sp = 48
+
 	/*---------------------
 	 * PX Imbalance Volume Threshold Factor 
 	 *---------------------*/
 	public static int PX_IMBAL_FACTOR = 20;  //12x4 sp = 48
 	public static double PX_IMBAL_MULTIFACTOR = 0.8;  //12x4 sp = 48
 	
-	
-	/*---------------------
-	 * PX Product type IDs 
-	 *---------------------*/
-	public static int PX_PRODUCT_ID_2H = 1;  //48x1 sp = 48
-	public static int PX_PRODUCT_ID_4H = 4;  //12x4  sp = 48
-	public static int PX_PRODUCT_ID_8H = 8; //6x8 sp = 48
 	
 	/*
 	public static enum IMBAL_TYPE {
@@ -110,10 +113,6 @@ public final class ASTEMConsts {
 	/*------------------------
 	 * Roth-Erev Learner Parameters  
 	 *-------------------------*/
-	/*------------------------
-	 * Roth-Erev Learner Parameters  
-	 *-------------------------*/
-	
 	public static double EXP_COAL = 0.5;
 	public static double REG_COAL = 0.9;
 	
@@ -128,7 +127,7 @@ public final class ASTEMConsts {
 	
 	public static double EXP_SMALLDEM = 0.5;
 	public static double REG_SMALLDEM = 0.9;
-			
+		
 	
 }
 

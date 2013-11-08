@@ -3,9 +3,9 @@
  */
 package uk.ac.dmu.iesd.cascade.util.profilegenerators;
 
+import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
-import repast.simphony.random.RandomHelper;
 
 
 /**

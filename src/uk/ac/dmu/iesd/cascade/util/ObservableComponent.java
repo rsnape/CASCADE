@@ -1,7 +1,7 @@
 package uk.ac.dmu.iesd.cascade.util;
 
-import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This class represents a concrete observable object/component.

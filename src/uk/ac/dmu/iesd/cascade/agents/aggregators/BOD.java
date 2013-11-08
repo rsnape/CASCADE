@@ -1,6 +1,7 @@
 package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
 import java.util.Arrays;
+
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
@@ -116,7 +117,7 @@ public class BOD {
 			this.arr_probabilities[i] = arr_propensities[i]/sumOfPropensities;
 		}
 		
-		int ind = RandomHelper.getUniform().nextIntFromTo(0, 2);
+		int ind = RandomHelper.getUniform().nextIntFromTo(0, 2); //TODO: JRS : Why pick randomly from first 3, rather than from all choices? JRS
 		this.submittedBO = this.arr_BO[ind];
 		
 	}

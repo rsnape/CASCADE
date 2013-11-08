@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.LinkedHashMap;
+
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.space.graph.Network;
-import repast.simphony.space.graph.RepastEdge;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BOD;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
@@ -19,10 +17,9 @@ import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.ITrader;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.data.ImbalData;
-import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
+import uk.ac.dmu.iesd.cascade.market.astem.util.ArraysUtils;
 import uk.ac.dmu.iesd.cascade.market.astem.util.CollectionUtils;
 import uk.ac.dmu.iesd.cascade.market.astem.util.SortComparatorUtils;
-import uk.ac.dmu.iesd.cascade.market.astem.util.ArraysUtils;
 
 /**
  * 
@@ -53,7 +50,7 @@ public class SystemOperator {
 	private double[] arr_IMBAL; //Imbalance
 	private double[] arr_oldIMBAL; // old/previous day Imbalance
 
-	private double[] arr_INDMAR; //Indicator Margin 
+	private double[] arr_INDMAR; //Indicator Margin across whole system - i.e. amount of potential generation across the system (maxCap - PNs) with the remaining IMBALANCE also subtracted
 	private ArrayList<ITrader> list_ITrader;  
 	private ArrayList<BOD> list_BOD;
 
@@ -375,7 +372,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 	private void broadcastPXImbalance(LinkedHashMap<Integer, ArrayList<ImbalData>> mapOfImbalType2ImbalData) {
 		this.messageBoard.setPxProductList(mapOfImbalType2ImbalData);
 	}
-		
+	
 
 	@ScheduledMethod(start = Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP, interval = 1, shuffle = false, priority = Consts.SO_PRIORITY_SECOND)
 	public void step() {

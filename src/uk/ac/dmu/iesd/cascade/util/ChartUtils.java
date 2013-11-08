@@ -6,8 +6,6 @@ package uk.ac.dmu.iesd.cascade.util;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,7 +27,6 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
-import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 import cern.jet.random.AbstractDiscreteDistribution;
