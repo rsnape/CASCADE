@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<parameters>
+					<parameter name="startDate" displayName="startDate" type="java.lang.String" 
+						defaultValue="01/01/2000" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="elecWaterFraction" displayName="elecWaterFraction" type="float" 
+						defaultValue="1.0" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$FloatConverter"
+									
+		/>
+				<parameter name="randomSeed" displayName="Default Random Seed" type="int" 
+						defaultValue="__NULL__"
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
+				<parameter name="systemBaseDemandFile" displayName="systemBaseDemandFile" type="java.lang.String" 
+						defaultValue="macroDemandStartingMonday.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="defraProfiles" displayName="defraProfiles" type="java.lang.String" 
+						defaultValue="1200profiles.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="ticksPerDay" displayName="ticksPerDay" type="java.lang.Integer" 
+						defaultValue="48" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
+				<parameter name="defraCategories" displayName="defraCategories" type="java.lang.String" 
+						defaultValue="DEFRA_pro_env_categories.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="smartControlDecisionThreshold" displayName="smartControlDecisionThreshold" type="java.lang.Double" 
+						defaultValue="0.9" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
+						defaultValue="yearWeather.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="defaultProsumersPerFeeder" displayName="defaultProsumersPerFeeder" type="java.lang.Integer" 
+						defaultValue="100" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
+				<parameter name="householdBaseAttributeFile" displayName="householdBaseAttributeFile" type="java.lang.String" 
+						defaultValue="1200profiles.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="defaultSignalLength" displayName="defaultSignalLength" type="java.lang.Integer" 
+						defaultValue="48" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
+									
+		/>
+				<parameter name="electricalNetworkLayoutFile" displayName="electricalNetworkLayoutFile" type="java.lang.String" 
+						defaultValue="networkTopology.csv" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
+						defaultValue="dataFiles" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									
+		/>
+				<parameter name="elecSpaceFraction" displayName="elecSpaceFraction" type="float" 
+						defaultValue="1.0" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$FloatConverter"
+									
+		/>
+				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
+						defaultValue="false" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
+									
+		/>
+		</parameters>
+
+

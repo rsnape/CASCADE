@@ -1,0 +1,18 @@
+<model name="Cascade">
+<classpath>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.*"/>
+<!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"/> -->
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.*"/>
+<!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo"/> -->
+<!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator"/> -->
+
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.test.HHProsumer"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.test.PAgent"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.SettlementCompany"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator"/>
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard"/>
+
+<entry path="../../Cascade/ExternalLib/commons-math-2.2.jar"/>
+</classpath>
+</model>
