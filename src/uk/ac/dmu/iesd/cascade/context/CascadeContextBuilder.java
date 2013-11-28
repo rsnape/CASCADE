@@ -4,15 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
 import java.util.WeakHashMap;
-
-import org.jgroups.tests.Probe;
 
 import cern.jet.random.Empirical;
 import repast.simphony.context.Context;
@@ -22,9 +17,7 @@ import repast.simphony.context.space.graph.NetworkFactoryFinder;
 import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
-import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.environment.RunState;
 import repast.simphony.engine.schedule.ISchedule;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.parameter.Parameters;
@@ -34,12 +27,7 @@ import repast.simphony.space.gis.Geography;
 import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
-import repast.simphony.ui.RSApplication;
 import repast.simphony.util.collections.IndexedIterable;
-import repast.simphony.visualization.IDisplay;
-import repast.simphony.visualization.ProbeEvent;
-import repast.simphony.visualizationOGL2D.DisplayOGL2D;
-import uk.ac.dmu.iesd.cascade.market.IPxTrader;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange;
@@ -48,12 +36,10 @@ import uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.SingleNonDomesticAggregator;
-import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.RaspPiHousehold;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory;
@@ -61,8 +47,6 @@ import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
-import uk.ac.dmu.iesd.cascade.test.HHProsumer;
-import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
 import uk.ac.dmu.iesd.cascade.util.*;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
 
@@ -72,12 +56,12 @@ import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
  * @version $Revision: 2.00 $ $Date: 2011/10/05 
  * 
  * Major changes for this submission include: 
- * • All the elements ('variable' declarations, including data structures consisting of values 
+ * ï¿½ All the elements ('variable' declarations, including data structures consisting of values 
  * [constant] or variables) of the type 'float' (32 bits) have been changed to 'double' (64 bits) (Babak Mahdavi)
  * 
  * CASCADE Project Version [ Model Built version] (Version# for the entire project/ as whole)
  *  @version $Revision: 3.00 $ $Date: 2012/05/30
- *  • Restructure of the entire project packages after with the integration with the ASTEM market model (Babak Mahdavi)
+ *  ï¿½ Restructure of the entire project packages after with the integration with the ASTEM market model (Babak Mahdavi)
  *   
  */
 
@@ -346,7 +330,32 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				System.err.println("Failed to add agent to context!!");
 			}
 		} 
-			
+		
+		RaspPiHousehold oneOffPiHH = new RaspPiHousehold(cascadeMainContext,map_nbOfOccToOtherDemand.get(2));
+		if (!cascadeMainContext.add(oneOffPiHH))	{
+			System.err.println("Failed to add the one off Rasp Pi agent to context!!");
+		}	
+		else
+		{
+			System.out.println("Put the one of Pi agent into the context");
+		}
+				
+		oneOffPiHH.setOptions();
+		oneOffPiHH.setHasDishWasher(true);
+		oneOffPiHH.setHasWasherDryer(true);
+		setWetAppsPerPBMatlabPrototype(oneOffPiHH);
+		oneOffPiHH.hasRefrigerator = true;
+		
+		oneOffPiHH.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.NB_OF_DAYS_LOADED_DEMAND, oneOffPiHH.hasRefrigerator, oneOffPiHH.hasFridgeFreezer, (oneOffPiHH.hasUprightFreezer || oneOffPiHH.hasChestFreezer)));
+
+		oneOffPiHH.setHasElectricalSpaceHeat(true);
+		oneOffPiHH.initializeElecSpaceHeatPar();
+		oneOffPiHH.setHasElectricalWaterHeat(true);
+		oneOffPiHH.initializeElectWaterHeatPar();
+		
+		System.err.println("Pi agent initialised with Water = " + Arrays.toString(oneOffPiHH.getWaterHeatProfile()));
+		
+		
 		System.out.println("Total # of HHPros added to context: " + cascadeMainContext.getObjects(HouseholdProsumer.class).size()); 
 		System.out.println("-----------------------------");
 
@@ -946,6 +955,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
 
+		
 		return cascadeMainContext;
 	}
 

@@ -11,6 +11,7 @@ import cern.colt.list.DoubleArrayList;
 import bsh.This;
 import repast.simphony.adaptation.neural.NeuralUtils;
 import repast.simphony.adaptation.neural.RepastNeuralWrapper;
+import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -27,7 +28,7 @@ import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
-import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
+//import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
@@ -960,7 +961,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		double b =1;
 		double s=1; /// Change this value to test for particular index!!!
 		//double s=-1;
-		//if (Consts.DEBUG) System.out.println(" £ RECO: Calculate e £");
+		//if (Consts.DEBUG) System.out.println(" ï¿½ RECO: Calculate e ï¿½");
 
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
@@ -999,7 +1000,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	private double calculateElasticityFactors_e_new(double[] arr_D, double[] arr_B, double[] arr_S, double[] arr_e) {	
 
 		double e=0;
-		//System.out.println(" £ RECO: Calculate e new £");
+		//System.out.println(" ï¿½ RECO: Calculate e new ï¿½");
 
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
@@ -1833,7 +1834,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 					broadcastSignalToCustomers(arr_i_S, customers);
 
 					//if (Consts.DEBUG)
-					
+					File dirName = new File("output".concat(File.separator).concat("Seed".concat(Integer.toString(mainContext.getRandomSeedValue())).concat("GasFrac").concat(Double.toString(mainContext.getGasPercentage()))));
+					dirName.mkdirs();
 					writeOutput("output".concat(File.separator).concat("Seed".concat(Integer.toString(mainContext.getRandomSeedValue())).concat("GasFrac").concat(Double.toString(mainContext.getGasPercentage()))),"output2_NormalBiz_day_",false, arr_i_C, arr_i_norm_C, arr_i_B, this.getDayNetDemands(), arr_i_S, Cavge,  ArrayUtils.zip(Kneg,Kpos));
 				}
 
@@ -2031,7 +2033,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		
 	}
 	
-	public SupplierCoAdvancedModel(AdoptionContext context) {
+	public SupplierCoAdvancedModel(CascadeContext context) {
 
 		//super(context,null,null,null,0);
 		super(context);

@@ -182,7 +182,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	ISmartController mySmartController;
 	WeakHashMap<String,double[]> currentSmartProfiles; 
 	
-	private double[] coldApplianceProfile;
+	protected double[] coldApplianceProfile;
 	protected WeakHashMap<String,double[]> coldApplianceProfiles;
 	
 	public double[] wetApplianceProfile;
@@ -624,7 +624,9 @@ public class HouseholdProsumer extends ProsumerAgent{
 	private double coldApplianceDemand() 
 	{
 		if (this.isHasColdAppliances())
+		{
 			return this.coldApplianceProfile[time % coldApplianceProfile.length];
+		}		
 		else return 0d;
 	}
 
@@ -1198,6 +1200,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 			this.setWaterHeatProfile(ArrayUtils.multiply(hotWaterNeededProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP) );
 		}
 		else {
+			System.err.println("No water heating!!!");
+
 			double[] noWaterHeating = new double[mainContext.ticksPerDay];
 			//double[] noWaterHeating = new double[this.lengthOfDemandProfile];
 			Arrays.fill(noWaterHeating,0);
@@ -1310,23 +1314,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return spaceHeatDemand;
 	}
 	
-	@ScheduledMethod(start = 0, interval = 0, priority = Consts.PROSUMER_PRIORITY_FIFTH)
-	public void probeSpecificAgent()
-	{
-	if (this.getAgentID() == 691)
-	{
-		ArrayList probed = new ArrayList();
-		probed.add(this);
-		List<IDisplay> listOfDisplays = RunState.getInstance().getGUIRegistry().getDisplays();
-		for (IDisplay display : listOfDisplays) {
 
-			if (display instanceof DisplayOGL2D)
-			{
-				((DisplayOGL2D) display).getProbeSupport().fireProbeEvent(this, probed);
-			}
-		}
-	}
-	}
 	
 	/******************
 	 * This method defines the step behaviour of a prosumer agent
@@ -1338,6 +1326,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 
 	public void step() {
+
 		// Note the simulation time if needed.
 		// Note - Repast can cope with fractions of a tick (a double is returned)
 		// but I am assuming here we will deal in whole ticks and alter the resolution should we need

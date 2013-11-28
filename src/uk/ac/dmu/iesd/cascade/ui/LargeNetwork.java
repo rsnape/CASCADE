@@ -13,6 +13,7 @@ import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.context.*;
+import repast.simphony.visualization.Box;
 import repast.simphony.visualization.Layout;
 import repast.simphony.visualization.VisualizationProperties;
 import repast.simphony.space.projection.Projection;
@@ -85,6 +86,14 @@ public class LargeNetwork implements Layout {
 	
 	public String getName() {
 		return "LargeNetwork";
+	}
+
+	/* (non-Javadoc)
+	 * @see repast.simphony.visualization.Layout#getBoundingBox()
+	 */
+	@Override
+	public Box getBoundingBox() {
+		return new Box();
 	}
 
 }
