@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.WeakHashMap;
 
+import cern.jet.random.Empirical;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.gis.GeographyFactoryFinder;
 import repast.simphony.context.space.graph.NetworkFactory;
@@ -28,12 +29,19 @@ import repast.simphony.space.gis.GeographyParameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.util.collections.IndexedIterable;
+import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
+import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
+import uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange;
+import uk.ac.dmu.iesd.cascade.market.astem.operators.SettlementCompany;
+import uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.WindFarmAggregator;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.RaspPiHousehold;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.WindGeneratorProsumer;
@@ -41,14 +49,7 @@ import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.base.FactoryFinder;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
-import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
-import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
-import uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange;
-import uk.ac.dmu.iesd.cascade.market.astem.operators.SettlementCompany;
-import uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator;
-import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
-import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
-import uk.ac.dmu.iesd.cascade.util.IterableUtils;
+import uk.ac.dmu.iesd.cascade.util.*;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
 import cern.jet.random.Empirical;
 
@@ -58,12 +59,12 @@ import cern.jet.random.Empirical;
  * @version $Revision: 2.00 $ $Date: 2011/10/05 
  * 
  * Major changes for this submission include: 
- * • All the elements ('variable' declarations, including data structures consisting of values 
+ * Â• All the elements ('variable' declarations, including data structures consisting of values 
  * [constant] or variables) of the type 'float' (32 bits) have been changed to 'double' (64 bits) (Babak Mahdavi)
  * 
  * CASCADE Project Version [ Model Built version] (Version# for the entire project/ as whole)
  *  @version $Revision: 3.00 $ $Date: 2012/05/30
- *  • Restructure of the entire project packages after with the integration with the ASTEM market model (Babak Mahdavi)
+ *  Â• Restructure of the entire project packages after with the integration with the ASTEM market model (Babak Mahdavi)
  *   
  */
 
@@ -332,7 +333,32 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 				System.err.println("Failed to add agent to context!!");
 			}
 		} 
-			
+		
+		RaspPiHousehold oneOffPiHH = new RaspPiHousehold(cascadeMainContext,map_nbOfOccToOtherDemand.get(2));
+		if (!cascadeMainContext.add(oneOffPiHH))	{
+			System.err.println("Failed to add the one off Rasp Pi agent to context!!");
+		}	
+		else
+		{
+			System.out.println("Put the one of Pi agent into the context");
+		}
+				
+		oneOffPiHH.setOptions();
+		oneOffPiHH.setHasDishWasher(true);
+		oneOffPiHH.setHasWasherDryer(true);
+		setWetAppsPerPBMatlabPrototype(oneOffPiHH);
+		oneOffPiHH.hasRefrigerator = true;
+		
+		oneOffPiHH.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.NB_OF_DAYS_LOADED_DEMAND, oneOffPiHH.hasRefrigerator, oneOffPiHH.hasFridgeFreezer, (oneOffPiHH.hasUprightFreezer || oneOffPiHH.hasChestFreezer)));
+
+		oneOffPiHH.setHasElectricalSpaceHeat(true);
+		oneOffPiHH.initializeElecSpaceHeatPar();
+		oneOffPiHH.setHasElectricalWaterHeat(true);
+		oneOffPiHH.initializeElectWaterHeatPar();
+		
+		System.err.println("Pi agent initialised with Water = " + Arrays.toString(oneOffPiHH.getWaterHeatProfile()));
+		
+		
 		System.out.println("Total # of HHPros added to context: " + cascadeMainContext.getObjects(HouseholdProsumer.class).size()); 
 		System.out.println("-----------------------------");
 
@@ -922,6 +948,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		if (cascadeMainContext.verbose)	
 			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
 
+		
 		return cascadeMainContext;
 	}
 

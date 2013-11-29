@@ -23,6 +23,8 @@ import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.Projection;
 import repast.simphony.ui.widget.SnapshotTaker;
+import repast.simphony.engine.environment.RunEnvironment;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.RaspPiHousehold;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
@@ -590,7 +592,7 @@ public class CascadeContext extends DefaultContext{
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
 		//if (Consts.DEBUG) System.out.println("calendarStep()");
-		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);		
+		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
 	}
 	
 	public Date getDateTime() {
@@ -733,7 +735,7 @@ public class CascadeContext extends DefaultContext{
 	 * @param percentageOfHHProsWithGas
 	 */
 	public void setGasPercentage(int percentageOfHHProsWithGas)
-	{ 
+	{
 		this.gasHeatedPercentage = percentageOfHHProsWithGas;
 		
 	}

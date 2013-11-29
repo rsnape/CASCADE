@@ -14,11 +14,11 @@
   <editedStyles>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent</string>
-      <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent.style_1.xml</string>
+      <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent.style_0.xml</string>
     </entry>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent</string>
-      <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent.style_1.xml</string>
+      <string>uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent.style_0.xml</string>
     </entry>
   </editedStyles>
   <netStyles>

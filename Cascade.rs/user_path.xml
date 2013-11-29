@@ -1,7 +1,7 @@
 <model name="Cascade">
 <classpath>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.*"/>
-<!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"/> -->
+<agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.prosumers.RaspPiHousehold"/>
 <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.*"/>
 <!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo"/> -->
 <!-- <agents path="../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator"/> -->
