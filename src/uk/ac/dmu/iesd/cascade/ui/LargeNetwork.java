@@ -16,10 +16,12 @@ import uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.context.*;
-import repast.simphony.visualization.Box;
+//Imports below would be needed for later versions of Repast
+/*import repast.simphony.visualization.Box;
 import repast.simphony.visualization.Layout;
 import repast.simphony.visualization.VisualizationProperties;
 import repast.simphony.space.projection.Projection;
+*/
 
 public class LargeNetwork implements Layout {
 	float x, y;
@@ -98,10 +100,16 @@ public class LargeNetwork implements Layout {
 
 	/* (non-Javadoc)
 	 * @see repast.simphony.visualization.Layout#getBoundingBox()
+	 * 
+	 * Needed for later distributions of Repast
 	 */
+	
+	/*
 	@Override
 	public Box getBoundingBox() {
 		return new Box();
 	}
+	*/
+	
 
 }

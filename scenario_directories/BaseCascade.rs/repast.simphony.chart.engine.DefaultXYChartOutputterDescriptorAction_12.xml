@@ -1,5 +1,5 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>SmartControlCount</name>
+  <name>PVCount</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
@@ -27,9 +27,9 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>SmartControlCount</seriesID>
-      <valueColumn>SmartControlCount</valueColumn>
-      <hashCode>312084011</hashCode>
+      <seriesID>PVCount</seriesID>
+      <valueColumn>PVCount</valueColumn>
+      <hashCode>-1971081217</hashCode>
       <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>

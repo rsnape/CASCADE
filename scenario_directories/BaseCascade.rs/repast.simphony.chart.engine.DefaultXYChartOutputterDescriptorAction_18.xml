@@ -1,22 +1,22 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>Cumulative CO2 saving</name>
+  <name>A Chart</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>CO2_data</string>
+      <string>AllAggs</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">CO2_data</dataSetId>
+  <dataSetId class="string">AllAggs</dataSetId>
   <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>3360.0</visibleXRange>
+  <visibleXRange>100.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
@@ -28,8 +28,8 @@
   <series>
     <repast.simphony.chart.Series>
       <seriesID>AgentName</seriesID>
-      <valueColumn>TotalCO2saving</valueColumn>
-      <hashCode>344123733</hashCode>
+      <valueColumn>NetDemand</valueColumn>
+      <hashCode>913364577</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

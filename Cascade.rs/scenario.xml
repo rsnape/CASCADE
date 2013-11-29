@@ -20,15 +20,10 @@
 <repast.simphony.data.logging.outputter.engine.DefaultOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.data.logging.outputter.engine.DefaultOutputterDescriptorAction_17.xml" />
 <repast.simphony.data.logging.outputter.engine.DefaultOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.data.logging.outputter.engine.DefaultOutputterDescriptorAction_18.xml" />
 <repast.simphony.data.logging.outputter.engine.DefaultOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.data.logging.outputter.engine.DefaultOutputterDescriptorAction_19.xml" />
-<repast.simphony.action.display context="CascadeContextMain" file="repast.simphony.action.display_20.xml" />
+<repast.simphony.action.display context="CascadeContextMain" file="repast.simphony.action.display_1.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_21.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_22.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_23.xml" />
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_24.xml" />
-<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_25.xml" />
-<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_26.xml" />
-<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_27.xml" />
-<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_28.xml" />
-<repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction context="CascadeContextMain" file="repast.simphony.chart.engine.DefaultXYChartOutputterDescriptorAction_29.xml" />
 <model.initializer class="uk.ac.dmu.iesd.cascade.base.Initializer" />
 </Scenario>

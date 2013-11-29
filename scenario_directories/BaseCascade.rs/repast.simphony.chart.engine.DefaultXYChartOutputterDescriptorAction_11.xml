@@ -1,16 +1,16 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>WindGenChart</name>
+  <name>Signal</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>WindOutput</string>
+      <string>aggData</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">WindOutput</dataSetId>
+  <dataSetId class="string">aggData</dataSetId>
   <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
@@ -28,8 +28,8 @@
   <series>
     <repast.simphony.chart.Series>
       <seriesID>AgentName</seriesID>
-      <valueColumn>NetDemand</valueColumn>
-      <hashCode>913364577</hashCode>
+      <valueColumn>CurrentPriceSignal</valueColumn>
+      <hashCode>908755569</hashCode>
       <proxy>false</proxy>
     </repast.simphony.chart.Series>
   </series>

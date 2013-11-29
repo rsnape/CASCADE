@@ -1,22 +1,22 @@
 <repast.simphony.chart.engine.DefaultXYChartOutputterDescriptor>
-  <name>TotalPVGen</name>
+  <name>SmartControlCount</name>
   <outputterFactory class="repast.simphony.chart.wizard.XYChartMappingsStep$XYFactory"/>
   <dataSetHandler>
     <dataSets>
-      <string>DistGeneration</string>
+      <string>PVCount</string>
     </dataSets>
   </dataSetHandler>
   <streamHandler>
     <columns/>
   </streamHandler>
   <isBatchAction>false</isBatchAction>
-  <dataSetId class="string">DistGeneration</dataSetId>
+  <dataSetId class="string">PVCount</dataSetId>
   <showLegend>false</showLegend>
   <multipleSeries>false</multipleSeries>
   <xColumnName>Tick</xColumnName>
   <autoRangeX>true</autoRangeX>
   <autoRangeY>true</autoRangeY>
-  <visibleXRange>100.0</visibleXRange>
+  <visibleXRange>3360.0</visibleXRange>
   <visibleYRange>0.0</visibleYRange>
   <xMin>0.0</xMin>
   <xMax>0.0</xMax>
@@ -27,9 +27,9 @@
   <seriesType>LINE</seriesType>
   <series>
     <repast.simphony.chart.Series>
-      <seriesID>New Column</seriesID>
-      <valueColumn>New Column</valueColumn>
-      <hashCode>1505018413</hashCode>
+      <seriesID>SmartControlCount</seriesID>
+      <valueColumn>SmartControlCount</valueColumn>
+      <hashCode>312084011</hashCode>
       <proxy>true</proxy>
     </repast.simphony.chart.Series>
   </series>
