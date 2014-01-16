@@ -334,7 +334,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 			}
 		} 
 		
-		RaspPiHousehold oneOffPiHH = new RaspPiHousehold(cascadeMainContext,map_nbOfOccToOtherDemand.get(2));
+/*		RaspPiHousehold oneOffPiHH = new RaspPiHousehold(cascadeMainContext,map_nbOfOccToOtherDemand.get(2));
 		if (!cascadeMainContext.add(oneOffPiHH))	{
 			System.err.println("Failed to add the one off Rasp Pi agent to context!!");
 		}	
@@ -357,7 +357,7 @@ public class CascadeContextBuilder implements ContextBuilder<Object> {
 		oneOffPiHH.initializeElectWaterHeatPar();
 		
 		System.err.println("Pi agent initialised with Water = " + Arrays.toString(oneOffPiHH.getWaterHeatProfile()));
-		
+		*/
 		
 		System.out.println("Total # of HHPros added to context: " + cascadeMainContext.getObjects(HouseholdProsumer.class).size()); 
 		System.out.println("-----------------------------");

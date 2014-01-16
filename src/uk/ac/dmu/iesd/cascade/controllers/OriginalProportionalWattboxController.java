@@ -736,13 +736,13 @@ public class OriginalProportionalWattboxController implements ISmartController
 			// ((owner.buildingHeatLossRate /
 			// Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY
 			// / ticksPerDay);
-			double setPointMaintenanceEnergy = (this.setPointProfile[i] - priorDayExternalTempProfile[i]) * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
+			double setPointMaintenanceEnergy = (this.setPointProfile[i] - priorDayExternalTempProfile[i]) * ((owner.getBuildingHeatLossRate() / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
 
 			// tempChangePower can be -ve if the temperature is falling. If
 			// tempChangePower magnitude
 			// is greater than or equal to setPointMaintenance, the heat pump is
 			// off.
-			double tempChangeEnergy = tempChange * owner.buildingThermalMass;
+			double tempChangeEnergy = tempChange * owner.getBuildingThermalMass();
 
 			// Although the temperature profiles supplied should be such that
 			// the heat

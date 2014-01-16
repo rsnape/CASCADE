@@ -117,8 +117,8 @@ public class ProsumerProbeListener implements ProbeListener {
 				variablesBox.setBackground(Color.WHITE);
 				variablesBox.add(new JLabel("Has Gas? " + thisAgent.isHasGas()));
 				variablesBox.add(new JLabel("Tau (secs) = " + String.format("%.2f", thisAgent.tau)));
-				variablesBox.add(new JLabel("M (kWh / deg C) = " + String.format("%.2f", thisAgent.buildingThermalMass)));
-				variablesBox.add(new JLabel("L (W / deg C) = " + String.format("%.2f", thisAgent.buildingHeatLossRate)));
+				variablesBox.add(new JLabel("M (kWh / deg C) = " + String.format("%.2f", thisAgent.getBuildingThermalMass())));
+				variablesBox.add(new JLabel("L (W / deg C) = " + String.format("%.2f", thisAgent.getBuildingHeatLossRate())));
 				variablesBox.add(new JLabel("Occupants = " + thisAgent.getNumOccupants()));
 				propertiesPanel.add(variablesBox,BorderLayout.CENTER);
 				propertiesPanel.setBackground(Color.WHITE);

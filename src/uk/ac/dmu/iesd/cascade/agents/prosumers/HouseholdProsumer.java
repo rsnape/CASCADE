@@ -116,12 +116,21 @@ public class HouseholdProsumer extends ProsumerAgent{
 	/**
 	 * Thermal mass of building (expressed in kWh per deg C)
 	 */
-	public double buildingThermalMass;
+	protected double buildingThermalMass;
 	/**
 	 * Heat loss rate for the building (expressed in Watts per degree C, or Joules per second per deg C)
 	 */
-	public double buildingHeatLossRate;
+	protected double buildingHeatLossRate;
+	
+	public double getBuildingHeatLossRate()
+	{
+		return this.buildingHeatLossRate;
+	}
 
+	public double getBuildingThermalMass()
+	{
+		return this.buildingThermalMass;
+	}
 	/*
 	 * temperature control parameters
 	 */
@@ -1337,6 +1346,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 			}
 		}
 	}
+	
+
 	}
 	
 	/******************

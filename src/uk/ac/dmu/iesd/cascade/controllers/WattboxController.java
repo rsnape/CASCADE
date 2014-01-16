@@ -667,7 +667,7 @@ public class WattboxController implements ISmartController{
 		double[] localDemandProfile = calculateEstimatedSpaceHeatPumpDemand(setPointProfile);
 		double leastCost = evaluateCost(localDemandProfile);
 		double newCost = leastCost;
-		double maxRecoveryPerTick = 0.5d * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * ArrayUtils.max(deltaT)) ; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
+		double maxRecoveryPerTick = 0.5d * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE * ((owner.getBuildingHeatLossRate() / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * ArrayUtils.max(deltaT)) ; // i.e. can't recover more than 50% of heat loss at 90% COP.  TODO: Need to code this better later
 
 		for (int i = 0; i < localSetPointArray.length; i++)
 		{
@@ -678,7 +678,7 @@ public class WattboxController implements ISmartController{
 
 			for ( int j = 0; (j < Consts.HEAT_PUMP_MAX_SWITCHOFF && (i+j < ticksPerDay)); j++)
 			{
-				double tempLoss = (((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * Math.max(0,(localSetPointArray[i+j] - priorDayExternalTempProfile[i+j]))) / owner.buildingThermalMass);
+				double tempLoss = (((owner.getBuildingHeatLossRate() / Consts.KWH_TO_JOULE_CONVERSION_FACTOR) * (Consts.SECONDS_PER_DAY / ticksPerDay) * Math.max(0,(localSetPointArray[i+j] - priorDayExternalTempProfile[i+j]))) / owner.getBuildingThermalMass());
 				//System.out.println("Temp loss in tick " + (i + j) + " = " + tempLoss);
 				totalTempLoss += tempLoss;						
 
@@ -690,7 +690,7 @@ public class WattboxController implements ISmartController{
 				double availableHeatRecoveryTicks = localSetPointArray.length - j;
 
 				//Sort out where to regain the temperature (if possible)
-				int n = (int) Math.ceil((totalTempLoss * owner.buildingThermalMass) / maxRecoveryPerTick);
+				int n = (int) Math.ceil((totalTempLoss * owner.getBuildingThermalMass()) / maxRecoveryPerTick);
 				// Take this slot out of the potential cheap slots to recover temp in.
 				otherPrices[i+j] = Double.POSITIVE_INFINITY;
 
@@ -802,11 +802,11 @@ public class WattboxController implements ISmartController{
 			}
 
 			//double setPointMaintenanceEnergy = deltaT[i] * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
-			double setPointMaintenanceEnergy = (this.setPointProfile[i] - priorDayExternalTempProfile[i]) * ((owner.buildingHeatLossRate / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
+			double setPointMaintenanceEnergy = (this.setPointProfile[i] - priorDayExternalTempProfile[i]) * ((owner.getBuildingHeatLossRate() / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
 
 			//tempChangePower can be -ve if the temperature is falling.  If tempChangePower magnitude
 			//is greater than or equal to setPointMaintenance, the heat pump is off.
-			double tempChangeEnergy = tempChange * owner.buildingThermalMass;
+			double tempChangeEnergy = tempChange * owner.getBuildingThermalMass();
 
 			// Although the temperature profiles supplied should be such that the heat
 			// can always be recovered within a reasonable cap - we could put a double
