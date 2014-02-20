@@ -219,7 +219,7 @@ public class RaspPiHousehold extends HouseholdProsumer {
 	public RaspPiHousehold(CascadeContext context, double[] otherDemandProfile) {
 		super(context, otherDemandProfile);
 
-		piURL = "http://10.14.140.74/action";
+		piURL = "http://10.14.140.211/action";
 	}
 
 
