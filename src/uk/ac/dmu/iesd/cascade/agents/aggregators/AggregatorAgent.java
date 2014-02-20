@@ -315,6 +315,11 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 		// if (Consts.DEBUG) System.out.println(
 		// time+" getCurrentPriceSignal: "+priceSignal[(int) time %
 		// priceSignal.length]);
+		if (priceSignal == null || time < 0)
+		{
+			return 0;
+		}
+		
 		return priceSignal[(int) time % priceSignal.length];
 	}
 

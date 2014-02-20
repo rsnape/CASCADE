@@ -38,8 +38,10 @@
     <start>1.0</start>
     <interval>0.0</interval>
     <priority>-Infinity</priority>
+    <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>ONE_TIME</frequency>
+    <hashCode>0</hashCode>
   </schedParams>
   <layoutClassName>uk.ac.dmu.iesd.cascade.ui.LargeNetwork</layoutClassName>
   <layoutProjection>economicNetwork</layoutProjection>
