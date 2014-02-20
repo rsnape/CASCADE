@@ -18,7 +18,7 @@
 	</aggregator>
 	<!--  First aggregator with households - no Gas and a range of thermal properties -->
 	<aggregator
-		class="uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag"
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel"
 		number="1">
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="500">
@@ -30,7 +30,7 @@
 	</aggregator>
 	<!--  Second aggregator with households - no Gas and a single (average) thermal property -->
 		<aggregator
-		class="uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag"
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel"
 		number="1">
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="500">
@@ -42,7 +42,7 @@
 	</aggregator>
 	<!--  Third aggregator with households - 60% gas and rather extreme poor thermal properties -->
 		<aggregator
-		class="uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag"
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel"
 		number="1">
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="500">
