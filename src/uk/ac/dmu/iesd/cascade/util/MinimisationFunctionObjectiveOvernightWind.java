@@ -3,6 +3,8 @@
  */
 package uk.ac.dmu.iesd.cascade.util;
 
+import java.util.Arrays;
+
 import org.apache.commons.mathforsimplex.analysis.MultivariateRealFunction;
 import org.jgap.Chromosome;
 import org.jgap.FitnessFunction;
@@ -71,7 +73,7 @@ public class MinimisationFunctionObjectiveOvernightWind  extends FitnessFunction
 			m=ArrayUtils.sum(ArrayUtils.absoluteValues(ArrayUtils.offset(d, -ArrayUtils.avg(d))));
 			
 			//For overnight wind - use this
-			/*double[] windDesire = new double[48];
+			double[] windDesire = new double[48];
 			Arrays.fill(windDesire, -1d/34);
 			for (int i = 0; i < 15; i++)
 			{
@@ -79,11 +81,11 @@ public class MinimisationFunctionObjectiveOvernightWind  extends FitnessFunction
 			}
 			if (printD)
 			{
-			System.err.println(Arrays.toString(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d))));
+				System.err.println(Arrays.toString(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d))));
 			}
 			
 			m = ArrayUtils.sum(ArrayUtils.add(d,ArrayUtils.negate(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d)))));
-			*/
+			
 			
 			//m=(ArrayUtils.max(d)/ArrayUtils.avg(d))*1000;
 			numEvaluations++;

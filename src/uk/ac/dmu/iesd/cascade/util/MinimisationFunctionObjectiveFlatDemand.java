@@ -68,21 +68,6 @@ public class MinimisationFunctionObjectiveFlatDemand  extends FitnessFunction im
 			
 			m=ArrayUtils.sum(ArrayUtils.absoluteValues(ArrayUtils.offset(d, -ArrayUtils.avg(d))));
 			
-			//For overnight wind - use this
-			double[] windDesire = new double[48];
-			Arrays.fill(windDesire, -1d/34);
-			for (int i = 0; i < 15; i++)
-			{
-				windDesire[i] = 1d/14;
-			}
-			if (printD)
-			{
-			System.err.println(Arrays.toString(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d))));
-			}
-			
-			m = ArrayUtils.sum(ArrayUtils.add(d,ArrayUtils.negate(ArrayUtils.offset(ArrayUtils.multiply(windDesire,ArrayUtils.avg(d)), ArrayUtils.avg(d)))));
-			
-			
 			//m=(ArrayUtils.max(d)/ArrayUtils.avg(d))*1000;
 			numEvaluations++;
 			m += checkPlusMin1Constraint(arr_S);
