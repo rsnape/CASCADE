@@ -38,9 +38,11 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
+import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionNeuralNetReady;
+import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveFlatDemand;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
-import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.SIGNAL_TYPE;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.TRAINING_S_SHAPE;
 import cern.colt.list.DoubleArrayList;
 import flanagan.math.Fmath;
 import flanagan.math.Matrix;
@@ -67,290 +69,22 @@ import flanagan.math.MinimisationFunction;
 
 public class SupplierCo extends BMPxTraderAggregator{
 
-	// New class member to test out Peter B's demand flattening approach with smart signal
-	// Same as class member RecoMinimisationFunction, apart from the function method is different
-	// In this case, equation in function has change to |Di - Bm|, where <Di> is the same as the 
-	// specification described in the paper, and <Bm> is the mean from the baseline load.
-	//
-	// Last updated: (26/02/12) DF
-	class RecoMinimisationFunction_DemandFlattening extends FitnessFunction implements MinimisationFunction, MultivariateRealFunction {
-		
-		private static final long serialVersionUID = 1L;
-
-		private double[] arr_B;
-		private double[] arr_e;		
-		private double[][] arr_k;
-		private boolean hasSimpleSumConstraint = false;
-		private boolean lessThanConstraint;
-		private double sumConstraintValue;
-		private double penaltyWeight  = 1.0e10;
-		private double sumConstraintTolerance;
-		private double mean_B;
-		private boolean hasEqualsConstraint = false;
-		private int numEvaluations = 0;
-		private int settlementPeriod; 
-
-		// Not sure why I cannot use methods in ArrayUtils class?
-		// Quick & dirty way: just copy the two methods that I want to use 
-		// to here for now
-		public double avg(double[] doubleArray) {
-			double avg=0d;
-			if (doubleArray.length !=0) {
-				double sum = sum(doubleArray);
-				avg = sum/(double)doubleArray.length;
-			}
-			return avg;
-		}
-		
-		public double sum(double[] doubleArray)	{
-			double sum = 0;
-			for (int i = 0; i < doubleArray.length; i++)	{
-				sum = sum + doubleArray[i];
-			}
-			return sum;
-		}
-		//
-		
-		public double function (double[] arr_S) {
-			double m =0d, di;
-			mean_B = avg(arr_B);
-			
-			for (int i=0; i<arr_S.length; i++){
-
-				double sumOf_SjkijBi =0;
-				for (int j=0; j<arr_S.length; j++){
-					if (i != j)
-						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
-				}
-				
-				di  = arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi;
-				m += Math.abs(di - mean_B);
-			}
-			numEvaluations++;
-			m += checkPosNegConstraint(arr_S);
-			return m;
-		} 
-
-		/**
-		 * Enforce the constraint that all positive values of S must sum to (maximum) of 1
-		 * and -ve values to (minimum) of -1
-		 * @param arr_S
-		 * @return
-		 */
-		private double checkPosNegConstraint(double[] arr_S) {
-			double penalty = 0;
-			double posValueSum = 0;
-			double negValueSum = 0;
-			for (int i = 0; i < arr_S.length; i++)
-			{
-				if (arr_S[i] > 0)		{
-					posValueSum += arr_S[i];
-				}
-				else {
-					negValueSum += arr_S[i];
-				}
-			}
-
-			if (posValueSum > 1)	{
-				penalty += this.penaltyWeight * Math.pow((posValueSum - 1), 2);
-			}
-			
-			if (negValueSum < -1)	{
-				penalty += this.penaltyWeight * Math.pow((-1 - negValueSum), 2);
-			}
-			
-			return penalty;
-		}
-
-		public double value (double[] arr_S)	{
-			double penalties = 0;
-			// Add on constraint penalties here (as the Apache NelderMead doesn't do constraints itself)
-			double sumOfArray = ArrayUtils.sum(arr_S);
-
-
-			if (this.hasEqualsConstraint  && (Math.sqrt(Math.pow(sumOfArray - sumConstraintValue, 2)) > this.sumConstraintTolerance))	{
-				penalties = this.penaltyWeight*Fmath.square(sumConstraintValue*(1.0-this.sumConstraintTolerance)-sumOfArray);
-			}
-			return function(arr_S) + penalties;
-		}
-
-		private void addSimpleSumEqualsConstraintForApache(double limit, double tolerance)	{
-			this.hasEqualsConstraint = true;
-			this.sumConstraintTolerance = tolerance;
-			this.sumConstraintValue = limit;
-
-		}
-
-		public void set_B(double [] b) {
-			arr_B = b;
-		}
-
-		public void set_e(double [] e) {
-			arr_e = e;
-		}
-
-		public void set_k(double [][] k ) {
-			arr_k = k;
-		}
-
-		public int getNumEvals()	{
-			return numEvaluations;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.jgap.FitnessFunction#evaluate(org.jgap.Chromosome)
-		 */
-		@Override
-		protected int evaluate(Chromosome arg0) {
-
-			double[] testArray = ArrayUtils.genesToDouble(arg0.getGenes());
-			for (int i = 0; i < testArray.length; i++)	{
-				testArray[i] -= 0.5;
-				testArray[i] *= 2;
-			}
-
-			return (int) Math.max(1,(100000 - value(testArray)));
-		}
-		
-	}
-	
-	class RecoMinimisationFunction extends FitnessFunction implements MinimisationFunction, MultivariateRealFunction {
-
-		private static final long serialVersionUID = 1L;
-
-		private double[] arr_C;
-		private double[] arr_B;
-		private double[] arr_e;		
-		private double[][] arr_k;
-		private boolean hasSimpleSumConstraint = false;
-		private boolean lessThanConstraint;
-		private double sumConstraintValue;
-		private double penaltyWeight  = 1.0e10;
-		private double sumConstraintTolerance;
-		private boolean hasEqualsConstraint = false;
-		private int numEvaluations = 0;
-
-		public double function (double[] arr_S) {
-			double m =0d;
-
-			for (int i=0; i<arr_S.length; i++){
-
-				double sumOf_SjkijBi =0;
-				for (int j=0; j<arr_S.length; j++){
-					if (i != j)
-						sumOf_SjkijBi += arr_S[j] * arr_k[i][j] * arr_B[i];
-				}
-
-				m += arr_C[i] * (arr_B[i] + (arr_S[i]*arr_e[i]*arr_B[i]) + (arr_S[i]*arr_k[i][i]*arr_B[i]) + sumOf_SjkijBi);
-			}
-			numEvaluations++;
-			m += checkPosNegConstraint(arr_S);
-			return m;
-		} 
-
-		/**
-		 * Enforce the constraint that all positive values of S must sum to (maximum) of 1
-		 * and -ve values to (minimum) of -1
-		 * @param arr_S
-		 * @return
-		 */
-		private double checkPosNegConstraint(double[] arr_S) {
-			double penalty = 0;
-			double posValueSum = 0;
-			double negValueSum = 0;
-			for (int i = 0; i < arr_S.length; i++)
-			{
-				if (arr_S[i] > 0)	{
-					posValueSum += arr_S[i];
-				}
-				else	{
-					negValueSum += arr_S[i];
-				}
-			}
-
-			if (posValueSum > 1) {
-				penalty += this.penaltyWeight * Math.pow((posValueSum - 1), 2);
-			}
-			
-			if (negValueSum < -1)	{
-				penalty += this.penaltyWeight * Math.pow((-1 - negValueSum), 2);
-			}
-			
-			return penalty;
-		}
-
-		public double value (double[] arr_S) {
-			double penalties = 0;
-			// Add on constraint penalties here (as the Apache NelderMead doesn't do constraints itself)
-			double sumOfArray = ArrayUtils.sum(arr_S);
-
-
-			if (this.hasEqualsConstraint  && (Math.sqrt(Math.pow(sumOfArray - sumConstraintValue, 2)) > this.sumConstraintTolerance))	{
-				penalties = this.penaltyWeight*Fmath.square(sumConstraintValue*(1.0-this.sumConstraintTolerance)-sumOfArray);
-			}
-			return function(arr_S) + penalties;
-		}
-
-		private void addSimpleSumEqualsConstraintForApache(double limit, double tolerance)	{
-			this.hasEqualsConstraint = true;
-			this.sumConstraintTolerance = tolerance;
-			this.sumConstraintValue = limit;
-
-		}
-
-		public void set_C(double [] c) {
-			arr_C = c;
-		}
-		
-
-		public void set_B(double [] b) {
-			arr_B = b;
-		}
-
-		public void set_e(double [] e) {
-			arr_e = e;
-		}
-
-		public void set_k(double [][] k ) {
-			arr_k = k;
-		}
-
-		public int getNumEvals() {
-			return numEvaluations;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.jgap.FitnessFunction#evaluate(org.jgap.Chromosome)
-		 */
-		@Override
-		protected int evaluate(Chromosome arg0) {
-
-			double[] testArray = ArrayUtils.genesToDouble(arg0.getGenes());
-			for (int i = 0; i < testArray.length; i++)	{
-				testArray[i] -= 0.5;
-				testArray[i] *= 2;
-			}
-
-			return (int) Math.max(1,(100000 - value(testArray)));
-		}
-
-	} //End of RecoMinimisationFunction class
-
-
 	/**
 	 * the aggregator agent's base name  
 	 **/	
 	protected static String agentBaseName = "SupplierCO";
+	
+	/**
+	 * indicates whether the agent is in 'profile building' mode/period  
+	 **/	
+	protected boolean isProfileBuidling = true;
+
 
 	/**
 	 * indicates whether the agent is in training mode/ period
 	 **/	
 	protected boolean isTraining = true;
 
-	/**
-	 * indicates whether the agent is in 'profile building' mode/period  
-	 **/	
-	protected boolean isProfileBuidling = true;
 
 
 	/**
@@ -700,7 +434,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 			int daysSoFar = mainContext.getDayCount();
 			int indexFor1 = (daysSoFar - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)%this.ticksPerDay; 
 			
-			double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.IMPULSE,ticksPerDay);
+			double [] t = this.trainingSigFactory.generateSignal(TRAINING_S_SHAPE.IMPULSE,ticksPerDay);
 			//double [] t = this.trainingSigFactory.generateSignal(SIGNAL_TYPE.PBORIGINAL,ticksPerDay);
 
 			System.arraycopy(t, 0, sArr, indexFor1, t.length - indexFor1);
@@ -1146,11 +880,9 @@ public class SupplierCo extends BMPxTraderAggregator{
 
 		minFunct.set_C(arr_C);*/
 		// (26/01/12) Change to test out demand flattening approach
-		RecoMinimisationFunction_DemandFlattening minFunct = new RecoMinimisationFunction_DemandFlattening();
+		MinimisationFunctionObjectiveFlatDemand minFunct = new MinimisationFunctionObjectiveFlatDemand();
 		
-		minFunct.set_B(arr_B);
-		minFunct.set_e(arr_e);
-		minFunct.set_k(arr_ij_k);
+		minFunct.set_pointer_to_B(arr_B);
 
 		minFunct.addSimpleSumEqualsConstraintForApache(0, 0.01);
 
@@ -1208,7 +940,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 	private double[] minimise_CD(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S ) {
 
 		Minimisation min = new Minimisation();
-		RecoMinimisationFunction minFunct = new RecoMinimisationFunction();
+		MinimisationFunctionNeuralNetReady minFunct = new MinimisationFunctionNeuralNetReady();
 
 		minFunct.set_C(arr_C);
 		minFunct.set_B(arr_B);
@@ -1298,7 +1030,7 @@ public class SupplierCo extends BMPxTraderAggregator{
 		// by the user.
 		// ------------------------------------------------------------
 
-		RecoMinimisationFunction geneticMinFunc =  new RecoMinimisationFunction();
+		MinimisationFunctionNeuralNetReady geneticMinFunc =  new MinimisationFunctionNeuralNetReady();
 		geneticMinFunc.set_B(arr_B);
 		geneticMinFunc.set_C(arr_C);
 		geneticMinFunc.set_e(arr_e);
