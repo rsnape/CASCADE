@@ -13,7 +13,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import uk.ac.dmu.iesd.cascade.util.ChartUtils;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
-import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.SIGNAL_TYPE;
+import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.TRAINING_S_SHAPE;
 
 /**
  * @author jsnape
@@ -42,7 +42,7 @@ public class TrainingSigFactoryTest {
 		
 		ArrayList<double[]> sigs = new ArrayList<double[]>();
 		DefaultCategoryDataset tempDataset = new DefaultCategoryDataset();
-		for (SIGNAL_TYPE t : SIGNAL_TYPE.values())
+		for (TRAINING_S_SHAPE t : TRAINING_S_SHAPE.values())
 		{
 			double [] s = defaultFactory.generateSignal(t);
 			sigs.add(s);
