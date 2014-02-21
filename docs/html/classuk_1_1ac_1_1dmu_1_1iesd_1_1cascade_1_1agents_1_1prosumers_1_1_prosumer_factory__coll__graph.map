@@ -1,0 +1,4 @@
+<map id="uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory" name="uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerFactory">
+<area shape="rect" id="node2" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_i_prosumer_factory.html" title="Interface IProsumerFactory defines possible ways where prosumer factory can/should create (/initiate)..." alt="" coords="425,218,701,260"/>
+<area shape="rect" id="node3" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context.html" title="CascadeContext is the main context for the Cascade framework. " alt="" coords="455,284,670,325"/>
+</map>

@@ -1,0 +1,489 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent}}
+}
+
+
+A {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}} is an object which can both consume and generate electricity at the same time.  
+
+
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aae9ac4dd2ebbb928f7dea0c2b0953dba}{to\-String} ()
+\begin{DoxyCompactList}\small\item\em Returns a string representation of this agent and its key values Currently is used by Repast as the method which produces and returns the probe I\-D. \end{DoxyCompactList}\item 
+long \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a2cd2c90197d569e71ccf5cbfe562b1b8}{get\-Agent\-I\-D} ()
+\begin{DoxyCompactList}\small\item\em Returns the agent's I\-D. \end{DoxyCompactList}\item 
+String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ae88127f0dac9ba97823b974934e8595a}{get\-Agent\-Name} ()
+\begin{DoxyCompactList}\small\item\em Returns the agent's name. \end{DoxyCompactList}\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a240212ecf3a1883def44a98a3ef16ec7}{set\-Agent\-Name} (String name)
+\begin{DoxyCompactList}\small\item\em Sets name of this agent. \end{DoxyCompactList}\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a1409ba2c8b5f7e96ae261136a81070b9}{get\-Context} ()
+\begin{DoxyCompactList}\small\item\em Returns the context in which this agent is a part. \end{DoxyCompactList}\item 
+boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab3ce44374f63d0e3ee06e032bbd89d3d}{has\-Smart\-Meter} ()
+\begin{DoxyCompactList}\small\item\em Determines whether this agent has a smart meter. \end{DoxyCompactList}\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a0e29a0e3c42a22d4928fc3d4355839da}{get\-Net\-Demand} ()
+\begin{DoxyCompactList}\small\item\em Returns the net demand {\ttfamily net\-Demand} for this agent. \end{DoxyCompactList}\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_af2175ee49726bb96de3807cd2bf8fb71}{set\-Net\-Demand} (double nd)
+\begin{DoxyCompactList}\small\item\em Sets the {\ttfamily net\-Demand} of this agent. \end{DoxyCompactList}\item 
+abstract void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a04cfe275806d2341eaa16350027f8947}{step} ()
+\begin{DoxyCompactList}\small\item\em this method should define the step for Prosumer agents. \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a87779946140d133c61752cdab13d259a}{boolean {\bfseries get\-Has\-Smart\-Control} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a87779946140d133c61752cdab13d259a}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a7281da7641d84f6e9964ea8ef9347a15}{double {\bfseries get\-Has\-Smart\-Control\-As\-Double} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a7281da7641d84f6e9964ea8ef9347a15}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ac67ddeb0bf184fe38131f0af4cf796a4}{int {\bfseries get\-Predicted\-Cost\-Signal\-Length} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ac67ddeb0bf184fe38131f0af4cf796a4}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a0848bca3b79f035dbe4822521476903b}{double {\bfseries get\-Current\-Prediction} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a0848bca3b79f035dbe4822521476903b}
+
+\item 
+int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ac2fa83c431ddc08a6e0276d769b51a16}{get\-Prediction\-Valid\-Time} ()
+\begin{DoxyCompactList}\small\item\em T\-O\-D\-O\-: check if it is needed (may changed/removed) \end{DoxyCompactList}\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a72af97b7c3f1c8ce5405e4aa8f030e9f}{set\-Prediction\-Valid\-Time} (int prediction\-Valid\-Time)
+\begin{DoxyCompactList}\small\item\em T\-O\-D\-O\-: check if it is needed (may changed/removed) \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a11e584d7bbbfac538ac71fa00d7ce634}{boolean {\bfseries receive\-Value\-Signal} (double\mbox{[}$\,$\mbox{]} signal, int length)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a11e584d7bbbfac538ac71fa00d7ce634}
+
+\item 
+boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab740c584d81eae3bde0a6043ad818c42}{receive\-Signal} (double\mbox{[}$\,$\mbox{]} signal, int length, Consts.\-S\-I\-G\-N\-A\-L\-\_\-\-T\-Y\-P\-E signal\-Type)
+\begin{DoxyCompactList}\small\item\em This method is used by other agents (e.\-g. \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab810411572cef8469a62fddda7248551}{double {\bfseries get\-Insolation} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab810411572cef8469a62fddda7248551}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab2d612a6d31147ad2433a3f3a89038d1}{double {\bfseries get\-Wind\-Speed} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab2d612a6d31147ad2433a3f3a89038d1}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a7882764e5d533927903ee7196298cdac}{double {\bfseries get\-Air\-Temperature} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a7882764e5d533927903ee7196298cdac}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_abc13a61e3b415d2f1c536b6c4305bc33}{double {\bfseries get\-Air\-Density} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_abc13a61e3b415d2f1c536b6c4305bc33}
+
+\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_abedc36b78c5e47aeac7c948c143ba5ec}{set\-Predicted\-Cost\-Signal} (double\mbox{[}$\,$\mbox{]} predicted\-Cost\-Signal)
+\item 
+double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a91c1c0ff95ef03018719412fe7dedbf2}{get\-Predicted\-Cost\-Signal} ()
+\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8210ffa78c7f4ef86f01383421c08a87}{Prosumer\-Agent} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context)
+\begin{DoxyCompactList}\small\item\em Constructs a prosumer agent with the context in which is created. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a6d748d17b6118067086a69c34b4469a7}{has\-Smart\-Meter} = false
+\begin{DoxyCompactList}\small\item\em Configuration options. \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ad113419e1d4f8d93f5e78c1460d7515c}{boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ad113419e1d4f8d93f5e78c1460d7515c}{exercises\-Behaviour\-Change} = false}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ad113419e1d4f8d93f5e78c1460d7515c}
+
+\begin{DoxyCompactList}\small\item\em does this agent change its behaviour in response to information it gathers? \end{DoxyCompactList}\item 
+boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aafc0b05ea964cf7dcfc729a04814480b}{has\-Smart\-Control} = false
+\begin{DoxyCompactList}\small\item\em Does this agent have a form of smart control -\/ i.\-e. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+abstract String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a204af2f60ecff60560da3ba5ae6ccb76}{param\-String\-Report} ()
+\begin{DoxyCompactList}\small\item\em Returns a string representing the state of this agent. \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ae0a24383e5f3d03800911e69b294564b}{void {\bfseries check\-Weather} (int time)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ae0a24383e5f3d03800911e69b294564b}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a548bbfbae2a8f4a0e869c4f9caf2d443}{long \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a548bbfbae2a8f4a0e869c4f9caf2d443}{agent\-I\-D} = -\/1}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a548bbfbae2a8f4a0e869c4f9caf2d443}
+
+\begin{DoxyCompactList}\small\item\em a prosumer agent's I\-D This field is automatically assigned by constructor when the agent is created for the first time \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a390465d4fb22f493d1c85b48214ca168}{String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a390465d4fb22f493d1c85b48214ca168}{agent\-Name}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a390465d4fb22f493d1c85b48214ca168}
+
+\begin{DoxyCompactList}\small\item\em A prosumer agent's name This field can be {\ttfamily null}. \end{DoxyCompactList}\item 
+boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab01e8cf16e8d2b4c12e5cca9efd840c1}{name\-Explicitly\-Set} = false
+\begin{DoxyCompactList}\small\item\em A boolean to determine whether the name has been set explicitly. \end{DoxyCompactList}\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a237dcff035ef786226e3843e8021761a}{main\-Context}
+\begin{DoxyCompactList}\small\item\em Reference to the \hyperlink{}{within which this Prosumer\-Agent exists. }\end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8521d1ba426c849386b0064c9adc7b43}{boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8521d1ba426c849386b0064c9adc7b43}{receives\-Cost\-Signal} = false}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8521d1ba426c849386b0064c9adc7b43}
+
+\begin{DoxyCompactList}\small\item\em Does this agent receive a smart cost signal? \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aace040747328a4a7768c2ac3896a53fd}{double {\bfseries insolation}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aace040747328a4a7768c2ac3896a53fd}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a6751cc84378252f9498d00eb4bb9e0d0}{double {\bfseries wind\-Speed}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a6751cc84378252f9498d00eb4bb9e0d0}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a3679bd1fe43947abce47f23382511ab4}{double {\bfseries air\-Temperature}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a3679bd1fe43947abce47f23382511ab4}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a6e11d2ef657129a0b78654af227f11d5}{double {\bfseries air\-Density}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a6e11d2ef657129a0b78654af227f11d5}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a015a0c84720c4ec6a43dd708329eb29a}{double\mbox{[}$\,$\mbox{]} {\bfseries arr\-\_\-other\-Demand\-Profile}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a015a0c84720c4ec6a43dd708329eb29a}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aec7bfa8b8c06089ef03041c96badc1dd}{double\mbox{[}$\,$\mbox{]} {\bfseries predicted\-Cost\-Signal}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aec7bfa8b8c06089ef03041c96badc1dd}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ac1d1ae554ef1e5afeb24982d88ad598f}{int {\bfseries prediction\-Valid\-Time}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ac1d1ae554ef1e5afeb24982d88ad598f}
+
+\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_af17266e09c606c54fb838282138b92a4}{net\-Demand}
+\begin{DoxyCompactList}\small\item\em This is net demand, may be +ve (consumption), 0, or -\/ve (generation) \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aaadbb4240cee3ac7a0392507ab00e896}{double {\bfseries inelastic\-Total\-Day\-Demand}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aaadbb4240cee3ac7a0392507ab00e896}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a697117e3580fa4287d8936fc09c47969}{double\mbox{[}$\,$\mbox{]} {\bfseries smart\-Optimised\-Profile}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a697117e3580fa4287d8936fc09c47969}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a85df0dd2d9532c6ceb7b50df59119730}{static final long \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a85df0dd2d9532c6ceb7b50df59119730}{serial\-Version\-U\-I\-D} = 1\-L}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a85df0dd2d9532c6ceb7b50df59119730}
+
+\begin{DoxyCompactList}\small\item\em serial\-Version\-U\-I\-D -\/ a unique identifier if this class is serialized \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8c66e8d47a309858469bc0490488eaba}{static String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8c66e8d47a309858469bc0490488eaba}{agent\-Base\-Name} = \char`\"{}prosumer\char`\"{}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8c66e8d47a309858469bc0490488eaba}
+
+\begin{DoxyCompactList}\small\item\em A prosumer agent's base name it can be reassigned (renamed) properly by descendants of this class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}} is an object which can both consume and generate electricity at the same time. 
+
+The {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}} class is the abstract superclass of prosumer agents. Examples of prosumer agents are the household and wind generator agents. 
+
+\begin{DoxyAuthor}{Author}
+J. Richard Snape 
+
+Babak Mahdavi 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Revision\-:}
+1.\-4 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{Date\-:}
+2013/08/17 12\-:00\-:00 
+\end{DoxyParagraph}
+
+
+Version history (for intermediate steps see Git repository history
+
+1.\-0 -\/ Initial basic functionality including pure elastic reaction to price signal 1.\-1 -\/ refactor to an abstract class holding only generic prosumer functions (17 March 2011) 1.\-2. -\/ implements \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1_i_cognitive_agent}{I\-Cognitive\-Agent} (Babak) 1.\-3. -\/ changed constructor, modified/added/removed methods, made the class properly abstract, sub-\/classes will/should not override the methodes defined here, except those made abstract (Babak)
+
+1.\-4 -\/ cleanup (J\-R\-S) \begin{DoxyVerb}   ----Extra comment added to test git ignore----\end{DoxyVerb}
+ 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8210ffa78c7f4ef86f01383421c08a87}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!Prosumer\-Agent@{Prosumer\-Agent}}
+\index{Prosumer\-Agent@{Prosumer\-Agent}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{Prosumer\-Agent}]{\setlength{\rightskip}{0pt plus 5cm}uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-Prosumer\-Agent (
+\begin{DoxyParamCaption}
+\item[{{\bf Cascade\-Context}}]{context}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a8210ffa78c7f4ef86f01383421c08a87}
+
+
+Constructs a prosumer agent with the context in which is created. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & the context in which this agent is situated \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a2cd2c90197d569e71ccf5cbfe562b1b8}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!get\-Agent\-I\-D@{get\-Agent\-I\-D}}
+\index{get\-Agent\-I\-D@{get\-Agent\-I\-D}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{get\-Agent\-I\-D}]{\setlength{\rightskip}{0pt plus 5cm}long uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-get\-Agent\-I\-D (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a2cd2c90197d569e71ccf5cbfe562b1b8}
+
+
+Returns the agent's I\-D. 
+
+\begin{DoxyReturn}{Returns}
+unique I\-D number of this agent 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ae88127f0dac9ba97823b974934e8595a}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!get\-Agent\-Name@{get\-Agent\-Name}}
+\index{get\-Agent\-Name@{get\-Agent\-Name}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{get\-Agent\-Name}]{\setlength{\rightskip}{0pt plus 5cm}String uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-get\-Agent\-Name (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ae88127f0dac9ba97823b974934e8595a}
+
+
+Returns the agent's name. 
+
+If the name has not been explicitly set, the default base name will be used. \begin{DoxyReturn}{Returns}
+agent's name as string 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a1409ba2c8b5f7e96ae261136a81070b9}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!get\-Context@{get\-Context}}
+\index{get\-Context@{get\-Context}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{get\-Context}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Cascade\-Context} uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-get\-Context (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a1409ba2c8b5f7e96ae261136a81070b9}
+
+
+Returns the context in which this agent is a part. 
+
+\begin{DoxyReturn}{Returns}
+the context where the agent is a part 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a0e29a0e3c42a22d4928fc3d4355839da}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!get\-Net\-Demand@{get\-Net\-Demand}}
+\index{get\-Net\-Demand@{get\-Net\-Demand}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{get\-Net\-Demand}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-get\-Net\-Demand (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a0e29a0e3c42a22d4928fc3d4355839da}
+
+
+Returns the net demand {\ttfamily net\-Demand} for this agent. 
+
+\begin{DoxyReturn}{Returns}
+the {\ttfamily net\-Demand} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a91c1c0ff95ef03018719412fe7dedbf2}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!get\-Predicted\-Cost\-Signal@{get\-Predicted\-Cost\-Signal}}
+\index{get\-Predicted\-Cost\-Signal@{get\-Predicted\-Cost\-Signal}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{get\-Predicted\-Cost\-Signal}]{\setlength{\rightskip}{0pt plus 5cm}double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-get\-Predicted\-Cost\-Signal (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a91c1c0ff95ef03018719412fe7dedbf2}
+\begin{DoxyReturn}{Returns}
+the predicted\-Cost\-Signal 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ac2fa83c431ddc08a6e0276d769b51a16}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!get\-Prediction\-Valid\-Time@{get\-Prediction\-Valid\-Time}}
+\index{get\-Prediction\-Valid\-Time@{get\-Prediction\-Valid\-Time}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{get\-Prediction\-Valid\-Time}]{\setlength{\rightskip}{0pt plus 5cm}int uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-get\-Prediction\-Valid\-Time (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ac2fa83c431ddc08a6e0276d769b51a16}
+
+
+T\-O\-D\-O\-: check if it is needed (may changed/removed) 
+
+\begin{DoxyReturn}{Returns}
+the prediction\-Valid\-Time 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab3ce44374f63d0e3ee06e032bbd89d3d}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!has\-Smart\-Meter@{has\-Smart\-Meter}}
+\index{has\-Smart\-Meter@{has\-Smart\-Meter}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{has\-Smart\-Meter}]{\setlength{\rightskip}{0pt plus 5cm}boolean uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-has\-Smart\-Meter (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab3ce44374f63d0e3ee06e032bbd89d3d}
+
+
+Determines whether this agent has a smart meter. 
+
+\begin{DoxyReturn}{Returns}
+{\ttfamily true} if the agent has smart meter, {\ttfamily false} otherwise 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a204af2f60ecff60560da3ba5ae6ccb76}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!param\-String\-Report@{param\-String\-Report}}
+\index{param\-String\-Report@{param\-String\-Report}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{param\-String\-Report}]{\setlength{\rightskip}{0pt plus 5cm}abstract String uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-param\-String\-Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [abstract]}, {\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a204af2f60ecff60560da3ba5ae6ccb76}
+
+
+Returns a string representing the state of this agent. 
+
+This method is intended to be used for debugging purposes, and the content and format of the returned string are left to the implementing concrete subclasses. The returned string may be empty but may not be {\ttfamily null}.
+
+\begin{DoxyReturn}{Returns}
+a string representation of this agent's state parameters 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab740c584d81eae3bde0a6043ad818c42}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!receive\-Signal@{receive\-Signal}}
+\index{receive\-Signal@{receive\-Signal}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{receive\-Signal}]{\setlength{\rightskip}{0pt plus 5cm}boolean uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-receive\-Signal (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{signal, }
+\item[{int}]{length, }
+\item[{Consts.\-S\-I\-G\-N\-A\-L\-\_\-\-T\-Y\-P\-E}]{signal\-Type}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab740c584d81eae3bde0a6043ad818c42}
+
+
+This method is used by other agents (e.\-g. 
+
+Aggregator) to send their signal to prosumer's agent. It receives different types of signals containing Real values.
+
+T\-O\-D\-O\-: in reality, these signals are sent to customer's device, so if in the future, there will be a separate smart device object, this method should be implemented there and not in the prosumer's agent directly.
+
+
+\begin{DoxyParams}{Parameters}
+{\em signal} & the array containing the signal \\
+\hline
+{\em length} & the length of the signal \\
+\hline
+{\em signal\-Type} & the type of the signal \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if signal received successfully, false otherwise 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a240212ecf3a1883def44a98a3ef16ec7}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!set\-Agent\-Name@{set\-Agent\-Name}}
+\index{set\-Agent\-Name@{set\-Agent\-Name}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{set\-Agent\-Name}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-set\-Agent\-Name (
+\begin{DoxyParamCaption}
+\item[{String}]{name}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a240212ecf3a1883def44a98a3ef16ec7}
+
+
+Sets name of this agent. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & the string that is to be this agent's name \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See Also}
+\#get\-Name 
+\end{DoxySeeAlso}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_af2175ee49726bb96de3807cd2bf8fb71}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!set\-Net\-Demand@{set\-Net\-Demand}}
+\index{set\-Net\-Demand@{set\-Net\-Demand}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{set\-Net\-Demand}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-set\-Net\-Demand (
+\begin{DoxyParamCaption}
+\item[{double}]{nd}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_af2175ee49726bb96de3807cd2bf8fb71}
+
+
+Sets the {\ttfamily net\-Demand} of this agent. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em nd} & the new net demand for the agent \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a0e29a0e3c42a22d4928fc3d4355839da}{get\-Net\-Demand} 
+\end{DoxySeeAlso}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_abedc36b78c5e47aeac7c948c143ba5ec}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!set\-Predicted\-Cost\-Signal@{set\-Predicted\-Cost\-Signal}}
+\index{set\-Predicted\-Cost\-Signal@{set\-Predicted\-Cost\-Signal}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{set\-Predicted\-Cost\-Signal}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-set\-Predicted\-Cost\-Signal (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{predicted\-Cost\-Signal}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_abedc36b78c5e47aeac7c948c143ba5ec}
+
+\begin{DoxyParams}{Parameters}
+{\em predicted\-Cost\-Signal} & the predicted\-Cost\-Signal to set \\
+\hline
+\end{DoxyParams}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a72af97b7c3f1c8ce5405e4aa8f030e9f}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!set\-Prediction\-Valid\-Time@{set\-Prediction\-Valid\-Time}}
+\index{set\-Prediction\-Valid\-Time@{set\-Prediction\-Valid\-Time}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{set\-Prediction\-Valid\-Time}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-set\-Prediction\-Valid\-Time (
+\begin{DoxyParamCaption}
+\item[{int}]{prediction\-Valid\-Time}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a72af97b7c3f1c8ce5405e4aa8f030e9f}
+
+
+T\-O\-D\-O\-: check if it is needed (may changed/removed) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em prediction\-Valid\-Time} & the prediction\-Valid\-Time to set \\
+\hline
+\end{DoxyParams}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a04cfe275806d2341eaa16350027f8947}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!step@{step}}
+\index{step@{step}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{step}]{\setlength{\rightskip}{0pt plus 5cm}abstract void uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-step (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [abstract]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a04cfe275806d2341eaa16350027f8947}
+
+
+this method should define the step for Prosumer agents. 
+
+The schedule should start at right timeslot among all concrete subclasses. Currently it starts at 0, however it does not have any priority restriction (such as being the last) so, it will be executed first (before the Aggregator which has the L\-A\-S\-T priority) \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aae9ac4dd2ebbb928f7dea0c2b0953dba}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}String uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-to\-String (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aae9ac4dd2ebbb928f7dea0c2b0953dba}
+
+
+Returns a string representation of this agent and its key values Currently is used by Repast as the method which produces and returns the probe I\-D. 
+
+\begin{DoxyReturn}{Returns}
+a string representation of this agent 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aafc0b05ea964cf7dcfc729a04814480b}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!has\-Smart\-Control@{has\-Smart\-Control}}
+\index{has\-Smart\-Control@{has\-Smart\-Control}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{has\-Smart\-Control}]{\setlength{\rightskip}{0pt plus 5cm}boolean uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-has\-Smart\-Control = false}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_aafc0b05ea964cf7dcfc729a04814480b}
+
+
+Does this agent have a form of smart control -\/ i.\-e. 
+
+automated control in response to information gathered from its smart meter (either information about itself or received information about the system \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a6d748d17b6118067086a69c34b4469a7}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!has\-Smart\-Meter@{has\-Smart\-Meter}}
+\index{has\-Smart\-Meter@{has\-Smart\-Meter}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{has\-Smart\-Meter}]{\setlength{\rightskip}{0pt plus 5cm}boolean uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-has\-Smart\-Meter = false}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a6d748d17b6118067086a69c34b4469a7}
+
+
+Configuration options. 
+
+All are set false initially -\/ they can be set true on instantiation to allow fine-\/grained control of agent properties Does the agent have the ability to send and receive \char`\"{}smart\char`\"{} information \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a237dcff035ef786226e3843e8021761a}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!main\-Context@{main\-Context}}
+\index{main\-Context@{main\-Context}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{main\-Context}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Cascade\-Context} uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-main\-Context\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_a237dcff035ef786226e3843e8021761a}
+
+
+Reference to the \hyperlink{}{within which this Prosumer\-Agent exists. }
+
+\begin{DoxySeeAlso}{See Also}
+Cascade\-Context 
+\end{DoxySeeAlso}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab01e8cf16e8d2b4c12e5cca9efd840c1}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!name\-Explicitly\-Set@{name\-Explicitly\-Set}}
+\index{name\-Explicitly\-Set@{name\-Explicitly\-Set}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{name\-Explicitly\-Set}]{\setlength{\rightskip}{0pt plus 5cm}boolean uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-name\-Explicitly\-Set = false\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_ab01e8cf16e8d2b4c12e5cca9efd840c1}
+
+
+A boolean to determine whether the name has been set explicitly. 
+
+{\ttfamily name\-Explicitly\-Set} will be false if the name has not been set and true if it has. \begin{DoxySeeAlso}{See Also}
+\#get\-Name 
+
+\#set\-Name(\-String) 
+\end{DoxySeeAlso}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_af17266e09c606c54fb838282138b92a4}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}!net\-Demand@{net\-Demand}}
+\index{net\-Demand@{net\-Demand}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerAgent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Agent}}
+\subsubsection[{net\-Demand}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Agent.\-net\-Demand\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent_af17266e09c606c54fb838282138b92a4}
+
+
+This is net demand, may be +ve (consumption), 0, or -\/ve (generation) 
+
+T\-O\-D\-O\-: J\-R\-S M\-U\-S\-T reach agreement of sign for Demand vs. Generation and units -\/ even if we introduce a factor such that we can translate between average k\-W in a timestep to k\-Wh per timestep (k\-Waverage = k\-Wh $\ast$ 24 / ticks per day) 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/agents/prosumers/Prosumer\-Agent.\-java\end{DoxyCompactItemize}

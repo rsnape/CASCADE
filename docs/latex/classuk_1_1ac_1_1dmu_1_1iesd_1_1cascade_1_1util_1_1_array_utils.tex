@@ -1,0 +1,1362 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils}}
+}
+
+
+A helper class with static methods to aid in the manipulation of arrays I\-M\-P\-L\-E\-M\-E\-N\-T\-A\-T\-I\-O\-N N\-O\-T\-E -\/ (except where explicitly stated) methods result in an array as output, the methods do not work directly on the array(s) passed in but rather create a new array and pass this back as the return value.  
+
+
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a036cc68e55f1302150e386c9cdff7c85}{static int\mbox{[}$\,$\mbox{]} {\bfseries convert\-String\-Array\-To\-Int\-Array} (String\mbox{[}$\,$\mbox{]} sarray)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a036cc68e55f1302150e386c9cdff7c85}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a7e1accb1fe62069b87f64ecb1791907b}{static float\mbox{[}$\,$\mbox{]} {\bfseries convert\-String\-Array\-To\-Float\-Array} (String\mbox{[}$\,$\mbox{]} sarray)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a7e1accb1fe62069b87f64ecb1791907b}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1045638b0a34a93dee484456d6ad4bf6}{static double\mbox{[}$\,$\mbox{]} {\bfseries convert\-String\-Array\-To\-Double\-Array} (String\mbox{[}$\,$\mbox{]} sarray)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1045638b0a34a93dee484456d6ad4bf6}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a107aa42085613ee0a85fe13b960e93cd}{static double\mbox{[}$\,$\mbox{]} {\bfseries convert\-String\-Array\-To\-Double\-Array2} (String\mbox{[}$\,$\mbox{]} array)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a107aa42085613ee0a85fe13b960e93cd}
+
+\item 
+static int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a8d4b59d9305b9dc4e06184b1299fc7e6}{sum} (int\mbox{[}$\,$\mbox{]} int\-Array)
+\begin{DoxyCompactList}\small\item\em return the sum of the members of the array passed into the method \end{DoxyCompactList}\item 
+static double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a50430a7b71868948ee1fbca64ece53a4}{sum} (double\mbox{[}$\,$\mbox{]} double\-Array)
+\begin{DoxyCompactList}\small\item\em return the sum of the members of the array passed into the method \end{DoxyCompactList}\item 
+static float \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aceffdcaae593e327dd48024f9d4f09c4}{sum} (float\mbox{[}$\,$\mbox{]} float\-Array)
+\begin{DoxyCompactList}\small\item\em return the sum of the members of the array passed into the method \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2674fa4ff35ab7c1d015785133318fe7}{mtimes} (float\mbox{[}$\,$\mbox{]}...arrays)
+\begin{DoxyCompactList}\small\item\em function to multiply the values of an arbitrary number of arrays together element by element \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2c02f1fbaf51961a0a657db030d2c743}{mtimes} (double\mbox{[}$\,$\mbox{]}...arrays)
+\begin{DoxyCompactList}\small\item\em function to multiply the values of an arbitrary number of arrays together element by element \end{DoxyCompactList}\item 
+static float \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ae28673c65f4201d7314e0d0acdb11062}{dot\-Product} (float\mbox{[}$\,$\mbox{]} array1, float\mbox{[}$\,$\mbox{]} array2)
+\begin{DoxyCompactList}\small\item\em calculates the dot (or inner) product of two input arrays \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0a294180e550b87c1c329a9b599bf688}{normalize\-Values} (float\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em normalize array values to lie in the range -\/1 $<$= member\-Value $<$= +1 the relative value of the array values is preserved \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_afb4f2ac43935c86ac918c1c69b158b2a}{normalize\-Values} (double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em normalize array values to lie in the range -\/1 $<$= member\-Value $<$= +1 the relative value of the array values is preserved \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_afee51896ffa74faa790edc370de42ce7}{normalize\-Values} (float\mbox{[}$\,$\mbox{]} array, float max\-Magnitude)
+\begin{DoxyCompactList}\small\item\em normalize array values to lie in the range -\/max\-Magnitude $<$= member\-Value $<$= +max\-Magnitude the relative value of the array values is preserved \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad860c0143f52e42e6d44fcc0f7923b34}{normalize\-Values} (double\mbox{[}$\,$\mbox{]} array, double max\-Magnitude)
+\begin{DoxyCompactList}\small\item\em normalize array values to lie in the range -\/max\-Magnitude $<$= member\-Value $<$= +max\-Magnitude the relative value of the array values is preserved \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a18b1198f711addbafe4908b5e5ebc5fa}{normalize\-Values} (float\mbox{[}$\,$\mbox{]} array, float max\-Magnitude, boolean allow\-Negative)
+\begin{DoxyCompactList}\small\item\em normalize array values to lie in the range -\/max\-Magnitude $<$= member\-Value $<$= +max\-Magnitude if allow\-Negatives is true 0 $<$= member\-Value $<$= + max\-Magnitude if allow\-Negatives is false the relative value of the array values is preserved \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af05acff9c2f6bb75893a2ad84ff64195}{normalize\-Values} (double\mbox{[}$\,$\mbox{]} array, double max\-Magnitude, boolean allow\-Negative)
+\begin{DoxyCompactList}\small\item\em normalize array values to lie in the range -\/max\-Magnitude $<$= member\-Value $<$= +max\-Magnitude if allow\-Negatives is true 0 $<$= member\-Value $<$= + max\-Magnitude if allow\-Negatives is false the relative value of the array values is preserved \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a6384a1b0807d190cd04d54fb6f5b070f}{absolute\-Values} (float\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em returns an array containing the absolute values of the members of the input array \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a995c00b09b08bebfe50a3d351c758d77}{absolute\-Values} (double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em returns an array containing the absolute values of the members of the input array \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a7c38e758dcf1b623264ca6a15426c45a}{multiply} (float\mbox{[}$\,$\mbox{]} array, float multiplier)
+\begin{DoxyCompactList}\small\item\em multiplies each member of the input array by the specified multiplier \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a131ace2939ab2f627fbe63c57b8eccbd}{static double\mbox{[}$\,$\mbox{]} {\bfseries multiply} (double\mbox{[}$\,$\mbox{]} array, double multiplier)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a131ace2939ab2f627fbe63c57b8eccbd}
+
+\item 
+static float \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad634422f957bcb7bca9b71ca2df80bdc}{max} (float\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em returns the maximum value of the input array \end{DoxyCompactList}\item 
+static double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ac6b0c16dc79a5ca5df790d6a2f3ce280}{max} (double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em returns the maximum value of the input array \end{DoxyCompactList}\item 
+static float \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1ea1dceabae3a8cd56c5d1e5cad32bc9}{min} (float\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em returns the minimum value of the input array \end{DoxyCompactList}\item 
+static double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ae28cfd55f0cd717a8cccbae16ce051e8}{min} (double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em returns the minimum value of the input array \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a4e465741240b166c11f2f8f058577db5}{offset} (double\mbox{[}$\,$\mbox{]} array, double offset)
+\begin{DoxyCompactList}\small\item\em offsets each member of the input array by the specified offset \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a7d8da36358cecf7fd0442eadda5c9ba0}{offset} (float\mbox{[}$\,$\mbox{]} array, float offset)
+\begin{DoxyCompactList}\small\item\em offsets each member of the input array by the specified offset \end{DoxyCompactList}\item 
+static int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa3b594db771dd2cda7bc0aa64d283469}{index\-Of\-Max} (float\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em find the index of the member of the input array with the maximum value (note real value, not absolute magnitude) \end{DoxyCompactList}\item 
+static int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_acf5b8cf57c9f478273959a8000dec435}{index\-Of\-Max} (double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em find the index of the member of the input array with the maximum value (note real value, not absolute magnitude) \end{DoxyCompactList}\item 
+static int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_accdab05dc514cfe9a8aa31d7011a11ee}{index\-Of\-Min} (float\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em find the index of the member of the input array with the minimum value (note real value, not absolute magnitude) \end{DoxyCompactList}\item 
+static int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa763bedd26369baedaa6920711c633fa}{index\-Of\-Min} (double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em find the index of the member of the input array with the minimum value (note real value, not absolute magnitude) \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad06289acc2c7cf99071f1e1d240e4484}{pow2} (double\mbox{[}$\,$\mbox{]} double\-Array\-Base)
+\begin{DoxyCompactList}\small\item\em raise each member of the input array to the power two (or square each member) \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aadc530cdb62125f8a1ebacbde8c00ce0}{pow} (double\mbox{[}$\,$\mbox{]} double\-Array\-Base, double exp)
+\begin{DoxyCompactList}\small\item\em This utility function returns an array of double values after raising the values of first argument (passed float array) to the power of second argument (exp). \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a137838b8f342da5968c84a88ec0a63f7}{convert\-Double\-Array\-To\-Float\-Array} (double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em This utility function accept a double array as an argument and returns a float array containing converted double values of the passed array (argument). \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa6443e6fd05584c2aafdc86dff32ff65}{convert\-Double\-Array\-To\-Float\-Array} (double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em This utility function accept a double array as an argument and returns a float array containing converted double values of the passed array (argument). \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa069a7b7065554e7ab59a45c55c8b763}{convert\-Float\-Array\-To\-Double\-Array} (float\mbox{[}$\,$\mbox{]} float\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function accept a float array as an argument and returns a double array containing converted double values of the passed array (argument). \end{DoxyCompactList}\item 
+static int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2dbf2f54bdb44a8d759d88cd5a4c8740}{index\-Of} (float\mbox{[}$\,$\mbox{]} float\-Array, float val)
+\begin{DoxyCompactList}\small\item\em This utility function returns the index where the passed value is found. \end{DoxyCompactList}\item 
+static int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad6169909480482f00f765f9675a5e513}{index\-Of} (double\mbox{[}$\,$\mbox{]} double\-Array, double val)
+\begin{DoxyCompactList}\small\item\em This utility function returns the index where the passed value is found. \end{DoxyCompactList}\item 
+static boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a23db3a5cb5ae703e9842e113e1c3ff7f}{is\-Sum\-Equal\-Zero} (float\mbox{[}$\,$\mbox{]} float\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function verifies if the sum of the values in the given array (float) are equal zero. \end{DoxyCompactList}\item 
+static boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a3c7ced4fd47d36f31a5c8a506fe408b7}{is\-Sum\-Equal\-Zero} (int\mbox{[}$\,$\mbox{]} int\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function verifies if the sum of the values in the given array (int) are equal zero. \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_acd09574fdde2b68964c0dcdf79f1d4fa}{col\-Copy} (float\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Dfloat\-Array, int col\-Nb)
+\begin{DoxyCompactList}\small\item\em This utility function returns a copy of the specific column of a passed 2\-D float array as a one dimensional float array. \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a4a36eed41a404b1301705710eae77546}{col\-Copy} (double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Ddouble\-Array, int col\-Nb)
+\begin{DoxyCompactList}\small\item\em This utility function returns a copy of the specific column of a passed 2\-D double array as a one dimensional double array. \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ab550992e23c72fbb9ed70648d3d0f26b}{sub\-Array\-Copy} (float\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Dfloat\-Array, int start\-Row, int end\-Row)
+\begin{DoxyCompactList}\small\item\em This utility function returns a sub-\/array copy of a given 2\-D array (with the same columns' size) by passing/specifying a start\-Row and end\-Row indices. \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0ef03bf6775473a98e596007198604c3}{sub\-Array\-Copy} (double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Ddouble\-Array, int start\-Row, int end\-Row)
+\begin{DoxyCompactList}\small\item\em This utility function returns a sub-\/array copy of a given 2\-D array (with the same columns' size) by passing/specifying a start\-Row and end\-Row indices. \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_abfb74f4b5844ac5e151ccb31bb13ccfb}{row\-Copy} (float\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Dfloat\-Array, int row)
+\begin{DoxyCompactList}\small\item\em This utility function returns an array copy containing of passed row index of a given 2\-D array. \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a46123e3dc5762c8a73ff442df0dc6683}{row\-Copy} (double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Ddouble\-Array, int row)
+\begin{DoxyCompactList}\small\item\em This utility function returns an array copy containing of passed row index of a given 2\-D array. \end{DoxyCompactList}\item 
+static float \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a01e47516d4413ce57f3f2cfa96b6f7b3}{avg} (float\mbox{[}$\,$\mbox{]} float\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function calculates the average of an float array values and returns it. \end{DoxyCompactList}\item 
+static double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2d266e50a270075669cef98886715649}{avg} (double\mbox{[}$\,$\mbox{]} double\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function calculates the average of a double array values and returns it. \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad10e9b8da896be89ea78d2106c37b454}{avg\-Cols2\-D\-Float\-Array} (float\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Dfloat\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function builds an printable string of the elements (values) of a given 2\-D integer array and returns it. \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a8e51829da36c0b53ebbd03e0e6525789}{avg\-Cols2\-D\-Double\-Array} (double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-D\-Double\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function builds an printable string of the elements (values) of a given 2\-D integer array and returns it. \end{DoxyCompactList}\item 
+static String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_add757a9cf1f0022125147177ea206788}{to\-String} (float\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Dfloat\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function builds an printable string of the elements (values) of a given 2\-D float array and returns it. \end{DoxyCompactList}\item 
+static String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1f7fb8044637b0d02dc6153972c5926b}{to\-String} (double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} two\-Ddouble\-Array)
+\begin{DoxyCompactList}\small\item\em This utility function builds an printable string of the elements (values) of a given 2\-D double array and returns it. \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a612aaab54beb089a4bc467e0fe359d4a}{add} (float\mbox{[}$\,$\mbox{]}...arrays)
+\begin{DoxyCompactList}\small\item\em Add together an arbitrary number of arrays by index i.\-e. \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af12f9b4f93882451a2fda113a04437bb}{add} (double\mbox{[}$\,$\mbox{]}...arrays)
+\begin{DoxyCompactList}\small\item\em Add together an arbitrary number of arrays by index i.\-e. \end{DoxyCompactList}\item 
+static float\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1813e4f2d69c4b1f2dde2dee58f1aeb8}{negate} (float\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em negate the member values of an array \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af6d71cb48a9bdb957734cc6081ea5b69}{negate} (double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em negate the member values of an array \end{DoxyCompactList}\item 
+static void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2ac92883cb33d02e6ed42a7ae345d2ea}{replace\-Range} (float\mbox{[}$\,$\mbox{]} dest\-Array, float\mbox{[}$\,$\mbox{]} replacement\-Array, int start\-Index)
+\begin{DoxyCompactList}\small\item\em Replaces the portion of the array passed in as the first argument with the content of the second. \end{DoxyCompactList}\item 
+static void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0c84c379ea03ddbde56b49941509abee}{replace\-Range} (double\mbox{[}$\,$\mbox{]} dest\-Array, double\mbox{[}$\,$\mbox{]} replacement\-Array, int start\-Index)
+\begin{DoxyCompactList}\small\item\em Replaces the portion of the array passed in as the first argument with the content of the second. \end{DoxyCompactList}\item 
+static String\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a72a3816e6663fcfe6c475471017de6b6}{convert\-Boolean\-Array\-To\-String} (boolean\mbox{[}$\,$\mbox{]} bool\-Array)
+\item 
+static String\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a9bed26719c44c677f315e2cd605bd46d}{convert\-Float\-Array\-To\-String} (float\mbox{[}$\,$\mbox{]} float\-Array)
+\item 
+static String\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa38f78cbb6ffbea796174bf98d06c485}{convert\-Double\-Array\-To\-String} (double\mbox{[}$\,$\mbox{]} double\-Array)
+\item 
+static int\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2f80bbf16c550ce9338986162a9bb34d}{find\-N\-Smallest\-Indices} (double\mbox{[}$\,$\mbox{]} double\-Array, int n)
+\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa5bfda6dac2f007f426ed7e68de6065d}{genes\-To\-Double} (Gene\mbox{[}$\,$\mbox{]} genes)
+\item 
+static double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a092c64eed3ff6f015710418605adb09f}{zip} (double\mbox{[}$\,$\mbox{]}...arrs)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A helper class with static methods to aid in the manipulation of arrays I\-M\-P\-L\-E\-M\-E\-N\-T\-A\-T\-I\-O\-N N\-O\-T\-E -\/ (except where explicitly stated) methods result in an array as output, the methods do not work directly on the array(s) passed in but rather create a new array and pass this back as the return value. 
+
+\begin{DoxyAuthor}{Author}
+J. Richard Snape 
+
+Babak Mahdavi 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Revision\-:}
+1.\-05 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{Date\-:}
+2011/06/28 12\-:00\-:00 
+\end{DoxyParagraph}
+
+
+Version history (for intermediate steps see Git repository history
+
+1.\-0 -\/ Initial basic functionality 1.\-01 -\/ added dot product functionality and normalization 1.\-02 -\/ added method is\-Sum\-Equal\-Zero(float\-Array); is\-Sum\-Equal\-Zero(int\-Array) \mbox{[}Babak\mbox{]} 1.\-03 -\/ added avg, avg\-Cols2\-D\-Float\-Arry 1.\-04 -\/ added get\-Printable\-Output\-For2\-D\-Float\-Arrary, get\-Printable\-Output\-For\-Float\-Array, get\-Printable\-Output\-For2\-D\-Int\-Arrary, get\-Printable\-Output\-For\-Int\-Arrary 1.\-05 -\/ added sub\-Array\-Copy, row\-Copy 1.\-06 -\/ added replace\-Range function 
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a6384a1b0807d190cd04d54fb6f5b070f}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!absolute\-Values@{absolute\-Values}}
+\index{absolute\-Values@{absolute\-Values}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{absolute\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-absolute\-Values (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a6384a1b0807d190cd04d54fb6f5b070f}
+
+
+returns an array containing the absolute values of the members of the input array 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a995c00b09b08bebfe50a3d351c758d77}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!absolute\-Values@{absolute\-Values}}
+\index{absolute\-Values@{absolute\-Values}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{absolute\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-absolute\-Values (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a995c00b09b08bebfe50a3d351c758d77}
+
+
+returns an array containing the absolute values of the members of the input array 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a612aaab54beb089a4bc467e0fe359d4a}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!add@{add}}
+\index{add@{add}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{add}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-add (
+\begin{DoxyParamCaption}
+\item[{float...\mbox{[}$\,$\mbox{]}}]{arrays}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a612aaab54beb089a4bc467e0fe359d4a}
+
+
+Add together an arbitrary number of arrays by index i.\-e. 
+
+{\ttfamily return\mbox{[}i\mbox{]} = a1\mbox{[}i\mbox{]} + a2\mbox{[}i\mbox{]} + ... + an\mbox{[}i\mbox{]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em arrays} & arbitrary number of floating point arrays \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array which is the sum of the input arrays 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af12f9b4f93882451a2fda113a04437bb}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!add@{add}}
+\index{add@{add}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{add}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-add (
+\begin{DoxyParamCaption}
+\item[{double...\mbox{[}$\,$\mbox{]}}]{arrays}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af12f9b4f93882451a2fda113a04437bb}
+
+
+Add together an arbitrary number of arrays by index i.\-e. 
+
+{\ttfamily return\mbox{[}i\mbox{]} = a1\mbox{[}i\mbox{]} + a2\mbox{[}i\mbox{]} + ... + an\mbox{[}i\mbox{]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em arrays} & arbitrary number of floating point arrays \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array which is the sum of the input arrays 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a01e47516d4413ce57f3f2cfa96b6f7b3}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!avg@{avg}}
+\index{avg@{avg}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{avg}]{\setlength{\rightskip}{0pt plus 5cm}static float uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-avg (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{float\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a01e47516d4413ce57f3f2cfa96b6f7b3}
+
+
+This utility function calculates the average of an float array values and returns it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & float\-Array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+average of array's elements/values 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2d266e50a270075669cef98886715649}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!avg@{avg}}
+\index{avg@{avg}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{avg}]{\setlength{\rightskip}{0pt plus 5cm}static double uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-avg (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{double\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2d266e50a270075669cef98886715649}
+
+
+This utility function calculates the average of a double array values and returns it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & double\-Array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+average of array's elements/values 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a8e51829da36c0b53ebbd03e0e6525789}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!avg\-Cols2\-D\-Double\-Array@{avg\-Cols2\-D\-Double\-Array}}
+\index{avg\-Cols2\-D\-Double\-Array@{avg\-Cols2\-D\-Double\-Array}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{avg\-Cols2\-D\-Double\-Array}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-avg\-Cols2\-D\-Double\-Array (
+\begin{DoxyParamCaption}
+\item[{double}]{two\-D\-Double\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a8e51829da36c0b53ebbd03e0e6525789}
+
+
+This utility function builds an printable string of the elements (values) of a given 2\-D integer array and returns it. 
+
+The string could be used in any standard print/output function (such as println)
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & 2\-D int\-Array to be printed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a ready-\/to-\/be-\/printed string of array elements/values 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad10e9b8da896be89ea78d2106c37b454}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!avg\-Cols2\-D\-Float\-Array@{avg\-Cols2\-D\-Float\-Array}}
+\index{avg\-Cols2\-D\-Float\-Array@{avg\-Cols2\-D\-Float\-Array}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{avg\-Cols2\-D\-Float\-Array}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-avg\-Cols2\-D\-Float\-Array (
+\begin{DoxyParamCaption}
+\item[{float}]{two\-Dfloat\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad10e9b8da896be89ea78d2106c37b454}
+
+
+This utility function builds an printable string of the elements (values) of a given 2\-D integer array and returns it. 
+
+The string could be used in any standard print/output function (such as println)
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & 2\-D int\-Array to be printed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a ready-\/to-\/be-\/printed string of array elements/values 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_acd09574fdde2b68964c0dcdf79f1d4fa}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!col\-Copy@{col\-Copy}}
+\index{col\-Copy@{col\-Copy}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{col\-Copy}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-col\-Copy (
+\begin{DoxyParamCaption}
+\item[{float}]{two\-Dfloat\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{col\-Nb}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_acd09574fdde2b68964c0dcdf79f1d4fa}
+
+
+This utility function returns a copy of the specific column of a passed 2\-D float array as a one dimensional float array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em two\-Dfloat\-Array} & a 2\-D float array whose column is supposed to be fetched and return \\
+\hline
+{\em col\-Nb} & the number of column whose values are supposed to be returned as array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array (float) containing a copy of the passed column number and 2\-D array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a4a36eed41a404b1301705710eae77546}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!col\-Copy@{col\-Copy}}
+\index{col\-Copy@{col\-Copy}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{col\-Copy}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-col\-Copy (
+\begin{DoxyParamCaption}
+\item[{double}]{two\-Ddouble\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{col\-Nb}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a4a36eed41a404b1301705710eae77546}
+
+
+This utility function returns a copy of the specific column of a passed 2\-D double array as a one dimensional double array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em two\-Dfloat\-Array} & a 2\-D double array whose column is supposed to be fetched and return \\
+\hline
+{\em col\-Nb} & the number of column whose values are supposed to be returned as array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array (double) containing a copy of the passed column number and 2\-D array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a72a3816e6663fcfe6c475471017de6b6}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!convert\-Boolean\-Array\-To\-String@{convert\-Boolean\-Array\-To\-String}}
+\index{convert\-Boolean\-Array\-To\-String@{convert\-Boolean\-Array\-To\-String}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{convert\-Boolean\-Array\-To\-String}]{\setlength{\rightskip}{0pt plus 5cm}static String \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-convert\-Boolean\-Array\-To\-String (
+\begin{DoxyParamCaption}
+\item[{boolean\mbox{[}$\,$\mbox{]}}]{bool\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a72a3816e6663fcfe6c475471017de6b6}
+
+\begin{DoxyParams}{Parameters}
+{\em bool\-Array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a137838b8f342da5968c84a88ec0a63f7}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!convert\-Double\-Array\-To\-Float\-Array@{convert\-Double\-Array\-To\-Float\-Array}}
+\index{convert\-Double\-Array\-To\-Float\-Array@{convert\-Double\-Array\-To\-Float\-Array}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{convert\-Double\-Array\-To\-Float\-Array}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-convert\-Double\-Array\-To\-Float\-Array (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a137838b8f342da5968c84a88ec0a63f7}
+
+
+This utility function accept a double array as an argument and returns a float array containing converted double values of the passed array (argument). 
+
+This is not a good/wise thing to do as information/precision could be lost, but it is written if it would be necessary to use it!
+
+
+\begin{DoxyParams}{Parameters}
+{\em double\-Array} & whose {\ttfamily double} element values will be converted to {\ttfamily float} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+array containing the passed array values (as argument) converted to {\ttfamily float} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa6443e6fd05584c2aafdc86dff32ff65}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!convert\-Double\-Array\-To\-Float\-Array@{convert\-Double\-Array\-To\-Float\-Array}}
+\index{convert\-Double\-Array\-To\-Float\-Array@{convert\-Double\-Array\-To\-Float\-Array}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{convert\-Double\-Array\-To\-Float\-Array}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-convert\-Double\-Array\-To\-Float\-Array (
+\begin{DoxyParamCaption}
+\item[{double}]{array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa6443e6fd05584c2aafdc86dff32ff65}
+
+
+This utility function accept a double array as an argument and returns a float array containing converted double values of the passed array (argument). 
+
+This is not a good/wise thing to do as information/precision could be lost, but it is written if it would be necessary to use it!
+
+
+\begin{DoxyParams}{Parameters}
+{\em double\-Array} & whose {\ttfamily double} element values will be converted to {\ttfamily float} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+array containing the passed array values (as argument) converted to {\ttfamily float} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa38f78cbb6ffbea796174bf98d06c485}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!convert\-Double\-Array\-To\-String@{convert\-Double\-Array\-To\-String}}
+\index{convert\-Double\-Array\-To\-String@{convert\-Double\-Array\-To\-String}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{convert\-Double\-Array\-To\-String}]{\setlength{\rightskip}{0pt plus 5cm}static String \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-convert\-Double\-Array\-To\-String (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{double\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa38f78cbb6ffbea796174bf98d06c485}
+
+\begin{DoxyParams}{Parameters}
+{\em double\-Array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa069a7b7065554e7ab59a45c55c8b763}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!convert\-Float\-Array\-To\-Double\-Array@{convert\-Float\-Array\-To\-Double\-Array}}
+\index{convert\-Float\-Array\-To\-Double\-Array@{convert\-Float\-Array\-To\-Double\-Array}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{convert\-Float\-Array\-To\-Double\-Array}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-convert\-Float\-Array\-To\-Double\-Array (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{float\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa069a7b7065554e7ab59a45c55c8b763}
+
+
+This utility function accept a float array as an argument and returns a double array containing converted double values of the passed array (argument). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em float\-Array} & whose {\ttfamily float} element values will be converted to {\ttfamily double} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double array containing the passed array values (as argument) converted to {\ttfamily double} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a9bed26719c44c677f315e2cd605bd46d}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!convert\-Float\-Array\-To\-String@{convert\-Float\-Array\-To\-String}}
+\index{convert\-Float\-Array\-To\-String@{convert\-Float\-Array\-To\-String}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{convert\-Float\-Array\-To\-String}]{\setlength{\rightskip}{0pt plus 5cm}static String \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-convert\-Float\-Array\-To\-String (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{float\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a9bed26719c44c677f315e2cd605bd46d}
+
+\begin{DoxyParams}{Parameters}
+{\em float\-Array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ae28673c65f4201d7314e0d0acdb11062}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!dot\-Product@{dot\-Product}}
+\index{dot\-Product@{dot\-Product}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{dot\-Product}]{\setlength{\rightskip}{0pt plus 5cm}static float uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-dot\-Product (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array1, }
+\item[{float\mbox{[}$\,$\mbox{]}}]{array2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ae28673c65f4201d7314e0d0acdb11062}
+
+
+calculates the dot (or inner) product of two input arrays 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array1} & \\
+\hline
+{\em array2} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the dot product of the input arrays. 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2f80bbf16c550ce9338986162a9bb34d}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!find\-N\-Smallest\-Indices@{find\-N\-Smallest\-Indices}}
+\index{find\-N\-Smallest\-Indices@{find\-N\-Smallest\-Indices}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{find\-N\-Smallest\-Indices}]{\setlength{\rightskip}{0pt plus 5cm}static int \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-find\-N\-Smallest\-Indices (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{double\-Array, }
+\item[{int}]{n}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2f80bbf16c550ce9338986162a9bb34d}
+
+\begin{DoxyParams}{Parameters}
+{\em copy\-Of\-Range} & \\
+\hline
+{\em n} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa5bfda6dac2f007f426ed7e68de6065d}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!genes\-To\-Double@{genes\-To\-Double}}
+\index{genes\-To\-Double@{genes\-To\-Double}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{genes\-To\-Double}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-genes\-To\-Double (
+\begin{DoxyParamCaption}
+\item[{Gene\mbox{[}$\,$\mbox{]}}]{genes}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa5bfda6dac2f007f426ed7e68de6065d}
+
+\begin{DoxyParams}{Parameters}
+{\em genes} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2dbf2f54bdb44a8d759d88cd5a4c8740}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!index\-Of@{index\-Of}}
+\index{index\-Of@{index\-Of}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{index\-Of}]{\setlength{\rightskip}{0pt plus 5cm}static int uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-index\-Of (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{float\-Array, }
+\item[{float}]{val}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2dbf2f54bdb44a8d759d88cd5a4c8740}
+
+
+This utility function returns the index where the passed value is found. 
+
+If there is no such a value, it returns -\/1 as index. If there are more than one occurrence, the index of the last one found is returned.
+
+
+\begin{DoxyParams}{Parameters}
+{\em float\-Array} & whose index for occurrence of {\ttfamily val} will be searched \\
+\hline
+{\em val} & the value whose index is sought \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+index of the array where {\ttfamily val} has been found 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad6169909480482f00f765f9675a5e513}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!index\-Of@{index\-Of}}
+\index{index\-Of@{index\-Of}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{index\-Of}]{\setlength{\rightskip}{0pt plus 5cm}static int uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-index\-Of (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{double\-Array, }
+\item[{double}]{val}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad6169909480482f00f765f9675a5e513}
+
+
+This utility function returns the index where the passed value is found. 
+
+If there is no such a value, it returns -\/1 as index. If there are more than one occurrence, the index of the last one found is returned.
+
+
+\begin{DoxyParams}{Parameters}
+{\em double\-Array} & whose index for occurrence of {\ttfamily val} will be searched \\
+\hline
+{\em val} & the value whose index is sought \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+index of the array where {\ttfamily val} has been found 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa3b594db771dd2cda7bc0aa64d283469}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!index\-Of\-Max@{index\-Of\-Max}}
+\index{index\-Of\-Max@{index\-Of\-Max}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{index\-Of\-Max}]{\setlength{\rightskip}{0pt plus 5cm}static int uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-index\-Of\-Max (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa3b594db771dd2cda7bc0aa64d283469}
+
+
+find the index of the member of the input array with the maximum value (note real value, not absolute magnitude) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the index of the maximum value in the input array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_acf5b8cf57c9f478273959a8000dec435}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!index\-Of\-Max@{index\-Of\-Max}}
+\index{index\-Of\-Max@{index\-Of\-Max}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{index\-Of\-Max}]{\setlength{\rightskip}{0pt plus 5cm}static int uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-index\-Of\-Max (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_acf5b8cf57c9f478273959a8000dec435}
+
+
+find the index of the member of the input array with the maximum value (note real value, not absolute magnitude) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the index of the maximum value in the input array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_accdab05dc514cfe9a8aa31d7011a11ee}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!index\-Of\-Min@{index\-Of\-Min}}
+\index{index\-Of\-Min@{index\-Of\-Min}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{index\-Of\-Min}]{\setlength{\rightskip}{0pt plus 5cm}static int uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-index\-Of\-Min (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_accdab05dc514cfe9a8aa31d7011a11ee}
+
+
+find the index of the member of the input array with the minimum value (note real value, not absolute magnitude) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the index of the minimum value in the input array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa763bedd26369baedaa6920711c633fa}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!index\-Of\-Min@{index\-Of\-Min}}
+\index{index\-Of\-Min@{index\-Of\-Min}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{index\-Of\-Min}]{\setlength{\rightskip}{0pt plus 5cm}static int uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-index\-Of\-Min (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aa763bedd26369baedaa6920711c633fa}
+
+
+find the index of the member of the input array with the minimum value (note real value, not absolute magnitude) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the index of the minimum value in the input array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a23db3a5cb5ae703e9842e113e1c3ff7f}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!is\-Sum\-Equal\-Zero@{is\-Sum\-Equal\-Zero}}
+\index{is\-Sum\-Equal\-Zero@{is\-Sum\-Equal\-Zero}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{is\-Sum\-Equal\-Zero}]{\setlength{\rightskip}{0pt plus 5cm}static boolean uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-is\-Sum\-Equal\-Zero (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{float\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a23db3a5cb5ae703e9842e113e1c3ff7f}
+
+
+This utility function verifies if the sum of the values in the given array (float) are equal zero. 
+
+If the sum is zero it returns true; otherwise false
+
+
+\begin{DoxyParams}{Parameters}
+{\em float\-Array} & to be verified if its sum is equal zero \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the sum of array elements are zero; false otherwise 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a3c7ced4fd47d36f31a5c8a506fe408b7}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!is\-Sum\-Equal\-Zero@{is\-Sum\-Equal\-Zero}}
+\index{is\-Sum\-Equal\-Zero@{is\-Sum\-Equal\-Zero}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{is\-Sum\-Equal\-Zero}]{\setlength{\rightskip}{0pt plus 5cm}static boolean uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-is\-Sum\-Equal\-Zero (
+\begin{DoxyParamCaption}
+\item[{int\mbox{[}$\,$\mbox{]}}]{int\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a3c7ced4fd47d36f31a5c8a506fe408b7}
+
+
+This utility function verifies if the sum of the values in the given array (int) are equal zero. 
+
+If the sum is zero it returns true; otherwise false
+
+
+\begin{DoxyParams}{Parameters}
+{\em int\-Array} & to be verified if its sum is equal zero \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the sum of array elements are zero; false otherwise 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad634422f957bcb7bca9b71ca2df80bdc}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!max@{max}}
+\index{max@{max}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{max}]{\setlength{\rightskip}{0pt plus 5cm}static float uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-max (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad634422f957bcb7bca9b71ca2df80bdc}
+
+
+returns the maximum value of the input array 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily float} which is the maximum value of the input array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ac6b0c16dc79a5ca5df790d6a2f3ce280}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!max@{max}}
+\index{max@{max}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{max}]{\setlength{\rightskip}{0pt plus 5cm}static double uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-max (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ac6b0c16dc79a5ca5df790d6a2f3ce280}
+
+
+returns the maximum value of the input array 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily double} which is the maximum value of the input array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1ea1dceabae3a8cd56c5d1e5cad32bc9}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!min@{min}}
+\index{min@{min}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{min}]{\setlength{\rightskip}{0pt plus 5cm}static float uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-min (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1ea1dceabae3a8cd56c5d1e5cad32bc9}
+
+
+returns the minimum value of the input array 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily float} which is the minimum value of the input array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ae28cfd55f0cd717a8cccbae16ce051e8}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!min@{min}}
+\index{min@{min}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{min}]{\setlength{\rightskip}{0pt plus 5cm}static double uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-min (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ae28cfd55f0cd717a8cccbae16ce051e8}
+
+
+returns the minimum value of the input array 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\ttfamily float} which is the minimum value of the input array 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2674fa4ff35ab7c1d015785133318fe7}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!mtimes@{mtimes}}
+\index{mtimes@{mtimes}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{mtimes}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-mtimes (
+\begin{DoxyParamCaption}
+\item[{float...\mbox{[}$\,$\mbox{]}}]{arrays}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2674fa4ff35ab7c1d015785133318fe7}
+
+
+function to multiply the values of an arbitrary number of arrays together element by element 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arrays} & arbitrary number of floating point arrays \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+array of {\ttfamily float}s containing multiplied values i.\-e. {\ttfamily return\-Array\mbox{[}i\mbox{]} = a1\mbox{[}i\mbox{]} $\ast$ a2\mbox{[}i\mbox{]} $\ast$ ... $\ast$ an\mbox{[}i\mbox{]}} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2c02f1fbaf51961a0a657db030d2c743}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!mtimes@{mtimes}}
+\index{mtimes@{mtimes}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{mtimes}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-mtimes (
+\begin{DoxyParamCaption}
+\item[{double...\mbox{[}$\,$\mbox{]}}]{arrays}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2c02f1fbaf51961a0a657db030d2c743}
+
+
+function to multiply the values of an arbitrary number of arrays together element by element 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arrays} & arbitrary number of floating point arrays \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+array of {\ttfamily double}s containing multiplied values i.\-e. {\ttfamily return\-Array\mbox{[}i\mbox{]} = a1\mbox{[}i\mbox{]} $\ast$ a2\mbox{[}i\mbox{]} $\ast$ ... $\ast$ an\mbox{[}i\mbox{]}} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a7c38e758dcf1b623264ca6a15426c45a}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!multiply@{multiply}}
+\index{multiply@{multiply}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{multiply}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-multiply (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array, }
+\item[{float}]{multiplier}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a7c38e758dcf1b623264ca6a15426c45a}
+
+
+multiplies each member of the input array by the specified multiplier 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+{\em multiplier} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1813e4f2d69c4b1f2dde2dee58f1aeb8}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!negate@{negate}}
+\index{negate@{negate}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{negate}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-negate (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1813e4f2d69c4b1f2dde2dee58f1aeb8}
+
+
+negate the member values of an array 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array where {\ttfamily return\mbox{[}i\mbox{]} = -\/ array\mbox{[}i\mbox{]}} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af6d71cb48a9bdb957734cc6081ea5b69}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!negate@{negate}}
+\index{negate@{negate}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{negate}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-negate (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af6d71cb48a9bdb957734cc6081ea5b69}
+
+
+negate the member values of an array 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array where {\ttfamily return\mbox{[}i\mbox{]} = -\/ array\mbox{[}i\mbox{]}} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0a294180e550b87c1c329a9b599bf688}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!normalize\-Values@{normalize\-Values}}
+\index{normalize\-Values@{normalize\-Values}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{normalize\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-normalize\-Values (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0a294180e550b87c1c329a9b599bf688}
+
+
+normalize array values to lie in the range -\/1 $<$= member\-Value $<$= +1 the relative value of the array values is preserved 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array1} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+normalized array of {\ttfamily float}s 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_afb4f2ac43935c86ac918c1c69b158b2a}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!normalize\-Values@{normalize\-Values}}
+\index{normalize\-Values@{normalize\-Values}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{normalize\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-normalize\-Values (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_afb4f2ac43935c86ac918c1c69b158b2a}
+
+
+normalize array values to lie in the range -\/1 $<$= member\-Value $<$= +1 the relative value of the array values is preserved 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array1} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+normalized array of {\ttfamily double}s 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_afee51896ffa74faa790edc370de42ce7}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!normalize\-Values@{normalize\-Values}}
+\index{normalize\-Values@{normalize\-Values}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{normalize\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-normalize\-Values (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array, }
+\item[{float}]{max\-Magnitude}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_afee51896ffa74faa790edc370de42ce7}
+
+
+normalize array values to lie in the range -\/max\-Magnitude $<$= member\-Value $<$= +max\-Magnitude the relative value of the array values is preserved 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array1} & \\
+\hline
+{\em max\-Magnitude} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+normalized array of {\ttfamily float}s 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad860c0143f52e42e6d44fcc0f7923b34}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!normalize\-Values@{normalize\-Values}}
+\index{normalize\-Values@{normalize\-Values}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{normalize\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-normalize\-Values (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array, }
+\item[{double}]{max\-Magnitude}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad860c0143f52e42e6d44fcc0f7923b34}
+
+
+normalize array values to lie in the range -\/max\-Magnitude $<$= member\-Value $<$= +max\-Magnitude the relative value of the array values is preserved 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array1} & \\
+\hline
+{\em max\-Magnitude} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+normalized array of {\ttfamily double}s 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a18b1198f711addbafe4908b5e5ebc5fa}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!normalize\-Values@{normalize\-Values}}
+\index{normalize\-Values@{normalize\-Values}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{normalize\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-normalize\-Values (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array, }
+\item[{float}]{max\-Magnitude, }
+\item[{boolean}]{allow\-Negative}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a18b1198f711addbafe4908b5e5ebc5fa}
+
+
+normalize array values to lie in the range -\/max\-Magnitude $<$= member\-Value $<$= +max\-Magnitude if allow\-Negatives is true 0 $<$= member\-Value $<$= + max\-Magnitude if allow\-Negatives is false the relative value of the array values is preserved 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array1} & \\
+\hline
+{\em max\-Magnitude} & \\
+\hline
+{\em allow\-Negatives} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+normalized array of {\ttfamily float}s 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af05acff9c2f6bb75893a2ad84ff64195}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!normalize\-Values@{normalize\-Values}}
+\index{normalize\-Values@{normalize\-Values}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{normalize\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-normalize\-Values (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array, }
+\item[{double}]{max\-Magnitude, }
+\item[{boolean}]{allow\-Negative}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_af05acff9c2f6bb75893a2ad84ff64195}
+
+
+normalize array values to lie in the range -\/max\-Magnitude $<$= member\-Value $<$= +max\-Magnitude if allow\-Negatives is true 0 $<$= member\-Value $<$= + max\-Magnitude if allow\-Negatives is false the relative value of the array values is preserved 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array1} & \\
+\hline
+{\em max\-Magnitude} & \\
+\hline
+{\em allow\-Negatives} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+normalized array of {\ttfamily float}s 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a4e465741240b166c11f2f8f058577db5}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!offset@{offset}}
+\index{offset@{offset}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{offset}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-offset (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{array, }
+\item[{double}]{offset}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a4e465741240b166c11f2f8f058577db5}
+
+
+offsets each member of the input array by the specified offset 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+{\em offset} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a7d8da36358cecf7fd0442eadda5c9ba0}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!offset@{offset}}
+\index{offset@{offset}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{offset}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-offset (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{array, }
+\item[{float}]{offset}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a7d8da36358cecf7fd0442eadda5c9ba0}
+
+
+offsets each member of the input array by the specified offset 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & \\
+\hline
+{\em offset} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aadc530cdb62125f8a1ebacbde8c00ce0}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!pow@{pow}}
+\index{pow@{pow}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{pow}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-pow (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{double\-Array\-Base, }
+\item[{double}]{exp}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aadc530cdb62125f8a1ebacbde8c00ce0}
+
+
+This utility function returns an array of double values after raising the values of first argument (passed float array) to the power of second argument (exp). 
+
+If the return value by Math.\-pow would be a Na\-N or Infinity, the value is set to 0.
+
+
+\begin{DoxyParams}{Parameters}
+{\em float\-Array\-Base} & whose base element values will be raised by {\ttfamily exp} value \\
+\hline
+{\em exp} & the exponent \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float array containing the initial array values raised by {\ttfamily exp} value This utility function returns an array of double values after raising the values of first argument (passed float array) to the power of second argument (exp). If the return value by Math.\-pow would be a Na\-N or Infinity, the value is set to 0.
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em double\-Array\-Base} & whose base element values will be raised by {\ttfamily exp} value \\
+\hline
+{\em exp} & the exponent \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double array containing the initial array values raised by {\ttfamily exp} value 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad06289acc2c7cf99071f1e1d240e4484}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!pow2@{pow2}}
+\index{pow2@{pow2}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{pow2}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-pow2 (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{double\-Array\-Base}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ad06289acc2c7cf99071f1e1d240e4484}
+
+
+raise each member of the input array to the power two (or square each member) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em double\-Array\-Base} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array containing the squared values i.\-e. {\ttfamily return\mbox{[}i\mbox{]} = input\-Array\mbox{[}i\mbox{]} $^\wedge$ 2} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2ac92883cb33d02e6ed42a7ae345d2ea}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!replace\-Range@{replace\-Range}}
+\index{replace\-Range@{replace\-Range}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{replace\-Range}]{\setlength{\rightskip}{0pt plus 5cm}static void uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-replace\-Range (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{dest\-Array, }
+\item[{float\mbox{[}$\,$\mbox{]}}]{replacement\-Array, }
+\item[{int}]{start\-Index}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a2ac92883cb33d02e6ed42a7ae345d2ea}
+
+
+Replaces the portion of the array passed in as the first argument with the content of the second. 
+
+N\-O\-T\-E\-: acts directly on the array passed in.
+
+
+\begin{DoxyParams}{Parameters}
+{\em dest\-Array} & \\
+\hline
+{\em replacement\-Array} & \\
+\hline
+{\em start\-Index} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0c84c379ea03ddbde56b49941509abee}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!replace\-Range@{replace\-Range}}
+\index{replace\-Range@{replace\-Range}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{replace\-Range}]{\setlength{\rightskip}{0pt plus 5cm}static void uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-replace\-Range (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{dest\-Array, }
+\item[{double\mbox{[}$\,$\mbox{]}}]{replacement\-Array, }
+\item[{int}]{start\-Index}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0c84c379ea03ddbde56b49941509abee}
+
+
+Replaces the portion of the array passed in as the first argument with the content of the second. 
+
+N\-O\-T\-E\-: acts directly on the array passed in.
+
+
+\begin{DoxyParams}{Parameters}
+{\em dest\-Array} & \\
+\hline
+{\em replacement\-Array} & \\
+\hline
+{\em start\-Index} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_abfb74f4b5844ac5e151ccb31bb13ccfb}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!row\-Copy@{row\-Copy}}
+\index{row\-Copy@{row\-Copy}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{row\-Copy}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-row\-Copy (
+\begin{DoxyParamCaption}
+\item[{float}]{two\-Dfloat\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{row}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_abfb74f4b5844ac5e151ccb31bb13ccfb}
+
+
+This utility function returns an array copy containing of passed row index of a given 2\-D array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em two\-Dfloat\-Array} & the original 2\-D float array from which a row will be copied and return as an array \\
+\hline
+{\em row} & a row index indicating the row which needs to be taken out (copied and returned) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array (float) containing a copy of its needed row (index passed as argument) 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a46123e3dc5762c8a73ff442df0dc6683}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!row\-Copy@{row\-Copy}}
+\index{row\-Copy@{row\-Copy}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{row\-Copy}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-row\-Copy (
+\begin{DoxyParamCaption}
+\item[{double}]{two\-Ddouble\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{row}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a46123e3dc5762c8a73ff442df0dc6683}
+
+
+This utility function returns an array copy containing of passed row index of a given 2\-D array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em two\-Ddouble\-Array} & the original 2\-D double array from which a row will be copied and return as an array \\
+\hline
+{\em row} & a row index indicating the row which needs to be taken out (copied and returned) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an array (double) containing a copy of its needed row (index passed as argument) 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ab550992e23c72fbb9ed70648d3d0f26b}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!sub\-Array\-Copy@{sub\-Array\-Copy}}
+\index{sub\-Array\-Copy@{sub\-Array\-Copy}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{sub\-Array\-Copy}]{\setlength{\rightskip}{0pt plus 5cm}static float \mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-sub\-Array\-Copy (
+\begin{DoxyParamCaption}
+\item[{float}]{two\-Dfloat\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{start\-Row, }
+\item[{int}]{end\-Row}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_ab550992e23c72fbb9ed70648d3d0f26b}
+
+
+This utility function returns a sub-\/array copy of a given 2\-D array (with the same columns' size) by passing/specifying a start\-Row and end\-Row indices. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em two\-Dfloat\-Array} & the original 2\-D float array from which a sub-\/array is built \\
+\hline
+{\em start\-Row} & a starting row index which indicates the beginning row of the sub-\/array \\
+\hline
+{\em end\-Row} & an ending row index which indicates the last row of original array included in the sub-\/array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an 2\-D sub-\/array (float) containing a copy of the passed 2\-D-\/array up from start\-Row to end\-Row 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0ef03bf6775473a98e596007198604c3}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!sub\-Array\-Copy@{sub\-Array\-Copy}}
+\index{sub\-Array\-Copy@{sub\-Array\-Copy}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{sub\-Array\-Copy}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-sub\-Array\-Copy (
+\begin{DoxyParamCaption}
+\item[{double}]{two\-Ddouble\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{start\-Row, }
+\item[{int}]{end\-Row}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a0ef03bf6775473a98e596007198604c3}
+
+
+This utility function returns a sub-\/array copy of a given 2\-D array (with the same columns' size) by passing/specifying a start\-Row and end\-Row indices. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em two\-Ddouble\-Array} & the original 2\-D double array from which a sub-\/array is built \\
+\hline
+{\em start\-Row} & a starting row index which indicates the beginning row of the sub-\/array \\
+\hline
+{\em end\-Row} & an ending row index which indicates the last row of original array included in the sub-\/array \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an 2\-D sub-\/array (double) containing a copy of the passed 2\-D-\/array up from start\-Row to end\-Row 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a8d4b59d9305b9dc4e06184b1299fc7e6}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!sum@{sum}}
+\index{sum@{sum}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{sum}]{\setlength{\rightskip}{0pt plus 5cm}static int uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-sum (
+\begin{DoxyParamCaption}
+\item[{int\mbox{[}$\,$\mbox{]}}]{int\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a8d4b59d9305b9dc4e06184b1299fc7e6}
+
+
+return the sum of the members of the array passed into the method 
+
+
+\begin{DoxyParams}{Parameters}
+{\em int\-Array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an {\ttfamily int} which is the sum of the {\ttfamily int} members of the array passed in 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a50430a7b71868948ee1fbca64ece53a4}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!sum@{sum}}
+\index{sum@{sum}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{sum}]{\setlength{\rightskip}{0pt plus 5cm}static double uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-sum (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{double\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a50430a7b71868948ee1fbca64ece53a4}
+
+
+return the sum of the members of the array passed into the method 
+
+
+\begin{DoxyParams}{Parameters}
+{\em double\-Array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an {\ttfamily double} which is the sum of the {\ttfamily double} members of the array passed in 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aceffdcaae593e327dd48024f9d4f09c4}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!sum@{sum}}
+\index{sum@{sum}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{sum}]{\setlength{\rightskip}{0pt plus 5cm}static float uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-sum (
+\begin{DoxyParamCaption}
+\item[{float\mbox{[}$\,$\mbox{]}}]{float\-Array}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_aceffdcaae593e327dd48024f9d4f09c4}
+
+
+return the sum of the members of the array passed into the method 
+
+
+\begin{DoxyParams}{Parameters}
+{\em float\-Array} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an {\ttfamily float} which is the sum of the {\ttfamily float} members of the array passed in 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_add757a9cf1f0022125147177ea206788}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}static String uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-to\-String (
+\begin{DoxyParamCaption}
+\item[{float}]{two\-Dfloat\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_add757a9cf1f0022125147177ea206788}
+
+
+This utility function builds an printable string of the elements (values) of a given 2\-D float array and returns it. 
+
+The string could be used in any standard print/output function (such as println)
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & 2\-D float\-Array to be printed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a ready-\/to-\/be-\/printed string of array elements/values 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1f7fb8044637b0d02dc6153972c5926b}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!to\-String@{to\-String}}
+\index{to\-String@{to\-String}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{to\-String}]{\setlength{\rightskip}{0pt plus 5cm}static String uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-to\-String (
+\begin{DoxyParamCaption}
+\item[{double}]{two\-Ddouble\-Array\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a1f7fb8044637b0d02dc6153972c5926b}
+
+
+This utility function builds an printable string of the elements (values) of a given 2\-D double array and returns it. 
+
+The string could be used in any standard print/output function (such as println)
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & 2\-D double\-Array to be printed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a ready-\/to-\/be-\/printed string of array elements/values 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a092c64eed3ff6f015710418605adb09f}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}!zip@{zip}}
+\index{zip@{zip}!uk::ac::dmu::iesd::cascade::util::ArrayUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Array\-Utils}}
+\subsubsection[{zip}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Array\-Utils.\-zip (
+\begin{DoxyParamCaption}
+\item[{double...\mbox{[}$\,$\mbox{]}}]{arrs}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_array_utils_a092c64eed3ff6f015710418605adb09f}
+
+\begin{DoxyParams}{Parameters}
+{\em kneg} & \\
+\hline
+{\em kpos} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/util/Array\-Utils.\-java\end{DoxyCompactItemize}

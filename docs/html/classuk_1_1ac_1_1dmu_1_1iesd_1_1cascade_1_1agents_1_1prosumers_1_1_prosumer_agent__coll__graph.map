@@ -1,0 +1,4 @@
+<map id="uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent" name="uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent">
+<area shape="rect" id="node2" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1_i_cognitive_agent.html" title="uk.ac.dmu.iesd.cascade.agents.\lICognitiveAgent" alt="" coords="427,218,637,260"/>
+<area shape="rect" id="node3" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context.html" title="CascadeContext is the main context for the Cascade framework. " alt="" coords="425,284,639,325"/>
+</map>

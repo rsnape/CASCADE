@@ -1,0 +1,78 @@
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable Interface Reference}
+\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable}}
+}
+
+
+Interface {\ttfamily \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable}} defines how an \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable} implementer should behave by basically allowing add, delete and count of observer objects.  
+
+
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+abstract void \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_acc9c7f4005f0c7efb9669190c4d6d064}{add\-Observer} (\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer} an\-I\-Observer)
+\begin{DoxyCompactList}\small\item\em This method allows an observer to be added to the list of observer objects. \end{DoxyCompactList}\item 
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_ae24a14651bd4afbadb22cd00ec8c32d8}{abstract void {\bfseries delete\-Observer} (\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer} an\-I\-Observer)}\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_ae24a14651bd4afbadb22cd00ec8c32d8}
+
+\item 
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_ae7c1f237a402679ee861d02f6a4aeedf}{abstract void {\bfseries delete\-Observers} ()}\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_ae7c1f237a402679ee861d02f6a4aeedf}
+
+\item 
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_aab284017c31acb507ce11bb13da1416b}{abstract int {\bfseries count\-Observers} ()}\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_aab284017c31acb507ce11bb13da1416b}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface {\ttfamily \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable}} defines how an \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable} implementer should behave by basically allowing add, delete and count of observer objects. 
+
+\begin{DoxyAuthor}{Author}
+Babak Mahdavi 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Revision\-:}
+1.\-00 
+\end{DoxyParagraph}
+\$\-Date\-: 2011/05/23 1\-:00\-:00
+
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable} 
+\end{DoxySeeAlso}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_acc9c7f4005f0c7efb9669190c4d6d064}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-I\-Observable@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-I\-Observable}!add\-Observer@{add\-Observer}}
+\index{add\-Observer@{add\-Observer}!uk::ac::dmu::iesd::cascade::util::IObservable@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-I\-Observable}}
+\subsubsection[{add\-Observer}]{\setlength{\rightskip}{0pt plus 5cm}abstract void uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable.\-add\-Observer (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Observer}}]{an\-I\-Observer}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [abstract]}}}\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_acc9c7f4005f0c7efb9669190c4d6d064}
+
+
+This method allows an observer to be added to the list of observer objects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em an\-I\-Observer} & the observer (I\-Obsever) who wants to be added and updated when a specific state changes or event occurs \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_aggregator_agent_af1d3c6ccad69e49e95aa9393af89d8af}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Aggregator\-Agent}, and \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a2de999ded542075a4074e1e3afaf50ba}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component}.
+
+
+
+The documentation for this interface was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/util/I\-Observable.\-java\end{DoxyCompactItemize}

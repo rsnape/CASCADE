@@ -1,0 +1,250 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map}}
+}
+
+
+A {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co}} or a supplier retail company is a concrete object that represents a commercial/business electricity/energy company involved in retail trade with prosumer agents ({\ttfamily Prosumer\-Agent}), such as household prosumers ({\ttfamily Household\-Prosumer}) In other words, a {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co}} provides electricity/energy to certain types of prosumers (e.\-g.  
+
+
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_ac7238297beafa908ed67663093b21d4a}{void {\bfseries market\-Pre\-Step} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_ac7238297beafa908ed67663093b21d4a}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a00cf9c1426554431006fa84e2379bae2}{void {\bfseries biz\-Pre\-Step} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a00cf9c1426554431006fa84e2379bae2}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_aaab1da0e0ef8484bafa3317c906c890f}{void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_aaab1da0e0ef8484bafa3317c906c890f}{biz\-Step} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_aaab1da0e0ef8484bafa3317c906c890f}
+
+\begin{DoxyCompactList}\small\item\em This method defines how this object behaves (what it does) at at a given scheduled time throughout the simulation. \end{DoxyCompactList}\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a4677eb817be685c3148dc8f0c7ed9d4e}{Supplier\-Co\-Neural\-Map} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_market_message_board}{Market\-Message\-Board} mb, B\-M\-U\-\_\-\-C\-A\-T\-E\-G\-O\-R\-Y cat, B\-M\-U\-\_\-\-T\-Y\-P\-E type, double max\-Dem, double min\-Dem, double\mbox{[}$\,$\mbox{]} base\-Demand)
+\begin{DoxyCompactList}\small\item\em Constructs a Supplier\-C\-O agent with the context in which is created and its base demand. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a5f2545c29f2656102e0867df86d017c0}{calculate\-\_\-\-Price\-\_\-\-P} (int timeslot)
+\begin{DoxyCompactList}\small\item\em This method calculates and returns the price (Pi) per k\-Wh at given time-\/slot. \end{DoxyCompactList}\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_ae5d9d71da6a3185e5571c6a1705d8c2e}{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D} (int timeslot)
+\begin{DoxyCompactList}\small\item\em This method calculates and returns the demand predicted by the aggregator in each time-\/slot, taking account of both elastic and displacement changes. \end{DoxyCompactList}\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a0e3a1f86a86a1c94088851c105fcac22}{calculate\-\_\-e} (double\mbox{[}$\,$\mbox{]} arr\-\_\-\-D, double\mbox{[}$\,$\mbox{]} arr\-\_\-\-B, double s, double B)
+\begin{DoxyCompactList}\small\item\em This method calculates and returns \char`\"{}price elasticity factor\char`\"{} (e) at a given time-\/slot. \end{DoxyCompactList}\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a82e035279b0352f02e2b6cab4fb0ae2a}{calculate\-\_\-k} (int t\-\_\-i, int t\-\_\-j)
+\begin{DoxyCompactList}\small\item\em This method calculates and returns \char`\"{}displacement factor\char`\"{} (k) at given time-\/slots. \end{DoxyCompactList}\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a0c4a4b5edec47cb3103803b7eb5b6ece}{predict\-Demand} (List$<$ \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent} $>$ customers\-List, int t)
+\begin{DoxyCompactList}\small\item\em This method calculates the predict demand at each given time-\/slot. \end{DoxyCompactList}\item 
+String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a65f3677239bfc35d0a0d7ee192d79c54}{param\-String\-Report} ()
+\begin{DoxyCompactList}\small\item\em Returns a string representing the state of this agent. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_aa89abf4305e19f3140c65249dff793f7}{boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_aa89abf4305e19f3140c65249dff793f7}{is\-Training} = true}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_aa89abf4305e19f3140c65249dff793f7}
+
+\begin{DoxyCompactList}\small\item\em indicates whether the agent is in training mode/ period \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a9616b661079591916dba42ba10d3be04}{boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a9616b661079591916dba42ba10d3be04}{is\-Profile\-Buidling} = true}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a9616b661079591916dba42ba10d3be04}
+
+\begin{DoxyCompactList}\small\item\em indicates whether the agent is in 'profile building' mode/period \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a55a5ed092a87d91bcc6cb8617721c5f0}{static String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a55a5ed092a87d91bcc6cb8617721c5f0}{agent\-Base\-Name} = \char`\"{}Supplier\-C\-O\char`\"{}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a55a5ed092a87d91bcc6cb8617721c5f0}
+
+\begin{DoxyCompactList}\small\item\em the aggregator agent's base name \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co}} or a supplier retail company is a concrete object that represents a commercial/business electricity/energy company involved in retail trade with prosumer agents ({\ttfamily Prosumer\-Agent}), such as household prosumers ({\ttfamily Household\-Prosumer}) In other words, a {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co}} provides electricity/energy to certain types of prosumers (e.\-g. 
+
+households) It will be also involved in electricity trade market.
+
+\begin{DoxyAuthor}{Author}
+Babak Mahdavi 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Revision\-:}
+2.\-0 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{Date\-:}
+2012/05/18 
+\end{DoxyParagraph}
+
+
+Version history (for intermediate steps see Git repository history)
+
+1.\-0 -\/ created the concrete class of \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_aggregator_agent}{Aggregator\-Agent} kind after the latter was made abstract upon my suggestion 1.\-1 -\/ Class name changed to \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co} (previously named R\-E\-C\-O) (2012/05/18) 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a4677eb817be685c3148dc8f0c7ed9d4e}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}!Supplier\-Co\-Neural\-Map@{Supplier\-Co\-Neural\-Map}}
+\index{Supplier\-Co\-Neural\-Map@{Supplier\-Co\-Neural\-Map}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoNeuralMap@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}}
+\subsubsection[{Supplier\-Co\-Neural\-Map}]{\setlength{\rightskip}{0pt plus 5cm}uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map.\-Supplier\-Co\-Neural\-Map (
+\begin{DoxyParamCaption}
+\item[{{\bf Cascade\-Context}}]{context, }
+\item[{{\bf Market\-Message\-Board}}]{mb, }
+\item[{B\-M\-U\-\_\-\-C\-A\-T\-E\-G\-O\-R\-Y}]{cat, }
+\item[{B\-M\-U\-\_\-\-T\-Y\-P\-E}]{type, }
+\item[{double}]{max\-Dem, }
+\item[{double}]{min\-Dem, }
+\item[{double\mbox{[}$\,$\mbox{]}}]{base\-Demand}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a4677eb817be685c3148dc8f0c7ed9d4e}
+
+
+Constructs a Supplier\-C\-O agent with the context in which is created and its base demand. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & the context in which this agent is situated \\
+\hline
+{\em base\-Demand} & an array containing the base demand \\
+\hline
+\end{DoxyParams}
++++++++++++++++++++++++++++++++++++++++ 
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a0e3a1f86a86a1c94088851c105fcac22}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}!calculate\-\_\-e@{calculate\-\_\-e}}
+\index{calculate\-\_\-e@{calculate\-\_\-e}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoNeuralMap@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}}
+\subsubsection[{calculate\-\_\-e}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map.\-calculate\-\_\-e (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{arr\-\_\-\-D, }
+\item[{double\mbox{[}$\,$\mbox{]}}]{arr\-\_\-\-B, }
+\item[{double}]{s, }
+\item[{double}]{B}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a0e3a1f86a86a1c94088851c105fcac22}
+
+
+This method calculates and returns \char`\"{}price elasticity factor\char`\"{} (e) at a given time-\/slot. 
+
+(It implements the formula proposed by P. Boait, Formula \#6) 
+\begin{DoxyParams}{Parameters}
+{\em arr\-\_\-\-D} & a double array containing aggregate demand (D) values for a timeslot of a day (usually 48 timeslots) \\
+\hline
+{\em arr\-\_\-\-B} & a double array containing average baseline aggregate demand (B) values for each timeslot of a day (usulaly 48 timeslots) \\
+\hline
+{\em s} & signal value at timeslot i \\
+\hline
+{\em B} & average baseline aggregate demand (B) value at timeslot i \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+elasticity price factor (e) \mbox{[}at timeslot i\mbox{]} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a82e035279b0352f02e2b6cab4fb0ae2a}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}!calculate\-\_\-k@{calculate\-\_\-k}}
+\index{calculate\-\_\-k@{calculate\-\_\-k}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoNeuralMap@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}}
+\subsubsection[{calculate\-\_\-k}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map.\-calculate\-\_\-k (
+\begin{DoxyParamCaption}
+\item[{int}]{t\-\_\-i, }
+\item[{int}]{t\-\_\-j}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a82e035279b0352f02e2b6cab4fb0ae2a}
+
+
+This method calculates and returns \char`\"{}displacement factor\char`\"{} (k) at given time-\/slots. 
+
+(It implements the formula proposed by P. Boait, Formula \#7 and \#8) By stepping Si=1 through all the timeslots over 48 days, the aggregator obtains complete set of estimates for e and k. By repeating this training (if necessary) more accurate estimates can be obtained. 
+\begin{DoxyParams}{Parameters}
+{\em timeslot} & time slot of the day (often/usually 1 day = 48 timeslot) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+displacement factor (Kij) at given timeslots (i and j) 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_ae5d9d71da6a3185e5571c6a1705d8c2e}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}!calculate\-\_\-\-Predicted\-Demand\-\_\-\-D@{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D}}
+\index{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D@{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoNeuralMap@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}}
+\subsubsection[{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map.\-calculate\-\_\-\-Predicted\-Demand\-\_\-\-D (
+\begin{DoxyParamCaption}
+\item[{int}]{timeslot}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_ae5d9d71da6a3185e5571c6a1705d8c2e}
+
+
+This method calculates and returns the demand predicted by the aggregator in each time-\/slot, taking account of both elastic and displacement changes. 
+
+(It implements the formula proposed by P. Boait, Formula \#4) When e=0 (i.\-e. all ei=0), then the sum of all Di = sum of all Bi 
+\begin{DoxyParams}{Parameters}
+{\em timeslot} & time slot of the day (often/usually 1 day = 48 timeslot) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Demand (Di) predicted by the aggregator at given timeslot (i) 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a5f2545c29f2656102e0867df86d017c0}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}!calculate\-\_\-\-Price\-\_\-\-P@{calculate\-\_\-\-Price\-\_\-\-P}}
+\index{calculate\-\_\-\-Price\-\_\-\-P@{calculate\-\_\-\-Price\-\_\-\-P}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoNeuralMap@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}}
+\subsubsection[{calculate\-\_\-\-Price\-\_\-\-P}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map.\-calculate\-\_\-\-Price\-\_\-\-P (
+\begin{DoxyParamCaption}
+\item[{int}]{timeslot}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a5f2545c29f2656102e0867df86d017c0}
+
+
+This method calculates and returns the price (Pi) per k\-Wh at given time-\/slot. 
+
+(It implements the formula proposed by P. Boait, Formula \#2) Parameters a and b are \char`\"{}fixed pricing\char`\"{} parameters and set by the aggregator and known to the prosumer's smart meter and other devices so they react to Pi. The summation of all Si to zero simplifies their calculation! In practice, it would be helpful to use normalized values between 1 and -\/1 to make up S 
+\begin{DoxyParams}{Parameters}
+{\em timeslot} & time slot of the day (often/usually 1 day = 48 timeslot) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Price(\-Pi) per K\-Wh at given timeslot (i) 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a65f3677239bfc35d0a0d7ee192d79c54}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}!param\-String\-Report@{param\-String\-Report}}
+\index{param\-String\-Report@{param\-String\-Report}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoNeuralMap@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}}
+\subsubsection[{param\-String\-Report}]{\setlength{\rightskip}{0pt plus 5cm}String uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map.\-param\-String\-Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a65f3677239bfc35d0a0d7ee192d79c54}
+
+
+Returns a string representing the state of this agent. 
+
+This method is intended to be used for debugging purposes, and the content and format of the returned string should include the states (variables/parameters) which are important for debugging purpose. The returned string may be empty but may not be {\ttfamily null}.
+
+\begin{DoxyReturn}{Returns}
+a string representation of this agent's state parameters 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a0c4a4b5edec47cb3103803b7eb5b6ece}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}!predict\-Demand@{predict\-Demand}}
+\index{predict\-Demand@{predict\-Demand}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoNeuralMap@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Neural\-Map}}
+\subsubsection[{predict\-Demand}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Neural\-Map.\-predict\-Demand (
+\begin{DoxyParamCaption}
+\item[{List$<$ {\bf Prosumer\-Agent} $>$}]{customers\-List, }
+\item[{int}]{t}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_neural_map_a0c4a4b5edec47cb3103803b7eb5b6ece}
+
+
+This method calculates the predict demand at each given time-\/slot. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & timeslot of the day (often/usually 1 day = 48 timeslot) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+displacement factor (Kij) at given timeslots (i and j) 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/agents/aggregators/Supplier\-Co\-Neural\-Map.\-java\end{DoxyCompactItemize}

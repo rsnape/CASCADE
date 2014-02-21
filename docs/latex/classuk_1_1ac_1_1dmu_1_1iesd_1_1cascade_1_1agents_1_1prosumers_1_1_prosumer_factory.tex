@@ -1,0 +1,99 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Factory Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Factory@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Factory}}
+}
+
+
+This class is a factory for creating instances of {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}} concrete subclasses Its public creator method's signatures are defined by \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_i_prosumer_factory}{I\-Prosumer\-Factory} interface.  
+
+
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Factory\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=286pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Factory\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_a2e8c6074859a9062f68b20f52b1d6c4c}{{\bfseries Prosumer\-Factory} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_a2e8c6074859a9062f68b20f52b1d6c4c}
+
+\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household_prosumer}{Household\-Prosumer} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_a1f5d95390081bfd30eb94f5d208a73e0}{create\-Household\-Prosumer} (double\mbox{[}$\,$\mbox{]} other\-Demand\-Profile\-Array, int num\-Of\-Occupants, boolean add\-Noise, boolean has\-Gas)
+\begin{DoxyCompactList}\small\item\em Creates a household prosumer with a basic consumption profile as supplied with or without added noise. \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_ad6711f0104dc0794aec11d0765fd58c6}{\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household_prosumer}{Household\-Prosumer} {\bfseries create\-Household\-Prosumer} (Weak\-Hash\-Map$<$ Integer, double\mbox{[}$\,$\mbox{]}$>$ map\-\_\-nb\-Of\-Occ2\-Other\-Demand, int occupancy\-Mode\-Or\-Nb, boolean add\-Noise, boolean has\-Gas)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_ad6711f0104dc0794aec11d0765fd58c6}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_ad9456eca876d9fb38fc61a3eb4888dbf}{\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent} {\bfseries create\-Pure\-Generator} (double capacity, Consts.\-G\-E\-N\-E\-R\-A\-T\-O\-R\-\_\-\-T\-Y\-P\-E gen\-Type)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_ad9456eca876d9fb38fc61a3eb4888dbf}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_a5a6d3b2a83676091527d47b200096338}{\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_wind_generator_prosumer}{Wind\-Generator\-Prosumer} {\bfseries create\-Wind\-Generator} (double capacity, Consts.\-G\-E\-N\-E\-R\-A\-T\-O\-R\-\_\-\-T\-Y\-P\-E gen\-Type, int n\-Turbines)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_a5a6d3b2a83676091527d47b200096338}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class is a factory for creating instances of {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}} concrete subclasses Its public creator method's signatures are defined by \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_i_prosumer_factory}{I\-Prosumer\-Factory} interface. 
+
+\begin{DoxyAuthor}{Author}
+Babak Mahdavi 
+
+Richard Snape 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Revision\-:}
+1.\-0 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{Date\-:}
+2011/05/16 14\-:00\-:00 
+\end{DoxyParagraph}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_a1f5d95390081bfd30eb94f5d208a73e0}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Factory@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Factory}!create\-Household\-Prosumer@{create\-Household\-Prosumer}}
+\index{create\-Household\-Prosumer@{create\-Household\-Prosumer}!uk::ac::dmu::iesd::cascade::agents::prosumers::ProsumerFactory@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::prosumers\-::\-Prosumer\-Factory}}
+\subsubsection[{create\-Household\-Prosumer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Household\-Prosumer} uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-Prosumer\-Factory.\-create\-Household\-Prosumer (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{other\-Demand\-Profile\-Array, }
+\item[{int}]{num\-Of\-Occupants, }
+\item[{boolean}]{add\-Noise, }
+\item[{boolean}]{has\-Gas}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory_a1f5d95390081bfd30eb94f5d208a73e0}
+
+
+Creates a household prosumer with a basic consumption profile as supplied with or without added noise. 
+
+N\-O\-T\-E\-: The add\-Noise option is unsafe as implemented -\/ under a certain combination of random factors, it can give negative demands!! D\-O N\-O\-T U\-S\-E
+
+
+\begin{DoxyParams}{Parameters}
+{\em other\-Elastic\-Demand\-Profile} & -\/ an array of the basic consumption profile for this prosumer (k\-Wh per tick) \\
+\hline
+{\em add\-Noise} & -\/ boolean specifying whether or not to add noise to the profile \\
+\hline
+{\em num\-Of\-Occupants} & -\/ number of occupancy per household, if Consts.\-R\-A\-N\-D\-O\-M is passed, it will done randomly \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_i_prosumer_factory}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers.\-I\-Prosumer\-Factory}.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/agents/prosumers/Prosumer\-Factory.\-java\end{DoxyCompactItemize}

@@ -1,0 +1,66 @@
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-I\-Smart\-Controller Interface Reference}
+\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-I\-Smart\-Controller@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-I\-Smart\-Controller}}
+}
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-I\-Smart\-Controller\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller_afc5d7e6516ec865dbb4e94d62b114440}{update} (int time)
+\begin{DoxyCompactList}\small\item\em Method to tell the smart controller to gather the data that it needs and update its internal state. \end{DoxyCompactList}\item 
+Weak\-Hash\-Map$<$ String, double\mbox{[}$\,$\mbox{]}$>$ \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller_a8e01c21d1ff1bb37e722695a18317d18}{get\-Current\-Profiles} ()
+\begin{DoxyCompactList}\small\item\em Method to extract the current profiles for controlled appliance / device usage. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+jsnape 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller_a8e01c21d1ff1bb37e722695a18317d18}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-I\-Smart\-Controller@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-I\-Smart\-Controller}!get\-Current\-Profiles@{get\-Current\-Profiles}}
+\index{get\-Current\-Profiles@{get\-Current\-Profiles}!uk::ac::dmu::iesd::cascade::controllers::ISmartController@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-I\-Smart\-Controller}}
+\subsubsection[{get\-Current\-Profiles}]{\setlength{\rightskip}{0pt plus 5cm}Weak\-Hash\-Map$<$String,double\mbox{[}$\,$\mbox{]}$>$ uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-I\-Smart\-Controller.\-get\-Current\-Profiles (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller_a8e01c21d1ff1bb37e722695a18317d18}
+
+
+Method to extract the current profiles for controlled appliance / device usage. 
+
+\begin{DoxyReturn}{Returns}
+a Weak\-Hash\-Map containing whose keys describe the type of load profile and whose values are floating point arrays of the current profile for the day 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_proportional_wattbox_controller_ac6f5ecd36fbf4688535d712a91fa529f}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Proportional\-Wattbox\-Controller}, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_original_proportional_wattbox_controller_a6f36db8353d50927ae4c46f167dee480}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Original\-Proportional\-Wattbox\-Controller}, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_aa824703749fe806d5462f70259a27d10}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller}, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a62f289fb63e12b9e9b7dc07027e1ea50}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller}, and \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_basic_smart_controller_abf5f0fb95e658558c8cd396ab9dfa10b}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Basic\-Smart\-Controller}.
+
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller_afc5d7e6516ec865dbb4e94d62b114440}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-I\-Smart\-Controller@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-I\-Smart\-Controller}!update@{update}}
+\index{update@{update}!uk::ac::dmu::iesd::cascade::controllers::ISmartController@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-I\-Smart\-Controller}}
+\subsubsection[{update}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-I\-Smart\-Controller.\-update (
+\begin{DoxyParamCaption}
+\item[{int}]{time}
+\end{DoxyParamCaption}
+)}}\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller_afc5d7e6516ec865dbb4e94d62b114440}
+
+
+Method to tell the smart controller to gather the data that it needs and update its internal state. 
+
+Note -\/ this may include learning algorithms if appropriate 
+
+Implemented in \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_original_proportional_wattbox_controller_a419b1e9dfb3b87b74dcba1d128a11a70}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Original\-Proportional\-Wattbox\-Controller}, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_proportional_wattbox_controller_a5bb1940f6acc2f3a4daca7fa04a67788}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Proportional\-Wattbox\-Controller}, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a43eba22dbcf324720c569fad3a6df487}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller}, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_basic_smart_controller_a0220e86b744e9e30d6ccc36130acf474}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Basic\-Smart\-Controller}, and \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a3ebf53ea02fef9b1d40527cac3e17c2f}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller}.
+
+
+
+The documentation for this interface was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/controllers/I\-Smart\-Controller.\-java\end{DoxyCompactItemize}

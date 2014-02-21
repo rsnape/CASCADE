@@ -1,0 +1,4 @@
+<map id="uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator" name="uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator">
+<area shape="rect" id="node2" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html" title="Totally basic abstract implementation &#45; provided only to extend. " alt="" coords="5,97,293,138"/>
+<area shape="rect" id="node3" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html" title="A suite of profile generating methods for various appliance types. " alt="" coords="5,187,293,229"/>
+</map>

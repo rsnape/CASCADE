@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html" title="Provide a standardised interface for providing initial demand profiles to the model. " alt="" coords="5,5,293,46"/>
+<area shape="rect" id="node2" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html" title="Totally basic abstract implementation &#45; provided only to extend. " alt="" coords="341,5,629,46"/>
+<area shape="rect" id="node3" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html" title="A suite of profile generating methods for various appliance types. " alt="" coords="677,5,965,46"/>
+</map>

@@ -1,0 +1,128 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller}}
+}
+
+
+This class implements an abstracted version of the \char`\"{}\-Wattbox\char`\"{} Smart controller developed by Dr.  
+
+
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=254pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a43eba22dbcf324720c569fad3a6df487}{void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a43eba22dbcf324720c569fad3a6df487}{update} (int time\-Step)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a43eba22dbcf324720c569fad3a6df487}
+
+\begin{DoxyCompactList}\small\item\em updates the occupancy profiles, probabilities of occupancy and lifestyle and optimises profiles based on this \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_aa824703749fe806d5462f70259a27d10}{Weak\-Hash\-Map$<$ String, double\mbox{[}$\,$\mbox{]}$>$ \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_aa824703749fe806d5462f70259a27d10}{get\-Current\-Profiles} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_aa824703749fe806d5462f70259a27d10}
+
+\begin{DoxyCompactList}\small\item\em method to return all the optimised profiles currently held by this Wattbox \end{DoxyCompactList}\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_aad0999e5fa1e9070d340bc39b000d83f}{set\-Day\-Predicted\-Cost\-Signal} (double\mbox{[}$\,$\mbox{]} day\-Predicted\-Cost\-Signal)
+\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a4dfdd37a5e9c2bef2957d4fa3bb0f3e7}{Wattbox\-Controller} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household_prosumer}{Household\-Prosumer} owner)
+\begin{DoxyCompactList}\small\item\em Constructor -\/ creates an uninitialized Wattbox controller assigned to the prosumer passed in as an argument. \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a495e87bc3da1b52674a8fc38e235e089}{{\bfseries Wattbox\-Controller} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household_prosumer}{Household\-Prosumer} owner, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a495e87bc3da1b52674a8fc38e235e089}
+
+\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_ad1adb0d7a97bf340ee5bbfcfffacd94b}{Wattbox\-Controller} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household_prosumer}{Household\-Prosumer} owner, \hyperlink{enumuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_user_profile}{Wattbox\-User\-Profile} user\-Profile, \hyperlink{enumuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_lifestyle}{Wattbox\-Lifestyle} user\-Lifestyle)
+\begin{DoxyCompactList}\small\item\em Constructor -\/ creates a Wattbox controller assigned to the prosumer passed in as an argument and initialized with a user profile and lifestyle also passed in. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a17d6462f8a51c8aa5157cbe23ffd044a}{\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} {\bfseries main\-Context}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a17d6462f8a51c8aa5157cbe23ffd044a}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class implements an abstracted version of the \char`\"{}\-Wattbox\char`\"{} Smart controller developed by Dr. 
+
+Peter Boait
+
+The Wattbox learned variable is occupancy, with the controlled variable being temperature set point. Set point is determined by an optimisation algorithm based upon an input signal and projected load for the following day
+
+\begin{DoxyAuthor}{Author}
+jrsnape
+\end{DoxyAuthor}
+Version history (for intermediate steps see Git repository history)
+\begin{DoxyItemize}
+\item Modified to receive and treate separate related loads for composite wet and cold (Babak Mahdavi)
+\item Re-\/written \#\-Optimise\-Wet\-Profile method (Babak Mahdavi)
+\item Re-\/wirtten \#\-Optimise\-Cold\-Profile method (Babak Mahdavi) 
+\end{DoxyItemize}
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a4dfdd37a5e9c2bef2957d4fa3bb0f3e7}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller}!Wattbox\-Controller@{Wattbox\-Controller}}
+\index{Wattbox\-Controller@{Wattbox\-Controller}!uk::ac::dmu::iesd::cascade::controllers::WattboxController@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller}}
+\subsubsection[{Wattbox\-Controller}]{\setlength{\rightskip}{0pt plus 5cm}uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller.\-Wattbox\-Controller (
+\begin{DoxyParamCaption}
+\item[{{\bf Household\-Prosumer}}]{owner}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_a4dfdd37a5e9c2bef2957d4fa3bb0f3e7}
+
+
+Constructor -\/ creates an uninitialized Wattbox controller assigned to the prosumer passed in as an argument. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner} & -\/ the prosumer agent that owns this wattbox \\
+\hline
+\end{DoxyParams}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_ad1adb0d7a97bf340ee5bbfcfffacd94b}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller}!Wattbox\-Controller@{Wattbox\-Controller}}
+\index{Wattbox\-Controller@{Wattbox\-Controller}!uk::ac::dmu::iesd::cascade::controllers::WattboxController@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller}}
+\subsubsection[{Wattbox\-Controller}]{\setlength{\rightskip}{0pt plus 5cm}uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller.\-Wattbox\-Controller (
+\begin{DoxyParamCaption}
+\item[{{\bf Household\-Prosumer}}]{owner, }
+\item[{{\bf Wattbox\-User\-Profile}}]{user\-Profile, }
+\item[{{\bf Wattbox\-Lifestyle}}]{user\-Lifestyle}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_ad1adb0d7a97bf340ee5bbfcfffacd94b}
+
+
+Constructor -\/ creates a Wattbox controller assigned to the prosumer passed in as an argument and initialized with a user profile and lifestyle also passed in. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner} & -\/ the prosumer agent that owns this wattbox \\
+\hline
+{\em user\-Profile} & \\
+\hline
+{\em user\-Lifestyle} & \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_aad0999e5fa1e9070d340bc39b000d83f}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller}!set\-Day\-Predicted\-Cost\-Signal@{set\-Day\-Predicted\-Cost\-Signal}}
+\index{set\-Day\-Predicted\-Cost\-Signal@{set\-Day\-Predicted\-Cost\-Signal}!uk::ac::dmu::iesd::cascade::controllers::WattboxController@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Wattbox\-Controller}}
+\subsubsection[{set\-Day\-Predicted\-Cost\-Signal}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Wattbox\-Controller.\-set\-Day\-Predicted\-Cost\-Signal (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{day\-Predicted\-Cost\-Signal}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller_aad0999e5fa1e9070d340bc39b000d83f}
+
+\begin{DoxyParams}{Parameters}
+{\em day\-Predicted\-Cost\-Signal} & the day\-Predicted\-Cost\-Signal to set \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/controllers/Wattbox\-Controller.\-java\end{DoxyCompactItemize}

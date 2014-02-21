@@ -1,0 +1,25 @@
+var classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context =
+[
+    [ "AdoptionContext", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#ac75a060dd25f7480fdd03534d17d1de8", null ],
+    [ "AdoptionContext", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a50881c5756a65d2ee83c5acc42f0c955", null ],
+    [ "calendarStep", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a173c0e5b27bf64d0d0a41f11d16561da", null ],
+    [ "dateToTick", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a3499e0309d29a8cb6b58694dfbd85b1f", null ],
+    [ "endSim", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a0cb8cac15ff0f19ae412f4028bacc08b", null ],
+    [ "firstCut", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#aaca900e78c4bc644ce9149582e07e49b", null ],
+    [ "getAdoptionPercentage", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a74f24b05bf116eb21dfaca568f2210f0", null ],
+    [ "getDateTime", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a1ace4022c8c2da3af58440dcbeb1fcfe", null ],
+    [ "getNbOfTickPerDay", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a8283e8e451e301a4e07f9004e4bdfbaf", null ],
+    [ "getPVTariff", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a479cdb4d472b207edc157a777d022b4f", null ],
+    [ "getRandomSeed", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#acf72323c18f07c4e324b20de8675dd44", null ],
+    [ "getTarriffAvailableUntil", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#ade6c467290e40a48beb2d24bb8d89a06", null ],
+    [ "getTickcount", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#aa5419e40783a0a7d3733713db4ffc500", null ],
+    [ "getTickCount", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a8ecf8ea6ccf7f72e98a9213251e8ba31", null ],
+    [ "getTimeslotOfDay", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a36ace547f9ae4933530cd35e4d65f268", null ],
+    [ "secondCut", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a5a4a5155ee62c7ae27f561a364b7b754", null ],
+    [ "setEconomicNetwork", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#addd8e9731d1ae5b1e6d58ce93dd6f021", null ],
+    [ "setNbOfTickPerDay", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a95e9b96c324299592a210b75ff00a99f", null ],
+    [ "tickToDate", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a26914ecfbf56f2379619d5b3b94f7a61", null ],
+    [ "logger", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a2b1c8b14a2d9a219d05dfedb54f7155a", null ],
+    [ "nextThoughtGenerator", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#ab8133834bcab82369470e82475dc7c23", null ],
+    [ "simStartDate", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_adoption_context.html#a290f943a0fe106b4415d6d780f66764c", null ]
+];

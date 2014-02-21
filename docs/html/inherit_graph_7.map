@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_i_aggregator_factory.html" title="Interface IAggregatorFactory defines possible ways where an aggregator factory can/should create (and..." alt="" coords="5,5,288,46"/>
+<area shape="rect" id="node2" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_aggregator_factory.html" title="This class is a factory for creating instances of AggregatorAgent concrete subclasses (e..." alt="" coords="336,5,619,46"/>
+</map>

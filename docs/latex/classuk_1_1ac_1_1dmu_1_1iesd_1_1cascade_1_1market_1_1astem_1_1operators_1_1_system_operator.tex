@@ -1,0 +1,46 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-market.\-astem.\-operators.\-System\-Operator Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-market.\-astem.\-operators.\-System\-Operator@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-market.\-astem.\-operators.\-System\-Operator}}
+}
+
+
+The {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator}{System\-Operator}} class embodies a major actor (agent) in the electricity market.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator_ad88d811a9c9e80e147a20444744ea22a}{double\mbox{[}$\,$\mbox{]} {\bfseries get\-Published\-N\-D\-F} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator_ad88d811a9c9e80e147a20444744ea22a}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator_ad3621c905d7cecca9b3449635e12432a}{void {\bfseries update\-Old\-I\-M\-B\-A\-L} (double\mbox{[}$\,$\mbox{]} current\-I\-M\-B\-A\-L\-Array, double\mbox{[}$\,$\mbox{]} old\-I\-M\-B\-A\-L\-Array)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator_ad3621c905d7cecca9b3449635e12432a}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator_a213ac48ac9c9bc9181208073ad02c11d}{void {\bfseries step} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator_a213ac48ac9c9bc9181208073ad02c11d}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator_aef3317b9d63c3c59f654439ee7c1bf4c}{{\bfseries System\-Operator} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_settlement_company}{Settlement\-Company} sc, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_market_message_board}{Market\-Message\-Board} mb)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator_aef3317b9d63c3c59f654439ee7c1bf4c}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_system_operator}{System\-Operator}} class embodies a major actor (agent) in the electricity market. 
+
+In the U\-K context, this role is played by the {\ttfamily National Grid}. It uses /interacts with {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_settlement_company}{Settlement\-Company}} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_settlement_company}{Settlement\-Company}), which in the U\-K context, its operations are performed by {\ttfamily Elexon}. It also uses {\itshape Message\-Board} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_market_message_board}{Market\-Message\-Board}) as a 'Reporting Service' tool to broadcast information used by the players in the electricity market.
+
+Another important operator in the electricity market is {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_power_exchange}{Power\-Exchange}}\-: \begin{DoxySeeAlso}{See Also}
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_power_exchange}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-market.\-astem.\-operators.\-Power\-Exchange}
+\end{DoxySeeAlso}
+\begin{DoxyAuthor}{Author}
+Babak Mahdavi Ardestani 
+
+Vijay Pakka 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\-0 \$ \$\-Date\-: 2012/02/09 
+\end{DoxyVersion}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/market/astem/operators/System\-Operator.\-java\end{DoxyCompactItemize}

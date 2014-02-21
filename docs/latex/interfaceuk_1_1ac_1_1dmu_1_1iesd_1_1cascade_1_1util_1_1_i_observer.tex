@@ -1,0 +1,74 @@
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observer Interface Reference}
+\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observer@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observer}}
+}
+
+
+Interface {\ttfamily \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer}} defines how an \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer} implementer should behave by basically implementing the update method, so that those objects wanting to be informed about changes in observable objects get notified/updated.  
+
+
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observer\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=254pt]{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+abstract void \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer_a4a1251fa996fd058f4f1f61c0e9e57e3}{update} (Object obs, Object arg)
+\begin{DoxyCompactList}\small\item\em This method is called whenever the observed object is changed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface {\ttfamily \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer}} defines how an \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer} implementer should behave by basically implementing the update method, so that those objects wanting to be informed about changes in observable objects get notified/updated. 
+
+\begin{DoxyAuthor}{Author}
+Babak Mahdavi 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Revision\-:}
+1.\-00 
+\end{DoxyParagraph}
+\$\-Date\-: 2011/05/23 1\-:00\-:00
+
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable} 
+\end{DoxySeeAlso}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer_a4a1251fa996fd058f4f1f61c0e9e57e3}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-I\-Observer@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-I\-Observer}!update@{update}}
+\index{update@{update}!uk::ac::dmu::iesd::cascade::util::IObserver@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-I\-Observer}}
+\subsubsection[{update}]{\setlength{\rightskip}{0pt plus 5cm}abstract void uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observer.\-update (
+\begin{DoxyParamCaption}
+\item[{Object}]{obs, }
+\item[{Object}]{arg}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [abstract]}}}\label{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer_a4a1251fa996fd058f4f1f61c0e9e57e3}
+
+
+This method is called whenever the observed object is changed. 
+
+An application/object/agent calls an {\ttfamily Observable} object's {\ttfamily notify\-Observers} method to have all the object's observers notified of the change.
+
+
+\begin{DoxyParams}{Parameters}
+{\em obs} & the observable object. \\
+\hline
+{\em arg} & an argument passed to the {\ttfamily notify\-Observers} method. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_smart_device_ace97b6fc3cc098a8b70191f7a6be50da}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Smart\-Device}.
+
+
+
+The documentation for this interface was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/util/I\-Observer.\-java\end{DoxyCompactItemize}

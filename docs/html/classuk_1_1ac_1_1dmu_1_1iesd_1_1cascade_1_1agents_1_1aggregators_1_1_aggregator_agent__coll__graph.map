@@ -1,0 +1,7 @@
+<map id="uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent" name="uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent">
+<area shape="rect" id="node2" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1_i_cognitive_agent.html" title="uk.ac.dmu.iesd.cascade.agents.\lICognitiveAgent" alt="" coords="429,6,640,47"/>
+<area shape="rect" id="node3" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable.html" title="Interface IObservable defines how an IObservable implementer should behave by basically allowing add..." alt="" coords="5,67,195,109"/>
+<area shape="rect" id="node19" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component.html" title="This class represents a concrete observable object/component. " alt="" coords="440,123,629,165"/>
+<area shape="rect" id="node6" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context.html" title="CascadeContext is the main context for the Cascade framework. " alt="" coords="427,346,642,387"/>
+<area shape="rect" id="node18" title="============================= Aggregator Constants " alt="" coords="435,411,635,453"/>
+</map>

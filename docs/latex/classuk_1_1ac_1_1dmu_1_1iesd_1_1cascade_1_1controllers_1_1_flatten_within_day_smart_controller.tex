@@ -1,0 +1,92 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller}}
+}
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=254pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a3ebf53ea02fef9b1d40527cac3e17c2f}{update} (int time\-Step)
+\begin{DoxyCompactList}\small\item\em Method to tell the smart controller to gather the data that it needs and update its internal state. \end{DoxyCompactList}\item 
+Weak\-Hash\-Map \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a62f289fb63e12b9e9b7dc07027e1ea50}{get\-Current\-Profiles} ()
+\begin{DoxyCompactList}\small\item\em Method to extract the current profiles for controlled appliance / device usage. \end{DoxyCompactList}\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a99da0181036318d5663653b577032194}{set\-Day\-Predicted\-Cost\-Signal} (double\mbox{[}$\,$\mbox{]} day\-Predicted\-Cost\-Signal)
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a21ba681d928fdd41291e3bcc6da8dd00}{{\bfseries Flatten\-Within\-Day\-Smart\-Controller} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household_prosumer}{Household\-Prosumer} owner)}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a21ba681d928fdd41291e3bcc6da8dd00}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyAuthor}{Author}
+jsnape 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a62f289fb63e12b9e9b7dc07027e1ea50}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller}!get\-Current\-Profiles@{get\-Current\-Profiles}}
+\index{get\-Current\-Profiles@{get\-Current\-Profiles}!uk::ac::dmu::iesd::cascade::controllers::FlattenWithinDaySmartController@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller}}
+\subsubsection[{get\-Current\-Profiles}]{\setlength{\rightskip}{0pt plus 5cm}Weak\-Hash\-Map uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller.\-get\-Current\-Profiles (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a62f289fb63e12b9e9b7dc07027e1ea50}
+
+
+Method to extract the current profiles for controlled appliance / device usage. 
+
+\begin{DoxyReturn}{Returns}
+a Weak\-Hash\-Map containing whose keys describe the type of load profile and whose values are floating point arrays of the current profile for the day 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller_a8e01c21d1ff1bb37e722695a18317d18}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-I\-Smart\-Controller}.
+
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a99da0181036318d5663653b577032194}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller}!set\-Day\-Predicted\-Cost\-Signal@{set\-Day\-Predicted\-Cost\-Signal}}
+\index{set\-Day\-Predicted\-Cost\-Signal@{set\-Day\-Predicted\-Cost\-Signal}!uk::ac::dmu::iesd::cascade::controllers::FlattenWithinDaySmartController@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller}}
+\subsubsection[{set\-Day\-Predicted\-Cost\-Signal}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller.\-set\-Day\-Predicted\-Cost\-Signal (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{day\-Predicted\-Cost\-Signal}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a99da0181036318d5663653b577032194}
+
+\begin{DoxyParams}{Parameters}
+{\em day\-Predicted\-Cost\-Signal} & the day\-Predicted\-Cost\-Signal to set \\
+\hline
+\end{DoxyParams}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a3ebf53ea02fef9b1d40527cac3e17c2f}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller}!update@{update}}
+\index{update@{update}!uk::ac::dmu::iesd::cascade::controllers::FlattenWithinDaySmartController@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::controllers\-::\-Flatten\-Within\-Day\-Smart\-Controller}}
+\subsubsection[{update}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-Flatten\-Within\-Day\-Smart\-Controller.\-update (
+\begin{DoxyParamCaption}
+\item[{int}]{time\-Step}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller_a3ebf53ea02fef9b1d40527cac3e17c2f}
+
+
+Method to tell the smart controller to gather the data that it needs and update its internal state. 
+
+Note -\/ this may include learning algorithms if appropriate 
+
+Implements \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_i_smart_controller_afc5d7e6516ec865dbb4e94d62b114440}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-controllers.\-I\-Smart\-Controller}.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/controllers/Flatten\-Within\-Day\-Smart\-Controller.\-java\end{DoxyCompactItemize}

@@ -1,0 +1,7 @@
+<map id="uk.ac.dmu.iesd.cascade.controllers.ISmartController" name="uk.ac.dmu.iesd.cascade.controllers.ISmartController">
+<area shape="rect" id="node2" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_basic_smart_controller.html" title="uk.ac.dmu.iesd.cascade.controllers.\lBasicSmartController" alt="" coords="289,5,521,46"/>
+<area shape="rect" id="node3" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_flatten_within_day_smart_controller.html" title="uk.ac.dmu.iesd.cascade.controllers.\lFlattenWithinDaySmartController" alt="" coords="289,70,521,111"/>
+<area shape="rect" id="node4" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_original_proportional_wattbox_controller.html" title="This class implements an abstracted version of the &quot;Wattbox&quot; Smart controller developed by Dr..." alt="" coords="286,135,525,177"/>
+<area shape="rect" id="node5" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_proportional_wattbox_controller.html" title="This class implements an abstracted version of the &quot;Wattbox&quot; Smart controller developed by Dr..." alt="" coords="289,201,521,242"/>
+<area shape="rect" id="node6" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1controllers_1_1_wattbox_controller.html" title="This class implements an abstracted version of the &quot;Wattbox&quot; Smart controller developed by Dr..." alt="" coords="289,266,521,307"/>
+</map>

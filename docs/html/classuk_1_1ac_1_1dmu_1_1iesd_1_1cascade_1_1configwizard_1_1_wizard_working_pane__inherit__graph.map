@@ -1,0 +1,8 @@
+<map id="uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane" name="uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane">
+<area shape="rect" id="node3" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1configwizard_1_1_add_aggregator_pane.html" title="uk.ac.dmu.iesd.cascade.configwizard.\lAddAggregatorPane" alt="" coords="405,5,648,46"/>
+<area shape="rect" id="node4" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1configwizard_1_1_add_input_file_pane.html" title="uk.ac.dmu.iesd.cascade.configwizard.\lAddInputFilePane" alt="" coords="405,70,648,111"/>
+<area shape="rect" id="node5" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1configwizard_1_1_add_network_pane.html" title="uk.ac.dmu.iesd.cascade.configwizard.\lAddNetworkPane" alt="" coords="405,135,648,177"/>
+<area shape="rect" id="node6" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1configwizard_1_1_add_prosumer_pane.html" title="uk.ac.dmu.iesd.cascade.configwizard.\lAddProsumerPane" alt="" coords="405,201,648,242"/>
+<area shape="rect" id="node7" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1configwizard_1_1_configure_aggregator_pane.html" title="uk.ac.dmu.iesd.cascade.configwizard.\lConfigureAggregatorPane" alt="" coords="405,266,648,307"/>
+<area shape="rect" id="node8" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1configwizard_1_1_configure_prosumer_pane.html" title="uk.ac.dmu.iesd.cascade.configwizard.\lConfigureProsumerPane" alt="" coords="405,331,648,373"/>
+</map>

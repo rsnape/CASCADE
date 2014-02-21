@@ -1,0 +1,239 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils}}
+}
+
+
+A suite of profile generating methods for various appliance types.  
+
+
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static Weak\-Hash\-Map$<$ String, \\*
+double\mbox{[}$\,$\mbox{]}$>$ \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ad499b30b2ede94bbe1ebdc76b47c203e}{melody\-Stokes\-Cold\-Appliance\-Gen} (int num\-Days, boolean fridges, boolean fridge\-Freezers, boolean freezers)
+\begin{DoxyCompactList}\small\item\em Helper method to use boolean indicators of ownership which simply calls the method of same name with integer arguments translating true to 1 and false to 0. \end{DoxyCompactList}\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a0110d443f84940dde051667b8b638e5c}{melody\-Stokes\-Cold\-Appliance\-Gen\-\_\-\-Old} (int num\-Days, int fridges, int fridge\-Freezers, int freezers)
+\begin{DoxyCompactList}\small\item\em Java implementation of the matlab code from Melody Stokes' model of cold appliance demand. \end{DoxyCompactList}\item 
+static Weak\-Hash\-Map$<$ String, \\*
+double\mbox{[}$\,$\mbox{]}$>$ \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_afde0080e90c188dc2b9074bf105cd423}{melody\-Stokes\-Cold\-Appliance\-Gen} (int num\-Days, int fridges, int fridge\-Freezers, int freezers)
+\begin{DoxyCompactList}\small\item\em Java implementation of the matlab code from Melody Stokes' model of cold appliance demand. \end{DoxyCompactList}\item 
+static Weak\-Hash\-Map$<$ String, \\*
+double\mbox{[}$\,$\mbox{]}$>$ \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a49cdaaf69ec071e90b2c49637148f72d}{melody\-Stokes\-Wet\-Appliance\-Gen} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context, int num\-Days, boolean wash\-Machine, boolean washer\-Dryer, boolean dish\-Washer, boolean tumble\-Dryer)
+\item 
+static Weak\-Hash\-Map$<$ String, \\*
+double\mbox{[}$\,$\mbox{]}$>$ \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a51bad98a5e63e61ccb47ed7dbbd18582}{melody\-Stokes\-Wet\-Appliance\-Gen\-\_\-\-Discrete\-Values} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context, int num\-Days, boolean wash\-Machine, boolean washer\-Dryer, boolean dish\-Washer, boolean tumble\-Dryer)
+\item 
+static double\mbox{[}$\,$\mbox{]} \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a49f16d85088f8c945254ef5749cb6150}{melody\-Stokes\-Domestic\-Cooking\-Load\-Gen} (int num\-Days)
+\begin{DoxyCompactList}\small\item\em Translation from Matlab -\/ Melody Stokes' cooking demand model (domestic section only) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_aba704ee9009fb2784312f0df5c17bca5}{static double\mbox{[}$\,$\mbox{]} {\bfseries trend\-\_\-year\-\_\-wash} = new double\mbox{[}$\,$\mbox{]} \{1970, 1990, 1998, 2000, 2005, 2010, 2015, 2020\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_aba704ee9009fb2784312f0df5c17bca5}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a03e40128ee9306d09548b8ba7e3546f9}{static double\mbox{[}$\,$\mbox{]} {\bfseries forty\-\_\-trend} = new double\mbox{[}$\,$\mbox{]} \{0.\-30, 0.\-58, 0.\-64, 0.\-66, 0.\-68, 0.\-68, 0.\-68, 0.\-68\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a03e40128ee9306d09548b8ba7e3546f9}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a3eafc6a12d4986e6359af9682f185018}{static double\mbox{[}$\,$\mbox{]} {\bfseries sixty\-\_\-trend} = new double\mbox{[}$\,$\mbox{]} \{0.\-45, 0.\-36, 0.\-34, 0.\-32, 0.\-30, 0.\-30, 0.\-30, 0.\-30\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a3eafc6a12d4986e6359af9682f185018}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a36b4db11780a5dea507d2ca1fef881b1}{static double\mbox{[}$\,$\mbox{]} {\bfseries ninety\-\_\-trend} = new double\mbox{[}$\,$\mbox{]} \{0.\-25, 0.\-06, 0.\-03, 0.\-03, 0.\-03, 0.\-03, 0.\-03, 0.\-03\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a36b4db11780a5dea507d2ca1fef881b1}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_aefb67d395b5ac952889d87879d0abd20}{static double\mbox{[}$\,$\mbox{]} {\bfseries forty\-\_\-wash} = new double\mbox{[}$\,$\mbox{]} \{0.\-05, 0.\-05, 0.\-3, 0.\-3, 2, 2, 2.\-05, 2.\-1, 2.\-1, 2, 2.\-05, 2, 2.\-1, 2.\-05, 0.\-3, 0.\-25, 0.\-1, 0.\-05, 0.\-45, 0.\-3, 0.\-25, 0.\-75, 0.\-05, 0.\-05, 0.\-45, 0.\-3, 0.\-25 , 0.\-75, 0.\-05, 0.\-05, 0.\-45, 0.\-3, 0.\-25, 0.\-75, 0.\-05, 0.\-05, 0.\-05, 0.\-3, 0.\-3, 0.\-1, 0.\-75, 0.\-4, 0.\-4, 0.\-4, 0.\-1, 0.\-1, 0.\-1, 0.\-1\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_aefb67d395b5ac952889d87879d0abd20}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ab21da44529cc6226200bae7bbf5dc2e8}{static double\mbox{[}$\,$\mbox{]} {\bfseries forty\-\_\-wash\-\_\-reactive} = new double\mbox{[}$\,$\mbox{]} \{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0, 0, 0, 0, 0.\-36, 0.\-192, 0.\-192, 0.\-192, 0, 0, 0, 0\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ab21da44529cc6226200bae7bbf5dc2e8}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a76eac998f315447ad80077de1cc43be9}{static double\mbox{[}$\,$\mbox{]} {\bfseries sixty\-\_\-wash} = new double\mbox{[}$\,$\mbox{]} \{0.\-05, 0.\-05, 0.\-3, 0.\-3, 2, 2, 2.\-05, 2.\-1, 2, 2.\-05, 2.\-05, 2, 2.\-1, 2.\-05, 2, 2.\-05, 2, 2.\-1, 2, 2.\-1, 0.\-1, 0.\-05, 2, 2.\-1, 0.\-3, 0.\-25, 0.\-1, 0.\-05, 0.\-45, 0.\-3, 0.\-25, 0.\-75, 0.\-05, 0.\-05, 0.\-45, 0.\-3, 0.\-25, 0.\-75, 0.\-05, 0.\-05, 0.\-45, 0.\-3, 0.\-25, 0.\-75, 0.\-05, 0.\-05, 0.\-05, 0.\-3, 0.\-3, 0.\-1, 0.\-75, 0.\-4, 0.\-4, 0.\-4, 0.\-1, 0.\-1, 0.\-1, 0.\-1\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a76eac998f315447ad80077de1cc43be9}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a2c8b3d381aa5dd7b88f89fa1a60621bd}{static double\mbox{[}$\,$\mbox{]} {\bfseries sixty\-\_\-wash\-\_\-reactive} = new double\mbox{[}$\,$\mbox{]} \{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.\-144, 0.\-12, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0, 0, 0, 0, 0.\-36, 0.\-192, 0.\-192, 0.\-192, 0, 0, 0, 0, 0\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a2c8b3d381aa5dd7b88f89fa1a60621bd}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ada24a78d6a1d9ce17cfcce229f7fab64}{static double\mbox{[}$\,$\mbox{]} {\bfseries ninety\-\_\-wash} = new double\mbox{[}$\,$\mbox{]} \{0.\-05, 0.\-05, 0.\-3, 0.\-3, 2, 2, 2.\-05, 2.\-1, 2, 2.\-05, 2.\-05, 2, 2.\-1, 2.\-05, 2, 2.\-05, 2, 2.\-1, 2, 2.\-1, 2, 2.\-05, 2.\-1, 2.\-1, 2, 2.\-05, 2.\-1, 2, 2.\-1, 2.\-05, 2.\-1, 2, 2.\-1, 2.\-05, 2.\-1, 2, 2, 2.\-1, 2.\-05, 2.\-1, 0.\-1, 0.\-05, 2, 2.\-1, 0.\-1, 0.\-05, 2, 2.\-1, 0.\-1, 0.\-05, 2, 2.\-1, 0.\-3, 0.\-25, 0.\-1, 0.\-05, 0.\-45, 0.\-3, 0.\-25, 0.\-75, 0.\-05, 0.\-05, 0.\-45, 0.\-3, 0.\-25, 0.\-75, 0.\-05, 0.\-05, 0.\-45, 0.\-3, 0.\-25, 0.\-75, 0.\-05, 0.\-05, 0.\-05, 0.\-3, 0.\-3, 0.\-1, 0.\-75, 0.\-4, 0.\-4, 0.\-4, 0.\-1, 0.\-1, 0.\-1, 0.\-1\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ada24a78d6a1d9ce17cfcce229f7fab64}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a04d5f73f27877eeaa99567091b0851d0}{static double\mbox{[}$\,$\mbox{]} {\bfseries ninety\-\_\-wash\-\_\-reactive} = new double\mbox{[}$\,$\mbox{]} \{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0.\-216, 0.\-144, 0.\-12, 0.\-36, 0, 0, 0, 0, 0, 0, 0.\-36, 0.\-192, 0.\-192, 0.\-192, 0, 0, 0, 0\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a04d5f73f27877eeaa99567091b0851d0}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ab5cbe755ed453926a8d991013d275148}{static double\mbox{[}$\,$\mbox{]} {\bfseries dry\-\_\-event} = new double\mbox{[}$\,$\mbox{]} \{1.\-901, 2.\-340, 2.\-441, 2.\-326, 2.\-016, 2.\-340, 2.\-441, 2.\-441, 2.\-300, 1.\-941, 2.\-441, 2.\-441, 2.\-415, 2.\-225, 2.\-041, 2.\-441, 2.\-415, 2.\-340, 2.\-326, 2.\-041, 2.\-415, 2.\-340, 2.\-441, 2.\-326, 2.\-016, 2.\-340, 2.\-441, 2.\-441, 2.\-300, 1.\-941, 2.\-441, 2.\-441, 2.\-415, 2.\-225, 2.\-041, 2.\-441, 2.\-415, 2.\-340, 2.\-326, 2.\-041, 2.\-415, 2.\-340, 2.\-441, 2.\-326, 2.\-016, 2.\-340, 2.\-441, 2.\-441, 2.\-300, 1.\-941, 2.\-441, 2.\-441, 2.\-415, 2.\-225, 2.\-041, 2.\-441, 2.\-415, 2.\-340, 2.\-326, 2.\-041, 2.\-415, 2.\-340, 2.\-441, 2.\-326, 2.\-016, 2.\-340, 2.\-441, 2.\-441, 2.\-300, 1.\-941, 2.\-441, 2.\-441, 2.\-415, 2.\-225, 2.\-041, 2.\-441, 2.\-415, 2.\-340, 2.\-326, 2.\-041, 2.\-415, 2.\-340, 2.\-441, 2.\-326, 2.\-016, 2.\-340, 2.\-441, 2.\-441, 2.\-300, 1.\-941, 2.\-441, 2.\-441, 2.\-415, 2.\-225, 2.\-041, 2.\-441, 2.\-415, 2.\-340, 2.\-326, 2.\-041, 2.\-415, 2.\-340, 2.\-441, 2.\-326, 2.\-016, 2.\-340, 2.\-441, 2.\-441, 2.\-300, 1.\-941, 2.\-441, 2.\-441, 2.\-415, 2.\-225, 2.\-041, 2.\-441, 2.\-415, 2.\-340, 2.\-326, 2.\-041\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ab5cbe755ed453926a8d991013d275148}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a34d462bd714866a26053dcd700ff1666}{static double\mbox{[}$\,$\mbox{]} {\bfseries dry\-\_\-event\-\_\-reactive} = new double\mbox{[}$\,$\mbox{]} \{0.\-048, 0.\-144, 0.\-192, 0.\-156, 0.\-084, 0.\-144, 0.\-192, 0.\-192, 0.\-144, 0.\-048, 0.\-192, 0.\-192, 0.\-180, 0.\-108, 0.\-096, 0.\-192, 0.\-180, 0.\-144, 0.\-156, 0.\-096, 0.\-180, 0.\-144, 0.\-192, 0.\-156, 0.\-084, 0.\-144, 0.\-192, 0.\-192, 0.\-144, 0.\-048, 0.\-192, 0.\-192, 0.\-180, 0.\-108, 0.\-096, 0.\-192, 0.\-180, 0.\-144, 0.\-156, 0.\-096, 0.\-180, 0.\-144, 0.\-192, 0.\-156, 0.\-084, 0.\-144, 0.\-192, 0.\-192, 0.\-144, 0.\-048, 0.\-192, 0.\-192, 0.\-180, 0.\-108, 0.\-096, 0.\-192, 0.\-180, 0.\-144, 0.\-156, 0.\-096, 0.\-180, 0.\-144, 0.\-192, 0.\-156, 0.\-084, 0.\-144, 0.\-192, 0.\-192, 0.\-144, 0.\-048, 0.\-192, 0.\-192, 0.\-180, 0.\-108, 0.\-096, 0.\-192, 0.\-180, 0.\-144, 0.\-156, 0.\-096, 0.\-180, 0.\-144, 0.\-192, 0.\-156, 0.\-084, 0.\-144, 0.\-192, 0.\-192, 0.\-144, 0.\-048, 0.\-192, 0.\-192, 0.\-180, 0.\-108, 0.\-096, 0.\-192, 0.\-180, 0.\-144, 0.\-156, 0.\-096, 0.\-180, 0.\-144, 0.\-192, 0.\-156, 0.\-084, 0.\-144, 0.\-192, 0.\-192, 0.\-144, 0.\-048, 0.\-192, 0.\-192, 0.\-180, 0.\-108, 0.\-096, 0.\-192, 0.\-180, 0.\-144, 0.\-156, 0.\-096\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a34d462bd714866a26053dcd700ff1666}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a2c4c03a4224e97287473345418637637}{static double\mbox{[}$\,$\mbox{]} {\bfseries dish\-\_\-chance} = new double\mbox{[}$\,$\mbox{]} \{1.\-337, 0.\-920, 0.\-998, 0.\-677\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a2c4c03a4224e97287473345418637637}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a03c373d2cc814adadf7cc6afcfad9c8e}{static double\mbox{[}$\,$\mbox{]} {\bfseries trend\-\_\-year\-\_\-dish} = new double\mbox{[}$\,$\mbox{]} \{1990, 1998, 2000, 2005, 2010, 2015, 2020\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a03c373d2cc814adadf7cc6afcfad9c8e}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a293f4009105ad636ba40c2e1ed26356c}{static double\mbox{[}$\,$\mbox{]} {\bfseries dish\-\_\-temp\-\_\-trend} = new double\mbox{[}$\,$\mbox{]} \{0.\-68 , 0.\-64 , 0.\-63 , 0.\-59 , 0.\-55 , 0.\-51 , 0.\-50\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a293f4009105ad636ba40c2e1ed26356c}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a1327c194b88c9a25699a5f9130d4ce90}{static double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} {\bfseries dish\-\_\-event} =new double\mbox{[}$\,$\mbox{]}\mbox{[}$\,$\mbox{]} \{\{0, 0, 0, 0\},\{0, 0, 0, 0\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-05, 0.\-05\},\{0.\-1, 0.\-1, 0, 0\},\{0, 0, 0.\-2, 0.\-2\},\{0, 0, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 2.\-1, 2.\-1\},\{2.\-7, 2.\-7, 2.\-1, 2.\-1\},\{2.\-7, 2.\-7, 2.\-1, 2.\-1\},\{2.\-7, 2.\-7, 2.\-1, 2.\-1\},\{2.\-7, 2.\-7, 2.\-1, 2.\-1\},\{2.\-7, 2.\-7, 2.\-1, 2.\-1\},\{2.\-7, 2.\-7, 2.\-1, 2.\-1\},\{2.\-7, 2.\-7, 2.\-1, 2.\-1\},\{2.\-7, 2.\-7, 2.\-1, 0.\-2\},\{2.\-7, 2.\-7, 2.\-1, 0.\-2\},\{2.\-7, 0.\-2, 2.\-1, 0.\-2\},\{2.\-7, 0.\-2, 2.\-1, 0.\-2\},\{2.\-7, 0.\-2, 2.\-1, 0.\-2\},\{2.\-7, 0.\-2, 0.\-2, 0.\-2\},\{2.\-7, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-05\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-2, 0.\-1, 0.\-2, 0.\-2\},\{0.\-2, 0, 0.\-05, 0\},\{0.\-2, 0, 0.\-2, 0.\-2\},\{0.\-2, 0, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 0.\-2\},\{0.\-1, 0.\-2, 0.\-2, 0.\-05\},\{0, 0.\-1, 0, 0\},\{0, 0.\-1, 0.\-2, 0.\-2\},\{0, 0, 0.\-2, 0.\-2\},\{0.\-2, 0.\-2, 0.\-2, 2.\-1\},\{0.\-2, 0.\-2, 0.\-05, 2.\-1\},\{0.\-1, 0.\-1, 0, 2.\-1\},\{0.\-1, 0.\-1, 0.\-2, 2.\-1\},\{0, 0, 0.\-2, 2.\-15\},\{0.\-2, 0.\-2, 2.\-1, 2.\-15\},\{0.\-2, 2.\-7, 2.\-1, 2.\-15\},\{0.\-1, 2.\-7, 2.\-1, 0.\-2\},\{0.\-1, 2.\-7, 2.\-1, 0.\-2\},\{0, 2.\-7, 2.\-15, 0.\-2\},\{0.\-2, 2.\-7, 2.\-15, 0.\-2\},\{2.\-7, 2.\-7, 2.\-15, 0.\-2\},\{2.\-7, 2.\-7, 2.\-15, 0.\-2\},\{2.\-7, 2.\-7, 2.\-15, 0.\-2\},\{2.\-7, 2.\-7, 2.\-15, 0.\-05\},\{2.\-7, 2.\-7, 2.\-15, 0\},\{2.\-7, 0.\-2, 0.\-2, 0\},\{2.\-7, 0.\-2, 0.\-2, 2.\-1\},\{2.\-7, 0.\-2, 0.\-2, 2.\-1\},\{2.\-7, 0.\-2, 0.\-2, 0\},\{2.\-7, 0.\-2, 0.\-2, 0\},\{2.\-7, 0.\-1, 0.\-2, 2.\-1\},\{2.\-7, 0.\-1, 0.\-2, 2.\-1\},\{2.\-7, 0, 0.\-05, 0.\-05\},\{2.\-7, 0, 0, 0\},\{0.\-2, 0, 0, 0\},\{0.\-2, 0, 2.\-1, 0\},\{0.\-2, 0, 2.\-1, 0\},\{0.\-2, 0, 0, 0\},\{0.\-2, 0, 0, 0\},\{0.\-1, 0, 2.\-1, 0\},\{0.\-1, 0, 2.\-1, 0\},\{0, 0, 0.\-05, 0\},\{0, 0, 0, 0\},\{0, 0, 0, 0\},\{0, 0, 0, 0\}\}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a1327c194b88c9a25699a5f9130d4ce90}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A suite of profile generating methods for various appliance types. 
+
+Based almost wholly on the work of Melody Stokes, see her thesis (2004-\/ish?)
+
+N\-O\-T\-E\-: Values for this are given in k\-W. Depending on your end use, these may require conversion to k\-Wh.
+
+\begin{DoxyAuthor}{Author}
+jsnape 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ad499b30b2ede94bbe1ebdc76b47c203e}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}!melody\-Stokes\-Cold\-Appliance\-Gen@{melody\-Stokes\-Cold\-Appliance\-Gen}}
+\index{melody\-Stokes\-Cold\-Appliance\-Gen@{melody\-Stokes\-Cold\-Appliance\-Gen}!uk::ac::dmu::iesd::cascade::util::InitialProfileGenUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}}
+\subsubsection[{melody\-Stokes\-Cold\-Appliance\-Gen}]{\setlength{\rightskip}{0pt plus 5cm}static Weak\-Hash\-Map$<$String,double\mbox{[}$\,$\mbox{]}$>$ uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils.\-melody\-Stokes\-Cold\-Appliance\-Gen (
+\begin{DoxyParamCaption}
+\item[{int}]{num\-Days, }
+\item[{boolean}]{fridges, }
+\item[{boolean}]{fridge\-Freezers, }
+\item[{boolean}]{freezers}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_ad499b30b2ede94bbe1ebdc76b47c203e}
+
+
+Helper method to use boolean indicators of ownership which simply calls the method of same name with integer arguments translating true to 1 and false to 0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em num\-Days} & \\
+\hline
+{\em fridges} & \\
+\hline
+{\em fridge\-Freezers} & \\
+\hline
+{\em freezers} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_afde0080e90c188dc2b9074bf105cd423}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}!melody\-Stokes\-Cold\-Appliance\-Gen@{melody\-Stokes\-Cold\-Appliance\-Gen}}
+\index{melody\-Stokes\-Cold\-Appliance\-Gen@{melody\-Stokes\-Cold\-Appliance\-Gen}!uk::ac::dmu::iesd::cascade::util::InitialProfileGenUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}}
+\subsubsection[{melody\-Stokes\-Cold\-Appliance\-Gen}]{\setlength{\rightskip}{0pt plus 5cm}static Weak\-Hash\-Map$<$String,double\mbox{[}$\,$\mbox{]}$>$ uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils.\-melody\-Stokes\-Cold\-Appliance\-Gen (
+\begin{DoxyParamCaption}
+\item[{int}]{num\-Days, }
+\item[{int}]{fridges, }
+\item[{int}]{fridge\-Freezers, }
+\item[{int}]{freezers}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_afde0080e90c188dc2b9074bf105cd423}
+
+
+Java implementation of the matlab code from Melody Stokes' model of cold appliance demand. 
+
+Note that this implementation does not account for leap years and simply assumes that days per year or where in the year the simulation starts In effect, it assumes a 1st January start.
+
+T\-O\-D\-O\-: If this is to be used extensively, need to make it sensitive to start date etc.
+
+N\-O\-T\-E\-: Values for this are given in k\-W. Depending on your end use, these may require conversion to k\-Wh. \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a0110d443f84940dde051667b8b638e5c}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}!melody\-Stokes\-Cold\-Appliance\-Gen\-\_\-\-Old@{melody\-Stokes\-Cold\-Appliance\-Gen\-\_\-\-Old}}
+\index{melody\-Stokes\-Cold\-Appliance\-Gen\-\_\-\-Old@{melody\-Stokes\-Cold\-Appliance\-Gen\-\_\-\-Old}!uk::ac::dmu::iesd::cascade::util::InitialProfileGenUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}}
+\subsubsection[{melody\-Stokes\-Cold\-Appliance\-Gen\-\_\-\-Old}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils.\-melody\-Stokes\-Cold\-Appliance\-Gen\-\_\-\-Old (
+\begin{DoxyParamCaption}
+\item[{int}]{num\-Days, }
+\item[{int}]{fridges, }
+\item[{int}]{fridge\-Freezers, }
+\item[{int}]{freezers}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a0110d443f84940dde051667b8b638e5c}
+
+
+Java implementation of the matlab code from Melody Stokes' model of cold appliance demand. 
+
+Note that this implementation does not account for leap years and simply assumes that days per year or where in the year the simulation starts In effect, it assumes a 1st January start.
+
+T\-O\-D\-O\-: If this is to be used extensively, need to make it sensitive to start date etc.
+
+N\-O\-T\-E\-: Values for this are given in k\-W. Depending on your end use, these may require conversion to k\-Wh. \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a49f16d85088f8c945254ef5749cb6150}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}!melody\-Stokes\-Domestic\-Cooking\-Load\-Gen@{melody\-Stokes\-Domestic\-Cooking\-Load\-Gen}}
+\index{melody\-Stokes\-Domestic\-Cooking\-Load\-Gen@{melody\-Stokes\-Domestic\-Cooking\-Load\-Gen}!uk::ac::dmu::iesd::cascade::util::InitialProfileGenUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}}
+\subsubsection[{melody\-Stokes\-Domestic\-Cooking\-Load\-Gen}]{\setlength{\rightskip}{0pt plus 5cm}static double \mbox{[}$\,$\mbox{]} uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils.\-melody\-Stokes\-Domestic\-Cooking\-Load\-Gen (
+\begin{DoxyParamCaption}
+\item[{int}]{num\-Days}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a49f16d85088f8c945254ef5749cb6150}
+
+
+Translation from Matlab -\/ Melody Stokes' cooking demand model (domestic section only) 
+
+This sub-\/model calculates the half-\/hourly group average domestic electricity demand for cooking T\-O\-D\-O\-: This currently always starts on a Sunday and doesn't deal with day of the year very well -\/ can be improved.
+
+
+\begin{DoxyParams}{Parameters}
+{\em num\-Days} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+N\-O\-T\-E\-: Values for this are given in k\-W. Depending on your end use, these may require conversion to k\-Wh. \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a49cdaaf69ec071e90b2c49637148f72d}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}!melody\-Stokes\-Wet\-Appliance\-Gen@{melody\-Stokes\-Wet\-Appliance\-Gen}}
+\index{melody\-Stokes\-Wet\-Appliance\-Gen@{melody\-Stokes\-Wet\-Appliance\-Gen}!uk::ac::dmu::iesd::cascade::util::InitialProfileGenUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}}
+\subsubsection[{melody\-Stokes\-Wet\-Appliance\-Gen}]{\setlength{\rightskip}{0pt plus 5cm}static Weak\-Hash\-Map$<$String,double\mbox{[}$\,$\mbox{]}$>$ uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils.\-melody\-Stokes\-Wet\-Appliance\-Gen (
+\begin{DoxyParamCaption}
+\item[{{\bf Cascade\-Context}}]{context, }
+\item[{int}]{num\-Days, }
+\item[{boolean}]{wash\-Machine, }
+\item[{boolean}]{washer\-Dryer, }
+\item[{boolean}]{dish\-Washer, }
+\item[{boolean}]{tumble\-Dryer}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a49cdaaf69ec071e90b2c49637148f72d}
+
+\begin{DoxyParams}{Parameters}
+{\em days\-Per\-Year} & \\
+\hline
+{\em has\-Washing\-Machine} & \\
+\hline
+{\em has\-Washer\-Dryer} & \\
+\hline
+{\em has\-Dish\-Washer} & \\
+\hline
+{\em has\-Tumble\-Dryer} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+N\-O\-T\-E\-: Values for this are given in k\-W. Depending on your end use, these may require conversion to k\-Wh. \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a51bad98a5e63e61ccb47ed7dbbd18582}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}!melody\-Stokes\-Wet\-Appliance\-Gen\-\_\-\-Discrete\-Values@{melody\-Stokes\-Wet\-Appliance\-Gen\-\_\-\-Discrete\-Values}}
+\index{melody\-Stokes\-Wet\-Appliance\-Gen\-\_\-\-Discrete\-Values@{melody\-Stokes\-Wet\-Appliance\-Gen\-\_\-\-Discrete\-Values}!uk::ac::dmu::iesd::cascade::util::InitialProfileGenUtils@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Initial\-Profile\-Gen\-Utils}}
+\subsubsection[{melody\-Stokes\-Wet\-Appliance\-Gen\-\_\-\-Discrete\-Values}]{\setlength{\rightskip}{0pt plus 5cm}static Weak\-Hash\-Map$<$String,double\mbox{[}$\,$\mbox{]}$>$ uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Initial\-Profile\-Gen\-Utils.\-melody\-Stokes\-Wet\-Appliance\-Gen\-\_\-\-Discrete\-Values (
+\begin{DoxyParamCaption}
+\item[{{\bf Cascade\-Context}}]{context, }
+\item[{int}]{num\-Days, }
+\item[{boolean}]{wash\-Machine, }
+\item[{boolean}]{washer\-Dryer, }
+\item[{boolean}]{dish\-Washer, }
+\item[{boolean}]{tumble\-Dryer}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_initial_profile_gen_utils_a51bad98a5e63e61ccb47ed7dbbd18582}
+
+\begin{DoxyParams}{Parameters}
+{\em days\-Per\-Year} & \\
+\hline
+{\em has\-Washing\-Machine} & \\
+\hline
+{\em has\-Washer\-Dryer} & \\
+\hline
+{\em has\-Dish\-Washer} & \\
+\hline
+{\em has\-Tumble\-Dryer} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+N\-O\-T\-E\-: Values for this are given in k\-W. Depending on your end use, these may require conversion to k\-Wh. 
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/util/Initial\-Profile\-Gen\-Utils.\-java\end{DoxyCompactItemize}

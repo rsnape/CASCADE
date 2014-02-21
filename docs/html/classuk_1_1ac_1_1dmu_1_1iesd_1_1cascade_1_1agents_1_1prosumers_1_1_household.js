@@ -1,0 +1,26 @@
+var classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household =
+[
+    [ "Household", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a96897a52f3e5bfa0afaf2a54975d5997", null ],
+    [ "Household", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#ac6e52dbada5690a83ea7d79d31a5af20", null ],
+    [ "calculateSaving", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a0668d07b6583f1e5a87f6544c8b171d7", null ],
+    [ "checkTime", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#ad2dc762cc4e93b15462162e2f20b2197", null ],
+    [ "determineBaseline", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a8350516038c5a480c0de4a5b9699b8cd", null ],
+    [ "getAdoptionThreshold", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a115924d2f0922cd1a8a10008d9ac786b", null ],
+    [ "getAgentName", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#adc2d5b03564d950954a24f6ca1fa7278", null ],
+    [ "getDailySaving", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a0d3e4a456a0f28b069939f75d979fffd", null ],
+    [ "getDefraCategory", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a18c8c778973afb2b0d1ce45f8ed271af", null ],
+    [ "getHasPV", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#accdda029fe18eff4bea85b709a61ff0f", null ],
+    [ "getHasPVNum", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a358023475bc8198329190569fb623658", null ],
+    [ "getHasSmartControlNum", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#ad01055036732d5d74653b76e1ca1e9ad", null ],
+    [ "getNumThoughts", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#ac404b761e7ed227f15e0d23992df6e5b", null ],
+    [ "getPVGen", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#af93a4ca8097085443d01b18f7b220529", null ],
+    [ "setAdoptionThreshold", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#af30b28063c5ceebddb1e1ef298b6bcf7", null ],
+    [ "setContext", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a11db19b72b5509871498706c5fd06346", null ],
+    [ "setGeography", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a8e768e294af41a46854565a8d6ab239a", null ],
+    [ "economicAbility", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a5659d62f2c6b0184fea452eefe554bcc", null ],
+    [ "HEMSPropensity", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#ac214e9c07490aa05dff24dcc163134db", null ],
+    [ "insulationPropensity", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a8822ed40329b387605403b04e9464e77", null ],
+    [ "microgenPropensity", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#a928431bd43ceedc8bb456058273fea28", null ],
+    [ "observedRadius", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#ac7afe1988f98700ede635b2d5198135f", null ],
+    [ "PVlikelihood", "classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household.html#af87def1dad6654a090207a67dce2abdc", null ]
+];

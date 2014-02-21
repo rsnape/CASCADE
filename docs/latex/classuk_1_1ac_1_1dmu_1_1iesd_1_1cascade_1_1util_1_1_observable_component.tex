@@ -1,0 +1,169 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component}}
+}
+
+
+This class represents a concrete observable object/component.  
+
+
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a17b6018ada7da126667f770424bb8303}{\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a17b6018ada7da126667f770424bb8303}{Observable\-Component} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a17b6018ada7da126667f770424bb8303}
+
+\begin{DoxyCompactList}\small\item\em Construct an \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component}{Observable\-Component} with zero Observers. \end{DoxyCompactList}\item 
+synchronized void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a2de999ded542075a4074e1e3afaf50ba}{add\-Observer} (\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer} obs)
+\begin{DoxyCompactList}\small\item\em Adds an observer to the set of observers for this object, provided that it is not the same as some observer already in the set. \end{DoxyCompactList}\item 
+synchronized void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a456fb504f132e9cac14544ec51db6ad0}{delete\-Observer} (\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer} obs)
+\begin{DoxyCompactList}\small\item\em Deletes an observer from the set of observers of this object. \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a58117b249843387842a6e6039f32151f}{synchronized void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a58117b249843387842a6e6039f32151f}{delete\-Observers} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a58117b249843387842a6e6039f32151f}
+
+\begin{DoxyCompactList}\small\item\em Clears the observer list so that this object no longer has any observers. \end{DoxyCompactList}\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a58665d8608f3c82887f5c4478ec957f8}{notify\-Observers} (Object obs, Object change\-Code\-Arg)
+\begin{DoxyCompactList}\small\item\em This method can be called when an the observed object' state (in which the observer object is interested) has changed. \end{DoxyCompactList}\item 
+synchronized int \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a3bb10b28f32a2ff32640031b7167e306}{count\-Observers} ()
+\begin{DoxyCompactList}\small\item\em Returns the number of observers of an {\ttfamily \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable}} object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class represents a concrete observable object/component. 
+
+An \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable} implementer class can simply use an instance of this object and delegate the task of adding, removing observers along with other required tasks to this object (e.\-g. counting observers, notifying observed ...) 
+
+An observable implementer object can have one or more observers. An observer may be any object that implements interface {\ttfamily \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer}}. After an \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable} implementer instance changes, an appropriate code will call the {\ttfamily \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable}}'s {\ttfamily notify\-Observers} method causes all of its observers to be notified of the change by a call to their {\ttfamily update} method. 
+
+The default implementation provided in this class will notify Observers in the order in which they registered interest. 
+
+When an observable object is newly created, its set of observers is empty. Two observers are considered the same if and only if the {\ttfamily equals} method returns true for them.
+
+\begin{DoxyAuthor}{Author}
+Babak Mahdavi 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Revision\-:}
+1.\-00 
+\end{DoxyParagraph}
+\$\-Date\-: 2011/05/23 1\-:00\-:00 \begin{DoxySeeAlso}{See Also}
+\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer}{I\-Observer} 
+
+\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable} 
+\end{DoxySeeAlso}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a2de999ded542075a4074e1e3afaf50ba}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component}!add\-Observer@{add\-Observer}}
+\index{add\-Observer@{add\-Observer}!uk::ac::dmu::iesd::cascade::util::ObservableComponent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component}}
+\subsubsection[{add\-Observer}]{\setlength{\rightskip}{0pt plus 5cm}synchronized void uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component.\-add\-Observer (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Observer}}]{obs}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a2de999ded542075a4074e1e3afaf50ba}
+
+
+Adds an observer to the set of observers for this object, provided that it is not the same as some observer already in the set. 
+
+The order in which notifications will be delivered to multiple observers is not specified. See the class comment.
+
+
+\begin{DoxyParams}{Parameters}
+{\em obs} & an observer to be added. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em Null\-Pointer\-Exception} & if the parameter o is null. \\
+\hline
+\end{DoxyExceptions}
+
+
+Implements \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable_acc9c7f4005f0c7efb9669190c4d6d064}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable}.
+
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a3bb10b28f32a2ff32640031b7167e306}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component}!count\-Observers@{count\-Observers}}
+\index{count\-Observers@{count\-Observers}!uk::ac::dmu::iesd::cascade::util::ObservableComponent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component}}
+\subsubsection[{count\-Observers}]{\setlength{\rightskip}{0pt plus 5cm}synchronized int uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component.\-count\-Observers (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a3bb10b28f32a2ff32640031b7167e306}
+
+
+Returns the number of observers of an {\ttfamily \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{I\-Observable}} object. 
+
+\begin{DoxyReturn}{Returns}
+the number of observers of a given object. 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable}.
+
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a456fb504f132e9cac14544ec51db6ad0}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component}!delete\-Observer@{delete\-Observer}}
+\index{delete\-Observer@{delete\-Observer}!uk::ac::dmu::iesd::cascade::util::ObservableComponent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component}}
+\subsubsection[{delete\-Observer}]{\setlength{\rightskip}{0pt plus 5cm}synchronized void uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component.\-delete\-Observer (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Observer}}]{obs}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a456fb504f132e9cac14544ec51db6ad0}
+
+
+Deletes an observer from the set of observers of this object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obs} & the observer to be deleted. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observable}{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-I\-Observable}.
+
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a58665d8608f3c82887f5c4478ec957f8}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component}!notify\-Observers@{notify\-Observers}}
+\index{notify\-Observers@{notify\-Observers}!uk::ac::dmu::iesd::cascade::util::ObservableComponent@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::util\-::\-Observable\-Component}}
+\subsubsection[{notify\-Observers}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-Observable\-Component.\-notify\-Observers (
+\begin{DoxyParamCaption}
+\item[{Object}]{obs, }
+\item[{Object}]{change\-Code\-Arg}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_observable_component_a58665d8608f3c82887f5c4478ec957f8}
+
+
+This method can be called when an the observed object' state (in which the observer object is interested) has changed. 
+
+It notifies all of its observers and then call 
+
+Each observer has its {\ttfamily update} method called with two arguments\-: the observable object and the {\ttfamily change\-Code\-Arg} argument.
+
+
+\begin{DoxyParams}{Parameters}
+{\em obs} & the observed object. \\
+\hline
+{\em change\-Code\-Arg} & the changed code argument. \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1_i_observer_a4a1251fa996fd058f4f1f61c0e9e57e3}{I\-Observer\-::update(\-Object,\-Object)} 
+\end{DoxySeeAlso}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/util/Observable\-Component.\-java\end{DoxyCompactItemize}

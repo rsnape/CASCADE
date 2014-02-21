@@ -1,0 +1,45 @@
+\hypertarget{namespaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers}{\section{Package uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers}
+\label{namespaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-prosumers}}
+}
+
+
+This package contains the abstract class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}, which must be extended by all prosumer agents in a C\-A\-S\-C\-A\-D\-E framework model.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_battery_prosumer}{Battery\-Prosumer}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_bhutan_household}{Bhutan\-Household}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_bhutan_hydro}{Bhutan\-Hydro}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_constant_load_prosumer}{Constant\-Load\-Prosumer}
+\begin{DoxyCompactList}\small\item\em This is a very simple prosumer which will present a constant load to the system. \end{DoxyCompactList}\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_constant_plus_elasticity_prosumer}{Constant\-Plus\-Elasticity\-Prosumer}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_generator_prosumer}{Generator\-Prosumer}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household}{Household}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household_prosumer}{Household\-Prosumer}
+\item 
+interface \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_i_prosumer_factory}{I\-Prosumer\-Factory}
+\begin{DoxyCompactList}\small\item\em Interface \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_i_prosumer_factory}{I\-Prosumer\-Factory} defines possible ways where prosumer factory can/should create (/initiate) different instances of prosumer concrete subclasses (such as {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_household_prosumer}{Household\-Prosumer}}) \end{DoxyCompactList}\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_non_domestic_prosumer}{Non\-Domestic\-Prosumer}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}
+\begin{DoxyCompactList}\small\item\em A {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}} is an object which can both consume and generate electricity at the same time. \end{DoxyCompactList}\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory}{Prosumer\-Factory}
+\begin{DoxyCompactList}\small\item\em This class is a factory for creating instances of {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}} concrete subclasses Its public creator method's signatures are defined by \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_i_prosumer_factory}{I\-Prosumer\-Factory} interface. \end{DoxyCompactList}\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_rasp_pi_household}{Rasp\-Pi\-Household}
+\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_storage_prosumer}{Storage\-Prosumer}
+\begin{DoxyCompactList}\small\item\em T\-O\-D\-O\-: Determine the role of this class; prosumers supposed to range from pure generators to pure consumers, but not storage (is this a tool)? May need to be eliminated. \end{DoxyCompactList}\item 
+class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_wind_generator_prosumer}{Wind\-Generator\-Prosumer}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This package contains the abstract class \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent}, which must be extended by all prosumer agents in a C\-A\-S\-C\-A\-D\-E framework model. It also contains a number of reference implementations which may be used as provided, extended or copied and adapted for specific implementations. 

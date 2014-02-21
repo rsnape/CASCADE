@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_i_prosumer_factory.html" title="Interface IProsumerFactory defines possible ways where prosumer factory can/should create (/initiate)..." alt="" coords="6,5,282,46"/>
+<area shape="rect" id="node2" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_factory.html" title="This class is a factory for creating instances of ProsumerAgent concrete subclasses Its public creato..." alt="" coords="331,5,607,46"/>
+</map>

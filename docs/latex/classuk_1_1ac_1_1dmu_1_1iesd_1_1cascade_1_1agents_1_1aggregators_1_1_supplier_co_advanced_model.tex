@@ -1,0 +1,271 @@
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model Class Reference}
+\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model}}
+}
+
+
+A {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co}} or a supplier retail company is a concrete object that represents a commercial/business electricity/energy company involved in retail trade with prosumer agents ({\ttfamily Prosumer\-Agent}), such as household prosumers ({\ttfamily Household\-Prosumer}) In other words, a {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co}} provides electricity/energy to certain types of prosumers (e.\-g.  
+
+
+
+
+Inheritance diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a7af4f0d6ae9d62a4fd893ed15ce0f86d}{double {\bfseries get\-Total\-C\-O2saving} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a7af4f0d6ae9d62a4fd893ed15ce0f86d}
+
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a06a8f5fd0419d00cdd26384527ad0290}{void {\bfseries biz\-Pre\-Step} ()}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a06a8f5fd0419d00cdd26384527ad0290}
+
+\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a94251d856ad9615a52c297b92d4703dd}{biz\-Step} ()
+\begin{DoxyCompactList}\small\item\em The scheduled method to run at the main business priority of the main step. \end{DoxyCompactList}\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aba70f0a59f41e4ba22fa2585a8123514}{Supplier\-Co\-Advanced\-Model} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context, \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem_1_1operators_1_1_market_message_board}{Market\-Message\-Board} mb, B\-M\-U\-\_\-\-C\-A\-T\-E\-G\-O\-R\-Y cat, B\-M\-U\-\_\-\-T\-Y\-P\-E type, double max\-Dem, double min\-Dem, double\mbox{[}$\,$\mbox{]} base\-Demand)
+\begin{DoxyCompactList}\small\item\em Constructs a Supplier\-C\-O agent with the context in which is created and its base demand. \end{DoxyCompactList}\item 
+\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a0a5e5ee87de492f07d6a0a4c437f6372}{Supplier\-Co\-Advanced\-Model} (\hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1context_1_1_cascade_context}{Cascade\-Context} context)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_ae200dca0667a3ec1e8bda30f7f3b27e7}{calculate\-\_\-\-Price\-\_\-\-P} (int timeslot)
+\begin{DoxyCompactList}\small\item\em This method calculates and returns the price (Pi) per k\-Wh at given time-\/slot. \end{DoxyCompactList}\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a572f80c1dca541958694191fbfcc97da}{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D} (int timeslot)
+\begin{DoxyCompactList}\small\item\em This method calculates and returns the demand predicted by the aggregator in each time-\/slot, taking account of both elastic and displacement changes. \end{DoxyCompactList}\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a16d46d717fa650fc5364f1db72a9b987}{calculate\-\_\-e} (double\mbox{[}$\,$\mbox{]} arr\-\_\-\-D, double\mbox{[}$\,$\mbox{]} arr\-\_\-\-B, double s, double B)
+\begin{DoxyCompactList}\small\item\em This method calculates and returns \char`\"{}price elasticity factor\char`\"{} (e) at a given time-\/slot. \end{DoxyCompactList}\item 
+double \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a60377873712a292a63b165703d0b25ac}{calculate\-\_\-k} (int t\-\_\-i, int t\-\_\-j)
+\begin{DoxyCompactList}\small\item\em This method calculates and returns \char`\"{}displacement factor\char`\"{} (k) at given time-\/slots. \end{DoxyCompactList}\item 
+void \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_ace87586e1ed4fb6a5f355634402d7dd5}{predict\-Demand} (List$<$ \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1prosumers_1_1_prosumer_agent}{Prosumer\-Agent} $>$ customers\-List, int t)
+\begin{DoxyCompactList}\small\item\em This method calculates the predict demand at each given time-\/slot. \end{DoxyCompactList}\item 
+String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a62f8d10d4f3ff89951091748a4c21972}{param\-String\-Report} ()
+\begin{DoxyCompactList}\small\item\em Returns a string representing the state of this agent. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aae297d99eec71cf412581ee48b413b31}{boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aae297d99eec71cf412581ee48b413b31}{is\-Training} = true}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aae297d99eec71cf412581ee48b413b31}
+
+\begin{DoxyCompactList}\small\item\em indicates whether the agent is in training mode/ period \end{DoxyCompactList}\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a95569aa5dfc17d74257b0021dfcb6c89}{boolean \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a95569aa5dfc17d74257b0021dfcb6c89}{is\-Profile\-Buidling} = true}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a95569aa5dfc17d74257b0021dfcb6c89}
+
+\begin{DoxyCompactList}\small\item\em indicates whether the agent is in 'profile building' mode/period \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aa75f64fc9e3affecede7fd316ca0c066}{static String \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aa75f64fc9e3affecede7fd316ca0c066}{agent\-Base\-Name} = \char`\"{}Supplier\-C\-O\char`\"{}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aa75f64fc9e3affecede7fd316ca0c066}
+
+\begin{DoxyCompactList}\small\item\em the aggregator agent's base name \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A {\itshape \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co}} or a supplier retail company is a concrete object that represents a commercial/business electricity/energy company involved in retail trade with prosumer agents ({\ttfamily Prosumer\-Agent}), such as household prosumers ({\ttfamily Household\-Prosumer}) In other words, a {\ttfamily \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co}} provides electricity/energy to certain types of prosumers (e.\-g. 
+
+households) It will be also involved in electricity trade market.
+
+\begin{DoxyAuthor}{Author}
+Babak Mahdavi 
+
+J. Richard Snape 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+
+\end{DoxyVersion}
+\begin{DoxyParagraph}{Revision\-:}
+2.\-1 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{Date\-:}
+2014/02/18 
+\end{DoxyParagraph}
+
+
+Version history (for intermediate steps see Git repository history)
+
+1.\-0 -\/ created the concrete class of \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_aggregator_agent}{Aggregator\-Agent} kind after the latter was made abstract upon my suggestion 1.\-1 -\/ Class name changed to \hyperlink{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co}{Supplier\-Co} (previously named R\-E\-C\-O) (2012/05/18) 2.\-0 2.\-1 -\/ Cleaned code -\/ refactored $\sim$1000 lines 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aba70f0a59f41e4ba22fa2585a8123514}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!Supplier\-Co\-Advanced\-Model@{Supplier\-Co\-Advanced\-Model}}
+\index{Supplier\-Co\-Advanced\-Model@{Supplier\-Co\-Advanced\-Model}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{Supplier\-Co\-Advanced\-Model}]{\setlength{\rightskip}{0pt plus 5cm}uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-Supplier\-Co\-Advanced\-Model (
+\begin{DoxyParamCaption}
+\item[{{\bf Cascade\-Context}}]{context, }
+\item[{{\bf Market\-Message\-Board}}]{mb, }
+\item[{B\-M\-U\-\_\-\-C\-A\-T\-E\-G\-O\-R\-Y}]{cat, }
+\item[{B\-M\-U\-\_\-\-T\-Y\-P\-E}]{type, }
+\item[{double}]{max\-Dem, }
+\item[{double}]{min\-Dem, }
+\item[{double\mbox{[}$\,$\mbox{]}}]{base\-Demand}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_aba70f0a59f41e4ba22fa2585a8123514}
+
+
+Constructs a Supplier\-C\-O agent with the context in which is created and its base demand. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & the context in which this agent is situated \\
+\hline
+{\em base\-Demand} & an array containing the base demand \\
+\hline
+\end{DoxyParams}
++++++++++++++++++++++++++++++++++++++++ \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a0a5e5ee87de492f07d6a0a4c437f6372}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!Supplier\-Co\-Advanced\-Model@{Supplier\-Co\-Advanced\-Model}}
+\index{Supplier\-Co\-Advanced\-Model@{Supplier\-Co\-Advanced\-Model}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{Supplier\-Co\-Advanced\-Model}]{\setlength{\rightskip}{0pt plus 5cm}uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-Supplier\-Co\-Advanced\-Model (
+\begin{DoxyParamCaption}
+\item[{{\bf Cascade\-Context}}]{context}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a0a5e5ee87de492f07d6a0a4c437f6372}
++++++++++++++++++++++++++++++++++++++++ 
+
+\subsection{Member Function Documentation}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a94251d856ad9615a52c297b92d4703dd}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!biz\-Step@{biz\-Step}}
+\index{biz\-Step@{biz\-Step}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{biz\-Step}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-biz\-Step (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a94251d856ad9615a52c297b92d4703dd}
+
+
+The scheduled method to run at the main business priority of the main step. 
+
+Method to generate k values for positive and negative signal values. Based on the original Matlab code preoposed by Peter Boait in prototype.\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a16d46d717fa650fc5364f1db72a9b987}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!calculate\-\_\-e@{calculate\-\_\-e}}
+\index{calculate\-\_\-e@{calculate\-\_\-e}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{calculate\-\_\-e}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-calculate\-\_\-e (
+\begin{DoxyParamCaption}
+\item[{double\mbox{[}$\,$\mbox{]}}]{arr\-\_\-\-D, }
+\item[{double\mbox{[}$\,$\mbox{]}}]{arr\-\_\-\-B, }
+\item[{double}]{s, }
+\item[{double}]{B}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a16d46d717fa650fc5364f1db72a9b987}
+
+
+This method calculates and returns \char`\"{}price elasticity factor\char`\"{} (e) at a given time-\/slot. 
+
+(It implements the formula proposed by P. Boait, Formula \#6) 
+\begin{DoxyParams}{Parameters}
+{\em arr\-\_\-\-D} & a double array containing aggregate demand (D) values for a timeslot of a day (usually 48 timeslots) \\
+\hline
+{\em arr\-\_\-\-B} & a double array containing average baseline aggregate demand (B) values for each timeslot of a day (usulaly 48 timeslots) \\
+\hline
+{\em s} & signal value at timeslot i \\
+\hline
+{\em B} & average baseline aggregate demand (B) value at timeslot i \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+elasticity price factor (e) \mbox{[}at timeslot i\mbox{]} 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a60377873712a292a63b165703d0b25ac}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!calculate\-\_\-k@{calculate\-\_\-k}}
+\index{calculate\-\_\-k@{calculate\-\_\-k}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{calculate\-\_\-k}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-calculate\-\_\-k (
+\begin{DoxyParamCaption}
+\item[{int}]{t\-\_\-i, }
+\item[{int}]{t\-\_\-j}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a60377873712a292a63b165703d0b25ac}
+
+
+This method calculates and returns \char`\"{}displacement factor\char`\"{} (k) at given time-\/slots. 
+
+(It implements the formula proposed by P. Boait, Formula \#7 and \#8) By stepping Si=1 through all the timeslots over 48 days, the aggregator obtains complete set of estimates for e and k. By repeating this training (if necessary) more accurate estimates can be obtained. 
+\begin{DoxyParams}{Parameters}
+{\em timeslot} & time slot of the day (often/usually 1 day = 48 timeslot) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+displacement factor (Kij) at given timeslots (i and j) 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a572f80c1dca541958694191fbfcc97da}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!calculate\-\_\-\-Predicted\-Demand\-\_\-\-D@{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D}}
+\index{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D@{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{calculate\-\_\-\-Predicted\-Demand\-\_\-\-D}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-calculate\-\_\-\-Predicted\-Demand\-\_\-\-D (
+\begin{DoxyParamCaption}
+\item[{int}]{timeslot}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a572f80c1dca541958694191fbfcc97da}
+
+
+This method calculates and returns the demand predicted by the aggregator in each time-\/slot, taking account of both elastic and displacement changes. 
+
+(It implements the formula proposed by P. Boait, Formula \#4) When e=0 (i.\-e. all ei=0), then the sum of all Di = sum of all Bi 
+\begin{DoxyParams}{Parameters}
+{\em timeslot} & time slot of the day (often/usually 1 day = 48 timeslot) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Demand (Di) predicted by the aggregator at given timeslot (i) 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_ae200dca0667a3ec1e8bda30f7f3b27e7}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!calculate\-\_\-\-Price\-\_\-\-P@{calculate\-\_\-\-Price\-\_\-\-P}}
+\index{calculate\-\_\-\-Price\-\_\-\-P@{calculate\-\_\-\-Price\-\_\-\-P}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{calculate\-\_\-\-Price\-\_\-\-P}]{\setlength{\rightskip}{0pt plus 5cm}double uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-calculate\-\_\-\-Price\-\_\-\-P (
+\begin{DoxyParamCaption}
+\item[{int}]{timeslot}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_ae200dca0667a3ec1e8bda30f7f3b27e7}
+
+
+This method calculates and returns the price (Pi) per k\-Wh at given time-\/slot. 
+
+(It implements the formula proposed by P. Boait, Formula \#2) Parameters a and b are \char`\"{}fixed pricing\char`\"{} parameters and set by the aggregator and known to the prosumer's smart meter and other devices so they react to Pi. The summation of all Si to zero simplifies their calculation! In practice, it would be helpful to use normalized values between 1 and -\/1 to make up S 
+\begin{DoxyParams}{Parameters}
+{\em timeslot} & time slot of the day (often/usually 1 day = 48 timeslot) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Price(\-Pi) per K\-Wh at given timeslot (i) 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a62f8d10d4f3ff89951091748a4c21972}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!param\-String\-Report@{param\-String\-Report}}
+\index{param\-String\-Report@{param\-String\-Report}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{param\-String\-Report}]{\setlength{\rightskip}{0pt plus 5cm}String uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-param\-String\-Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_a62f8d10d4f3ff89951091748a4c21972}
+
+
+Returns a string representing the state of this agent. 
+
+This method is intended to be used for debugging purposes, and the content and format of the returned string should include the states (variables/parameters) which are important for debugging purpose. The returned string may be empty but may not be {\ttfamily null}.
+
+\begin{DoxyReturn}{Returns}
+a string representation of this agent's state parameters 
+\end{DoxyReturn}
+\hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_ace87586e1ed4fb6a5f355634402d7dd5}{\index{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}!predict\-Demand@{predict\-Demand}}
+\index{predict\-Demand@{predict\-Demand}!uk::ac::dmu::iesd::cascade::agents::aggregators::SupplierCoAdvancedModel@{uk\-::ac\-::dmu\-::iesd\-::cascade\-::agents\-::aggregators\-::\-Supplier\-Co\-Advanced\-Model}}
+\subsubsection[{predict\-Demand}]{\setlength{\rightskip}{0pt plus 5cm}void uk.\-ac.\-dmu.\-iesd.\-cascade.\-agents.\-aggregators.\-Supplier\-Co\-Advanced\-Model.\-predict\-Demand (
+\begin{DoxyParamCaption}
+\item[{List$<$ {\bf Prosumer\-Agent} $>$}]{customers\-List, }
+\item[{int}]{t}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}}\label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1agents_1_1aggregators_1_1_supplier_co_advanced_model_ace87586e1ed4fb6a5f355634402d7dd5}
+
+
+This method calculates the predict demand at each given time-\/slot. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & timeslot of the day (often/usually 1 day = 48 timeslot) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+displacement factor (Kij) at given timeslots (i and j) 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/uk/ac/dmu/iesd/cascade/agents/aggregators/Supplier\-Co\-Advanced\-Model.\-java\end{DoxyCompactItemize}

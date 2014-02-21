@@ -1,0 +1,32 @@
+\hypertarget{namespaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market}{\section{Package uk.\-ac.\-dmu.\-iesd.\-cascade.\-market}
+\label{namespaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-market@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-market}}
+}
+
+
+Defines the market components of the C\-A\-S\-C\-A\-D\-E framework.  
+
+
+\subsection*{Packages}
+\begin{DoxyCompactItemize}
+\item 
+package \hyperlink{namespaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1astem}{astem}
+\begin{DoxyCompactList}\small\item\em A-\/\-S\-T\-E\-M implementation of a market within the C\-A\-S\-C\-A\-D\-E framework. \end{DoxyCompactList}\item 
+package \hyperlink{namespaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1data}{data}
+\begin{DoxyCompactList}\small\item\em Data structures used by market implementations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+interface \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1_i_b_m_trader}{I\-B\-M\-Trader}
+\begin{DoxyCompactList}\small\item\em {\itshape \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1_i_b_m_trader}{I\-B\-M\-Trader}} interface defines the methods' signature of an agent actor player in the U\-K Balancing Mechanism (B\-M) electricity market. \end{DoxyCompactList}\item 
+interface \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1_i_market}{I\-Market}
+\begin{DoxyCompactList}\small\item\em {\itshape \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1_i_market}{I\-Market}} interface defines the methods' signature of a component which represents the electricity market. \end{DoxyCompactList}\item 
+interface \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1_i_px_trader}{I\-Px\-Trader}
+\begin{DoxyCompactList}\small\item\em {\itshape \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1_i_px_trader}{I\-Px\-Trader}} interface defines the methods' signature of an actor (agent) who wants to be a player in the {\ttfamily Power Exchange} electricity market. \end{DoxyCompactList}\item 
+interface \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1_i_trader}{I\-Trader}
+\begin{DoxyCompactList}\small\item\em {\itshape \hyperlink{interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1market_1_1_i_trader}{I\-Trader}} interface defines the base methods' signature of an actor (agent) who wants to be a player in either the balancing mechanism and/or the {\ttfamily Power Exchange} electricity market. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Defines the market components of the C\-A\-S\-C\-A\-D\-E framework. The top level package defines the interfaces that any market implementation must satisfy.
+
+Sub packages define particular implementations of a market. The reference implementation for C\-A\-S\-C\-A\-D\-E is the A-\/\-S\-T\-E\-M market -\/ described by Dr. V. Pakka et al \href{https://www.dora.dmu.ac.uk/xmlui/handle/2086/7554}{\tt (Pakka et al, 2012)} 
