@@ -27,15 +27,16 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
  * @author Babak Mahdavi
  * @version $Revision: 1.4 $ $Date: 2012/01/23 $
  * 
- * Version history (for intermediate steps see Git repository history
+ * Version history (for intermediate steps see Git repository history)
  * 
- * 1.0 - Initial split of categories of prosumer from the abstract class representing all prosumers
+ * 1.0 - Initial split of prosumer implementations from the abstract class representing all prosumers
  * 1.1 - 
  * 1.2 - add in more sophisticated model incorporating displaceable and non-displaceable demand, appliance
- * 		 ownership etc.  Richard
+ * 		 ownership etc.  (Richard)
  * 1.3 - added heat pump model and temperature calculation model (Richard)
  * 1.4 - modified and added the parts that calculate the combined wet and cold profiles demand 
  *       which was previously only based on single profile (Babak)
+ * 1.5 - code cleanup and documentation (Richard)
  */
 public class HouseholdProsumer extends ProsumerAgent{
 
@@ -1040,97 +1041,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 	}
 
 
-	//@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
-	/*
-	public void init() {
-		// Note the simulation time if needed.
-		// Note - Repast can cope with fractions of a tick (a double is returned)
-		// but I am assuming here we will deal in whole ticks and alter the resolution should we need
-		
-		if (Consts.DEBUG) System.out.println("    ---iiii----- HouseholdProsumer: init() ---iii------ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-
-		time = (int) RepastEssentials.GetTickCount();
-		timeOfDay = (time % this.mainContext.ticksPerDay);
-
-		checkWeather(time);
-
-
-		//Do all the "once-per-day" things here
-		if (timeOfDay == 0)
-		{
-			//TODO: decide whether the inelastic day demand is something that needs
-			// calculating here
-			inelasticTotalDayDemand = calculateFixedDayTotalDemand(time);
-			if (hasSmartControl){
-				mySmartController.update(time);
-				currentSmartProfiles = mySmartController.getCurrentProfiles();
-				if (this.getHasColdAppliances())
-					ArrayUtils.replaceRange(this.coldApplianceProfile, (double[]) currentSmartProfiles.get("ColdApps"),time % this.coldApplianceProfile.length);
-				this.optimisedSetPointProfile = (double[]) currentSmartProfiles.get("HeatPump");
-				this.setWaterHeatProfile((double[]) currentSmartProfiles.get("WaterHeat"));
-
-			}
-
-
-			//***Richard output test for prosumer behaviour***
-
-			if (sampleOutput != null)
-			{
-				sampleOutput.appendText("timeStep " + time);
-				sampleOutput.appendText(Arrays.toString(baseDemandProfile));
-				sampleOutput.writeColHeaders(new String[]{"pumpSwitching", "wetApp","coldApp"});
-				String[][] outputBuilder = new String[4][this.this.mainContext.ticksPerDay];
-				if (this.getHasElectricalSpaceHeat()) {
-					outputBuilder[0] = ArrayUtils.convertDoubleArrayToString(spaceHeatPumpOn);
-					outputBuilder[1] = ArrayUtils.convertDoubleArrayToString(recordedHeatPumpDemand);
-				}
-				if(this.getHasWetAppliances())
-					outputBuilder[2] = ArrayUtils.convertDoubleArrayToString(wetApplianceProfile);
-				if(this.getHasColdAppliances())
-					outputBuilder[3] = ArrayUtils.convertDoubleArrayToString(coldApplianceProfile);
-				sampleOutput.appendCols(outputBuilder);
-			}
-
-		}
-		
-		if (this.getHasElectricalSpaceHeat())
-			this.setPoint = this.optimisedSetPointProfile[time % this.mainContext.ticksPerDay];
-
-		if (Consts.DEBUG)
-		{
-			System.out.println("HouseholdProsumer:: " + this.agentName + "Proceeding to everyday actions");
-		}
-
-		//Every step we do these actions
-
-		if (hasSmartControl){
-			setNetDemand(smartDemand(time));
-			if (Consts.DEBUG) System.out.println("Agent " + this.agentName + "set netdemand at time " + time + " to " + this.getNetDemand());
-
-		}
-		else if (hasSmartMeter && exercisesBehaviourChange) {
-
-			learnBehaviourChange();
-			setNetDemand(evaluateElasticBehaviour(time));
-			learnSmartAdoptionDecision(time);
-		}
-		else
-		{
-			//No adaptation case
-			setNetDemand(baseDemandProfile[time % baseDemandProfile.length] - currentGeneration());
-
-			learnSmartAdoptionDecision(time);
-		}
-
-		//After the heat input has been calculated, re-calculate the internal temperature of the house
-		recordInternalAndExternalTemp(time);
-
-		if (Consts.DEBUG) System.out.println("   ---iii----- HouseholdProsumer: init() END ----iii------ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-
-
-	} */
-
-
 	public void initializeRandomlyDailyElasticityArray(double from, double to) {
 		for (int i = 0; i < dailyElasticity.length; i++)  {
 			dailyElasticity[i] = RandomHelper.nextDoubleFromTo(from, to);
@@ -1351,14 +1261,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 	}
 	
 	/******************
+	 * 
 	 * This method defines the step behaviour of a prosumer agent
 	 * 
-	 * Input variables: none
-	 * 
 	 ******************/
-	//@ScheduledMethod(start = 0, interval = 1, priority = Consts.PROSUMER_PRIORITY_FIFTH)
-	//@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.PROSUMER_PRIORITY_FIFTH)
-
 	public void step() {
 
 		// Note the simulation time if needed.
@@ -1488,6 +1394,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * 
 	 * @param context - the context within which this agent exists
 	 * @param otherDemandProfile - a floating point array containing the misc base demand (lightening, entertainment, computers, small appliances) for this prosumer.  Can be arbitrary length.
+	 * 
 	 */
 	public HouseholdProsumer(CascadeContext context, double[] otherDemandProfile) {
 		super(context);
@@ -1498,8 +1405,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.setAgentName("Household_" + agentID);
 		this.mainContext.ticksPerDay = context.getNbOfTickPerDay();
 		
-		 this.lengthOfDemandProfile = this.mainContext.ticksPerDay*Consts.NB_OF_DAYS_LOADED_DEMAND;
-        // this.lengthOfDemandProfile = context.getLengthOfDemandProfiles();
+		 //this.lengthOfDemandProfile = this.mainContext.ticksPerDay*Consts.NB_OF_DAYS_LOADED_DEMAND;
+         this.lengthOfDemandProfile = otherDemandProfile.length;
 		
 		
 		if (otherDemandProfile.length % this.mainContext.ticksPerDay != 0) {
@@ -1546,12 +1453,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 			this.hasPV = true;
 			this.ratedPowerPV = 3;
 		}
-		
-		//Richard test - just to monitor evolution of one agent
-		/*if (this.agentID == 1)
-		{
-			sampleOutput = new CSVWriter("richardTestOutput.csv", false);
-		} */
 		
 	}
 

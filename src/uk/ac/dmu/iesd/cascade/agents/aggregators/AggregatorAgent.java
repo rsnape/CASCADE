@@ -39,10 +39,10 @@ import uk.ac.dmu.iesd.cascade.util.ObservableComponent;
  *          Version history (for intermediate steps see Git repository history)
  * 
  * 			1.0 - initial version including boiler plate stuff and netDemand etc.(JRS)
- *          1.1 - Implements ICognitiveAgent (Babak) 1.2 - Made the class
- *          abstract; modified the constructor, added/modified/removed
- *          fields/methods made some methods abstract (Babak) 1.3 - Modified the
- *          base class for ASTEM market integration, notably by adding category
+ *          1.1 - Implements ICognitiveAgent (Babak) 
+ *          1.2 - Made the class abstract; modified the constructor, added/modified/removed
+ *          fields/methods made some methods abstract (Babak) 
+ *          1.3 - Modified the base class for ASTEM market integration, notably by adding category
  *          and type (Babak)
  */
 public abstract class AggregatorAgent implements ICognitiveAgent, IObservable

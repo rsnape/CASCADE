@@ -952,8 +952,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	} 
 
 	/**
-	 * This method defines how this object behaves (what it does)
-	 * at at a given scheduled time throughout the simulation. 
+	 * The scheduled method to run at the main business priority of the main step
+	 * 
 	 */
 	public void bizStep() {
 
