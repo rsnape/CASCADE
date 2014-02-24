@@ -1,11 +1,16 @@
 \hypertarget{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_training_signal_factory}{\section{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-profilegenerators.\-Training\-Signal\-Factory Class Reference}
 \label{classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_training_signal_factory}\index{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-profilegenerators.\-Training\-Signal\-Factory@{uk.\-ac.\-dmu.\-iesd.\-cascade.\-util.\-profilegenerators.\-Training\-Signal\-Factory}}
 }
+
+
+Factory to create training signals of a requested shape.  
+
+
 \subsection*{Classes}
 \begin{DoxyCompactItemize}
 \item 
 enum {\bfseries T\-R\-A\-I\-N\-I\-N\-G\-\_\-\-S\-\_\-\-S\-H\-A\-P\-E}
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Training signal shapes available, currently \-: \{I\-M\-P\-U\-L\-S\-E, T\-R\-I\-A\-N\-G\-L\-E, S\-Q\-U\-A\-R\-E, S\-I\-N\-E, P\-B\-O\-R\-I\-G\-I\-N\-A\-L, C\-O\-S\-I\-N\-E\}. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -27,6 +32,12 @@ enum {\bfseries T\-R\-A\-I\-N\-I\-N\-G\-\_\-\-S\-\_\-\-S\-H\-A\-P\-E}
 
 
 \subsection{Detailed Description}
+Factory to create training signals of a requested shape. 
+
+The shape is offset by one tick each day
+
+Supported shapes are enumerated in \hyperlink{}{Training\-Signal\-Factory.\-T\-R\-A\-I\-N\-I\-N\-G\-\_\-\-S\-\_\-\-S\-H\-A\-P\-E}
+
 \begin{DoxyAuthor}{Author}
 jsnape 
 \end{DoxyAuthor}
