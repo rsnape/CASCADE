@@ -13,7 +13,7 @@ import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.TRAINING_S_SHAPE;
 
 /**
- * Very basic bespoke test class for {@link TrainingSignalFactory}
+ * Very basic bespoke test class for {@link uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory TrainingSignalFactory}
  * 
  * @author jsnape
  *
