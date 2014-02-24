@@ -56,6 +56,14 @@ import uk.ac.dmu.iesd.cascade.util.profilegenerators.EVProfileGenerator;
 import cern.jet.random.Empirical;
 
 /**
+ * Implementation of the Repast ContextBuilder object designed to take input from a CACADE framework
+ * context file and build the context according to that specification.
+ * 
+ * Currently v0.1 - lots of strong assumptions about users' knowledge of the internals of agent implementations
+ * 
+ * TODO: Implement class level annotation for configurable variables and distributions
+ * TODO: Ensure generic across all implementations of {@link ProsumerAgent} and {@link AggregatorAgent}
+ * 
  * @author jsnape
  * 
  */

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package uk.ac.dmu.iesd.cascade.test;
 
 import java.util.ArrayList;
@@ -16,6 +13,8 @@ import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.TRAINING_S_SHAPE;
 
 /**
+ * Very basic bespoke test class for {@link TrainingSignalFactory}
+ * 
  * @author jsnape
  *
  * TODO: Should really integrate JUnit tests into all our classes to ensure they don't regress

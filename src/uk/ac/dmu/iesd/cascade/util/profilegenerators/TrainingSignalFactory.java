@@ -6,6 +6,11 @@ package uk.ac.dmu.iesd.cascade.util.profilegenerators;
 import java.util.Arrays;
 
 /**
+ * Factory to create training signals of a requested shape.  The shape is offset by one tick each day
+ * 
+ * Supported shapes are enumerated in {@link TrainingSignalFactory.TRAINING_S_SHAPE}
+ * 
+ * 
  * @author jsnape
  *
  */
@@ -14,6 +19,10 @@ public class TrainingSignalFactory {
 	private double[] PBsigFromMatlab = new double[]{0,0.166666667,0.25,0.333333333,0.416666667,0.5,0.583333333,0.666666667,0.75,0.833333333,0.916666667,1,1,0.916666667,0.833333333,0.75,0.666666667,0.583333333,0.5,0.416666667,0.333333333,0.25,0.166666667,0,0,-0.166666667,-0.25,-0.333333333,-0.416666667,-0.5,-0.583333333,-0.666666667,-0.75,-0.833333333,-0.916666667,-1,-1,-0.916666667,-0.833333333,-0.75,-0.666666667,-0.583333333,-0.5,-0.416666667,-0.333333333,-0.25,-0.166666667,0};
 
 	private int signalLength;
+	
+	/**
+	 * Training signal shapes available, currently :  {IMPULSE, TRIANGLE, SQUARE, SINE, PBORIGINAL, COSINE}
+	 */
 	public static enum TRAINING_S_SHAPE {IMPULSE, TRIANGLE, SQUARE, SINE, PBORIGINAL, COSINE};
 		
 	public void setSignalLength(int n)
@@ -28,7 +37,7 @@ public class TrainingSignalFactory {
 	
 	public double[] generateSignal(TRAINING_S_SHAPE sigType)
 	{
-		return generateSignal(sigType, this.defaultLength);
+		return generateSignal(sigType, this.signalLength);
 	}
 	
 	public double[] generateSignal(TRAINING_S_SHAPE sigType, int n)
