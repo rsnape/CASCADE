@@ -10,6 +10,9 @@ Repast.settings
 *.png
 !icons/*.png
 
+#check in everything in the docs file, irrespective of other exclusions
+!docs/**/*
+
 *.tif
 *.txt
 *.tab
