@@ -1,4 +1,4 @@
 <map id="uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator" name="uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator">
 <area shape="rect" id="node2" href="$classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html" title="Totally basic abstract implementation &#45; provided only to extend. " alt="" coords="5,97,293,138"/>
-<area shape="rect" id="node3" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html" title="Provide a standardised interface for providing initial demand profiles to the model. " alt="" coords="5,6,293,47"/>
+<area shape="rect" id="node3" href="$interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html" title="A standardised interface for providing initial demand profiles to the model. " alt="" coords="5,6,293,47"/>
 </map>

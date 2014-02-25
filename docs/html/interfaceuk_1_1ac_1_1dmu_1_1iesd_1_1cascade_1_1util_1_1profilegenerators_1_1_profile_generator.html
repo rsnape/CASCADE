@@ -104,7 +104,7 @@ $(document).ready(function(){initNavTree('interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1ca
 </div><!--header-->
 <div class="contents">
 
-<p>Provide a standardised interface for providing initial demand profiles to the model.  
+<p>A standardised interface for providing initial demand profiles to the model.  
  <a href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator:</div>
@@ -116,74 +116,382 @@ Inheritance diagram for uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGen
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a03ce4a4efee11e9fd5a7f1f408f2083b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a03ce4a4efee11e9fd5a7f1f408f2083b"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesTotalProfile</b> ()</td></tr>
+<tr class="memitem:a03ce4a4efee11e9fd5a7f1f408f2083b"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a03ce4a4efee11e9fd5a7f1f408f2083b">generatesTotalProfile</a> ()</td></tr>
 <tr class="separator:a03ce4a4efee11e9fd5a7f1f408f2083b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7872d2ee0f8190783e7a17ecd699dd70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7872d2ee0f8190783e7a17ecd699dd70"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesWetProfile</b> ()</td></tr>
+<tr class="memitem:a7872d2ee0f8190783e7a17ecd699dd70"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a7872d2ee0f8190783e7a17ecd699dd70">generatesWetProfile</a> ()</td></tr>
 <tr class="separator:a7872d2ee0f8190783e7a17ecd699dd70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adad9f0b49f993ffea0ad9fbdebf2f806"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adad9f0b49f993ffea0ad9fbdebf2f806"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesColdProfile</b> ()</td></tr>
+<tr class="memitem:adad9f0b49f993ffea0ad9fbdebf2f806"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#adad9f0b49f993ffea0ad9fbdebf2f806">generatesColdProfile</a> ()</td></tr>
 <tr class="separator:adad9f0b49f993ffea0ad9fbdebf2f806"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab153edf81baf97f0fdffab0ab87d0731"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab153edf81baf97f0fdffab0ab87d0731"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesBrownProfile</b> ()</td></tr>
+<tr class="memitem:ab153edf81baf97f0fdffab0ab87d0731"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#ab153edf81baf97f0fdffab0ab87d0731">generatesBrownProfile</a> ()</td></tr>
 <tr class="separator:ab153edf81baf97f0fdffab0ab87d0731"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae727d4e45bcabd2df9b7116bf72af462"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae727d4e45bcabd2df9b7116bf72af462"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesLightingProfile</b> ()</td></tr>
+<tr class="memitem:ae727d4e45bcabd2df9b7116bf72af462"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#ae727d4e45bcabd2df9b7116bf72af462">generatesLightingProfile</a> ()</td></tr>
 <tr class="separator:ae727d4e45bcabd2df9b7116bf72af462"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2eb6b8c2fff79b830a722eb838af5086"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2eb6b8c2fff79b830a722eb838af5086"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesCookingProfile</b> ()</td></tr>
+<tr class="memitem:a2eb6b8c2fff79b830a722eb838af5086"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a2eb6b8c2fff79b830a722eb838af5086">generatesCookingProfile</a> ()</td></tr>
 <tr class="separator:a2eb6b8c2fff79b830a722eb838af5086"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac29dfa4de542a970b9e9e020689cd835"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac29dfa4de542a970b9e9e020689cd835"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesSpaceHeatProfile</b> ()</td></tr>
+<tr class="memitem:ac29dfa4de542a970b9e9e020689cd835"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#ac29dfa4de542a970b9e9e020689cd835">generatesSpaceHeatProfile</a> ()</td></tr>
 <tr class="separator:ac29dfa4de542a970b9e9e020689cd835"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab105809ea32ff56b1105246b0d4f2578"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab105809ea32ff56b1105246b0d4f2578"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesWaterHeatProfile</b> ()</td></tr>
+<tr class="memitem:ab105809ea32ff56b1105246b0d4f2578"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#ab105809ea32ff56b1105246b0d4f2578">generatesWaterHeatProfile</a> ()</td></tr>
 <tr class="separator:ab105809ea32ff56b1105246b0d4f2578"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabea9d9fd10b82dec60351373d08282b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aabea9d9fd10b82dec60351373d08282b"></a>
-boolean&#160;</td><td class="memItemRight" valign="bottom"><b>generatesMiscProfile</b> ()</td></tr>
+<tr class="memitem:aabea9d9fd10b82dec60351373d08282b"><td class="memItemLeft" align="right" valign="top">boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#aabea9d9fd10b82dec60351373d08282b">generatesMiscProfile</a> ()</td></tr>
 <tr class="separator:aabea9d9fd10b82dec60351373d08282b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06a3d4c98934dbc9e13e3918e5c1b416"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a06a3d4c98934dbc9e13e3918e5c1b416"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getTotalProfile</b> ()</td></tr>
+<tr class="memitem:a06a3d4c98934dbc9e13e3918e5c1b416"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a06a3d4c98934dbc9e13e3918e5c1b416">getTotalProfile</a> ()</td></tr>
 <tr class="separator:a06a3d4c98934dbc9e13e3918e5c1b416"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a682b86a89f79bf5500b8c7b4f1eeddba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a682b86a89f79bf5500b8c7b4f1eeddba"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getWetProfile</b> ()</td></tr>
+<tr class="memitem:a682b86a89f79bf5500b8c7b4f1eeddba"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a682b86a89f79bf5500b8c7b4f1eeddba">getWetProfile</a> ()</td></tr>
 <tr class="separator:a682b86a89f79bf5500b8c7b4f1eeddba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30db698c07287d431d42818e24f65b67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30db698c07287d431d42818e24f65b67"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getColdProfile</b> ()</td></tr>
+<tr class="memitem:a30db698c07287d431d42818e24f65b67"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a30db698c07287d431d42818e24f65b67">getColdProfile</a> ()</td></tr>
 <tr class="separator:a30db698c07287d431d42818e24f65b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcbf7d1c99ee11c5d640933b87472b50"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abcbf7d1c99ee11c5d640933b87472b50"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getBrownProfile</b> ()</td></tr>
+<tr class="memitem:abcbf7d1c99ee11c5d640933b87472b50"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#abcbf7d1c99ee11c5d640933b87472b50">getBrownProfile</a> ()</td></tr>
 <tr class="separator:abcbf7d1c99ee11c5d640933b87472b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d5ddc5c30e0d36e9a02ea99822d31a2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d5ddc5c30e0d36e9a02ea99822d31a2"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getLightingProfile</b> ()</td></tr>
+<tr class="memitem:a5d5ddc5c30e0d36e9a02ea99822d31a2"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a5d5ddc5c30e0d36e9a02ea99822d31a2">getLightingProfile</a> ()</td></tr>
 <tr class="separator:a5d5ddc5c30e0d36e9a02ea99822d31a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1dcc58776daaf62cc7274e429011a057"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1dcc58776daaf62cc7274e429011a057"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getCookingProfile</b> ()</td></tr>
+<tr class="memitem:a1dcc58776daaf62cc7274e429011a057"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a1dcc58776daaf62cc7274e429011a057">getCookingProfile</a> ()</td></tr>
 <tr class="separator:a1dcc58776daaf62cc7274e429011a057"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6daf282d4089cbb713ac76516ef42374"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6daf282d4089cbb713ac76516ef42374"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getSpaceHeatProfile</b> ()</td></tr>
+<tr class="memitem:a6daf282d4089cbb713ac76516ef42374"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a6daf282d4089cbb713ac76516ef42374">getSpaceHeatProfile</a> ()</td></tr>
 <tr class="separator:a6daf282d4089cbb713ac76516ef42374"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a704e83b65e4c7d67d501de2a1fda1047"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a704e83b65e4c7d67d501de2a1fda1047"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getWaterHeatProfile</b> ()</td></tr>
+<tr class="memitem:a704e83b65e4c7d67d501de2a1fda1047"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#a704e83b65e4c7d67d501de2a1fda1047">getWaterHeatProfile</a> ()</td></tr>
 <tr class="separator:a704e83b65e4c7d67d501de2a1fda1047"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac767903804d0de680508c761192ebcbf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac767903804d0de680508c761192ebcbf"></a>
-double[]&#160;</td><td class="memItemRight" valign="bottom"><b>getMiscProfile</b> ()</td></tr>
+<tr class="memitem:ac767903804d0de680508c761192ebcbf"><td class="memItemLeft" align="right" valign="top">double[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html#ac767903804d0de680508c761192ebcbf">getMiscProfile</a> ()</td></tr>
 <tr class="separator:ac767903804d0de680508c761192ebcbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Provide a standardised interface for providing initial demand profiles to the model. </p>
+<div class="textblock"><p>A standardised interface for providing initial demand profiles to the model. </p>
 <dl class="section author"><dt>Author</dt><dd>jsnape </dd></dl>
-</div><hr/>The documentation for this interface was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ab153edf81baf97f0fdffab0ab87d0731"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesBrownProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile over "brown" appliances (e.g. </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#abe255377e0c77973d194494771e2b33d">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a1adfb4892c460a8b690d8a37e4b84cd7">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="adad9f0b49f993ffea0ad9fbdebf2f806"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesColdProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile over cold appliances (e.g. fridge, freezer etc) </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a535f8fbe41af34abd67348c8088ba580">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a11892ef1ce98f14c757d88e687ee1d10">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2eb6b8c2fff79b830a722eb838af5086"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesCookingProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile of electricity used for cooking </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a729d216207e782887cb6083008184624">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a922cb8b8e8323b9e6ab7d2aff55311d8">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae727d4e45bcabd2df9b7116bf72af462"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesLightingProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile of electricity used for lighting </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a7259e2c7433ac6b4778a19f60c5e8cf2">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a3c50b80a57f6e51240b3528fd8c6c3ef">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aabea9d9fd10b82dec60351373d08282b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesMiscProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile for electricity use not covered by any other category </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a9c6940d3660118c015b2f94a8251e97b">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a1aa4f11583d5eb019aff082e00860e1f">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac29dfa4de542a970b9e9e020689cd835"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesSpaceHeatProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile of electricity used for heating space </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a356bad39bad89863790f4682e980ecd2">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a2e3cef31a1972a8f4356801ca68e2fe0">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a03ce4a4efee11e9fd5a7f1f408f2083b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesTotalProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile over all appliances </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#ac9d0e96f0a359079d72212b44213278a">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#af4e637ea0349f2c9e6148980ee608dc3">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab105809ea32ff56b1105246b0d4f2578"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesWaterHeatProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile of electricity used for heating water </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#aae1be9f2c99b3dc6c78b3b28bc0a6be8">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a9cd5ead3ef58dfe13dd94eab04094956">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7872d2ee0f8190783e7a17ecd699dd70"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boolean uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.generatesWetProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if this generator can produce a profile for wet appliances (e.g. washing machine, dishwasher, tumble dryer domestically) </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a0fcf520b5342a8f67a7e30df30ef86ef">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a321a9812f901313cf1404af208558c0b">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abcbf7d1c99ee11c5d640933b87472b50"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getBrownProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile over "brown" appliances (e.g. </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a7304edd29f6c9677d1e89350c726f69f">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a10d969545d1b03d199b102467086ccd7">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a30db698c07287d431d42818e24f65b67"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getColdProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile over cold appliances (e.g. fridge, freezer etc) </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a73d3f4c33e1c379281011f57bb5e7166">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a7f2c50d9ed579937c169ad693f1b30f7">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1dcc58776daaf62cc7274e429011a057"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getCookingProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile of electricity used for cooking </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a0901a14f0e636ae35c9e6ed72cdb9c57">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a286998a03911b2d6ad9edc039ad849f6">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5d5ddc5c30e0d36e9a02ea99822d31a2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getLightingProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile of electricity used for lighting </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a1753ee50469d911de5b50e5452e360e5">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a5f42e1b861a5c82dad29e0e8a8c06937">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac767903804d0de680508c761192ebcbf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getMiscProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile for electricity use not covered by any other category </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#a9995b6ccb854ea28cd24bc7b98402a01">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a7d13463bad93c9ea34f9242fabd40328">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6daf282d4089cbb713ac76516ef42374"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getSpaceHeatProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile of electricity used for heating space </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#ae2d6dc45eb54e1069c7d851f5237cee3">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a43f81be418bed39231da62960c5d69d5">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a06a3d4c98934dbc9e13e3918e5c1b416"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getTotalProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile over all appliances </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#aa7116d50484ababf5453516210b5d937">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a4bf6684963d57449566f0635fa186138">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a704e83b65e4c7d67d501de2a1fda1047"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getWaterHeatProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile of electricity used for heating water </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#abdb697cbf2cdf0940689a7f8eb6cebda">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a393a03954d85d67497513b1ff9766c1a">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a682b86a89f79bf5500b8c7b4f1eeddba"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double [] uk.ac.dmu.iesd.cascade.util.profilegenerators.ProfileGenerator.getWetProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>profile for wet appliances (e.g. washing machine, dishwasher, tumble dryer domestically) </dd></dl>
+
+<p>Implemented in <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_basic_profile_generator.html#acdaea8931afd24a7cc895237366d830e">uk.ac.dmu.iesd.cascade.util.profilegenerators.BasicProfileGenerator</a>, and <a class="el" href="classuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_melody_stokes_generator.html#a563726c89c92ac282563c97925819e78">uk.ac.dmu.iesd.cascade.util.profilegenerators.MelodyStokesGenerator</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this interface was generated from the following file:<ul>
 <li>src/uk/ac/dmu/iesd/cascade/util/profilegenerators/ProfileGenerator.java</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
+<!-- HTML footer for doxygen 1.8.6-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>uk</b></li><li class="navelem"><b>ac</b></li><li class="navelem"><b>dmu</b></li><li class="navelem"><b>iesd</b></li><li class="navelem"><b>cascade</b></li><li class="navelem"><a class="el" href="namespaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util.html">util</a></li><li class="navelem"><a class="el" href="namespaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators.html">profilegenerators</a></li><li class="navelem"><a class="el" href="interfaceuk_1_1ac_1_1dmu_1_1iesd_1_1cascade_1_1util_1_1profilegenerators_1_1_profile_generator.html">ProfileGenerator</a></li>
-    <li class="footer">Generated on Fri Feb 21 2014 11:22:34 for CASCADE Framework by
+    <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

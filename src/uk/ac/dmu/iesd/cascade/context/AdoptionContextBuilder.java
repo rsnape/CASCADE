@@ -1,5 +1,6 @@
 package uk.ac.dmu.iesd.cascade.context;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
+import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
@@ -88,7 +90,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		 */
 		CSVReader defraCategories = null;
 		CSVReader defraProfiles = null;
-		String dataDirectory = RepastEssentials.GetParameter("RootDir").toString() + "/dataFiles";
+		String dataDirectory = "dataFiles"; // TODO: commonise this with other CASCADE builders - read from params
 		String categoryFile = dataDirectory + "/DEFRA_pro_env_categories.csv";
 		String profileFile = dataDirectory + "/200profiles.csv";
 		String weatherFileName = "weatherProfiles_1Ywind81.csv";
@@ -835,7 +837,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	
 		//pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 - Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
 		//Alter initial smartControl here
-		hhProsAgent.hasSmartControl = false;
+		hhProsAgent.hasSmartControl = true;
 		
 		//TODO: we need to set up wattbox after appliances added.  This is all a bit
 		//non-object oriented.  Could do with a proper design methodology here.

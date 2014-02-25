@@ -16,6 +16,7 @@ import java.util.WeakHashMap;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.spi.LoggingEvent;
@@ -240,15 +241,17 @@ public class AdoptionContext extends CascadeContext{
 	
 	public AdoptionContext(Context context,String date) {
 		super(context);
-		if (logger.exists("AdoptionLogger")!=null)
+		if (LogManager.exists("AdoptionLogger")!=null)
 		{
 			logger = Logger.getLogger("AdoptionLogger");
+			logger.info("Found existing logger:");
+			logger.info(logger);
 		}
 		else
 		{
 			logger = Logger.getLogger("AdoptionLogger");
 	
-		logger.setLevel(Level.INFO); //Set this to TRACE for full log files
+		logger.setLevel(Level.DEBUG); //Set this to TRACE for full log files
 		ConsoleAppender console = new ConsoleAppender(new AdoptionLogLayout());
 		console.setName("ConsoleOutput");
 		console.setThreshold(Level.DEBUG);
@@ -257,17 +260,19 @@ public class AdoptionContext extends CascadeContext{
 		FileAppender traceFile;
 		try {
 			String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
-			traceFile = new FileAppender(new AdoptionLogLayout(),RepastEssentials.GetParameter("RootDir").toString() + "/output/myTrace"+parsedDate+".log");
+			traceFile = new FileAppender(new AdoptionLogLayout(),"output/myTrace"+parsedDate+".log");
 			traceFile.setName("traceFileOutput");
 			traceFile.setThreshold(Level.TRACE);
 			logger.addAppender(traceFile);
+			logger.info("Created logger:");
+			logger.info(logger);
 		} catch (IOException e1) {
 			this.logger.warn("Creating file appender for logger failed");
 			e1.printStackTrace();
 		}
 		}
 
-		logger.debug("Adoption Context instantiated and logger configured");
+		logger.info("Adoption Context instantiated and logger configured");
 
 
 		simStartDate = parseUKDate(date);
