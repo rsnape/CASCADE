@@ -52,13 +52,14 @@ public class IterableUtils {
 	/**
 	 * This method returns an arrayList of a given iterable 
 	 * @author Babak Mahdavi
+	 * @param <T>
 	 * @param anIterable
 	 * @return an ArrayList
 	 */
-	public static ArrayList Iterable2ArrayList(Iterable anIterable) {
+	public static <T> ArrayList<T> Iterable2ArrayList(Iterable<T> anIterable) {
 		
-		ArrayList iterableItems = new ArrayList();
-		Iterator iterable = anIterable.iterator();
+		ArrayList<T> iterableItems = new ArrayList<T>();
+		Iterator<T> iterable = anIterable.iterator();
 		
 		while(iterable.hasNext())
 			iterableItems.add(iterable.next());
