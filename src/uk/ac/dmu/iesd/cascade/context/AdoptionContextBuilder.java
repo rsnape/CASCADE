@@ -3,10 +3,13 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
+
+import org.geotools.data.FileDataStoreFinder;
 
 import repast.simphony.context.Context;
 import repast.simphony.context.space.graph.NetworkFactory;
@@ -21,12 +24,14 @@ import repast.simphony.query.PropertyEquals;
 import repast.simphony.query.Query;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.DefaultGeography;
+import repast.simphony.space.gis.ShapefileLoader;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.util.collections.IndexedIterable;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
@@ -35,6 +40,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.InitialProfileGenUtils;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 import cern.jet.random.Empirical;
+import cern.jet.random.Normal;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -47,8 +53,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	private Parameters params; // parameters for the model run environment
 	private AdoptionContext myContext;
 	WeakHashMap<Integer, double[]> map_nbOfOccToOtherDemand;
-	private double[] monthlyMainsWaterTemp;
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Context build(Context context)
@@ -93,8 +98,6 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		String dataDirectory = "dataFiles"; // TODO: commonise this with other CASCADE builders - read from params
 		String categoryFile = dataDirectory + "/DEFRA_pro_env_categories.csv";
 		String profileFile = dataDirectory + "/200profiles.csv";
-		String weatherFileName = "weatherProfiles_1Ywind81.csv";
-
 		try
 		{
 			defraCategories = new CSVReader(categoryFile);
@@ -125,50 +128,42 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		ArrayList<Household> households;
 
-		households = new ArrayList<Household>();
-		int numHouseholds = 1000;
-		for (int i = 0; i < numHouseholds; i++)
+		boolean fromShapefile = true;
+		
+		if (!fromShapefile)
 		{
-			Household thisHousehold = createHouseholdProsumer(this.map_nbOfOccToOtherDemand, Consts.RANDOM, true, false);//(RandomHelper.nextDouble() < 0.7));
-			households.add(thisHousehold);
-			if (!myContext.add(thisHousehold))
-			{
-				System.err.println("Adding household to context failed");
-			} else
-			{
-				thisHousehold.setContext(myContext);
-			}
-
-			double lon = 52.58 + 0.004 * RandomHelper.nextDouble();
-			double lat = -1.05 - 0.005 * RandomHelper.nextDouble();
-			Coordinate coord = new Coordinate(lat, lon);
-			GeometryFactory fac = new GeometryFactory();
-			Point geom = fac.createPoint(coord);
-			leicesterGeography.move(thisHousehold, geom);
-			thisHousehold.setGeography(leicesterGeography);
-
-			thisHousehold.setPredictedCostSignal(new double[48]);
+			populateSyntheticGeography(4000, leicesterGeography);
 		}
-
-		/*
-		 * File file = new
-		 * File(RepastEssentials.GetParameter("RootDir").toString() +
-		 * "/dataFiles/probDomesticLE2.shp"); ShapefileLoader loader = null; try
-		 * { loader = new ShapefileLoader(Household.class, file.toURL(),
-		 * leicesterGeography, myContext);
-		 * System.out.println("have shapefile initialised with " +
-		 * file.toURL().toString()); loader.load(); } catch
-		 * (MalformedURLException e) { e.printStackTrace(); }
-		 */
+		else
+		{
+			populateFromShapefile(dataDirectory + "/probDomesticLE2.shp", leicesterGeography);
+		}
 
 		households = IterableUtils.Iterable2ArrayList(myContext.getObjects(Household.class));
 		double observedDistanceMean = (Double) RepastEssentials.GetParameter("ObservedRadiusMean");
 		double observedDistanceStd = (Double) RepastEssentials.GetParameter("ObservedRadiusStd");
-		RandomHelper.createNormal(observedDistanceMean, observedDistanceStd);
+		Normal ObservationDist = RandomHelper.createNormal(observedDistanceMean, observedDistanceStd);
 
 		int tmp = 0;
 		for (Household thisHousehold : households)
 		{
+			if (fromShapefile)
+			{
+				//Shapefile loader can't assign the context or call constructor that
+				// does so (or indeed sets up the basic profiles).
+				thisHousehold.setContext(this.myContext);
+				thisHousehold.setStartDateAndFirstThought();
+				
+				int numOfOccupant = myContext.occupancyGenerator.nextInt() + 1;
+				if (numOfOccupant > map_nbOfOccToOtherDemand.size())
+				{
+					numOfOccupant = map_nbOfOccToOtherDemand.size();
+				}
+				thisHousehold.initialiseHouseholdProsumer(this.myContext, map_nbOfOccToOtherDemand.get(numOfOccupant));
+				setOptions(thisHousehold, numOfOccupant, false);
+
+			}
+			thisHousehold.setPredictedCostSignal(new double[48]);
 			thisHousehold.setGeography(leicesterGeography);
 			// Need to think about defining the column names as consts, or
 			// otherwise working out
@@ -196,15 +191,17 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 			thisHousehold.HEMSPropensity = Double.parseDouble(defraCategories.getColumn("HEMS_propensity")[custSegment - 1]);
 			thisHousehold.EVPropensity = Double.parseDouble(defraCategories.getColumn("EV_propensity")[custSegment - 1]);
 			thisHousehold.habit = Double.parseDouble(defraCategories.getColumn("Habit_factor")[custSegment - 1]);
-			thisHousehold.hasPV = (RandomHelper.nextDouble() / 125 < thisHousehold.microgenPropensity);
+			if (RandomHelper.nextDouble() < thisHousehold.microgenPropensity)
+			{
+				thisHousehold.setPV();
+			}
 			//thisHousehold.hasPV=false; //pre-initialise No PV
-			if (thisHousehold.hasPV) thisHousehold.ratedPowerPV=3;
 
-			thisHousehold.setAdoptionThreshold(0.5);
+			thisHousehold.setAdoptionThreshold(0.2);
 			// thisHousehold.observedRadius = (RandomHelper.nextDouble() * 15);
-			thisHousehold.observedRadius = RandomHelper.getNormal().nextDouble();
-			myContext.logger.trace(thisHousehold.getAgentName() + " observes " + thisHousehold.observedRadius);
-			myContext.logger.trace(thisHousehold.getAgentName() + " has " + thisHousehold.microgenPropensity + " and pre-assigned PV = " + thisHousehold.getHasPV());
+			thisHousehold.observedRadius = ObservationDist.nextDouble();
+			myContext.logger.debug(thisHousehold.getAgentName() + " observes " + thisHousehold.observedRadius);
+			myContext.logger.debug(thisHousehold.getAgentName() + " has " + thisHousehold.microgenPropensity + " and pre-assigned PV = " + thisHousehold.getHasPV());
 			tmp += thisHousehold.hasPV ? 1 : 0;
 		}
 
@@ -226,6 +223,52 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		populateContext();
 		return myContext;
+	}
+	
+	@SuppressWarnings("deprecation")
+	void populateFromShapefile(String filename, DefaultGeography<Household> geog)
+	{
+		File file = new  File(filename);
+		ShapefileLoader<Household> loader = null; 
+		try
+		{ 
+			loader = new ShapefileLoader<Household>(Household.class, file.toURL(), geog, myContext);
+			FileDataStoreFinder.getDataStore(file).dispose();
+			System.out.println("have shapefile initialised with " + file.toURL().toString() + ": starting load"); 
+			loader.load(); 
+			System.out.println("Agents loaded");
+		}
+		catch ( IOException e) 
+		{ 
+			e.printStackTrace(); 
+		}
+		
+	}
+	
+	void populateSyntheticGeography(int numHouseholds, DefaultGeography<Household>  geog)
+	{
+		//ArrayList<Household> households = new ArrayList<Household>();
+		
+		for (int i = 0; i < numHouseholds; i++)
+		{
+			Household thisHousehold = createHouseholdProsumer(this.map_nbOfOccToOtherDemand, Consts.RANDOM, true, false);//(RandomHelper.nextDouble() < 0.7));
+			//households.add(thisHousehold);
+			if (!myContext.add(thisHousehold))
+			{
+				System.err.println("Adding household to context failed");
+			} else
+			{
+				thisHousehold.setContext(myContext);
+			}
+
+			double lon = 52.58 + 0.004 * RandomHelper.nextDouble();
+			double lat = -1.05 - 0.005 * RandomHelper.nextDouble();
+			Coordinate coord = new Coordinate(lat, lon);
+			GeometryFactory fac = new GeometryFactory();
+			Point geom = fac.createPoint(coord);
+			geog.move(thisHousehold, geom);
+			thisHousehold.setGeography(geog);
+		}
 	}
 
 	/*
@@ -264,12 +307,8 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		File dataDirectory = new File(dataFileFolderPath);
 		File weatherFile = new File(dataDirectory, weatherFileName);
 		CSVReader weatherReader = null;
-		File systemDemandFile = new File(dataDirectory, systemDemandFileName);
-		CSVReader systemBasePriceReader = null;
-
+		new File(dataDirectory, systemDemandFileName);
 		File householdOtherDemandFile = new File(dataDirectory, householdOtherDemandFilename);
-
-		int lengthOfProfileArrays = ticksPerDay * Consts.NB_OF_DAYS_LOADED_DEMAND;
 
 		try
 		{
@@ -350,7 +389,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 			RunEnvironment.getInstance().endRun();
 		}
 
-		this.monthlyMainsWaterTemp = Arrays.copyOf(Consts.MONTHLY_MAINS_WATER_TEMP, Consts.MONTHLY_MAINS_WATER_TEMP.length);
+		Arrays.copyOf(Consts.MONTHLY_MAINS_WATER_TEMP, Consts.MONTHLY_MAINS_WATER_TEMP.length);
 	}
 
 	/**
@@ -619,7 +658,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		 * AGGREGATORS, PROSUMERS, ETC..
 		 */
 
-		;
+		myContext.logger.info("initialising households");
 		// createHouseholdProsumersAndAddThemToContext(2); //pass in parameter
 		// nb of occupants, or random
 		// createHouseholdProsumersAndAddThemToContext(Consts.RANDOM);
@@ -630,18 +669,39 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		// @TODO: these 4 methods below will eventually be included in the first
 		// method (createHousholdPro...)
 		if (Consts.HHPRO_HAS_WET_APPL)
+		{
 			initializeHHProsumersWetAppliancesPar4All();
+		}
+		
+		myContext.logger.info("Wet appliances complete");
+
 
 		if (Consts.HHPRO_HAS_COLD_APPL)
+		{
 			initializeHHProsumersColdAppliancesPar4All();
+		}
+		
+		myContext.logger.info("Cold appliances complete");
+
 
 		if (Consts.HHPRO_HAS_ELEC_WATER_HEAT)
+		{
 			initializeWithoutGasHHProsumersElecWaterHeat();
+		}
+		myContext.logger.info("Electrical Water Heating complete");
+
 
 		if (Consts.HHPRO_HAS_ELEC_SPACE_HEAT)
+		{
 			initializeWithoutGasHHProsumersElecSpaceHeat();
+		}
+		
+		myContext.logger.info("Electrical Space Heating complete");
 
-		buildSocialNetwork();
+
+		//buildSocialNetwork();
+
+		myContext.logger.info("Adding supplier company");
 
 		SupplierCoAdvancedModel firstRecoAggregator = new SupplierCoAdvancedModel(myContext);
 		myContext.add(firstRecoAggregator);
@@ -656,11 +716,15 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		// aggregatorFactory.createSingleNonDomesticAggregator(myContext.systemPriceSignalDataArray);
 		// myContext.add(singleNonDomestic);
 
+		myContext.logger.info("Building supplier company network");
 		buildOtherNetworks(firstRecoAggregator);
+		
+		myContext.logger.info("All agents added to supplier co network");
 
 	}
 
-	/**
+	/**climatepre
+	 * 
 	 * This method will build all the networks TODO: This method will need to be
 	 * refined later At this moment, there is only one aggregator and links are
 	 * simply created between this aggregator and all the prosumers in the
@@ -674,6 +738,8 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		// Create the household social network before other agent types are
 		// added to the context.
+		this.myContext.logger.debug("find network factory");
+
 		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);
 
 		// Create null networks for other than social at this point.
@@ -681,28 +747,32 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		// Economic network should be hierarchical aggregator to prosumer
 		// TODO: Decide what economic network between aggregators looks like?
 		// TODO: i.e. what is market design for aggregators?
+		this.myContext.logger.debug("create economic net");
+
 		Network economicNet = networkFactory.createNetwork("economicNetwork", myContext, directed);
+		
+	//	networkFactory.createNetwork("electricalNetwork", myContext, directed);
+		// TODO: How does info network differ from economic network?
+	//	Network infoNet = networkFactory.createNetwork("infoNetwork", myContext, directed);
 
 		// TODO: replace this with something better. Next iteration of code
 		// should probably take network design from a file
-		for (ProsumerAgent prAgent : (Iterable<ProsumerAgent>) (myContext.getObjects(ProsumerAgent.class)))
+		this.myContext.logger.debug("getting prosumer list");
+		Iterable<ProsumerAgent> agList = (Iterable<ProsumerAgent>) (myContext.getObjects(ProsumerAgent.class));
+		
+		this.myContext.logger.debug("adding edges from list to supplier");
+
+		for (ProsumerAgent prAgent : agList)
 		{
-			economicNet.addEdge(firstAggregator, prAgent);
+			economicNet.addEdge(firstAggregator, prAgent); // TODO: This is computationally heavy.  Why??
+			//infoNet.addEdge(firstAggregator, prAgent);
+			this.myContext.logger.trace("Added edge for " + prAgent.getAgentName());
 		}
+		this.myContext.logger.debug("setting economic net in context and returning");
+
 
 		this.myContext.setEconomicNetwork(economicNet);
 
-		// We should create a bespoke network for the electrical networks.
-		// ProsumerAgents only - edges should have nominal voltage and capacity
-		// attributes. TODO: How do we deal with transformers??
-		Network physicalNet = networkFactory.createNetwork("electricalNetwork", myContext, directed);
-		// TODO: How does info network differ from economic network?
-		Network infoNet = networkFactory.createNetwork("infoNetwork", myContext, directed);
-
-		for (ProsumerAgent prAgent : (Iterable<ProsumerAgent>) (myContext.getObjects(ProsumerAgent.class)))
-		{
-			infoNet.addEdge(firstAggregator, prAgent);
-		}
 	}
 
 	/**
@@ -807,6 +877,13 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		else 		
 			hhProsAgent = new Household(myContext, otherDemandProfileArray);
 	
+		setOptions(hhProsAgent, numOfOccupants, hasGas);
+	
+		return hhProsAgent;
+	}
+	
+	void setOptions(HouseholdProsumer hhProsAgent, int numOfOccupants, boolean hasGas)
+	{
 		hhProsAgent.setNumOccupants(numOfOccupants);
 		
 		hhProsAgent.setHasGas(hasGas);
@@ -843,8 +920,6 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		//non-object oriented.  Could do with a proper design methodology here.
 		if (hhProsAgent.hasSmartControl)
 			hhProsAgent.setWattboxController();
-	
-		return hhProsAgent;
 	}
 
 	/**

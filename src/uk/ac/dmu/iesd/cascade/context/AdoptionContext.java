@@ -7,17 +7,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -42,7 +47,7 @@ public class AdoptionContext extends CascadeContext{
 	public static final double FIT_EXPORT_TARIFF = 45;
 	public Poisson nextThoughtGenerator = RandomHelper.createPoisson(30.0);
 	
-	private class CountUpdater implements ContextListener {
+/*	private class CountUpdater implements ContextListener {
 
 		public void eventOccured(ContextEvent ev) {
 			if (ev.getType().equals(EventType.AGENT_ADDED)
@@ -58,9 +63,9 @@ public class AdoptionContext extends CascadeContext{
 				}
 			}
 		}
-	}
+	}*/
 
-	DateFormat ukDateParser = new SimpleDateFormat("dd/mm/yyyy");
+	DateFormat ukDateParser = new SimpleDateFormat("dd/MM/yyyy");
 	public Logger logger;
 	DisplayGIS styledDisplay;
 	SortedMap<Integer, Integer> PVFITs; // Holds PV feed in tarriffs in system
@@ -94,16 +99,18 @@ public class AdoptionContext extends CascadeContext{
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
 		simTime.add(GregorianCalendar.MINUTE, 30);
+		this.logger.trace("Advancing date to " + ukDateParser.format(simTime.getTime()));
 	}
 
-	@ScheduledMethod(start = (48 * 365 * 4), interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
+	@ScheduledMethod(start = (48 * 365 * 4), interval = 0, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
 	public void endSim() {
 		for (Object thisH : this.getObjects(Household.class)) {
 			Household h = (Household) thisH;
 			this.logger.trace(h.getAgentName() + " has had " + h.getNumThoughts());
 		}
-		this.logger = null; // remove reference to logger, so context can be gc'd
 		RepastEssentials.EndSimulationRun();
+		this.logger = null; // remove reference to logger, so context can be gc'd
+		
 	}
 
 	public Date getDateTime() {
@@ -166,7 +173,7 @@ public class AdoptionContext extends CascadeContext{
     	try {
     		returnDate = ukDateParser.parse(d);
 		} catch (ParseException e) {
-			this.logger.warn("Asked to parse "+d+" which didn't parse as a uk format date (dd/mm/yyyy)");
+			this.logger.warn("Asked to parse "+d+" which didn't parse as a uk format date (dd/MM/yyyy)");
 		}
 		return returnDate;
     }
@@ -174,7 +181,7 @@ public class AdoptionContext extends CascadeContext{
 	public Integer getPVTariff(double cap) {
     	Date now = this.getDateTime();
     	
-    	this.logger.trace("Getting PV tariff for capacity" + cap + " on date "+ukDateParser.format(now));
+    	this.logger.trace("Getting PV tariff for capacity" + cap + " on date " + ukDateParser.format(now));
     	
     	if (now.before(parseUKDate("01/04/2010")))
     	{
@@ -241,44 +248,46 @@ public class AdoptionContext extends CascadeContext{
 	
 	public AdoptionContext(Context context,String date) {
 		super(context);
-		if (LogManager.exists("AdoptionLogger")!=null)
-		{
-			logger = Logger.getLogger("AdoptionLogger");
-			logger.info("Found existing logger:");
-			logger.info(logger);
-		}
-		else
-		{
-			logger = Logger.getLogger("AdoptionLogger");
-	
-		logger.setLevel(Level.DEBUG); //Set this to TRACE for full log files
+		
+		
+		// set up a logger for the adoption context
+		logger = Logger.getLogger("AdoptionLogger");
+		logger.removeAllAppenders();
+		logger.setLevel(Level.INFO); //Set this to TRACE for full log files.  Can filter what is actually output below
 		ConsoleAppender console = new ConsoleAppender(new AdoptionLogLayout());
 		console.setName("ConsoleOutput");
-		console.setThreshold(Level.DEBUG);
+		console.setThreshold(Level.INFO);
+		console.activateOptions(); // Needed or the appender appends everything from the logger
+		
 		logger.addAppender(console);
 		
 		FileAppender traceFile;
-		try {
+		try 
+		{
 			String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
 			traceFile = new FileAppender(new AdoptionLogLayout(),"output/myTrace"+parsedDate+".log");
+			//traceFile.setMaxFileSize("1024000");
+			//traceFile.setMaxBackupIndex(0);
 			traceFile.setName("traceFileOutput");
-			traceFile.setThreshold(Level.TRACE);
+			traceFile.setThreshold(Level.DEBUG);
+			traceFile.activateOptions(); // Needed or the appender appends everything from the logger
+			
 			logger.addAppender(traceFile);
-			logger.info("Created logger:");
-			logger.info(logger);
+
 		} catch (IOException e1) {
 			this.logger.warn("Creating file appender for logger failed");
 			e1.printStackTrace();
 		}
-		}
 
 		logger.info("Adoption Context instantiated and logger configured");
-
-
+		logger.info(logger);
+		
+		logger.setAdditivity(false);
+		
 		simStartDate = parseUKDate(date);
 		simTime.setTime(simStartDate);
 
-		this.addContextListener(new CountUpdater());
+		//this.addContextListener(new CountUpdater());
 	}
 
 	// @ScheduledMethod(start=0,interval=0)

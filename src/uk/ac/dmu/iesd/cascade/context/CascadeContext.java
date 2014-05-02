@@ -23,8 +23,6 @@ import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.Projection;
 import repast.simphony.ui.widget.SnapshotTaker;
-import repast.simphony.engine.environment.RunEnvironment;
-import uk.ac.dmu.iesd.cascade.agents.prosumers.RaspPiHousehold;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
@@ -89,7 +87,6 @@ public class CascadeContext extends DefaultContext{
 	
 	int totalNbOfProsumers;
 	int randomSeed;
-	private int lengthOfDemandProfiles;
 	
 	public static boolean verbose = false;  // use to produce verbose output based on user choice (default is false)
 	protected static boolean chartSnapshotOn = false;  // use
@@ -100,6 +97,7 @@ public class CascadeContext extends DefaultContext{
 	
 	private Network<?> socialNetwork;
 	protected Network<?> economicNetwork;
+	@SuppressWarnings("unused")
 	private Network<?> windNetwork;
 	
 	public GregorianCalendar simulationCalendar;
@@ -603,7 +601,7 @@ public class CascadeContext extends DefaultContext{
      * Constructs the cascade context 
      * 
      */
-	public CascadeContext(Context context)
+	public CascadeContext(Context<?> context)
 	{
 		super(context.getId(), context.getTypeID());
 		if (verbose)
