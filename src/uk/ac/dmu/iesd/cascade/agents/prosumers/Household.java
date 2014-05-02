@@ -31,7 +31,7 @@ public class Household extends HouseholdProsumer {
 	//public boolean hasSmartControl;
 
 	//public boolean hasElectricVehicle;
-	private double potentialPVCapacity = 3.0;
+	private double potentialPVCapacity = RandomHelper.nextDoubleFromTo(2, 4);
 	public double observedRadius;
 
 	private double perceivedSmartControlBenefit;
@@ -57,6 +57,8 @@ public class Household extends HouseholdProsumer {
 
 	private double economicSensitivity;
 	private double decisionUrgency = 0.001;
+	
+
 
 	public boolean getHasPV() {
 		return hasPV;
@@ -108,9 +110,8 @@ public class Household extends HouseholdProsumer {
 				+ " has microgen propensity " + this.microgenPropensity
 				+ " and PV adoption likelihood " + PVlikelihood);
 		if (PVlikelihood > getAdoptionThreshold()) {
-			mainContext.logger.trace(this.agentName + " Adopted PV");
-			this.hasPV = true;
-			this.ratedPowerPV=3;
+			mainContext.logger.debug(this.agentName + " Adopted PV");
+			this.setPV();
 
 		}
 		
@@ -118,8 +119,7 @@ public class Household extends HouseholdProsumer {
 		if (false)//(ArrayUtils.sum(this.baseProfile)*RandomHelper.nextDouble()*365*100 > smartContCapital)
 		{
 			this.hasSmartControl = true;
-			this.setWattboxController();
-			
+			this.setWattboxController();			
 		}
 		
 		
@@ -129,12 +129,20 @@ public class Household extends HouseholdProsumer {
 		
 		/*if (mainContext.getTickCount() > 0)//(Consts.AGGREGATOR_TRAINING_SP+Consts.AGGREGATOR_PROFILE_BUILDING_SP))
 		{
-			this.hasPV=true;
-			this.ratedPowerPV=3;
+			setPV();
 		}*/
 
 	}
 	
+	/**
+	 * 
+	 */
+	public void setPV() {
+		this.hasPV = true;
+		this.ratedPowerPV=this.potentialPVCapacity;
+		
+	}
+
 	public double getPVGen()
 	{
 		return this.PVGeneration();
@@ -165,7 +173,7 @@ public class Household extends HouseholdProsumer {
 		for (Household h : neighbours) {
 			mainContext.logger.trace("Into observation loop");
 			boolean observe = (RandomHelper.nextDouble() > 0.5);
-			// observe = true; // for testing
+			observe = true; // for testing
 
 			if (observe) {
 				if (h.getHasPV()) {
@@ -176,7 +184,7 @@ public class Household extends HouseholdProsumer {
 
 			// Likelihood of adopting now - based on observation alone
 			// Note that the 0.5 is an arbitrary and tunable parameter.
-			PVlikelihood += (0.4 * observedAdoption);
+			PVlikelihood += ((double) observedAdoption) / observed;
 			mainContext.logger.trace("Adding likelihood to agent "
 					+ this.getAgentName() + " based on " + observedAdoption
 					+ " of " + numCachedNeighbours
@@ -199,9 +207,9 @@ public class Household extends HouseholdProsumer {
 	 */
 	private ArrayList<Household> getNeighbours() {
 
-		if (this.myNeighboursCache == null) {
-			GeographyWithin<Household> neighbourhood = new GeographyWithin<Household>(
-					myGeography, observedRadius, this);
+		if (this.myNeighboursCache == null) 
+		{
+			GeographyWithin<Household> neighbourhood = new GeographyWithin<Household>(myGeography, observedRadius, this);
 			this.myNeighboursCache = IterableUtils.Iterable2ArrayList(neighbourhood.query());
 			this.numCachedNeighbours = myNeighboursCache.size();
 			mainContext.logger.trace(this.getAgentName()
@@ -229,11 +237,19 @@ public class Household extends HouseholdProsumer {
 	 */
 	public Household(AdoptionContext context) {
 		this(context, new double[48]);
-		this.mainContext = context;
-		Date startTime = (Date) context.simStartDate.clone();
-		startTime.setTime(startTime.getTime() + ((long) (context.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
-		this.nextCogniscentDate = startTime;
-		context.logger.debug(this.agentName+" first thought at "+nextCogniscentDate.toGMTString());
+		//Date startTime = (Date) context.simStartDate.clone();
+	//	startTime.setTime(startTime.getTime() + ((long) (context.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
+	//	this.nextCogniscentDate = startTime;
+
+	}
+	
+	/**
+	 * Test for Richard
+	 * need no arg constructor for shapefile load
+	 */
+	public Household()
+	{
+		super();
 	}
 
 	/**
@@ -246,19 +262,32 @@ public class Household extends HouseholdProsumer {
 	public Household(AdoptionContext context, double[] otherDemandProfile) {
 		super(context,otherDemandProfile);
 		this.agentName = "Household_" + this.agentID;
+		this.mainContext = context;
+		setStartDateAndFirstThought();
+		context.logger.debug(this.agentName+" initialised, first thought at "+nextCogniscentDate.toGMTString());
+		}
+	
+	public void setStartDateAndFirstThought()
+	{
 		Date startTime = null;
 		try {
-			startTime = (new SimpleDateFormat("dd/mm/yyyy"))
+			startTime = (new SimpleDateFormat("dd/MM/yyyy"))
 					.parse("01/04/2010");
 		} catch (ParseException e) {
-			System.err.println("Can't parse this");
+			System.err.println("Weird - I can't parse this fixed string that I've always parsed before");
 		}
+		
+		//Date startTime = (Date) this.mainContext.simStartDate.clone();
+	//	startTime.setTime(startTime.getTime() + ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
+	//	this.nextCogniscentDate = startTime;
+		
 		startTime
 				.setTime(startTime.getTime()
-						+ ((long) (context.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
+						+ ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
 		this.nextCogniscentDate = startTime;
 		this.economicSensitivity = RandomHelper.nextDouble();
 		this.perceivedSmartControlBenefit = RandomHelper.nextDouble(); // comment this out for non-smart adoption scenarios
+	
 	}
 
 	public int getNumThoughts() {
@@ -273,6 +302,7 @@ public class Household extends HouseholdProsumer {
 
 	public void setContext(AdoptionContext c) {
 		this.mainContext = c;
+		super.mainContext = c;
 	}
 
 	public void setGeography(Geography g) {

@@ -13,6 +13,7 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.RepastEdge;
+import repast.simphony.util.ContextUtils;
 import repast.simphony.visualization.IDisplay;
 import repast.simphony.visualizationOGL2D.DisplayOGL2D;
 import uk.ac.dmu.iesd.cascade.base.Consts;
@@ -1398,7 +1399,12 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 */
 	public HouseholdProsumer(CascadeContext context, double[] otherDemandProfile) {
 		super(context);
-		
+		initialiseHouseholdProsumer(context, otherDemandProfile);
+
+	}
+	
+	public void initialiseHouseholdProsumer(CascadeContext context, double[] otherDemandProfile)
+	{
 		//all the immutable must be initialized here
 		//miscDemand includes aggregate of ligtening, entertainment, computers, & small appliances (Kettle, Toaster, Microwave)
 		
@@ -1447,13 +1453,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		this.recordedHeatPumpDemand = new double[this.mainContext.ticksPerDay];
 		
 		this.coldApplianceProfiles = new WeakHashMap<String, double[]>();
-		
-		if (RandomHelper.nextDouble() < 0)
-		{
-			this.hasPV = true;
-			this.ratedPowerPV = 3;
-		}
-		
+			
 	}
 
 	/**
@@ -1481,6 +1481,12 @@ public class HouseholdProsumer extends ProsumerAgent{
 		return Arrays.copyOf(this.electricVehicleProfile, this.electricVehicleProfile.length);
 	}
 
-
+	/***
+	 * Test for Richard - need no arg constructor for shapefile load.
+	 */
+	public HouseholdProsumer()
+	{
+		super();
+	}
 
 }
