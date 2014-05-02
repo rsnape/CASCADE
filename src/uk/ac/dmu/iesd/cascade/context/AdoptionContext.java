@@ -93,17 +93,19 @@ public class AdoptionContext extends CascadeContext{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
+		this.logger.debug("Incrementing simulation date and time");
 		simTime.add(GregorianCalendar.MINUTE, 30);
 	}
 
-	@ScheduledMethod(start = (48 * 365 * 4), interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
+	@ScheduledMethod(start = (48 * 365 * 4), interval = 0, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
 	public void endSim() {
 		for (Object thisH : this.getObjects(Household.class)) {
 			Household h = (Household) thisH;
 			this.logger.trace(h.getAgentName() + " has had " + h.getNumThoughts());
 		}
-		this.logger = null; // remove reference to logger, so context can be gc'd
 		RepastEssentials.EndSimulationRun();
+		this.logger = null; // remove reference to logger, so context can be gc'd
+
 	}
 
 	public Date getDateTime() {
@@ -254,15 +256,16 @@ public class AdoptionContext extends CascadeContext{
 		logger.setLevel(Level.DEBUG); //Set this to TRACE for full log files
 		ConsoleAppender console = new ConsoleAppender(new AdoptionLogLayout());
 		console.setName("ConsoleOutput");
-		console.setThreshold(Level.DEBUG);
+		console.setThreshold(Level.INFO);
 		logger.addAppender(console);
+		logger.setAdditivity(false);
 		
 		FileAppender traceFile;
 		try {
 			String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
 			traceFile = new FileAppender(new AdoptionLogLayout(),"output/myTrace"+parsedDate+".log");
 			traceFile.setName("traceFileOutput");
-			traceFile.setThreshold(Level.TRACE);
+			traceFile.setThreshold(Level.DEBUG);
 			logger.addAppender(traceFile);
 			logger.info("Created logger:");
 			logger.info(logger);

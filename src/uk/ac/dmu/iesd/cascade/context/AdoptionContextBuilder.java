@@ -126,7 +126,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		ArrayList<Household> households;
 
 		households = new ArrayList<Household>();
-		int numHouseholds = 1000;
+		int numHouseholds = 40420;
 		for (int i = 0; i < numHouseholds; i++)
 		{
 			Household thisHousehold = createHouseholdProsumer(this.map_nbOfOccToOtherDemand, Consts.RANDOM, true, false);//(RandomHelper.nextDouble() < 0.7));
@@ -698,11 +698,12 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		Network physicalNet = networkFactory.createNetwork("electricalNetwork", myContext, directed);
 		// TODO: How does info network differ from economic network?
 		Network infoNet = networkFactory.createNetwork("infoNetwork", myContext, directed);
-
+		this.myContext.logger.info("Adding edges to network");
 		for (ProsumerAgent prAgent : (Iterable<ProsumerAgent>) (myContext.getObjects(ProsumerAgent.class)))
 		{
 			infoNet.addEdge(firstAggregator, prAgent);
 		}
+		this.myContext.logger.info("Edges added - ready to start");
 	}
 
 	/**
