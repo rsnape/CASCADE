@@ -10,8 +10,7 @@ import java.util.SortedMap;
  * @author Richard
  *
  */
-@SuppressWarnings("rawtypes")
-public abstract class TimeSeries<K extends Comparable, T> {
+public abstract class TimeSeries<K, T> {
 	
 	SortedMap<K,T> datapoints;
 
