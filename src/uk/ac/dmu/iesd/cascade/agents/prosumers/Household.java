@@ -12,6 +12,7 @@ import repast.simphony.query.space.gis.GeographyWithin;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.util.ContextUtils;
+import uk.ac.dmu.iesd.cascade.behaviour.psychological.cognitive.SCTModel;
 import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 
@@ -23,6 +24,8 @@ public class Household extends HouseholdProsumer {
 	private ArrayList<Household> myNeighboursCache;
 	private int numCachedNeighbours;
 
+	private SCTModel PVDecisionModel = new SCTModel();
+	
 	private AdoptionContext mainContext = (AdoptionContext) super.mainContext;
 	
 	private Date nextCogniscentDate;

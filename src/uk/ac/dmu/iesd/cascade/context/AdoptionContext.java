@@ -2,6 +2,7 @@ package uk.ac.dmu.iesd.cascade.context;
 
 //import javax.media.jai.WarpAffine;
 import java.io.IOException;
+import java.io.ObjectInputStream.GetField;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,6 +35,7 @@ import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.visualization.gis.DisplayGIS;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
+import uk.ac.dmu.iesd.cascade.util.DatedTimeSeries;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 import cern.jet.random.Poisson;
 
@@ -60,10 +62,10 @@ public class AdoptionContext extends CascadeContext{
 		}
 	}
 
-	DateFormat ukDateParser = new SimpleDateFormat("dd/mm/yyyy");
+	DateFormat ukDateParser = new SimpleDateFormat("dd/MM/yyyy");
 	public Logger logger;
 	DisplayGIS styledDisplay;
-	SortedMap<Integer, Integer> PVFITs; // Holds PV feed in tarriffs in system
+	DatedTimeSeries<TreeMap<Integer,Integer>> PVFITs = new DatedTimeSeries<TreeMap<Integer,Integer>>(); // Holds PV feed in tarriffs in system
 										// capacity vs. tenths of
 										// pence / eurocents per kWh
 	WeakHashMap<String,Integer> agentCounts = new WeakHashMap<String,Integer>();
@@ -93,7 +95,7 @@ public class AdoptionContext extends CascadeContext{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
-		this.logger.debug("Incrementing simulation date and time");
+		this.logger.trace("Incrementing simulation date and time");
 		simTime.add(GregorianCalendar.MINUTE, 30);
 	}
 
@@ -112,29 +114,21 @@ public class AdoptionContext extends CascadeContext{
 		return simTime.getTime();
 	}
 	
-	@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
-	public void firstCut() {
-		this.PVFITs = new TreeMap<Integer,Integer>();
-		this.PVFITs.put(4, 210);
-		this.PVFITs.put(10, 160);
-		this.PVFITs.put(100, 130);
-		this.PVFITs.put(5000,130);
-	}
-	
-	@ScheduledMethod(start = 0, interval = 0, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
-	public void secondCut() {
-		this.PVFITs = new TreeMap<Integer,Integer>();
-		this.PVFITs.put(4, 160);
-		this.PVFITs.put(10, 140);
-		this.PVFITs.put(100, 100);
-		this.PVFITs.put(5000,100);
-	}
 	
     public Date getTarriffAvailableUntil()
     {
     	Date returnDate = new Date();    	
     	Date now = this.getDateTime();
-    	if (now.before(parseUKDate("31/10/2011")))
+    	
+    	Date retVal = this.PVFITs.getFirstKeyFollowing(now);
+    	if (retVal == null)
+    	{
+    		this.logger.debug("return last valid date as appears " + ukDateParser.format(now) + " is past last key");
+    		retVal = this.PVFITs.getLastValidDate();
+    	}
+    	
+    	
+/*    	if (now.before(parseUKDate("31/10/2011")))
     	{
 			returnDate = parseUKDate("01/04/2035");
     	}
@@ -157,12 +151,17 @@ public class AdoptionContext extends CascadeContext{
     		cal.setTime(d);
     		cal.add( Calendar.MONTH, 3);
     		returnDate = cal.getTime();
-    	}
+    	}*/
     	
-    	return returnDate;
+    	return retVal;
     }
 
-    private Date parseUKDate(String d)
+    /**
+     * Return a date object for an input string in the UK date format (dd/MM/yyyy)
+     * @param d
+     * @return
+     */
+    Date parseUKDate(String d)
     {
     	Date returnDate = null;
     	try {
@@ -178,24 +177,35 @@ public class AdoptionContext extends CascadeContext{
     	
     	this.logger.trace("Getting PV tariff for capacity" + cap + " on date "+ukDateParser.format(now));
     	
-    	if (now.before(parseUKDate("01/04/2010")))
+    	if (now.before(this.PVFITs.getFirstDate()))
     	{
 			return 0;
     	}   	
 		
-		Iterator<Integer> iterator = this.PVFITs.keySet().iterator();
+    	SortedMap<Integer,Integer> tariffNow = this.PVFITs.getValue(now);
+    	
+    	tariffNow = tariffNow.tailMap((int)(cap+0.5));
+    	Integer retVal;
+    	if (tariffNow.size()==0)
+    	{
+    		retVal = 0;
+    	}
+    	else
+    	{
+    		retVal = tariffNow.get(tariffNow.firstKey());
+    	}
+    	
+    	this.logger.debug("returning fit for capacity " + cap + " = " + retVal);
+    	return retVal;
+    	
+		/*Iterator<Integer> iterator = tariffNow.keySet().iterator();
 		while (iterator.hasNext()) {
 			Integer key = iterator.next();
 			if (key >= cap) {
 				this.logger.trace("Returning value for up to " + key);
-				return this.PVFITs.get(key);
+				return tariffNow.get(key);
 			}
-		}
-
-		this.logger.trace("Returning null");
-		// No tariff exists for installation of this size
-		return null;
-
+		}*/
 	}
 
 	int getAgentCount(Class clazz) {

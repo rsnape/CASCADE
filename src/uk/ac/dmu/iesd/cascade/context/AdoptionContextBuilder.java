@@ -15,6 +15,8 @@ import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.PropertyEquals;
@@ -72,11 +74,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		 * myContext.setNorthLim(52.62); myContext.setSouthLin(52.58);
 		 * myContext.setEastLim(-1.05); myContext.setWestLim(-1.1);
 		 */
-		myContext.PVFITs = new TreeMap<Integer, Integer>();
-		myContext.PVFITs.put(4, 370);
-		myContext.PVFITs.put(10, 310);
-		myContext.PVFITs.put(100, 280);
-		myContext.PVFITs.put(5000, 260);
+
 
 		DefaultGeography<Household> leicesterGeography = new DefaultGeography<Household>("Leicester");
 
@@ -126,7 +124,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		ArrayList<Household> households;
 
 		households = new ArrayList<Household>();
-		int numHouseholds = 40420;
+		int numHouseholds = 4000;
 		for (int i = 0; i < numHouseholds; i++)
 		{
 			Household thisHousehold = createHouseholdProsumer(this.map_nbOfOccToOtherDemand, Consts.RANDOM, true, false);//(RandomHelper.nextDouble() < 0.7));
@@ -657,6 +655,34 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		// myContext.add(singleNonDomestic);
 
 		buildOtherNetworks(firstRecoAggregator);
+
+	}
+	
+	/*
+	 * populate the PV tariffs in the context
+	 */
+	public void firstCutTariffs() {
+		
+		TreeMap<Integer, Integer> FitVal = new TreeMap<Integer,Integer>();
+		FitVal.put(4, 370);
+		FitVal.put(10, 310);
+		FitVal.put(100, 280);
+		FitVal.put(5000, 260);
+		myContext.PVFITs.putValue(myContext.parseUKDate("01/04/2010"), FitVal);
+		
+		FitVal = new TreeMap<Integer,Integer>();
+		FitVal.put(4, 210);
+		FitVal.put(10, 160);
+		FitVal.put(100, 130);
+		FitVal.put(5000,130);
+		myContext.PVFITs.putValue(myContext.parseUKDate("12/12/2011"), FitVal);
+
+		FitVal = new TreeMap<Integer,Integer>();
+		FitVal.put(4, 160);
+		FitVal.put(10, 140);
+		FitVal.put(100, 100);
+		FitVal.put(5000,100);
+		myContext.PVFITs.putValue(myContext.parseUKDate("01/12/2012"), FitVal);
 
 	}
 
