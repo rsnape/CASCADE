@@ -50,6 +50,13 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.ChartUtils;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 
+/***
+ * Class to listen for probe of prosumer and produce custom information panel when triggered.
+ * 
+ * @author Richard (original)
+ * @author Babak (refactoring floats to doubles and added pie chart)
+ *
+ */
 public class ProsumerProbeListener implements ProbeListener {
 
 	/**
@@ -74,7 +81,6 @@ public class ProsumerProbeListener implements ProbeListener {
 
 		public void execute() {
 			probeListener.scheduledUpdate();
-
 		}
 	}
 
@@ -95,7 +101,7 @@ public class ProsumerProbeListener implements ProbeListener {
 				final HouseholdProsumer thisAgent = (HouseholdProsumer) thisObj;
 				probedAgents.add(thisAgent);
 				ProbePanelCreator newProbe = new ProbePanelCreator(new BeanParameters(thisAgent,new HashSet<String>()));
-				Probe myProbe = newProbe.getProbe("TestProbe", true);
+				newProbe.getProbe("TestProbe", true);
 			//	myProbe.addPropertyChangeListener(RSApplication.getRSApplicationInstance().getGui());
 				JFrame agentProbeFrame = new JFrame("Prosumer probe frame for " + thisAgent.toString());
 				agentProbeFrame.setAlwaysOnTop(false);
@@ -178,11 +184,7 @@ public class ProsumerProbeListener implements ProbeListener {
 				JButton loadsProfilesLineChartButton = new JButton("Click here to see demands Line Chart of this HHPros");
 				loadsProfilesLineChartButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
-						//IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
-						//DefaultCategoryDataset loadsDataset = createDataset(thisAgent);
-						CategoryTableXYDataset loadsDataset = createDataset(thisAgent);
-						//JFreeChart loadsChart = createLineChart(loadsDataset, "Demand Profiles Chart (hh_"+thisAgent.getAgentID()+", @t="+mainContext.getTickCount()+")", "Half hour", "Load (KWh)");
-						//ChartUtils.showChart(loadsChart);
+						createDataset(thisAgent);
 					}
 				});
 				
@@ -264,18 +266,8 @@ public class ProsumerProbeListener implements ProbeListener {
 			result.add(i, arr4[i], "Cold");
 			result.add(i, arr5[i], "Wet");
 			result.add(i, arr6[i],"EV");
-			/*result.addValue((Number)arr1[i], "Space Heat", i);
-			result.addValue((Number)arr2[i], "Water Heat", i);
-			result.addValue((Number)arr3[i], "Other", i);
-			result.addValue((Number)arr4[i], "Cold", i);
-			result.addValue((Number)arr5[i], "Wet", i);
-			result.addValue((Number)arr6[i],"EV", i);*/
-
-
 		}
-
 		return result;
-
 	}
 
 	/**
@@ -419,7 +411,7 @@ public class ProsumerProbeListener implements ProbeListener {
 		double[] tot_wet=new double[48];
 		double[] tot_EV=new double[48];
 		
-		double nbOfHHPros = list_hhProsumers.size();
+		list_hhProsumers.size();
 
 		for (HouseholdProsumer hhAgent : list_hhProsumers) {
 			tot_spaceHeat = ArrayUtils.add(tot_spaceHeat,hhAgent.getHistoricalSpaceHeatDemand());
@@ -572,10 +564,8 @@ public class ProsumerProbeListener implements ProbeListener {
 				false
 		);
 
-		//Alter appearance here
-
+		//Alter appearance here if desired
 		return chart;
-
 	}
 	
 
@@ -613,9 +603,7 @@ public class ProsumerProbeListener implements ProbeListener {
 
 				i += 2;
 			}
-
 		}
-
 	}
 
 	public ProsumerProbeListener(CascadeContext context)
@@ -625,11 +613,7 @@ public class ProsumerProbeListener implements ProbeListener {
 				ScheduleParameters.END), new ProbeUpdater(this));
 		
 		mainContext = context;
-	
-	
 	}
-
-
 }
 
 
