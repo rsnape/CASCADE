@@ -1,6 +1,5 @@
 package uk.ac.dmu.iesd.cascade.base;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,24 +13,15 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.jfree.chart.ChartPanel;
-
-
 import repast.simphony.context.Context;
 import repast.simphony.engine.controller.ControllerActionVisitor;
 import repast.simphony.engine.controller.NullAbstractControllerAction;
-import repast.simphony.engine.controller.TickListener;
 import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.GUIRegistryType;
-import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunEnvironmentBuilder;
 import repast.simphony.engine.environment.RunState;
-import repast.simphony.engine.schedule.IAction;
-import repast.simphony.engine.schedule.ISchedule;
-import repast.simphony.engine.schedule.ScheduleParameters;
-import repast.simphony.parameter.ParameterConstants;
+import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.Parameters;
-import repast.simphony.random.RandomHelper;
 import repast.simphony.scenario.ModelInitializer;
 import repast.simphony.scenario.Scenario;
 import repast.simphony.ui.RSApplication;
@@ -76,8 +66,9 @@ public class Initializer implements ModelInitializer{
 			
 			CascadeContext cascadeContext = (CascadeContext) context;
 			//if (Consts.DEBUG) System.out.println("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
-			if (RSApplication.isGui()){
+			if (!runState.getInstance().getRunInfo().isBatch()){
 				GUIRegistry guiRegis = runState.getGUIRegistry();
+				
 				RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
 				RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
 				//Collection <Pair<GUIRegistryType,Collection<JComponent>>> typeAndComp = guiRegis.getTypesAndComponents();
