@@ -3,264 +3,499 @@
  */
 package uk.ac.dmu.iesd.cascade.behaviour.psychological.cognitive;
 
+import repast.simphony.random.RandomHelper;
+
 /**
  * @author jsnape
  *
  */
 public class SCTModel {
 	
-	//constructs
-	private double outcome_expectation;
-	private double perception_of_others;
-	private double self_efficacy;
-	private double socio_structural_factors;
-	private double goal;
-	private double behaviour;	
-	private double outcome;
 	
+	double outcomeExpectation = 0;
+	double perceptionOfOthers = 0;
+	double selfEfficacy = 0;
+	double socioStructural = 0;
 	
-	//relationships
-	private double weight_socio_structural_to_perception_of_others;
-	private double weight_socio_structural_to_outcome_peception;
+	double goal = 0;
+	double behaviour = 0;
+
+	double outcome = 0;
 	
-	private double weight_outcome_expectation_to_goal;
-	private double weight_perception_of_others_to_goal;
-	private double weight_self_efficacy_to_goal;
-	private double weight_socio_structural_factors_to_goal;
+	double weightSocioStructuralToOutcomeExp = 0;
+	double weightSocioStructuralToPerceptionOfOthers = 0;
+	double weightSelfEfficacyToOutcomeExp = 0;
+
+	double weightOutcomeExpToGoal= 0;
+	double weightPerceptionOfOthersToGoal = 0;
+	double weightSelfEfficacyToGoal = 0;
+	double weightSocioStructuralToGoal = 0;
 	
-	private double weight_outcome_expectation_to_behaviour;
-	private double weight_perception_of_others_to_behaviour;
-	private double weight_self_efficacy_to_behaviour;
-	private double weight_socio_structural_factors_to_behaviour;
+
+	double weightOutcomeExpToBehaviour= 0;
+	double weightPerceptionOfOthersToBehaviour = 0;
+	double weightSelfEfficacyToBehaviour = 0;
+	double weightSocioStructuralToBehaviour = 0;
+
+	/*
+	 * This is a special link - from the goal to behaviour
+	 * This is given full weighting as it 
+	 */
+	double weightGoalToBehaviour = 1;
+
+	//Note - the behaviour to Outcome link is calculated by other 
+	//factors in the models and so outcome is populated directly
 	
-	private double weight_efficacy_to_outcome_peception;
-	/**
-	 * @return the outcome_expectation
+	/*
+	 * These are the feedback links, affecting the construct values
 	 */
-	public double getOutcome_expectation() {
-		return outcome_expectation;
-	}
-	/**
-	 * @param outcome_expectation the outcome_expectation to set
+	double weightOutcomeToSelfEfficacy = 0;
+	double weightOutcomeToSocioStructural = 0;
+	double weightOutcomeToOutcomeExp = 0;
+	
+	private void calculateFeedbacks()
+	{
+		outcomeExpectation = (outcomeExpectation + weightOutcomeToOutcomeExp * outcome + weightSocioStructuralToOutcomeExp * socioStructural + weightSelfEfficacyToOutcomeExp * selfEfficacy) / (1.0 + weightOutcomeToOutcomeExp + weightSocioStructuralToOutcomeExp+weightSelfEfficacyToOutcomeExp);
+		perceptionOfOthers = (perceptionOfOthers + weightSocioStructuralToPerceptionOfOthers * socioStructural) / (1.0  + weightSocioStructuralToPerceptionOfOthers);
+		selfEfficacy = (selfEfficacy + weightOutcomeToSelfEfficacy * outcome) / (1.0 + weightOutcomeToSelfEfficacy );
+		socioStructural = (socioStructural + weightOutcomeToSocioStructural * outcome) / (1.0 + weightOutcomeToSocioStructural);
+}
+
+	/*
+	 * Caluculate the goal from the constructs
+	 * 
+	 * The formulae used are such that socio-structual factors
+	 * of 0 does not render the holding of the goal impossible
+	 * (note the difference with behaviour, where some socio
+	 * structural factors can render the behaviour impossible
 	 */
-	public void setOutcome_expectation(double outcome_expectation) {
-		this.outcome_expectation = outcome_expectation;
+	private void calculateGoal()
+	{
+		calculateFeedbacks();
+		
+		double sumOfWeightedConstructs = 0;
+		sumOfWeightedConstructs += weightOutcomeExpToGoal * outcomeExpectation;
+		sumOfWeightedConstructs += weightPerceptionOfOthersToGoal * perceptionOfOthers;
+		sumOfWeightedConstructs += weightSelfEfficacyToGoal * selfEfficacy;
+		sumOfWeightedConstructs += weightSocioStructuralToGoal * socioStructural;
+		double sumOfWeights = 0;
+		sumOfWeights  += weightOutcomeExpToGoal;
+		sumOfWeights  += weightPerceptionOfOthersToGoal;
+		sumOfWeights  += weightSelfEfficacyToGoal;
+		sumOfWeights  += weightSocioStructuralToGoal;
+		goal = sumOfWeightedConstructs / sumOfWeights;
 	}
-	/**
-	 * @return the perception_of_others
+	
+	/*
+	 * Return a number between 0 1nad 1 which can be thought of 
+	 * as a likelihood of behaviour.  
+	 * 
+	 * The formulae implemented are such that certaion socio-structural
+	 * factors can render the socio-structural construct value
+	 * of 0 can render the behaviour impossible.
 	 */
-	public double getPerception_of_others() {
-		return perception_of_others;
+	public void calculateBehaviour()
+	{
+		calculateGoal();
+		double sumOfWeightedConstructs = 0;
+		sumOfWeightedConstructs += weightOutcomeExpToGoal * outcomeExpectation;
+		sumOfWeightedConstructs += weightPerceptionOfOthersToGoal * perceptionOfOthers;
+		sumOfWeightedConstructs += weightSelfEfficacyToGoal * selfEfficacy;
+		sumOfWeightedConstructs += weightSocioStructuralToGoal * socioStructural;
+		sumOfWeightedConstructs += weightGoalToBehaviour * goal;
+		double sumOfWeights = 0;
+		sumOfWeights  += weightOutcomeExpToGoal;
+		sumOfWeights  += weightPerceptionOfOthersToGoal;
+		sumOfWeights  += weightSelfEfficacyToGoal;
+		sumOfWeights  += weightSocioStructuralToGoal;
+		sumOfWeights += weightGoalToBehaviour;
+		behaviour = sumOfWeightedConstructs / sumOfWeights;
+		behaviour *= socioStructural;
 	}
-	/**
-	 * @param perception_of_others the perception_of_others to set
+	
+	double lowestBehaviourTrueThreshold = 0;
+	double absoluteBehaviourThreshold = 1;
+	
+	/*
+	 * get a binary behaviour variable from the internal
+	 * behaviour likelihood.
+	 * 
+	 * This is done in a stochastic fashion, with hard limits if
+	 * required.  The scheme is as follows
+	 * 
+	 * if behaviour likelihood < lowestBehaviourThreshold return false
+	 * if behaviour likelihood > absoluteBehaviourThreshold retunr true
+	 * for other values, draw from a uniform distribution between
+	 * the thresholds.  If likelihood > random draw return true else false
+	 * 
+	 * By default, the thresholds are 0 and 1, meaning that the "inbetween"
+	 * regime applies to all values
 	 */
-	public void setPerception_of_others(double perception_of_others) {
-		this.perception_of_others = perception_of_others;
+	public boolean getBinaryBehaviourDecisionStochastic()
+	{
+		if (RandomHelper.nextDoubleFromTo(lowestBehaviourTrueThreshold, absoluteBehaviourThreshold) < behaviour)
+		{
+			return true;
+		}
+		return false;
 	}
-	/**
-	 * @return the self_efficacy
+	
+	/*
+	 * return true if behaviour likelihood > absoluteBehaviourThreshold,
+	 * false otherwise
 	 */
-	public double getSelf_efficacy() {
-		return self_efficacy;
+	public boolean getBinaryBehaviourDecisionHardThreshold()
+	{
+		return (behaviour > absoluteBehaviourThreshold);
 	}
+	
+	public void setLowestTrueBehaviourThreshold(double d)
+	{
+		this.lowestBehaviourTrueThreshold = d;
+	}
+	
+	public void setAbsoluteBehaviourThreshold(double d)
+	{
+		this.absoluteBehaviourThreshold = d;
+	}
+
 	/**
-	 * @param self_efficacy the self_efficacy to set
+	 * @return the outcomeExpectation
 	 */
-	public void setSelf_efficacy(double self_efficacy) {
-		this.self_efficacy = self_efficacy;
+	public double getOutcomeExpectation() {
+		return outcomeExpectation;
 	}
+
 	/**
-	 * @return the socio_structural_factors
+	 * @return the perceptionOfOthers
 	 */
-	public double getSocio_structural_factors() {
-		return socio_structural_factors;
+	public double getPerceptionOfOthers() {
+		return perceptionOfOthers;
 	}
+
 	/**
-	 * @param socio_structural_factors the socio_structural_factors to set
+	 * @return the selfEfficacy
 	 */
-	public void setSocio_structural_factors(double socio_structural_factors) {
-		this.socio_structural_factors = socio_structural_factors;
+	public double getSelfEfficacy() {
+		return selfEfficacy;
 	}
+
+	/**
+	 * @return the socioStructural
+	 */
+	public double getSocioStructural() {
+		return socioStructural;
+	}
+
 	/**
 	 * @return the goal
 	 */
 	public double getGoal() {
 		return goal;
 	}
-	/**
-	 * @param goal the goal to set
-	 */
-	public void setGoal(double goal) {
-		this.goal = goal;
-	}
+
 	/**
 	 * @return the behaviour
 	 */
 	public double getBehaviour() {
 		return behaviour;
 	}
-	/**
-	 * @param behaviour the behaviour to set
-	 */
-	public void setBehaviour(double behaviour) {
-		this.behaviour = behaviour;
-	}
+
 	/**
 	 * @return the outcome
 	 */
 	public double getOutcome() {
 		return outcome;
 	}
+
+	/**
+	 * @return the weightSocioStructuralToOutcomeExp
+	 */
+	public double getWeightSocioStructuralToOutcomeExp() {
+		return weightSocioStructuralToOutcomeExp;
+	}
+
+	/**
+	 * @return the weightSocioStructuralToPerceptionOfOthers
+	 */
+	public double getWeightSocioStructuralToPerceptionOfOthers() {
+		return weightSocioStructuralToPerceptionOfOthers;
+	}
+
+	/**
+	 * @return the weightSelfEfficacyToOutcomeExp
+	 */
+	public double getWeightSelfEfficacyToOutcomeExp() {
+		return weightSelfEfficacyToOutcomeExp;
+	}
+
+	/**
+	 * @return the weightOutcomeExpToGoal
+	 */
+	public double getWeightOutcomeExpToGoal() {
+		return weightOutcomeExpToGoal;
+	}
+
+	/**
+	 * @return the weightPerceptionOfOthersToGoal
+	 */
+	public double getWeightPerceptionOfOthersToGoal() {
+		return weightPerceptionOfOthersToGoal;
+	}
+
+	/**
+	 * @return the weightSelfEfficacyToGoal
+	 */
+	public double getWeightSelfEfficacyToGoal() {
+		return weightSelfEfficacyToGoal;
+	}
+
+	/**
+	 * @return the weightSocioStructuralToGoal
+	 */
+	public double getWeightSocioStructuralToGoal() {
+		return weightSocioStructuralToGoal;
+	}
+
+	/**
+	 * @return the weightOutcomeExpToBehaviour
+	 */
+	public double getWeightOutcomeExpToBehaviour() {
+		return weightOutcomeExpToBehaviour;
+	}
+
+	/**
+	 * @return the weightPerceptionOfOthersToBehaviour
+	 */
+	public double getWeightPerceptionOfOthersToBehaviour() {
+		return weightPerceptionOfOthersToBehaviour;
+	}
+
+	/**
+	 * @return the weightSelfEfficacyToBehaviour
+	 */
+	public double getWeightSelfEfficacyToBehaviour() {
+		return weightSelfEfficacyToBehaviour;
+	}
+
+	/**
+	 * @return the weightSocioStructuralToBehaviour
+	 */
+	public double getWeightSocioStructuralToBehaviour() {
+		return weightSocioStructuralToBehaviour;
+	}
+
+	/**
+	 * @return the weightGoalToBehaviour
+	 */
+	public double getWeightGoalToBehaviour() {
+		return weightGoalToBehaviour;
+	}
+
+	/**
+	 * @return the weightOutcomeToSelfEfficacy
+	 */
+	public double getWeightOutcomeToSelfEfficacy() {
+		return weightOutcomeToSelfEfficacy;
+	}
+
+	/**
+	 * @return the weightOutcomeToSocioStructural
+	 */
+	public double getWeightOutcomeToSocioStructural() {
+		return weightOutcomeToSocioStructural;
+	}
+
+	/**
+	 * @return the weightOutcomeToOutcomeExp
+	 */
+	public double getWeightOutcomeToOutcomeExp() {
+		return weightOutcomeToOutcomeExp;
+	}
+
+	/**
+	 * @return the lowestBehaviourTrueThreshold
+	 */
+	public double getLowestBehaviourTrueThreshold() {
+		return lowestBehaviourTrueThreshold;
+	}
+
+	/**
+	 * @return the absoluteBehaviourThreshold
+	 */
+	public double getAbsoluteBehaviourThreshold() {
+		return absoluteBehaviourThreshold;
+	}
+
+	/**
+	 * @param outcomeExpectation the outcomeExpectation to set
+	 */
+	public void setOutcomeExpectation(double outcomeExpectation) {
+		this.outcomeExpectation = outcomeExpectation;
+	}
+
+	/**
+	 * @param perceptionOfOthers the perceptionOfOthers to set
+	 */
+	public void setPerceptionOfOthers(double perceptionOfOthers) {
+		this.perceptionOfOthers = perceptionOfOthers;
+	}
+
+	/**
+	 * @param selfEfficacy the selfEfficacy to set
+	 */
+	public void setSelfEfficacy(double selfEfficacy) {
+		this.selfEfficacy = selfEfficacy;
+	}
+
+	/**
+	 * @param socioStructural the socioStructural to set
+	 */
+	public void setSocioStructural(double socioStructural) {
+		this.socioStructural = socioStructural;
+	}
+
+	/**
+	 * @param goal the goal to set
+	 */
+	public void setGoal(double goal) {
+		this.goal = goal;
+	}
+
+	/**
+	 * @param behaviour the behaviour to set
+	 */
+	public void setBehaviour(double behaviour) {
+		this.behaviour = behaviour;
+	}
+
 	/**
 	 * @param outcome the outcome to set
 	 */
 	public void setOutcome(double outcome) {
 		this.outcome = outcome;
 	}
+
 	/**
-	 * @return the weight_efficacy_to_outcome_peception
+	 * @param weightSocioStructuralToOutcomeExp the weightSocioStructuralToOutcomeExp to set
 	 */
-	public double getWeight_efficacy_to_outcome_peception() {
-		return weight_efficacy_to_outcome_peception;
-	}
-	/**
-	 * @param weight_efficacy_to_outcome_peception the weight_efficacy_to_outcome_peception to set
-	 */
-	public void setWeight_efficacy_to_outcome_peception(
-			double weight_efficacy_to_outcome_peception) {
-		this.weight_efficacy_to_outcome_peception = weight_efficacy_to_outcome_peception;
-	}
-	/**
-	 * @return the weight_socio_structural_to_perception_of_others
-	 */
-	public double getWeight_socio_structural_to_perception_of_others() {
-		return weight_socio_structural_to_perception_of_others;
-	}
-	/**
-	 * @param weight_socio_structural_to_perception_of_others the weight_socio_structural_to_perception_of_others to set
-	 */
-	public void setWeight_socio_structural_to_perception_of_others(
-			double weight_socio_structural_to_perception_of_others) {
-		this.weight_socio_structural_to_perception_of_others = weight_socio_structural_to_perception_of_others;
-	}
-	/**
-	 * @return the weight_socio_structural_to_outcome_peception
-	 */
-	public double getWeight_socio_structural_to_outcome_peception() {
-		return weight_socio_structural_to_outcome_peception;
-	}
-	/**
-	 * @param weight_socio_structural_to_outcome_peception the weight_socio_structural_to_outcome_peception to set
-	 */
-	public void setWeight_socio_structural_to_outcome_peception(
-			double weight_socio_structural_to_outcome_peception) {
-		this.weight_socio_structural_to_outcome_peception = weight_socio_structural_to_outcome_peception;
-	}
-	/**
-	 * @return the weight_outcome_expectation_to_goal
-	 */
-	public double getWeight_outcome_expectation_to_goal() {
-		return weight_outcome_expectation_to_goal;
-	}
-	/**
-	 * @param weight_outcome_expectation_to_goal the weight_outcome_expectation_to_goal to set
-	 */
-	public void setWeight_outcome_expectation_to_goal(
-			double weight_outcome_expectation_to_goal) {
-		this.weight_outcome_expectation_to_goal = weight_outcome_expectation_to_goal;
-	}
-	/**
-	 * @return the weight_perception_of_others_to_goal
-	 */
-	public double getWeight_perception_of_others_to_goal() {
-		return weight_perception_of_others_to_goal;
-	}
-	/**
-	 * @param weight_perception_of_others_to_goal the weight_perception_of_others_to_goal to set
-	 */
-	public void setWeight_perception_of_others_to_goal(
-			double weight_perception_of_others_to_goal) {
-		this.weight_perception_of_others_to_goal = weight_perception_of_others_to_goal;
-	}
-	/**
-	 * @return the weight_self_efficacy_to_goal
-	 */
-	public double getWeight_self_efficacy_to_goal() {
-		return weight_self_efficacy_to_goal;
-	}
-	/**
-	 * @param weight_self_efficacy_to_goal the weight_self_efficacy_to_goal to set
-	 */
-	public void setWeight_self_efficacy_to_goal(double weight_self_efficacy_to_goal) {
-		this.weight_self_efficacy_to_goal = weight_self_efficacy_to_goal;
-	}
-	/**
-	 * @return the weight_socio_structural_factors_to_goal
-	 */
-	public double getWeight_socio_structural_factors_to_goal() {
-		return weight_socio_structural_factors_to_goal;
-	}
-	/**
-	 * @param weight_socio_structural_factors_to_goal the weight_socio_structural_factors_to_goal to set
-	 */
-	public void setWeight_socio_structural_factors_to_goal(
-			double weight_socio_structural_factors_to_goal) {
-		this.weight_socio_structural_factors_to_goal = weight_socio_structural_factors_to_goal;
-	}
-	/**
-	 * @return the weight_outcome_expectation_to_behaviour
-	 */
-	public double getWeight_outcome_expectation_to_behaviour() {
-		return weight_outcome_expectation_to_behaviour;
-	}
-	/**
-	 * @param weight_outcome_expectation_to_behaviour the weight_outcome_expectation_to_behaviour to set
-	 */
-	public void setWeight_outcome_expectation_to_behaviour(
-			double weight_outcome_expectation_to_behaviour) {
-		this.weight_outcome_expectation_to_behaviour = weight_outcome_expectation_to_behaviour;
-	}
-	/**
-	 * @return the weight_perception_of_others_to_behaviour
-	 */
-	public double getWeight_perception_of_others_to_behaviour() {
-		return weight_perception_of_others_to_behaviour;
-	}
-	/**
-	 * @param weight_perception_of_others_to_behaviour the weight_perception_of_others_to_behaviour to set
-	 */
-	public void setWeight_perception_of_others_to_behaviour(
-			double weight_perception_of_others_to_behaviour) {
-		this.weight_perception_of_others_to_behaviour = weight_perception_of_others_to_behaviour;
-	}
-	/**
-	 * @return the weight_self_efficacy_to_behaviour
-	 */
-	public double getWeight_self_efficacy_to_behaviour() {
-		return weight_self_efficacy_to_behaviour;
-	}
-	/**
-	 * @param weight_self_efficacy_to_behaviour the weight_self_efficacy_to_behaviour to set
-	 */
-	public void setWeight_self_efficacy_to_behaviour(
-			double weight_self_efficacy_to_behaviour) {
-		this.weight_self_efficacy_to_behaviour = weight_self_efficacy_to_behaviour;
-	}
-	/**
-	 * @return the weight_socio_structural_factors_to_behaviour
-	 */
-	public double getWeight_socio_structural_factors_to_behaviour() {
-		return weight_socio_structural_factors_to_behaviour;
-	}
-	/**
-	 * @param weight_socio_structural_factors_to_behaviour the weight_socio_structural_factors_to_behaviour to set
-	 */
-	public void setWeight_socio_structural_factors_to_behaviour(
-			double weight_socio_structural_factors_to_behaviour) {
-		this.weight_socio_structural_factors_to_behaviour = weight_socio_structural_factors_to_behaviour;
+	public void setWeightSocioStructuralToOutcomeExp(
+			double weightSocioStructuralToOutcomeExp) {
+		this.weightSocioStructuralToOutcomeExp = weightSocioStructuralToOutcomeExp;
 	}
 
+	/**
+	 * @param weightSocioStructuralToPerceptionOfOthers the weightSocioStructuralToPerceptionOfOthers to set
+	 */
+	public void setWeightSocioStructuralToPerceptionOfOthers(
+			double weightSocioStructuralToPerceptionOfOthers) {
+		this.weightSocioStructuralToPerceptionOfOthers = weightSocioStructuralToPerceptionOfOthers;
+	}
 
+	/**
+	 * @param weightSelfEfficacyToOutcomeExp the weightSelfEfficacyToOutcomeExp to set
+	 */
+	public void setWeightSelfEfficacyToOutcomeExp(
+			double weightSelfEfficacyToOutcomeExp) {
+		this.weightSelfEfficacyToOutcomeExp = weightSelfEfficacyToOutcomeExp;
+	}
+
+	/**
+	 * @param weightOutcomeExpToGoal the weightOutcomeExpToGoal to set
+	 */
+	public void setWeightOutcomeExpToGoal(double weightOutcomeExpToGoal) {
+		this.weightOutcomeExpToGoal = weightOutcomeExpToGoal;
+	}
+
+	/**
+	 * @param weightPerceptionOfOthersToGoal the weightPerceptionOfOthersToGoal to set
+	 */
+	public void setWeightPerceptionOfOthersToGoal(
+			double weightPerceptionOfOthersToGoal) {
+		this.weightPerceptionOfOthersToGoal = weightPerceptionOfOthersToGoal;
+	}
+
+	/**
+	 * @param weightSelfEfficacyToGoal the weightSelfEfficacyToGoal to set
+	 */
+	public void setWeightSelfEfficacyToGoal(double weightSelfEfficacyToGoal) {
+		this.weightSelfEfficacyToGoal = weightSelfEfficacyToGoal;
+	}
+
+	/**
+	 * @param weightSocioStructuralToGoal the weightSocioStructuralToGoal to set
+	 */
+	public void setWeightSocioStructuralToGoal(double weightSocioStructuralToGoal) {
+		this.weightSocioStructuralToGoal = weightSocioStructuralToGoal;
+	}
+
+	/**
+	 * @param weightOutcomeExpToBehaviour the weightOutcomeExpToBehaviour to set
+	 */
+	public void setWeightOutcomeExpToBehaviour(double weightOutcomeExpToBehaviour) {
+		this.weightOutcomeExpToBehaviour = weightOutcomeExpToBehaviour;
+	}
+
+	/**
+	 * @param weightPerceptionOfOthersToBehaviour the weightPerceptionOfOthersToBehaviour to set
+	 */
+	public void setWeightPerceptionOfOthersToBehaviour(
+			double weightPerceptionOfOthersToBehaviour) {
+		this.weightPerceptionOfOthersToBehaviour = weightPerceptionOfOthersToBehaviour;
+	}
+
+	/**
+	 * @param weightSelfEfficacyToBehaviour the weightSelfEfficacyToBehaviour to set
+	 */
+	public void setWeightSelfEfficacyToBehaviour(
+			double weightSelfEfficacyToBehaviour) {
+		this.weightSelfEfficacyToBehaviour = weightSelfEfficacyToBehaviour;
+	}
+
+	/**
+	 * @param weightSocioStructuralToBehaviour the weightSocioStructuralToBehaviour to set
+	 */
+	public void setWeightSocioStructuralToBehaviour(
+			double weightSocioStructuralToBehaviour) {
+		this.weightSocioStructuralToBehaviour = weightSocioStructuralToBehaviour;
+	}
+
+	/**
+	 * @param weightGoalToBehaviour the weightGoalToBehaviour to set
+	 */
+	public void setWeightGoalToBehaviour(double weightGoalToBehaviour) {
+		this.weightGoalToBehaviour = weightGoalToBehaviour;
+	}
+
+	/**
+	 * @param weightOutcomeToSelfEfficacy the weightOutcomeToSelfEfficacy to set
+	 */
+	public void setWeightOutcomeToSelfEfficacy(double weightOutcomeToSelfEfficacy) {
+		this.weightOutcomeToSelfEfficacy = weightOutcomeToSelfEfficacy;
+	}
+
+	/**
+	 * @param weightOutcomeToSocioStructural the weightOutcomeToSocioStructural to set
+	 */
+	public void setWeightOutcomeToSocioStructural(
+			double weightOutcomeToSocioStructural) {
+		this.weightOutcomeToSocioStructural = weightOutcomeToSocioStructural;
+	}
+
+	/**
+	 * @param weightOutcomeToOutcomeExp the weightOutcomeToOutcomeExp to set
+	 */
+	public void setWeightOutcomeToOutcomeExp(double weightOutcomeToOutcomeExp) {
+		this.weightOutcomeToOutcomeExp = weightOutcomeToOutcomeExp;
+	}
+
+	/**
+	 * @param lowestBehaviourTrueThreshold the lowestBehaviourTrueThreshold to set
+	 */
+	public void setLowestBehaviourTrueThreshold(double lowestBehaviourTrueThreshold) {
+		this.lowestBehaviourTrueThreshold = lowestBehaviourTrueThreshold;
+	}
+
+	
 	
 }

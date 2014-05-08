@@ -7,6 +7,7 @@ Repast.settings
 *.csv
 *Thumbs.db
 *.mwsymb
+.metadata*
 
 #ignore png files stored anywhere except the icons folder
 *.png

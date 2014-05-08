@@ -18,6 +18,8 @@ import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.PropertyEquals;
@@ -77,11 +79,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		 * myContext.setNorthLim(52.62); myContext.setSouthLin(52.58);
 		 * myContext.setEastLim(-1.05); myContext.setWestLim(-1.1);
 		 */
-		myContext.PVFITs = new TreeMap<Integer, Integer>();
-		myContext.PVFITs.put(4, 370);
-		myContext.PVFITs.put(10, 310);
-		myContext.PVFITs.put(100, 280);
-		myContext.PVFITs.put(5000, 260);
+
 
 		DefaultGeography<Household> leicesterGeography = new DefaultGeography<Household>("Leicester");
 
@@ -722,8 +720,36 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		myContext.logger.info("All agents added to supplier co network");
 
 	}
+	
+	/*
+	 * populate the PV tariffs in the context
+	 */
+	public void firstCutTariffs() {
+		
+		TreeMap<Integer, Integer> FitVal = new TreeMap<Integer,Integer>();
+		FitVal.put(4, 370);
+		FitVal.put(10, 310);
+		FitVal.put(100, 280);
+		FitVal.put(5000, 260);
+		myContext.PVFITs.putValue(myContext.parseUKDate("01/04/2010"), FitVal);
+		
+		FitVal = new TreeMap<Integer,Integer>();
+		FitVal.put(4, 210);
+		FitVal.put(10, 160);
+		FitVal.put(100, 130);
+		FitVal.put(5000,130);
+		myContext.PVFITs.putValue(myContext.parseUKDate("12/12/2011"), FitVal);
 
-	/**climatepre
+		FitVal = new TreeMap<Integer,Integer>();
+		FitVal.put(4, 160);
+		FitVal.put(10, 140);
+		FitVal.put(100, 100);
+		FitVal.put(5000,100);
+		myContext.PVFITs.putValue(myContext.parseUKDate("01/12/2012"), FitVal);
+
+	}
+
+	/**
 	 * 
 	 * This method will build all the networks TODO: This method will need to be
 	 * refined later At this moment, there is only one aggregator and links are
@@ -772,6 +798,19 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 
 		this.myContext.setEconomicNetwork(economicNet);
+
+		// We should create a bespoke network for the electrical networks.
+		// ProsumerAgents only - edges should have nominal voltage and capacity
+		// attributes. TODO: How do we deal with transformers??
+		// Network physicalNet = networkFactory.createNetwork("electricalNetwork", myContext, directed);
+		// TODO: How does info network differ from economic network?
+		// Network infoNet = networkFactory.createNetwork("infoNetwork", myContext, directed);
+		// this.myContext.logger.info("Adding edges to network");
+		// for (ProsumerAgent prAgent : (Iterable<ProsumerAgent>) (myContext.getObjects(ProsumerAgent.class)))
+		// {
+		// 	infoNet.addEdge(firstAggregator, prAgent);
+		// }
+		// this.myContext.logger.info("Edges added - ready to start");
 
 	}
 
