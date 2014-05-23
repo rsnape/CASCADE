@@ -40,6 +40,7 @@ import repast.simphony.random.RandomHelper;
 import repast.simphony.space.graph.Network;
 import repast.simphony.visualization.gis.DisplayGIS;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.util.DatedTimeSeries;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 import cern.jet.random.Poisson;
@@ -73,6 +74,11 @@ public class AdoptionContext extends CascadeContext{
 	DatedTimeSeries<TreeMap<Integer,Integer>> PVFITs = new DatedTimeSeries<TreeMap<Integer,Integer>>(); // Holds PV feed in tarriffs in system
 										// capacity vs. tenths of
 										// pence / eurocents per kWh
+	
+	DatedTimeSeries<Integer> PVCosts = new DatedTimeSeries<Integer>(); // Holds PV feed in tarriffs in system
+	// capacity vs. tenths of
+	// pence / eurocents per kWh
+	
 	WeakHashMap<String,Integer> agentCounts = new WeakHashMap<String,Integer>();
 	Calendar simTime = new GregorianCalendar();
 	public Date simStartDate;
@@ -201,7 +207,7 @@ public class AdoptionContext extends CascadeContext{
     		retVal = tariffNow.get(tariffNow.firstKey());
     	}
     	
-    	this.logger.debug("returning fit for capacity " + cap + " = " + retVal);
+    	this.logger.trace("returning fit for capacity " + cap + " = " + retVal);
     	return retVal;
     	
 		/*Iterator<Integer> iterator = tariffNow.keySet().iterator();
@@ -264,7 +270,7 @@ public class AdoptionContext extends CascadeContext{
 		// set up a logger for the adoption context
 		logger = Logger.getLogger("AdoptionLogger");
 		logger.removeAllAppenders();
-		logger.setLevel(Level.INFO); //Set this to TRACE for full log files.  Can filter what is actually output below
+		logger.setLevel(Level.DEBUG); //Set this to TRACE for full log files.  Can filter what is actually output below
 		ConsoleAppender console = new ConsoleAppender(new AdoptionLogLayout());
 		console.setName("ConsoleOutput");
 		console.setThreshold(Level.INFO);
@@ -399,6 +405,36 @@ public class AdoptionContext extends CascadeContext{
 	
 	public int getTimeslotOfDay() {
 		return (int) RepastEssentials.GetTickCount() % ticksPerDay;
+	}
+	
+	public int getPricePerkWp()
+	{
+		Date now = this.getDateTime();
+    	
+    	this.logger.trace("Getting PV price per kWh on date " + ukDateParser.format(now));
+    	
+    	if (now.before(this.PVCosts.getFirstDate()))
+    	{
+			return 0;
+    	}   	
+		
+    	return this.PVCosts.getValue(now);
+    	
+	}
+
+	/**
+	 * @param potentialPVCapacity
+	 * @return
+	 */
+	public double getPVSystemPrice(double potentialPVCapacity) {
+		double quote = this.getPricePerkWp() * potentialPVCapacity;
+		double profit = RandomHelper.nextDoubleFromTo(Consts.INSTALLER_MIN_PROFIT, Consts.INSTALLER_MIN_PROFIT);
+		double installationPrice = 500000; //£500 in tenths of pence (estimated for 2 people, 1 day)
+		quote = quote + installationPrice * (1+profit);
+		
+		return quote;
+		
+		
 	}
 
 }

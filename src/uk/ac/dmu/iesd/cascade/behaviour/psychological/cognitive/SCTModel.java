@@ -22,20 +22,20 @@ public class SCTModel {
 
 	double outcome = 0;
 	
-	double weightSocioStructuralToOutcomeExp = 0;
-	double weightSocioStructuralToPerceptionOfOthers = 0;
-	double weightSelfEfficacyToOutcomeExp = 0;
+	double weightSocioStructuralToOutcomeExp = 1;
+	double weightSocioStructuralToPerceptionOfOthers = 1;
+	double weightSelfEfficacyToOutcomeExp = 1;
 
-	double weightOutcomeExpToGoal= 0;
-	double weightPerceptionOfOthersToGoal = 0;
-	double weightSelfEfficacyToGoal = 0;
-	double weightSocioStructuralToGoal = 0;
+	double weightOutcomeExpToGoal= 1;
+	double weightPerceptionOfOthersToGoal = 1;
+	double weightSelfEfficacyToGoal = 1;
+	double weightSocioStructuralToGoal = 1;
 	
 
-	double weightOutcomeExpToBehaviour= 0;
-	double weightPerceptionOfOthersToBehaviour = 0;
-	double weightSelfEfficacyToBehaviour = 0;
-	double weightSocioStructuralToBehaviour = 0;
+	double weightOutcomeExpToBehaviour= 1;
+	double weightPerceptionOfOthersToBehaviour = 1;
+	double weightSelfEfficacyToBehaviour = 1;
+	double weightSocioStructuralToBehaviour = 1;
 
 	/*
 	 * This is a special link - from the goal to behaviour
@@ -71,7 +71,7 @@ public class SCTModel {
 	 */
 	private void calculateGoal()
 	{
-		calculateFeedbacks();
+		//calculateFeedbacks(); // Need to think about this - ensure it doesn't take contructs -ve (or at least that we deal with that properly)
 		
 		double sumOfWeightedConstructs = 0;
 		sumOfWeightedConstructs += weightOutcomeExpToGoal * outcomeExpectation;

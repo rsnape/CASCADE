@@ -12,6 +12,7 @@ import repast.simphony.query.space.gis.GeographyWithin;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
 import repast.simphony.util.ContextUtils;
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.behaviour.psychological.cognitive.SCTModel;
 import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
@@ -60,6 +61,7 @@ public class Household extends HouseholdProsumer {
 
 	private double economicSensitivity;
 	private double decisionUrgency = 0.001;
+	private double perceivedPVBenefit = 0;
 	
 
 
@@ -86,7 +88,7 @@ public class Household extends HouseholdProsumer {
 
 		if (mainContext.getDateTime().getTime() > this.nextCogniscentDate.getTime()	&& mainContext.getDateTime().getTime() <= (this.nextCogniscentDate.getTime() + 24 * 60 * 60 * 1000)) {
 			mainContext.logger.debug(this.getAgentName() + " Thinking with PV ownership = "+this.getHasPV()+"..."+this.PVlikelihood);
-			considerOptions();
+			considerOptions(); //Could make the consideration further probabilistic...
 			// this.myGeography.move(this, this.myGeography.getGeometry(this));
 			numThoughts++;
 			decisionUrgency = 1.0 / (mainContext.dateToTick(mainContext.getTarriffAvailableUntil()) - mainContext.getTickCount());
@@ -100,40 +102,76 @@ public class Household extends HouseholdProsumer {
 		mainContext.logger.trace(this.agentName
 				+ " gathering information from baseline likelihood of "
 				+ PVlikelihood + "...");
-		observeNeighbours();
 		checkTariffs();
+		calculateSCT();
+	
+
+		if (RandomHelper.nextDouble() > habit) {
+			// habit change
+			microgenPropensity = PVlikelihood;
+			mainContext.logger
+					.trace("Updating propensity, i.e. changing habit, based on likelihood");
+		}
+		
 		mainContext.logger.trace(this.agentName
 				+ " making decision based on likelihood of " + PVlikelihood
 				+ "...");
 		makeDecision();
 	}
 
+	/**
+	 * 
+	 */
+	private void calculateSCT() {
+
+		/*
+		 * Set perception of others' behaviour based on observed percentage
+		 */
+		this.PVDecisionModel.setPerceptionOfOthers(this.observeNeighbours());		
+		this.PVDecisionModel.setSelfEfficacy(this.economicAbility); //Could do this one off at initialisation
+		this.PVDecisionModel.setOutcomeExpectation(this.decisionUrgency * this.economicSensitivity * this.perceivedPVBenefit);
+		
+		/*
+		 * Set economic factors in socio structural construct.  Note that a value of 0
+		 * is an absolute veto
+		 */
+		double quote = this.mainContext.getPVSystemPrice(this.potentialPVCapacity);
+		if (this.PVCapital < quote || this.potentialPVCapacity == 0)
+		{
+			this.PVDecisionModel.setSocioStructural(0);			
+		}
+		else
+		{
+			double socioStructuralFactors = 0; //0 = absolutely not, 1 = maximum likelihood
+			socioStructuralFactors = (this.PVCapital - quote) / this.PVCapital; // Cheaper it is, the more attractive - free = socio structural of 1
+			this.PVDecisionModel.setSocioStructural(socioStructuralFactors);
+		}
+		
+		this.PVlikelihood = this.PVDecisionModel.getGoal();	
+	}
+
 	private void makeDecision() {
 		mainContext.logger.trace(this.getAgentName()
 				+ " has microgen propensity " + this.microgenPropensity
 				+ " and PV adoption likelihood " + PVlikelihood);
-		if (PVlikelihood > getAdoptionThreshold()) {
+		
+		this.PVDecisionModel.setAbsoluteBehaviourThreshold(this.getAdoptionThreshold());
+		this.PVDecisionModel.calculateBehaviour();
+		
+		this.mainContext.logger.debug("Calculated behaviour from SCT" + this.PVDecisionModel.getBehaviour());
+		
+		//if (PVlikelihood > getAdoptionThreshold()) 
+		if (this.PVDecisionModel.getBinaryBehaviourDecisionHardThreshold()) 		
+		{
 			mainContext.logger.debug(this.agentName + " Adopted PV");
 			this.setPV();
 
-		}
-		
+		}		
 		
 		if (false)//(ArrayUtils.sum(this.baseProfile)*RandomHelper.nextDouble()*365*100 > smartContCapital)
 		{
-			this.hasSmartControl = true;
 			this.setWattboxController();			
 		}
-		
-		
-		//Tests for ECEEE scenarios to check PV generation bit working
-
-		//this.hasPV=false;
-		
-		/*if (mainContext.getTickCount() > 0)//(Consts.AGGREGATOR_TRAINING_SP+Consts.AGGREGATOR_PROFILE_BUILDING_SP))
-		{
-			setPV();
-		}*/
 
 	}
 	
@@ -168,7 +206,7 @@ public class Household extends HouseholdProsumer {
 		// Add the weight of the tariff influence to the adoption likelihood
 	}
 
-	private void observeNeighbours() {
+	private double observeNeighbours() {
 		mainContext.logger.trace("Observing neighbours");
 		ArrayList<Household> neighbours = getNeighbours();
 		int observedAdoption = 0;
@@ -184,24 +222,18 @@ public class Household extends HouseholdProsumer {
 				}
 				observed++;
 			}
-
-			// Likelihood of adopting now - based on observation alone
-			// Note that the 0.5 is an arbitrary and tunable parameter.
-			PVlikelihood += ((double) observedAdoption) / observed;
-			mainContext.logger.trace("Adding likelihood to agent "
-					+ this.getAgentName() + " based on " + observedAdoption
-					+ " of " + numCachedNeighbours
-					+ " neighbours observed to have PV (" + observed
-					+ " observed this round)");
-
-			if (RandomHelper.nextDouble() > habit) {
-				// habit change
-				microgenPropensity = PVlikelihood;
-				mainContext.logger
-						.trace("Updating propensity, i.e. changing habit, based on likelihood");
-			}
-
 		}
+		
+		mainContext.logger.trace("Returninglikelihood to agent "
+				+ this.getAgentName() + " based on " + observedAdoption
+				+ " of " + numCachedNeighbours
+				+ " neighbours observed to have PV (" + observed
+				+ " observed this round)");
+
+		// Likelihood of adopting now - based on observation alone
+		// Note that the 0.5 is an arbitrary and tunable parameter.
+		return observed == 0 ? 0 : ((double) observedAdoption) / observed;
+
 	}
 
 	/*
@@ -267,6 +299,7 @@ public class Household extends HouseholdProsumer {
 		this.agentName = "Household_" + this.agentID;
 		this.mainContext = context;
 		setStartDateAndFirstThought();
+		initialiseSCT();
 		context.logger.debug(this.agentName+" initialised, first thought at "+nextCogniscentDate.toGMTString());
 		}
 	
@@ -385,15 +418,37 @@ public class Household extends HouseholdProsumer {
 		return 0;
 	}
 
-/*	@ScheduledMethod(start = 2600, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
-	public void estimatePVBenefit()
+	@ScheduledMethod(start = 49, interval = 48, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
+	public void estimateDailyPVBenefit()
 	{
-		
+		//EST generation factor = 833 kWh per kWp per year for South facing - 640 for East facing, 661 West facing
+		//Heavy shading attenuates by half.  For now - use 750 as reasonable estimate
+		double estimatedPVGen = this.potentialPVCapacity * (Consts.PV_KWH_PER_KWP / 365);
+		this.perceivedPVBenefit = estimatedPVGen * currentTariff();
 	}
 	
 	@ScheduledMethod(start = 2600, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void estimateSmartControlBenefit()
 	{
 		
-	}*/
+	}
+	
+	private void initialiseSCT()
+	{
+		this.PVDecisionModel.setWeightGoalToBehaviour(5);
+		this.PVDecisionModel.setWeightSocioStructuralToOutcomeExp(4);
+		this.PVDecisionModel.setWeightSocioStructuralToPerceptionOfOthers(2) ;
+		this.PVDecisionModel.setWeightSelfEfficacyToOutcomeExp(5) ;
+		this.PVDecisionModel.setWeightOutcomeExpToGoal(5) ;
+		this.PVDecisionModel.setWeightPerceptionOfOthersToGoal(3); 
+		this.PVDecisionModel.setWeightSelfEfficacyToGoal(4); 
+		this.PVDecisionModel.setWeightSocioStructuralToGoal(5); 
+		this.PVDecisionModel.setWeightOutcomeExpToBehaviour(5) ;
+		this.PVDecisionModel.setWeightPerceptionOfOthersToBehaviour(1) ;
+		this.PVDecisionModel.setWeightSelfEfficacyToBehaviour(5) ;
+		this.PVDecisionModel.setWeightSocioStructuralToBehaviour(5) ;
+		this.PVDecisionModel.setWeightOutcomeToSelfEfficacy(4) ;
+		this.PVDecisionModel.setWeightOutcomeToSocioStructural(1) ;
+		this.PVDecisionModel.setWeightOutcomeToOutcomeExp(5);
+	}
 }

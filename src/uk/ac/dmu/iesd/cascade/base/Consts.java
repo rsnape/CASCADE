@@ -359,8 +359,8 @@ public final class Consts {
 	public static final boolean USE_SINGLE_NON_DOMESTIC_AGGREGATOR = false;
 	public static final boolean UPDATE_PHYSICAL_NODE_TO_MARKET = true;
 	public static final double RATIO_AGANIST_HOUSEHOLD = 2d;
-
-
-
+	public static final double PV_KWH_PER_KWP = 750;
+	public static final double INSTALLER_MIN_PROFIT = 0.05;
+	public static final double INSTALLER_MAX_PROFIT = 0.2;
 }
 

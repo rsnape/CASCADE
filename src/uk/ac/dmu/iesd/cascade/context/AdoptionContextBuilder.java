@@ -126,7 +126,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		ArrayList<Household> households;
 
-		boolean fromShapefile = true;
+		boolean fromShapefile = false;
 		
 		if (!fromShapefile)
 		{
@@ -356,6 +356,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		 * "Base System Demand array not a whole number of days. This may cause unexpected behaviour"
 		 * ); }
 		 */
+		initTariffs();
+		initCosts();
+		
+		
 		try
 		{
 			CSVReader otherDemandReader = new CSVReader(householdOtherDemandFile);
@@ -388,6 +392,13 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		}
 
 		Arrays.copyOf(Consts.MONTHLY_MAINS_WATER_TEMP, Consts.MONTHLY_MAINS_WATER_TEMP.length);
+	}
+
+	/**
+	 * TODO: Put a time series proper here, instead of a flat £1 per Wp
+	 */
+	private void initCosts() {
+		myContext.PVCosts.putValue(myContext.parseUKDate("01/04/2010"), 1000000);		
 	}
 
 	/**
@@ -724,7 +735,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	/*
 	 * populate the PV tariffs in the context
 	 */
-	public void firstCutTariffs() {
+	public void initTariffs() {
 		
 		TreeMap<Integer, Integer> FitVal = new TreeMap<Integer,Integer>();
 		FitVal.put(4, 370);

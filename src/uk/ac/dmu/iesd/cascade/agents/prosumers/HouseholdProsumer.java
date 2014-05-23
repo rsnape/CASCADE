@@ -1176,7 +1176,8 @@ public class HouseholdProsumer extends ProsumerAgent{
 		
 	}
 	
-	public void setWattboxController() {	
+	public void setWattboxController() {
+		this.hasSmartControl = true;
 		//this.mySmartController = new WattboxController(this, this.mainContext);
 		this.mySmartController = new ProportionalWattboxController(this, this.mainContext);
 	}
