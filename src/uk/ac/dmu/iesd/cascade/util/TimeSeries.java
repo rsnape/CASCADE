@@ -66,5 +66,13 @@ public abstract class TimeSeries<K extends Comparable, T> {
 		}
 	}
 
-
+	public String toString()
+	{
+		StringBuffer sb = new StringBuffer();
+		for (K thisKey : datapoints.keySet())
+		{
+			sb.append(thisKey + " : " + datapoints.get(thisKey)+"\n");
+		}
+		return sb.toString();
+	}
 }

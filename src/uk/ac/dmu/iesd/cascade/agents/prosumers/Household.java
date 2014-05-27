@@ -86,14 +86,16 @@ public class Household extends HouseholdProsumer {
 			}
 		}
 
-		if (mainContext.getDateTime().getTime() > this.nextCogniscentDate.getTime()	&& mainContext.getDateTime().getTime() <= (this.nextCogniscentDate.getTime() + 24 * 60 * 60 * 1000)) {
+		if (mainContext.getDateTime().getTime() > this.nextCogniscentDate.getTime()	&& mainContext.getDateTime().getTime() <= (this.nextCogniscentDate.getTime() + Consts.MSECS_PER_DAY)) {
 			mainContext.logger.debug(this.getAgentName() + " Thinking with PV ownership = "+this.getHasPV()+"..."+this.PVlikelihood);
 			considerOptions(); //Could make the consideration further probabilistic...
+			mainContext.logger.debug("Resulting in PV ownership = "+this.getHasPV()+", likelihood:"+this.PVlikelihood+", neightbours:"+this.numCachedNeighbours);
+
 			// this.myGeography.move(this, this.myGeography.getGeometry(this));
 			numThoughts++;
-			decisionUrgency = 1.0 / (mainContext.dateToTick(mainContext.getTarriffAvailableUntil()) - mainContext.getTickCount());
-			mainContext.logger.debug("Resulting in PV ownership = "+this.getHasPV()+", likelihood:"+this.PVlikelihood+", neightbours:"+this.numCachedNeighbours);
-			this.nextCogniscentDate.setTime(mainContext.getDateTime().getTime() + ((long) (mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
+			decisionUrgency = Math.exp(-((mainContext.dateToTick(mainContext.getTarriffAvailableUntil()) - mainContext.getTickCount())/(mainContext.ticksPerDay*28)));
+			mainContext.logger.debug("New decision urgency = " + decisionUrgency + " from tariff available until tick: " + mainContext.dateToTick(mainContext.getTarriffAvailableUntil()));
+			this.nextCogniscentDate.setTime(mainContext.getDateTime().getTime() + ((long) (mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
 		}
 	}
 
@@ -107,7 +109,8 @@ public class Household extends HouseholdProsumer {
 	
 
 		if (RandomHelper.nextDouble() > habit) {
-			// habit change
+			// habit change - introducing a longer term feedback, 
+			// should be equivalent to norm shifting over the population.
 			microgenPropensity = PVlikelihood;
 			mainContext.logger
 					.trace("Updating propensity, i.e. changing habit, based on likelihood");

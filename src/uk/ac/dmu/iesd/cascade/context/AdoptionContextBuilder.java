@@ -757,6 +757,8 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		FitVal.put(100, 100);
 		FitVal.put(5000,100);
 		myContext.PVFITs.putValue(myContext.parseUKDate("01/12/2012"), FitVal);
+		
+		myContext.logger.debug("Tariffs set to" + myContext.PVFITs);
 
 	}
 

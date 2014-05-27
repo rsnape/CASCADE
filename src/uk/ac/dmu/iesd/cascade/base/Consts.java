@@ -362,5 +362,6 @@ public final class Consts {
 	public static final double PV_KWH_PER_KWP = 750;
 	public static final double INSTALLER_MIN_PROFIT = 0.05;
 	public static final double INSTALLER_MAX_PROFIT = 0.2;
+	public static final int MSECS_PER_DAY = 24*60*60*1000;
 }
 

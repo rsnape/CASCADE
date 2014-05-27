@@ -15,6 +15,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 
+import jogamp.opengl.macosx.cgl.MacOSXCGLGraphicsConfiguration;
+
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.ConsoleAppender;
@@ -49,7 +51,22 @@ public class AdoptionContext extends CascadeContext{
 	
 	public static final double FIT_EXPORT_TARIFF = 45;
 	public Poisson nextThoughtGenerator = RandomHelper.createPoisson(30.0);
+	private int msecsPerTick;
 	
+	/**
+	 * @return the msecsPerTick
+	 */
+	public int getMsecsPerTick() {
+		return msecsPerTick;
+	}
+
+	/**
+	 * @param msecsPerTick the msecsPerTick to set
+	 */
+	public void setMsecsPerTick(int msecsPerTick) {
+		this.msecsPerTick = msecsPerTick;
+	}
+
 	private class CountUpdater implements ContextListener {
 
 		public void eventOccured(ContextEvent ev) {
@@ -107,7 +124,7 @@ public class AdoptionContext extends CascadeContext{
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
 		this.logger.trace("Incrementing simulation date and time");
-		simTime.add(GregorianCalendar.MINUTE, 30);
+		simTime.add(GregorianCalendar.MINUTE, this.getMsecsPerTick()/(1000*60));
 		this.logger.trace("Advancing date to " + ukDateParser.format(simTime.getTime()));
 	}
 
@@ -129,16 +146,19 @@ public class AdoptionContext extends CascadeContext{
 	
     public Date getTarriffAvailableUntil()
     {
-    	Date returnDate = new Date();    	
+    	Date retVal = new Date();    	
     	Date now = this.getDateTime();
     	
-    	Date retVal = this.PVFITs.getFirstKeyFollowing(now);
+    	retVal = this.PVFITs.getFirstKeyFollowing(now);
+    	this.logger.debug("Finding key following " + ukDateParser.format(now));
+    	
     	if (retVal == null)
     	{
     		this.logger.debug("return last valid date as appears " + ukDateParser.format(now) + " is past last key");
     		retVal = this.PVFITs.getLastValidDate();
     	}
     	
+    	this.logger.debug("Returning  = " + ukDateParser.format(retVal));
     	
 /*    	if (now.before(parseUKDate("31/10/2011")))
     	{
@@ -304,6 +324,8 @@ public class AdoptionContext extends CascadeContext{
 		
 		simStartDate = parseUKDate(date);
 		simTime.setTime(simStartDate);
+		
+
 
 		//this.addContextListener(new CountUpdater());
 	}
@@ -344,19 +366,16 @@ public class AdoptionContext extends CascadeContext{
 	
 	public int dateToTick(Date d)
 	{
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(d);
-		Calendar cal1 = Calendar.getInstance();
-		cal1.setTime(simStartDate);
-		int msecDiff = cal.compareTo(cal1);
-		return msecDiff / (30*60*1000);
+		long msecDiff = d.getTime() - simStartDate.getTime();
+		this.logger.debug("simStartDate = " + ukDateParser.format(simStartDate) + " : date to test = " + ukDateParser.format(d) + " : msecsPerTick = " + this.msecsPerTick + " difference being " + msecDiff);
+		return (int) (msecDiff / this.msecsPerTick);
 	}
 	
 	public Date tickToDate(int t)
 	{
 		Calendar cal1 = Calendar.getInstance();
 		cal1.setTime(simStartDate);
-		cal1.add(Calendar.MINUTE,t*30);
+		cal1.add(Calendar.MINUTE,t*Consts.MINUTES_PER_DAY / this.ticksPerDay);
 		return cal1.getTime();
 	}
 
@@ -375,6 +394,7 @@ public class AdoptionContext extends CascadeContext{
 	public void setNbOfTickPerDay(int ticksPerDay)
 	{
 		this.ticksPerDay =ticksPerDay;	
+		this.setMsecsPerTick(Consts.MSECS_PER_DAY/this.ticksPerDay);
 	}
 
 	/**
