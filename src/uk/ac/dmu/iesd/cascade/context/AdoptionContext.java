@@ -2,30 +2,20 @@ package uk.ac.dmu.iesd.cascade.context;
 
 //import javax.media.jai.WarpAffine;
 import java.io.IOException;
-import java.io.ObjectInputStream.GetField;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 
-import jogamp.opengl.macosx.cgl.MacOSXCGLGraphicsConfiguration;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
-import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.spi.LoggingEvent;
 

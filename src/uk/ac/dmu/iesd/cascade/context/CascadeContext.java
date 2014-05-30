@@ -11,8 +11,6 @@ import java.util.Iterator;
 
 import javax.swing.JComponent;
 
-import org.jfree.chart.ChartPanel;
-
 import repast.simphony.context.Context;
 import repast.simphony.context.DefaultContext;
 import repast.simphony.engine.environment.RunEnvironment;
@@ -27,6 +25,7 @@ import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
 import uk.ac.dmu.iesd.cascade.market.ITrader;
+import uk.ac.dmu.iesd.cascade.util.ChartUtils;
 import cern.jet.random.Binomial;
 import cern.jet.random.EmpiricalWalker;
 import cern.jet.random.Normal;
@@ -548,37 +547,14 @@ public class CascadeContext extends DefaultContext{
 	public void setChartCompCollection(Collection<JComponent> c) {
 		chartCompCollection=c;
 		if (chartSnapshotOn) {
-			buildChartSnapshotTakers(c);
-			buildChartSnapshotSchedule();
+			snapshotTakerArrList = ChartUtils.buildChartSnapshotTakers(c);
+			ChartUtils.buildChartSnapshotSchedule(this, getChartSnapshotInterval());
 		}
 	}
 	
 	public Collection<JComponent> getChartCompCollection() {
 		return chartCompCollection;
 	}
-	
-	private void buildChartSnapshotTakers (Collection<JComponent> chartCompCollection) {
-		Iterator<JComponent> compIter= chartCompCollection.iterator();
-		snapshotTakerArrList = new ArrayList<SnapshotTaker>();
-		while ( compIter.hasNext() ){
-			ChartPanel chartComp = (ChartPanel) compIter.next();
-			//if (Consts.DEBUG) System.out.println(chartComp.getChart().getTitle().getText());
-			SnapshotTaker snapshotTaker = new SnapshotTaker(chartComp);
-			snapshotTakerArrList.add(snapshotTaker);
-		}
-	}
-	
-	private void buildChartSnapshotSchedule() {
-
-		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
-		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
-		//if (Consts.DEBUG) System.out.println("chartCompCol: null?: "+getChartCompCollection());
-		//if ((chartSnapshotOn) && (getChartCompCollection() != null)){
-		ScheduleParameters params = ScheduleParameters.createRepeating(0, getChartSnapshotInterval(),ScheduleParameters.LAST_PRIORITY);
-		schedule.schedule(params, this, "takeSnapshot"); 
-
-	}
-	
 	
 	
 	/******************

@@ -10,8 +10,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.jfree.chart.ChartFactory;
@@ -29,6 +33,11 @@ import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.HistogramType;
 import org.jfree.ui.RefineryUtilities;
 
+import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.ISchedule;
+import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.ui.widget.SnapshotTaker;
+import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import cern.jet.random.AbstractDiscreteDistribution;
 
 /**
@@ -37,6 +46,29 @@ import cern.jet.random.AbstractDiscreteDistribution;
  */
 public class ChartUtils {
 	
+	public static ArrayList<SnapshotTaker> buildChartSnapshotTakers (Collection<JComponent> chartCompCollection) {
+		Iterator<JComponent> compIter= chartCompCollection.iterator();
+		ArrayList<SnapshotTaker>  snapshotTakerArrList = new ArrayList<SnapshotTaker>();
+		while ( compIter.hasNext() ){
+			ChartPanel chartComp = (ChartPanel) compIter.next();
+			//if (Consts.DEBUG) System.out.println(chartComp.getChart().getTitle().getText());
+			SnapshotTaker snapshotTaker = new SnapshotTaker(chartComp);
+			snapshotTakerArrList.add(snapshotTaker);
+		}
+		
+		return snapshotTakerArrList;
+	}
+	
+	public static void buildChartSnapshotSchedule(CascadeContext context, int interval) {
+
+		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
+		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
+		//if (Consts.DEBUG) System.out.println("chartCompCol: null?: "+getChartCompCollection());
+		//if ((chartSnapshotOn) && (getChartCompCollection() != null)){
+		ScheduleParameters params = ScheduleParameters.createRepeating(0, interval,ScheduleParameters.LAST_PRIORITY);
+		schedule.schedule(params, context, "takeSnapshot"); 
+
+	}
 	
 	static class ChartAppFrame extends JFrame {
 		public ChartAppFrame(String title, JFreeChart chart) {

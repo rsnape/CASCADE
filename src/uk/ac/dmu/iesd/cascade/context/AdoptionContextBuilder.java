@@ -60,6 +60,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	@Override
 	public Context build(Context context)
 	{
+		System.err.println("***** HERE IN THE BATCH MODE *****");
 		myContext = new AdoptionContext(context, "01/04/2010");
 
 		readParamsAndInitializeArrays();
