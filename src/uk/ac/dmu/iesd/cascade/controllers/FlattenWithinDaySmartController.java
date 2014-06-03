@@ -56,10 +56,10 @@ public class FlattenWithinDaySmartController implements ISmartController {
 			{
 				//TODO: This always gets triggerd - I wonder if the "day" i'm taking
 				//here and in the inelasticdemand method are "off-by-one"
-				if (Consts.DEBUG) System.out.println("optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - owner.inelasticTotalDayDemand));
+				this.mainContext.logger.debug("optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - owner.inelasticTotalDayDemand));
 			}
 
-			if (Consts.DEBUG) System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+			this.mainContext.logger.debug("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
 		}*/
 	}
 

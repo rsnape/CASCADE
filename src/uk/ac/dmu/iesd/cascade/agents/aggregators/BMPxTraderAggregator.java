@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.random.DefaultRandomRegistry;
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
@@ -13,6 +14,7 @@ import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
+import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
 import uk.ac.dmu.iesd.cascade.market.astem.util.ArraysUtils;
 import uk.ac.dmu.iesd.cascade.market.data.BSOD;
 import uk.ac.dmu.iesd.cascade.market.data.PxPD;
@@ -112,7 +114,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	//------	
 
 	private double[] calculateStochasticPN(double[] baselineProfile, double mFactor){
-		//System.out.println("calculateStochasticPN: "+mFactor);
+		this.mainContext.logger.trace("calculateStochasticPN: "+mFactor);
 
 		double [] randomPN = new double[this.ticksPerDay];
 		double avg = ArraysUtils.avg(baselineProfile);
@@ -122,14 +124,14 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 			Normal normalDist = RandomHelper.createNormal(baselineProfile[i], sd);
 			randomPN[i] = normalDist.nextDouble();
 		}
-		//System.out.println("randomPN: "+Arrays.toString(randomPN));
+		this.mainContext.logger.trace("randomPN: "+Arrays.toString(randomPN));
 
 		return randomPN;			
 	}
 	
 	private double[] initializePN(double[] baselineProfile) {
-		//System.out.println("initializePN (baselineProf): "+Arrays.toString(baselineProfile));
-		//System.out.println(" initializePN "+this.id + " -- "+ TestHelper.getEnvInfoInString(mainContext));
+		this.mainContext.logger.trace("initializePN (baselineProf): "+Arrays.toString(baselineProfile));
+		this.mainContext.logger.trace(" initializePN "+this.id + " -- "+ TestHelper.getEnvInfoInString(mainContext));
 
 		double[] initializedArray=baselineProfile; 
 		
@@ -141,7 +143,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		case GEN_COAL: 
 			//initializedArray= baselineProfile;//calculateStochasticPN(baselineProfile, 0.01);
 			initializedArray= calculateStochasticPN(baselineProfile, 0.01);
-			//System.out.println("initializedArray GENCOAL: "+Arrays.toString(baselineProfile));
+			this.mainContext.logger.trace("initializedArray GENCOAL: "+Arrays.toString(baselineProfile));
 			break;
 		case GEN_CCGT: 
 			//initializedArray= baselineProfile; //calculateStochasticPN(baselineProfile, 0.01);
@@ -290,7 +292,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	}
 	
 	public void recieveBOA( ArrayList<BOD> listOfBOD){
-		//System.out.println("BMU ("+ this.getName()+"): recieveBOA() called");
+		this.mainContext.logger.trace("BMU ("+ this.getAgentName()+"): recieveBOA() called");
 		//should they recieve or go to fetch? 
 		//if (!list_BOA.isEmpty())
 			//list_BOA.clear();
@@ -298,13 +300,13 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		for (BOD bod : listOfBOD){	
 			list_BOA.add(bod);
 		}
-		//System.out.println("BOA after they are recieved:");
+		this.mainContext.logger.trace("BOA after they are recieved:");
 		//TestUtils.printBODs(list_BOA);
 	}
 	
 	/*
 	public void recieveBSOD( ArrayList<BSOD> listOfBSOD){
-		//System.out.println("BMU ("+ this.getName()+"): recieveBSOD() called");
+		this.mainContext.logger.trace("BMU ("+ this.getName()+"): recieveBSOD() called");
 
 		list_BSOD = new ArrayList<BSOD>();
 		for (BSOD bsod : listOfBSOD){	
@@ -313,7 +315,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	} */
 	
 	public void recieveBSOA( ArrayList<BSOD> listOfBSOD){
-		//System.out.println("SupplierCo ("+ this.getName()+"): recieveBSOD() called");
+		this.mainContext.logger.trace("SupplierCo ("+ this.getAgentName()+"): recieveBSOD() called");
 
 		list_BSOD = new ArrayList<BSOD>();
 		for (BSOD bsod : listOfBSOD){	
@@ -330,7 +332,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	
 		if (this.category == BMU_CATEGORY.GEN_T) {
 
-			//System.out.println("getMarginPC:: is T type");
+			this.mainContext.logger.trace("getMarginPC:: is T type");
 			switch (pairID) {
 			case 1: marginPC= 0.05;
 			break;
@@ -358,7 +360,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		}
 		else if (this.category == BMU_CATEGORY.DEM_S) {
 
-			//System.out.println("getMarginPC:: is S type");
+			this.mainContext.logger.trace("getMarginPC:: is S type");
 
 			switch (pairID) {
 			case 1: marginPC= 0.2;
@@ -369,7 +371,7 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 			}
 		}
 		
-		//System.out.println("getMarginPC:: "+this.id+this.getTypeAsString()+this.type+", pairID="+pairID+ ", marginPC="+marginPC);
+		this.mainContext.logger.trace("getMarginPC:: "+this.id+this.getCategoryAsString()+this.type+", pairID="+pairID+ ", marginPC="+marginPC);
 		
 		return marginPC;
 	}
@@ -596,7 +598,7 @@ private double getExperiment() {
 			updatedE = reward * (1 - getExperiment());
 		else updatedE = (reward * getExperiment()) / (ASTEMConsts.BMU_BO_NUM_OF_CHOICE - 1);
 
-		//System.out.println("updatedE="+updatedE);
+		this.mainContext.logger.trace("updatedE="+updatedE);
 
 		return updatedE;
 	}
@@ -604,7 +606,7 @@ private double getExperiment() {
 	private double[] learnAndUpdatePropensity(int acceptedIndex, double accBO, double[] propensityArray){
 		for(int i=0; i<propensityArray.length; i++)
 			propensityArray[i] = (1-getRegency()) * propensityArray[i] + updateExperience(i, acceptedIndex, Math.abs(accBO));
-		//System.out.println("propensityArray="+Arrays.toString(propensityArray));
+		this.mainContext.logger.trace("propensityArray="+Arrays.toString(propensityArray));
 
 		return propensityArray;
 	}
@@ -633,13 +635,13 @@ private double getExperiment() {
 				//EmpiricalWalker randWalkDist= new cern.jet.random.EmpiricalWalker(boa.getProbabilityArray(), Empirical.NO_INTERPOLATION, mainContext.cRandomEng);
 				//EmpiricalWalker randWalkDist= new cern.jet.random.EmpiricalWalker(boa.getProbabilityArray(), Empirical.NO_INTERPOLATION,  (RandomEngine) RandomHelper.getGenerator(DefaultRandomRegistry.DEFAULT_GENERATOR).clone());
 
-				//System.out.println("Regis. Gen: "+RandomHelper.getRegistry().getGenerator(DefaultRandomRegistry.DEFAULT_GENERATOR).toString());
-				//System.out.println("RH. Gen: "+RandomHelper.getGenerator(DefaultRandomRegistry.DEFAULT_GENERATOR).clone());
+				this.mainContext.logger.trace("Regis. Gen: "+RandomHelper.getDefaultRegistry().getGenerator(DefaultRandomRegistry.DEFAULT_GENERATOR).toString());
+				this.mainContext.logger.trace("RH. Gen: "+RandomHelper.getGenerator(DefaultRandomRegistry.DEFAULT_GENERATOR).clone());
 
 								
 
 				int ind = randDist.nextInt();  //check the value return by this.
-				//System.out.println("EmpWalker output index: "+ind);
+				this.mainContext.logger.trace("EmpWalker output index: "+ind);
 				double[] boArray = boa.getBOArray();
 				boa.setSubmittedBO(boArray[ind]);
 				boa.isAccepted = false;		
@@ -651,29 +653,29 @@ private double getExperiment() {
 	
 	private ArrayList<BOD> initializeBOD(int sp, double[] marginArray) {
 		
-		//System.out.println("BOA after they are recieved:");
+		this.mainContext.logger.trace("BOA after they are recieved:");
 		//TestUtils.printBODs(list_BOA);
 		ArrayList<BOD> listOfBOD=null;
 		switch (this.type) {
 		case GEN_COAL:
 			listOfBOD = generateBOD4Gen(sp, marginArray);
-			//System.out.println("marginArray:Coal: "+Arrays.toString(marginArray));
+			this.mainContext.logger.trace("marginArray:Coal: "+Arrays.toString(marginArray));
 			break;
 		case GEN_CCGT:
 			listOfBOD = generateBOD4Gen(sp, marginArray);	
-			//System.out.println("marginArray:CCGT: "+Arrays.toString(marginArray));
+			this.mainContext.logger.trace("marginArray:CCGT: "+Arrays.toString(marginArray));
 			break;
 		case GEN_WIND:
 			listOfBOD = generateBOD4WindGen(sp, marginArray);		
-			//System.out.println("marginArray:Wind: "+Arrays.toString(marginArray));
+			this.mainContext.logger.trace("marginArray:Wind: "+Arrays.toString(marginArray));
 			break;
 		case DEM_LARGE:
 			listOfBOD = generateBOD4DemLarge(sp, marginArray);		
-			//System.out.println("marginArray:DEM_LARG: "+Arrays.toString(marginArray));
+			this.mainContext.logger.trace("marginArray:DEM_LARG: "+Arrays.toString(marginArray));
             break;
 		case DEM_SMALL:
 			listOfBOD = generateBOD4DemSmall(sp, marginArray);	
-			//System.out.println("marginArray:DEM_SMALL: "+Arrays.toString(marginArray));
+			this.mainContext.logger.trace("marginArray:DEM_SMALL: "+Arrays.toString(marginArray));
 			break;
 		}
 		
@@ -698,7 +700,7 @@ private double getExperiment() {
 @ScheduledMethod(start = Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP, interval = 1, shuffle = true, priority = Consts.AGGREGATOR_INIT_MARKET_STEP_PRIORITY_FIRST)
 	public void marketPreStep() {
 		
-		//System.out.println(" initializeMarketStep "+this.id + " -- "+ TestHelper.getEnvInfoInString(mainContext));
+		this.mainContext.logger.trace(" initializeMarketStep "+this.id + " -- "+ TestHelper.getEnvInfoInString(mainContext));
 
 		settlementPeriod = mainContext.getSettlementPeriod();
 	
@@ -708,7 +710,7 @@ private double getExperiment() {
 			//this.arr_PN = this.arr_day_B;
 			this.arr_PN = initializePN(arr_baselineProfile);
 			//this.arr_PN = initializePN_temp(arr_baselineProfile);
-			//System.out.println("arr_PN: "+Arrays.toString(arr_PN));
+			this.mainContext.logger.trace("arr_PN: "+Arrays.toString(arr_PN));
 
 			break;
 		}
@@ -718,8 +720,8 @@ private double getExperiment() {
 	@ScheduledMethod(start = Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP, interval = 1, shuffle = true, priority = Consts.AGGREGATOR_MARKET_STEP_PRIORITY_FIRST)
 	public void marketStep() {
 
-	   //System.out.println("-marketStep (-------------------------");
-		//if (Consts.DEBUG) System.out.println("--marketStep (BMPxTraderAgg): "+TestHelper.getEnvInfoInString(mainContext));
+	   this.mainContext.logger.trace("-marketStep (-------------------------");
+		this.mainContext.logger.trace("--marketStep (BMPxTraderAgg): "+TestHelper.getEnvInfoInString(mainContext));
 
     	//printBMUInfo();
 
@@ -728,18 +730,18 @@ private double getExperiment() {
 		switch (settlementPeriod) {
 	
 		case 19: 
-			//System.out.println("BMU: gotPxProd");
+			this.mainContext.logger.trace("BMU: gotPxProd");
 			//TestUtils.printListOfPxPD(list_PX_products);
 			list_PX_products = getPxProductFromSOMessageBoard();
 			list_BSOD = generateBSOforPX(list_PX_products, arr_PN);
-			//System.out.println("Printing BSOD list");
+			this.mainContext.logger.trace("Printing BSOD list");
 			//TestHelper.printListOfBSOD(list_BSOD);
 
 			break;
 		case 21: 
-			//System.out.println("PN (BEFORE UPDATE): "+Arrays.toString(arr_PN));
+			this.mainContext.logger.trace("PN (BEFORE UPDATE): "+Arrays.toString(arr_PN));
 			this.arr_PN = updatePN(list_BSOD, arr_PN);
-			//System.out.println("PN (AFTER UPDATE): "+Arrays.toString(arr_PN));
+			this.mainContext.logger.trace("PN (AFTER UPDATE): "+Arrays.toString(arr_PN));
 
 			break;
 		case 27: 
@@ -764,16 +766,16 @@ private double getExperiment() {
 			
 		case 47: //end of day
 			arr_oldPN = updateOldPN(arr_PN, arr_oldPN);
-			//System.out.println("arr_oldPN: "+ Arrays.toString(arr_oldPN));
+			this.mainContext.logger.trace("arr_oldPN: "+ Arrays.toString(arr_oldPN));
 			arr_Margin = updateMarginForBM(arr_oldPN);
-			//System.out.println("arr_Margin: "+ Arrays.toString(arr_Margin));
+			this.mainContext.logger.trace("arr_Margin: "+ Arrays.toString(arr_Margin));
 
 			break;
 		}
 		
 		if (mainContext.isMarketFirstDay()  && settlementPeriod ==47) {	
 			list_BOD = initializeBOD(0, arr_Margin);
-			//System.out.println("BODs after initialisation:");
+			this.mainContext.logger.trace("BODs after initialisation:");
 			//TestHelper.printListOfBODs(list_BOD);
 			
 		}

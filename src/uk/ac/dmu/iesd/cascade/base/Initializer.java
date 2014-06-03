@@ -13,6 +13,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.jfree.chart.ChartPanel;
+
 import repast.simphony.context.Context;
 import repast.simphony.engine.controller.ControllerActionVisitor;
 import repast.simphony.engine.controller.NullAbstractControllerAction;
@@ -41,16 +43,12 @@ public class Initializer implements ModelInitializer {
 
 	// private TickListener tickListener = null;
 
-	class CascadeGuiCustomiserAction extends
-			NullAbstractControllerAction {
-
-		// @Override
+	class CascadeGuiCustomiserAction extends NullAbstractControllerAction 
+	{
 		public void runInitialize(RunState runState, Context context,
 				Parameters runParams) {
-			// if (Consts.DEBUG)
-			// System.out.println("Begining of runInitialize");
-			// if (Consts.DEBUG)
-			// System.out.println("this is runInitialize method test");
+			System.out.println("Begining of model Intializer runInitialize");
+
 			// will be executed at initialization.
 
 			/*
@@ -67,142 +65,102 @@ public class Initializer implements ModelInitializer {
 			 */
 
 			CascadeContext cascadeContext = (CascadeContext) context;
-			// if (Consts.DEBUG)
-			// System.out.println("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
-				GUIRegistry guiRegis = runState.getGUIRegistry();
+			cascadeContext.logger.trace("Initializer:: runInitialize method test: "+cascadeContext.getNbOfTickPerDay());
+			GUIRegistry guiRegis = runState.getGUIRegistry();
 
-				RSApplication
-						.getRSApplicationInstance()
-						.getGui()
-						.setTickCountFormatter(
-								new TicksToDaysFormatter(cascadeContext));
-				RSApplication.getRSApplicationInstance().getGui()
-						.updateTickCountLabel(0);
-				// Collection <Pair<GUIRegistryType,Collection<JComponent>>>
-				// typeAndComp = guiRegis.getTypesAndComponents();
-				Collection typeAndComp = guiRegis.getTypesAndComponents();
-				// Iterator <Pair<GUIRegistryType,Collection<JComponent>>>
-				// typeAndCompIter = typeAndComp.iterator();
-				Iterator<Pair> typeAndCompIter = typeAndComp.iterator();
+			RSApplication
+			.getRSApplicationInstance()
+			.getGui()
+			.setTickCountFormatter(
+					new TicksToDaysFormatter(cascadeContext));
+			RSApplication.getRSApplicationInstance().getGui()
+			.updateTickCountLabel(0);
+			// Collection <Pair<GUIRegistryType,Collection<JComponent>>>
+			// typeAndComp = guiRegis.getTypesAndComponents();
+			Collection typeAndComp = guiRegis.getTypesAndComponents();
+			// Iterator <Pair<GUIRegistryType,Collection<JComponent>>>
+			// typeAndCompIter = typeAndComp.iterator();
+			Iterator<Pair> typeAndCompIter = typeAndComp.iterator();
 
-				while (typeAndCompIter.hasNext()) {
-					Pair<GUIRegistryType, Collection<JComponent>> typeAndCompPair = typeAndCompIter
-							.next();
-					GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
-					// if (Consts.DEBUG) System.out.println("guiRegisType: "+
-					// guiRegisType);
-					if (guiRegisType == GUIRegistryType.CHART) {
-						Collection<JComponent> chartCollection = typeAndCompPair
-								.getSecond();
-						cascadeContext.setChartCompCollection(chartCollection);
-
-					}
-					if (guiRegisType == GUIRegistryType.DISPLAY) {
-
-					}
-					Collection<JComponent> compCol = typeAndCompPair
+			while (typeAndCompIter.hasNext()) {
+				Pair<GUIRegistryType, Collection<JComponent>> typeAndCompPair = typeAndCompIter.next();
+				GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
+				cascadeContext.logger.trace("guiRegisType: "+ guiRegisType);
+				if (guiRegisType == GUIRegistryType.CHART) {
+					Collection<JComponent> chartCollection = typeAndCompPair
 							.getSecond();
-					// if (Consts.DEBUG) System.out.println("compCol: "+
-					// compCol);
-					Iterator<JComponent> compIter = compCol.iterator();
-					while (compIter.hasNext()) {
-						JComponent comp = compIter.next();
-						if (guiRegisType == GUIRegistryType.CHART) {
-							// if (Consts.DEBUG)
-							// System.out.println("chartTitle: "+((ChartPanel)
-							// comp).getChart().getTitle().getText());
-						}
-						// if (Consts.DEBUG) System.out.print("Comp Name: "+
-						// comp.getName());
-						// if (Consts.DEBUG)
-						// System.out.print(" Comp toolTipText: "+
-						// comp.getToolTipText() );
-						// if (Consts.DEBUG) System.out.print(" Comp Count: "+
-						// comp.getComponentCount());
-						if (comp.getComponentCount() > 0) {
-							// if (Consts.DEBUG) System.out.print(" SubComp: "+
-							// comp.getComponent(0));
-						}
-						// if (Consts.DEBUG) System.out.println(" Comp class: "+
-						// comp.getClass());
-					}
+					cascadeContext.setChartCompCollection(chartCollection);
 
 				}
+				if (guiRegisType == GUIRegistryType.DISPLAY) {
 
-				List<IDisplay> listOfDisplays = guiRegis.getDisplays();
-				for (IDisplay display : listOfDisplays) {
-
-					if (display instanceof DisplayOGL2D) {
-						((DisplayOGL2D) display)
-								.addProbeListener(new ProsumerProbeListener(
-										cascadeContext));
+				}
+				Collection<JComponent> compCol = typeAndCompPair
+						.getSecond();
+				cascadeContext.logger.trace("compCol: "+ compCol);
+				Iterator<JComponent> compIter = compCol.iterator();
+				while (compIter.hasNext()) {
+					JComponent comp = compIter.next();
+					if (guiRegisType == GUIRegistryType.CHART) {
+						cascadeContext.logger.trace("chartTitle: "+((ChartPanel) comp).getChart().getTitle().getText());
 					}
+
+					cascadeContext.logger.trace(" Comp class: "+ comp.getClass());
 				}
 
-				// ++++++++++++++Add stuff to user panel
-				JPanel customPanel = new JPanel();
-				customPanel.add(new JLabel("TestLabel"));
-				customPanel.add(new JButton("Test Button"));
-				JLabel dayCountLabel = new JLabel();
-				dayCountLabel.setText("");
+			}
 
-				/*
-				 * if (tickListener != null) {
-				 * tickListener.tickCountUpdated(mainContext.getTickCount()); }
-				 */
-
-				RSApplication.getRSApplicationInstance().addCustomUserPanel(
-						customPanel);
-
-			//	RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
-				RSApplication.getRSApplicationInstance().getGui()
-						.updateTickCountLabel(0);
-
-				// runParams.
-				// if (Consts.DEBUG)
-				// System.out.println("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
-				// +++++++++++++++++++++++++++++++++++++
-
-
-			if (Consts.DEBUG) {
-				if (Consts.DEBUG_OUTPUT_FILE != "") {
-					File file = new File(Consts.DEBUG_OUTPUT_FILE);
-					PrintStream printStream;
-					try {
-						printStream = new PrintStream(
-								new FileOutputStream(file));
-						System.setOut(printStream);
-						if (Consts.DEBUG)
-						{
-							System.out
-									.println("Redirected System.out to this file, namely "
-											+ Consts.DEBUG_OUTPUT_FILE);
-							System.out.println("Initializer action added with batch mode = " + runState.getRunInfo().isBatch());
-						}
-
-					} catch (FileNotFoundException e) {
-						System.err.println("Couldn't find file with name "
-								+ Consts.DEBUG_OUTPUT_FILE);
-						System.err
-								.println("Therefore cannot re-direct System.out to this file ");
-					}
+			List<IDisplay> listOfDisplays = guiRegis.getDisplays();
+			for (IDisplay display : listOfDisplays) 
+			{
+				if (display instanceof DisplayOGL2D) 
+				{
+					((DisplayOGL2D) display)
+					.addProbeListener(new ProsumerProbeListener(
+							cascadeContext));
 				}
 			}
+
+			// ++++++++++++++Add stuff to user panel
+			JPanel customPanel = new JPanel();
+			customPanel.add(new JLabel("TestLabel"));
+			customPanel.add(new JButton("Test Button"));
+			JLabel dayCountLabel = new JLabel();
+			dayCountLabel.setText("");
+
+			/*
+			 * if (tickListener != null) {
+			 * tickListener.tickCountUpdated(mainContext.getTickCount()); }
+			 */
+
+			RSApplication.getRSApplicationInstance().addCustomUserPanel(
+					customPanel);
+
+			//	RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
+			RSApplication.getRSApplicationInstance().getGui()
+			.updateTickCountLabel(0);
+
+			// runParams.
+			// if (Consts.DEBUG)
+			cascadeContext.logger.trace("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
+			// +++++++++++++++++++++++++++++++++++++
+
 		}
 
-		public String toString() {
+		public String toString() 
+		{
 			return "Custom Action Test";
 		}
 
-		public void accept(ControllerActionVisitor visitor) {
-			// if (Consts.DEBUG)
-			// System.out.println("Initializer:: accept test "+visitor.toString());
-
+		public void accept(ControllerActionVisitor visitor)
+		{
+			//Place holder - possibly test this later
 		}
 	}
 
-	public void initialize(Scenario scen, RunEnvironmentBuilder builder) {
-			scen.addMasterControllerAction(new CascadeGuiCustomiserAction());
+	public void initialize(Scenario scen, RunEnvironmentBuilder builder) 
+	{
+		scen.addMasterControllerAction(new CascadeGuiCustomiserAction());
 
 	}
 

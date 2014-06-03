@@ -668,11 +668,11 @@ public class ArrayUtils {
 			double val = Math.pow(doubleArrayBase[i], exp);
 			/*if (Double.isNaN(val)) {
 				val =0;
-				if (Consts.DEBUG) System.out.println("ArrayUtils:: pow(), calculated val was NaN and set to 0");
+				this.mainContext.logger.debug("ArrayUtils:: pow(), calculated val was NaN and set to 0");
 			}
 
 			if (Double.isInfinite(val)) {
-				if (Consts.DEBUG) System.out.println("ArrayUtils:: pow(), calculated val was Infinity and set to 0");
+				this.mainContext.logger.debug("ArrayUtils:: pow(), calculated val was Infinity and set to 0");
 				val =0;
 			} */
 			powArray[i]=val;
@@ -784,12 +784,21 @@ public class ArrayUtils {
 	 * @return true if the sum of array elements are zero; false otherwise 
 	 */
 	public static boolean isSumEqualZero(float[] floatArray) {	
+		return isSumEqualZero(convertFloatArrayToDoubleArray(floatArray));
+	}
+	
+	/**
+	 * This utility function verifies if the sum of the values in
+	 * the given array (float) are equal zero. If the sum is zero it returns true; otherwise false
+	 * 
+	 * @param   floatArray to be verified if its sum is equal zero 	 
+	 * @return true if the sum of array elements are zero; false otherwise 
+	 */
+	public static boolean isSumEqualZero(double[] floatArray) {	
 		boolean sumIsEqualZero = false;
-		float sum= sum(floatArray);
-		if (sum ==0)
-			sumIsEqualZero=true;
-		//if (Consts.DEBUG) System.out.println("ArryUtils.isSumEqualZero: "+sum);
-		return sumIsEqualZero;
+		double sum= sum(floatArray);
+
+		return (sum == 0);
 	}
 
 	/**
@@ -1297,6 +1306,4 @@ public class ArrayUtils {
 		
 		return returnArr;
 	}
-
-
 }

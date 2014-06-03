@@ -211,13 +211,12 @@ public class NonDomesticProsumer extends ProsumerAgent{
 		double returnAmount = 0;
 
 		returnAmount = returnAmount + CHPGeneration() + windGeneration() + hydroGeneration() + thermalGeneration() + PVGeneration();
-		if (Consts.DEBUG)
+
+		if (returnAmount != 0)
 		{
-			if (returnAmount != 0)
-			{
-				if (Consts.DEBUG) System.out.println("NonDomesticProsumer: Generating " + returnAmount);
-			}
+			this.mainContext.logger.debug("NonDomesticProsumer: Generating " + returnAmount);
 		}
+
 		return returnAmount;
 	}
 
@@ -308,12 +307,8 @@ public class NonDomesticProsumer extends ProsumerAgent{
 			double predictedCostNow = getPredictedCostSignal()[timeSinceSigValid % getPredictedCostSignalLength()];
 			if ( predictedCostNow > costThreshold){
 				//Infinitely elastic version (i.e. takes no account of percenteageMoveableDemand
-				// TODO: Need a better logging system than this - send logs with a level and output to
-				// console or file.  Can we use log4j?
-				if (Consts.DEBUG)
-				{
-					if (Consts.DEBUG) System.out.println("NonDomesticProsumer: " + this.agentID + "Changing demand at time " + time + " with price signal " + (predictedCostNow - costThreshold) + " above threshold");
-				}
+
+				this.mainContext.logger.debug("NonDomesticProsumer: " + this.agentID + "Changing demand at time " + time + " with price signal " + (predictedCostNow - costThreshold) + " above threshold");
 				myDemand = myDemand * (1 - percentageMoveableDemand * (1 - Math.exp( - ((predictedCostNow - costThreshold) / costThreshold))));
 
 			}
@@ -372,17 +367,14 @@ public class NonDomesticProsumer extends ProsumerAgent{
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
 		}
 		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, this.mainContext.ticksPerDay);
-		if (Consts.DEBUG)
+		if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
 		{
-			if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
-			{
-				//TODO: This always gets triggerd - I wonder if the "day" i'm taking
-				//here and in the inelasticdemand method are "off-by-one"
-				if (Consts.DEBUG) System.out.println("NonDomesticProsumer: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
-			}
-
-			if (Consts.DEBUG) System.out.println("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+			//TODO: This always gets triggerd - I wonder if the "day" i'm taking
+			//here and in the inelasticdemand method are "off-by-one"
+			this.mainContext.logger.debug("NonDomesticProsumer: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
 		}
+
+		this.mainContext.logger.debug("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
 	}
 	
 	private void smartControlLearn(int time)
@@ -415,24 +407,20 @@ public class NonDomesticProsumer extends ProsumerAgent{
 			movedLoad = movedLoad + movedThisTime;
 			daysOptimisedDemand[maxIndex] = swapAmount;
 			daysOptimisedDemand[minIndex] = swapAmount;
-			if (Consts.DEBUG)
-			{
-				if (Consts.DEBUG) System.out.println("NonDomesticProsumer: " +agentID + " moving " + movedLoad + "MaxIndex = " + maxIndex + " minIndex = " + minIndex + Arrays.toString(tempArray));
-			}
+			this.mainContext.logger.debug("NonDomesticProsumer: " +agentID + " moving " + movedLoad + "MaxIndex = " + maxIndex + " minIndex = " + minIndex + Arrays.toString(tempArray));
+			
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
 		}
 		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, this.mainContext.ticksPerDay);
-		if (Consts.DEBUG)
+		
+		if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
 		{
-			if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
-			{
-				//TODO: This always gets triggerd - I wonder if the "day" i'm taking
-				//here and in the inelasticdemand method are "off-by-one"
-				if (Consts.DEBUG) System.out.println("NonDomesticProsumer: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
-			}
-
-			if (Consts.DEBUG) System.out.println("NonDomesticProsumer: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+			//TODO: This always gets triggerd - I wonder if the "day" i'm taking
+			//here and in the inelasticdemand method are "off-by-one"
+			this.mainContext.logger.debug("NonDomesticProsumer: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
 		}
+
+			this.mainContext.logger.debug("NonDomesticProsumer: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
 	}
 
 	private void learnSmartAdoptionDecisionRemoveAll(int time)

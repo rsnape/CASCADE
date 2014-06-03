@@ -24,8 +24,7 @@ public final class Consts {
 	/*----------------------------
 	 * Model level constants
 	 *----------------------------*/
-	public static boolean DEBUG = true;  //use for debugging, default is false
-	public static String DEBUG_OUTPUT_FILE = "DebugOutputSeed";// + RepastEssentials.GetParameter("randomSeed") + "Mode" + RepastEssentials.GetParameter("signalMode") + ".txt"; //Change this to a name to desired filename to divert System.out to a file when DEBUG is true
+	public static String CASCADE_LOGGER_NAME = "CascadeLogger";  //use for debugging, default is false
 	
 	public static String FILE_CHART_FORMAT_EXT = ".png";
 	

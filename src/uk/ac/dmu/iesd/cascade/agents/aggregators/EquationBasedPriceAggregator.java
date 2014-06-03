@@ -47,7 +47,7 @@ public class EquationBasedPriceAggregator extends AggregatorAgent {
 	 */
 	@Override
 	public void bizPreStep() {
-		System.out.println("At tick "+RepastEssentials.GetTickCount()+" demand = "+this.getNetDemand());
+		this.mainContext.logger.debug("At tick "+RepastEssentials.GetTickCount()+" demand = "+this.getNetDemand());
 		ArrayList<ProsumerAgent> customers = getCustomersList();
 		broadcastSignalToCustomers(calculatePrice(this.getNetDemand()), customers);
 	}
@@ -116,7 +116,7 @@ public class EquationBasedPriceAggregator extends AggregatorAgent {
 		{
 			totalDemand += c.getNetDemand();
 		}
-		System.out.println(this.getAgentName() + " has total demand "+totalDemand);
+		this.mainContext.logger.debug(this.getAgentName() + " has total demand "+totalDemand);
 		this.setNetDemand(totalDemand);
 	}
 
@@ -128,13 +128,11 @@ public class EquationBasedPriceAggregator extends AggregatorAgent {
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		
 		Iterable<RepastEdge> iter = economicNet.getEdges();
-		if(Consts.DEBUG) {
-			//System.out.println(This.class+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
-		}
+		this.mainContext.logger.trace(this.getAgentName()+ " has "+ economicNet.size() + " links in economic network");
 
 		for (RepastEdge edge : iter) {
 			Object linkSource = edge.getTarget();
-			//if (Consts.DEBUG) System.out.println("RECO linkSource " + linkSource);
+			this.mainContext.logger.trace("RECO linkSource " + linkSource);
 			if (linkSource instanceof ProsumerAgent){
 				c.add((ProsumerAgent) linkSource);    		
 			}

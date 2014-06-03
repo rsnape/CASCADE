@@ -11,6 +11,7 @@ import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.ITrader;
+import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
 
 /**
  *
@@ -57,7 +58,7 @@ public class SettlementCompany {
 		Network bmuNet = mainContext.getNetworkOfRegisteredBMUs();
 		Iterable<RepastEdge> edgeIter = bmuNet.getEdges();
 		if(Consts.VERBOSE) 
-			System.out.println("SCo has access to "+ bmuNet.size() + " registered BMUs");
+			this.mainContext.logger.debug("SCo has access to "+ bmuNet.size() + " registered BMUs");
 		for (RepastEdge edge : edgeIter) {
 			Object obj = edge.getTarget();
 			if (obj instanceof BMU)
@@ -82,7 +83,7 @@ public class SettlementCompany {
 	
 	public LinkedHashMap<Integer, double[]> fetchPreviousDayPNs(ArrayList<ITrader> listOfTraders){
 		
-		//System.out.println("sc:: fetchPreviousDayPNs()");
+		this.mainContext.logger.trace("sc:: fetchPreviousDayPNs()");
 		
 		LinkedHashMap<Integer, double[]> mapOfOldPNs = new LinkedHashMap<Integer, double[]>();
 		for (ITrader bmu : listOfTraders)
@@ -104,7 +105,7 @@ public class SettlementCompany {
 	} */
 	
 	/*private LinkedHashMap<BMU, ArrayList<BOD>>  fetchHistoricalBOA(ArrayList<BMU> listOfBMUs) {
-		System.out.println("SC: fetchHistoricalBOA() is called");
+		this.mainContext.logger.debug("SC: fetchHistoricalBOA() is called");
 		
 		LinkedHashMap<BMU, ArrayList<BOD>> mapOfListOfHistBOAs = new LinkedHashMap<BMU, ArrayList<BOD>>();
 				
@@ -124,7 +125,7 @@ public class SettlementCompany {
 		ArrayList<BOD> listOfBODs = new ArrayList<BOD>();
 		
 	    //TestHelper.printMapListOfBODs(mapOfIBMTraders2ListOfBOAs);
-		//System.out.println("SC: mapOfIBMTraders2ListOfBOAs.size: "+mapOfIBMTraders2ListOfBOAs.size());
+		this.mainContext.logger.trace("SC: mapOfIBMTraders2ListOfBOAs.size: "+mapOfIBMTraders2ListOfBOAs.size());
 
 		Collection<ArrayList <BOD>> valCol = mapOfIBMTraders2ListOfBOAs.values();
 		for (ArrayList<BOD> arrBOD : valCol) 
@@ -136,8 +137,8 @@ public class SettlementCompany {
 			if(bod.getPairID() < 0 && bod.isAccepted == true)  {
 				totalBidsVol = totalBidsVol + bod.getLevel();
 				sumOfProducts = sumOfProducts + (bod.getLevel() * bod.getSubmittedBO());
-				//System.out.println("SC: totalBidsVol: "+totalBidsVol);
-				//System.out.println("SC: sumOfProducts: "+sumOfProducts);
+				this.mainContext.logger.trace("SC: totalBidsVol: "+totalBidsVol);
+				this.mainContext.logger.trace("SC: sumOfProducts: "+sumOfProducts);
 			}
 		}
 		
@@ -177,7 +178,7 @@ public class SettlementCompany {
 	@ScheduledMethod(start = Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP, interval = 1, shuffle = false, priority = Consts.SC_PRIORITY_THIRD)
 	public void step() {
 
-		//if (Consts.DEBUG) System.out.println("--SC: "+TestHelper.getEnvInfoInString(mainContext));
+		this.mainContext.logger.trace("--SC: "+TestHelper.getEnvInfoInString(mainContext));
 
 		int settlementPeriod = mainContext.getSettlementPeriod();
 		
@@ -240,10 +241,10 @@ public class SettlementCompany {
 				
 			//System.out.print(this.getSBPforEachSP());
 			
-			//System.out.println(", "+this.getSSPforEachSP());
+			this.mainContext.logger.trace(", "+this.getSSPforEachSP());
 			if (settlementPeriod == 47) {
-				System.out.println("SSP" + mainContext.getDayCount() + ": " + Arrays.toString(arr_SSP));
-				System.out.println("SBP" + mainContext.getDayCount() + ": " + Arrays.toString(arr_SBP));
+				this.mainContext.logger.debug("SSP" + mainContext.getDayCount() + ": " + Arrays.toString(arr_SSP));
+				this.mainContext.logger.debug("SBP" + mainContext.getDayCount() + ": " + Arrays.toString(arr_SBP));
 			}
 		}
 		

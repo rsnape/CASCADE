@@ -144,7 +144,7 @@ public class OriginalProportionalWattboxController implements ISmartController
 			assignSetPointsProbabilistic();
 			/*if (Consts.DEBUG)
 			{
-				System.out.println("Optimised set point profile = " + Arrays.toString(this.setPointProfile));
+				this.owner.mainContext.logger.debug("Optimised set point profile = " + Arrays.toString(this.setPointProfile));
 			}*/
 		}
 
@@ -371,17 +371,14 @@ public class OriginalProportionalWattboxController implements ISmartController
 		// hotWaterVolumeDemandProfile =owner.baseHotWaterVolumeDemProfile
 		// which is changed only on initialisation
 		double[] baseArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP);
-		// if (Consts.DEBUG) System.out.println("hotWaterVolumeDemandProfile: "+
-		// Arrays.toString(hotWaterVolumeDemandProfile));
+	
+		this.owner.mainContext.logger.trace("hotWaterVolumeDemandProfile: "+ Arrays.toString(hotWaterVolumeDemandProfile));
 
 		this.waterHeatDemandProfile = new double[baseArray.length];// Arrays.copyOf(baseArray,
 																	// baseArray.length);
-		// if (Consts.DEBUG) System.out.println("waterHeatDemandProfile: "+
-		// Arrays.toString(waterHeatDemandProfile));
+		this.owner.mainContext.logger.trace("waterHeatDemandProfile: "+ Arrays.toString(waterHeatDemandProfile));
 
-		// if (Consts.DEBUG)
-		// System.out.println("spreadWaterDemand(baseArray) : "+
-		// Arrays.toString(spreadWaterDemand(baseArray)));
+		//this.owner.mainContext.logger.trace("spreadWaterDemand(baseArray) : "+ Arrays.toString(spreadWaterDemand(baseArray)));
 
 		// double[] totalHeatDemand = ArrayUtils.add(this.heatPumpDemandProfile,
 		// spreadWaterDemand(baseArray));
@@ -508,10 +505,8 @@ public class OriginalProportionalWattboxController implements ISmartController
 	 */
 	private void optimiseWetProfileProbabilistic(int timeStep)
 	{
-		// System.out.println("==OptimiseWetProfil for a  "+
-		// owner.getAgentID()+"; timeStep: "+ timeStep);
-		// System.out.println("dayPredictedCostSignal: "+
-		// Arrays.toString(dayPredictedCostSignal));
+		this.owner.mainContext.logger.trace("==OptimiseWetProfil for a  "+ owner.getAgentID()+"; timeStep: "+ timeStep);
+		this.owner.mainContext.logger.trace("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
 
 		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
 		{
@@ -529,12 +524,9 @@ public class OriginalProportionalWattboxController implements ISmartController
 		double[] dishwasher_loads_day = Arrays.copyOfRange(dishwasher_loads, (timeStep % dishwasher_loads.length), (timeStep % dishwasher_loads.length) + ticksPerDay);
 
 		int Tw = Consts.MAX_ALLOWED_WET_APP_MOVE;
-		// System.out.println("BEFORE washer_loads_day: "+
-		// Arrays.toString(washer_loads_day));
-		// System.out.println("BEFORE dryer_loads_day: "+
-		// Arrays.toString(dryer_loads_day));
-		// System.out.println("BEFORE dishwasher_loads_day: "+
-		// Arrays.toString(dishwasher_loads_day));
+		this.owner.mainContext.logger.trace("BEFORE washer_loads_day: "+ Arrays.toString(washer_loads_day));
+		this.owner.mainContext.logger.trace("BEFORE dryer_loads_day: "+ Arrays.toString(dryer_loads_day));
+		this.owner.mainContext.logger.trace("BEFORE dishwasher_loads_day: "+ Arrays.toString(dishwasher_loads_day));
 
 		// Extract cycles
 		ArrayList<double[]> washCycles = new ArrayList<double[]>();
@@ -786,8 +778,7 @@ public class OriginalProportionalWattboxController implements ISmartController
 				// This profiel produces a value that exceeds the total capacity
 				// of the
 				// heat pump and is therefore unachievable.
-				// System.out.println("Nulling the demand profile for energy needed "
-				// + heatPumpEnergyNeeded );
+				this.owner.mainContext.logger.trace("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded );
 				// Can't satisfy this demand for this set point profile, return
 				// null
 				return null;
@@ -848,7 +839,7 @@ public class OriginalProportionalWattboxController implements ISmartController
 	public OriginalProportionalWattboxController(HouseholdProsumer owner, CascadeContext context)
 	{
 		this(owner);
-		this.mainContext = context;
+		owner.mainContext = context;
 
 	}
 

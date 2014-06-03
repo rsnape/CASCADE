@@ -441,7 +441,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer {
 		}
 /*		if (Consts.DEBUG) {
 			if (returnAmount != 0) {
-				 System.out.println("WindGeneratorProsumer: Generating " + returnAmount);
+				 this.mainContext.logger.debug("WindGeneratorProsumer: Generating " + returnAmount);
 			}
 		}
 */
