@@ -296,7 +296,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		Iterable<RepastEdge> iter = economicNet.getEdges(this);
 		if(Consts.DEBUG) {
-			System.out.println(this.getAgentName()+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
+			this.mainContext.logger.debug(this.getAgentName()+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
 		}
 
 		for (RepastEdge edge : iter) {
@@ -360,8 +360,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		
 		if (Consts.DEBUG) 
 		{
-			System.out.println(" ====updateHistoryArray==== ");
-			System.out.println("Entering loop through all customers to add their net Demands to history ");
+			this.mainContext.logger.debug(" ====updateHistoryArray==== ");
+			this.mainContext.logger.debug("Entering loop through all customers to add their net Demands to history ");
 		}
 		for (ProsumerAgent a : customersList) {
 			sumDemand = sumDemand + a.getNetDemand();
@@ -372,7 +372,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		if (dayCount < hist_arr_B.length)	{
 			hist_arr_B[dayCount][timeOfDay]=sumDemand;
-			//if (Consts.DEBUG) System.out.println("RECO:: update Total demand for day " + dayCount+ " timeslot: "+ timeOfDay + " to = " + sumDemand);
+			this.mainContext.logger.trace("RECO:: update Total demand for day " + dayCount+ " timeslot: "+ timeOfDay + " to = " + sumDemand);
 
 		}
 		else {
@@ -393,7 +393,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	private double[] calculateBADfromHistoryArray(double[][] hist_arr_2D) {	
 		if (Consts.DEBUG) 
 		{
-			System.out.println("RECO: calcualteBADfromHistoy: hist_arrr_2D "+ ArrayUtils.toString(hist_arr_2D));
+			this.mainContext.logger.debug("RECO: calcualteBADfromHistoy: hist_arrr_2D "+ ArrayUtils.toString(hist_arr_2D));
 		}
 		return ArrayUtils.avgCols2DDoubleArray(hist_arr_2D);	
 	}
@@ -405,7 +405,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		double sumDemand = 0;
 		if (Consts.DEBUG)
 		{
-			System.out.println(" customers list size: "+customers.size() + " - entering loop to add all net demands");
+			this.mainContext.logger.debug(" customers list size: "+customers.size() + " - entering loop to add all net demands");
 		}
 		for (ProsumerAgent a : customers)	{
 			sumDemand = sumDemand + a.getNetDemand();
@@ -413,7 +413,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		setNetDemand(sumDemand);
 		if (Consts.DEBUG) 
 		{
-			System.out.println("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+			this.mainContext.logger.debug("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
 		}
 		
 		return sumDemand;
@@ -552,23 +552,23 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		}
 		catch (@SuppressWarnings("deprecation") OptimizationException e) {
 			System.err.println("Optimization Exception");
-			if (Consts.DEBUG) System.out.println( "RECO: Apache Optim Exc (Optim exc): "+e.getCause() );
+			this.mainContext.logger.debug( "RECO: Apache Optim Exc (Optim exc): "+e.getCause() );
 		} 
 		catch ( FunctionEvaluationException e) {
 			System.err.println("Functino eval Exception");
 
-			if (Consts.DEBUG) System.out.println( "RECO: Apache Optim Exc (Funct eval exc): "+e.getCause() );
+			this.mainContext.logger.debug( "RECO: Apache Optim Exc (Funct eval exc): "+e.getCause() );
 		}
 
 		catch (IllegalArgumentException e) {
 			System.err.println("Illegal arg exception");
 
-			if (Consts.DEBUG) System.out.println( "RECO: Apache Optim Exc (Illegal arg exc): "+e.getCause() );
+			this.mainContext.logger.debug( "RECO: Apache Optim Exc (Illegal arg exc): "+e.getCause() );
 		}
 		
 		if (Consts.DEBUG)
 		{
-			System.out.println("Optimisation converged on value " + minValue.getValue() + " at point " + minValue.getPoint() + " with ref " + minValue.getPointRef());
+			this.mainContext.logger.debug("Optimisation converged on value " + minValue.getValue() + " at point " + minValue.getPoint() + " with ref " + minValue.getPointRef());
 		}
 
 		double[] newOpt_S= minValue.getPoint();
@@ -582,7 +582,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 	private void updateCumulativeSaving(double savingAmount) {
 		int daysSoFar = mainContext.getDayCount();
-		//if (Consts.DEBUG) System.out.println("days so far: "+daysSoFar);
+		this.mainContext.logger.trace("days so far: "+daysSoFar);
 		if (daysSoFar > (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
 			this.cumulativeCostSaving += savingAmount;
 
@@ -704,7 +704,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	 */
 	private void errorEstimationAndAdjustment(double[] arr_i_B, double [] arr_hist_1D, double[] arr_i_S, double[] arr_i_e, double[][] arr_ij_k) {
 		
-		//if (Consts.DEBUG) System.out.println(" --REEA-- ");
+		this.mainContext.logger.trace(" --REEA-- ");
 		
 		double[] actualShift = ArrayUtils.add(arr_hist_1D, ArrayUtils.negate(arr_i_B));
 		
@@ -748,7 +748,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	 */
 	private void costSavingCalculation(double[] arr_i_C, double[] arr_hist_1D, double[] arr_i_B, double[] arr_i_S, double[] arr_i_e) {
 		
-		//if (Consts.DEBUG) System.out.println(" --^costSavingCalculation-- Daycount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount());
+		this.mainContext.logger.trace(" --^costSavingCalculation-- Daycount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount());
 		double predCost = 0;
 		double actualCost = 0;
 		
@@ -771,7 +771,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	
 	
 /*	public void marketPreStep() {
-		//System.out.println(" initializeMarketStep (SupplierCo) "+this.id);
+		this.mainContext.logger.trace(" initializeMarketStep (SupplierCo) "+this.id);
 		settlementPeriod = mainContext.getSettlementPeriod();
 	
 		switch (settlementPeriod) {
@@ -792,7 +792,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		if (Consts.DEBUG) 
 		{
-			System.out.println(" ============ SupplierCO pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+			this.mainContext.logger.debug(" ============ SupplierCO pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		}
 		timeTick = mainContext.getTickCount();	
 		timeslotOfDay = mainContext.getTimeslotOfDay();
@@ -948,7 +948,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			} //end of begining of normal operation
 
 		} //end of else (history profile building) 
-		//if (Consts.DEBUG) System.out.println(" ========== RECO: pre_step END =========== DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		this.mainContext.logger.trace(" ========== RECO: pre_step END =========== DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 	} 
 
 	/**
@@ -957,7 +957,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	 */
 	public void bizStep() {
 
-		//if (Consts.DEBUG) System.out.println(" ++++++++++++++ SupplierCO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+		this.mainContext.logger.trace(" ++++++++++++++ SupplierCO step +++++++++++++ DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		if (!isAggregateDemandProfileBuildingPeriodCompleted()) { 
 			updateAggregateDemandHistoryArray(customers, timeslotOfDay, arr_hist_ij_D); 
 		}

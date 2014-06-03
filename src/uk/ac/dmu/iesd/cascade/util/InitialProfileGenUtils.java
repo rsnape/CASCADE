@@ -4,6 +4,8 @@ package uk.ac.dmu.iesd.cascade.util;
 import java.util.Arrays;
 import java.util.WeakHashMap;
 
+import org.apache.log4j.Logger;
+
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
@@ -32,12 +34,7 @@ public abstract class InitialProfileGenUtils {
 	 */
 	public static WeakHashMap<String,double[]> melodyStokesColdApplianceGen(int numDays, boolean fridges, boolean fridgeFreezers, boolean freezers)
 	{
-		//if (Consts.DEBUG) System.out.println("Fridge; FridgeFreezer; Freezer"+ fridges  +" "+ fridgeFreezers + " "+ freezers); 
-
-		//return melodyStokesColdApplianceGen(numDays, fridges ? 1 : 0, freezers ? 1:0, fridgeFreezers ? 1:0);
-
 		return melodyStokesColdApplianceGen(numDays, fridges ? 1 : 0, fridgeFreezers ? 1:0, freezers ? 1:0);
-
 	}
 
 
@@ -85,7 +82,7 @@ public abstract class InitialProfileGenUtils {
 		{
 			for (int HH=0; HH < Consts.MELODY_MODELS_TICKS_PER_DAY; HH++)
 			{
-				//if (Consts.DEBUG) System.out.println("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
+				Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
 
 				d_fridge[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridges * ( Math.max(0, scale_fridge[HH]*Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH])+const_fridge[HH]+(RandomHelper.getNormal().nextDouble()*stddev_fridge[HH])));
 				d_freezer[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridgeFreezers * ( Math.max(0,scale_freezer[HH]* Math.sin(2*Math.PI*(i / Consts.DAYS_PER_YEAR)-2.05)+const_freezer[HH]+(RandomHelper.getNormal().nextDouble()*stddev_freezer[HH])));
@@ -140,17 +137,17 @@ public abstract class InitialProfileGenUtils {
 
 		WeakHashMap<String,double[]> coldProfiles = new WeakHashMap<String,double[]>();
 
-		//System.out.println("fridges: "+fridges);
-		//System.out.println("freezers: "+freezers);
-		//System.out.println("fridgeFreezers: "+fridgeFreezers);
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("fridges: "+fridges);
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("freezers: "+freezers);
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("fridgeFreezers: "+fridgeFreezers);
 		
 		
 		for (int i=0; i < numDays; i++)
 		{
 			for (int HH=0; HH < Consts.MELODY_MODELS_TICKS_PER_DAY; HH++)
 			{
-				//if (Consts.DEBUG) System.out.println("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
-				//System.out.println("randomNB: "+RandomHelper.getNormal().nextDouble());
+				Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]): "+ Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH]));
+				Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("randomNB: "+RandomHelper.getNormal().nextDouble());
 
 				d_fridge[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=fridges * ( Math.max(0, scale_fridge[HH]*Math.sin(2*Math.PI*(i/Consts.DAYS_PER_YEAR)-phase_fridge[HH])+const_fridge[HH]+(RandomHelper.getNormal().nextDouble()*stddev_fridge[HH])));
 				d_freezer[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=freezers * ( Math.max(0,scale_freezer[HH]* Math.sin(2*Math.PI*(i / Consts.DAYS_PER_YEAR)-2.05)+const_freezer[HH]+(RandomHelper.getNormal().nextDouble()*stddev_freezer[HH])));
@@ -176,8 +173,8 @@ public abstract class InitialProfileGenUtils {
 		coldProfiles.put(Consts.COLD_APP_FREEZER_ORIGINAL, Arrays.copyOf(d_freezer, d_freezer.length));
 		coldProfiles.put(Consts.COLD_APP_FRIDGEFREEZER_ORIGINAL, Arrays.copyOf(d_fridge_freezer,d_fridge_freezer.length));
 		
-		//System.out.println("d_fridge_freezer: "+ Arrays.toString(d_fridge_freezer));
-		//System.out.println("d_fridge_freezer(sum): "+ ArrayUtils.sum(d_fridge_freezer));
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("d_fridge_freezer: "+ Arrays.toString(d_fridge_freezer));
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("d_fridge_freezer(sum): "+ ArrayUtils.sum(d_fridge_freezer));
 
 
 		return coldProfiles;
@@ -300,7 +297,7 @@ public abstract class InitialProfileGenUtils {
 		{
 			//washing demand for Mondays:
 			if (i%Consts.DAYS_PER_WEEK == 1)
-			{ //System.out.println("Wet: Monday");
+			{ Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("Wet: Monday");
 				for (int HH = 0; HH < 48; HH++)
 				{
 					d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]= (washMach + washDry) * Math.max(0, scale_washer_mon_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_mon_UR[HH])+const_washer_mon_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_washer_mon_UR[HH]) );
@@ -310,7 +307,7 @@ public abstract class InitialProfileGenUtils {
 			}
 			//washing demand for Sundays:
 			else if (i%Consts.DAYS_PER_WEEK == 0)
-			{ //System.out.println("Wet: SUNDAY");
+			{ Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("Wet: SUNDAY");
 				for (int HH = 0; HH < 48; HH++)
 				{
 					d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=(washMach + washDry) * Math.max(0, scale_washer_sun_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_sun_UR[HH])+const_washer_sun_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_washer_sun_UR[HH]));
@@ -320,7 +317,7 @@ public abstract class InitialProfileGenUtils {
 			}
 			//washing demand for Saturdays:
 			else if (i%Consts.DAYS_PER_WEEK == 6)
-			{ //System.out.println("Wet: SAT");
+			{ Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("Wet: SAT");
 				for (int HH = 0; HH < 48; HH++)
 				{
 					d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=(washMach + washDry) * Math.max(0, scale_washer_sat_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_sat_UR[HH])+const_washer_sat_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_washer_sat_UR[HH]));
@@ -331,7 +328,7 @@ public abstract class InitialProfileGenUtils {
 			else
 			{ 
 				for (int HH = 0; HH < 48; HH++)
-				{ //System.out.println("Wet: Wkdays");
+				{ Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("Wet: Wkdays");
 					d_washer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=(washMach + washDry) * Math.max(0, scale_washer_wkdays_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_washer_wkdays_UR[HH])+const_washer_wkdays_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_washer_wkdays_UR[HH]));
 					d_dryer_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=(tumbleDry + washDry) * Math.max(0, scale_dryer_wkdays_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dryer_wkdays_UR[HH])+const_dryer_wkdays_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_dryer_wkdays_UR[HH])) ;
 					d_dish_UR[i * Consts.MELODY_MODELS_TICKS_PER_DAY +HH]=dishWash * Math.max(0, scale_dish_UR[HH]*Math.sin((2*Math.PI*(i / Consts.DAYS_PER_YEAR))-phase_dish_UR[HH])+const_dish_UR[HH]+(RandomHelper.getNormal().nextDouble()*stddev_dish_UR[HH])) ;
@@ -1160,7 +1157,7 @@ public abstract class InitialProfileGenUtils {
 		for(int f=0; f<48; f++) {
 			System.out.print(d_dryer[f] + " ");
 		}
-		System.out.println("\n");
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).debug("\n");
 		*/
 		
 		double temp1 = ArrayUtils.sum(d_washer)/Nspan;
@@ -1168,11 +1165,11 @@ public abstract class InitialProfileGenUtils {
 		double temp3 = ArrayUtils.sum(d_dish)/Nspan;
 		
 		/*System.out.print("[" + temp1 + "," + temp2 + "," + temp3 + "];");
-		System.out.println(Arrays.toString(d_washer));
-		System.out.println(Arrays.toString(d_dryer));
-		System.out.println(Arrays.toString(d_dish));
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).debug(Arrays.toString(d_washer));
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).debug(Arrays.toString(d_dryer));
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).debug(Arrays.toString(d_dish));
 
-		System.out.println(ArrayUtils.sum(D_min_wash));*/
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).debug(ArrayUtils.sum(D_min_wash));*/
 		
 		
 		WeakHashMap<String,double[]> wetProfiles = new WeakHashMap<String,double[]>();

@@ -235,7 +235,7 @@ public class BasicTestContextBuilder implements ContextBuilder<Object> {
 
 			if (cascadeMainContext.verbose)
 			{
-				System.out.println("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
+				this.mainContext.logger.debug("CascadeContextBuilder: householdBaseDemandArray is initialised with profile " + demandName);
 			}
 			//householdBaseDemandArray = ArrayUtils.convertStringArrayToDoubleArray(otherDemandReader.getColumn(demandName));
 
@@ -250,11 +250,11 @@ public class BasicTestContextBuilder implements ContextBuilder<Object> {
 	 * used in this model. 
 	 */
 	private void initializeProbabilityDistributions() {
-		System.out.println("Random seed is" + RandomHelper.getSeed());
+		this.cascadeMainContext.logger.debug("Random seed is" + RandomHelper.getSeed());
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		//if (Consts.DEBUG) System.out.println("  ArrayUtils.sum(drawOffDist)"+ ArrayUtils.sum(drawOffDist));
+		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)"+ ArrayUtils.sum(drawOffDist));
 		cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
-		//if (Consts.DEBUG) System.out.println("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
 
 		cascadeMainContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
 		cascadeMainContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
@@ -278,6 +278,8 @@ public class BasicTestContextBuilder implements ContextBuilder<Object> {
 		cascadeMainContext.add(settlementCo);
 		
 		messageBoard = new MarketMessageBoard();
+		cascadeMainContext.add(messageBoard);
+		messageBoard.setContext(cascadeMainContext);
 
 		sysOp = new SystemOperator(cascadeMainContext, settlementCo, messageBoard);
 		cascadeMainContext.add(sysOp);
@@ -298,7 +300,7 @@ public class BasicTestContextBuilder implements ContextBuilder<Object> {
 			ConstantPlusElasticityProsumer p = new ConstantPlusElasticityProsumer(cascadeMainContext, RandomHelper.nextDouble());
 		}
 		
-		System.out.println("context now has "+cascadeMainContext.getObjects(ConstantPlusElasticityProsumer.class).size()+" prosumers and "+cascadeMainContext.getObjects(EquationBasedPriceAggregator.class).size()+" aggregators");
+		this.cascadeMainContext.logger.debug("context now has "+cascadeMainContext.getObjects(ConstantPlusElasticityProsumer.class).size()+" prosumers and "+cascadeMainContext.getObjects(EquationBasedPriceAggregator.class).size()+" aggregators");
 		
 		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);
 		
@@ -331,7 +333,7 @@ public class BasicTestContextBuilder implements ContextBuilder<Object> {
 		
 		try {
 			CSVReader baseProfileCSVReader = new CSVReader(dmu_BaseProfiles_File);
-			System.out.println("baseProfileCSVReader created");
+			this.cascadeMainContext.logger.debug("baseProfileCSVReader created");
 			baseProfileCSVReader.parseByColumn();
 			
 			mapOfTypeName2BaseProfileArray.put("DEM_LARGE", ArrayUtils.convertStringArrayToDoubleArray(baseProfileCSVReader.getColumn("DEM_LARGE")));
@@ -422,7 +424,7 @@ public class BasicTestContextBuilder implements ContextBuilder<Object> {
 	
 
 		if (cascadeMainContext.verbose)	
-			System.out.println("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
+			this.cascadeMainContext.logger.debug("CascadeContextBuilder: Cascade Main Context created: "+cascadeMainContext.toString());
 
 		return cascadeMainContext;
 	}

@@ -83,7 +83,7 @@ public class CSVWriter {
 		try {
 			for (int i=0; i<values.length; i++){
 				writer.append(""+values[i]);
-				//if (Consts.DEBUG) System.out.println("CSWriter:: value: "+values[i]);
+				this.mainContext.logger.trace("CSWriter:: value: "+values[i]);
 				writer.append(',');
 				
 			}
@@ -180,7 +180,7 @@ public class CSVWriter {
 			writer.close();
 			System.getProperty("user.dir");
 			//if (Consts.DEBUG)
-				//System.out.println("CSVWriter: File created: "+System.getProperty("user.dir")+"\\"+fileName);
+				this.mainContext.logger.trace("CSVWriter: File created: "+System.getProperty("user.dir")+"\\"+fileName);
 		}
 		catch(IOException e) {
 			e.printStackTrace();

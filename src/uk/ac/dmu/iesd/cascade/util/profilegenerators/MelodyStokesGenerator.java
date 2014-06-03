@@ -137,7 +137,7 @@ public class MelodyStokesGenerator extends BasicProfileGenerator {
 	 */
 	public static WeakHashMap<String,double[]> melodyStokesColdApplianceGen(int numDays, boolean fridges, boolean fridgeFreezers, boolean freezers)
 	{
-		//if (Consts.DEBUG) System.out.println("Fridge; FridgeFreezer; Freezer"+ fridges  +" "+ fridgeFreezers + " "+ freezers); 
+		this.mainContext.logger.trace("Fridge; FridgeFreezer; Freezer"+ fridges  +" "+ fridgeFreezers + " "+ freezers); 
 
 		//return melodyStokesColdApplianceGen(numDays, fridges ? 1 : 0, freezers ? 1:0, fridgeFreezers ? 1:0);
 

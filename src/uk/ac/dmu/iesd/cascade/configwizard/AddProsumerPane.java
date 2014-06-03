@@ -163,7 +163,7 @@ public class AddProsumerPane extends WizardWorkingPane implements ActionListener
 			proElement.setAttributeNode(sName);
 			getWorkingElement().appendChild(proElement);
 			
-			System.out.println("Added element " + proElement.toString() + " as an child element of " + getWorkingElement().toString());
+			this.mainContext.logger.debug("Added element " + proElement.toString() + " as an child element of " + getWorkingElement().toString());
 			this.setWorkingElement(proElement);
 		}
 		

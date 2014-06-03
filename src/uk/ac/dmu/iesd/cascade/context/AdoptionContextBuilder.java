@@ -94,7 +94,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		 */
 		CSVReader defraCategories = null;
 		CSVReader defraProfiles = null;
-		String dataDirectory = "dataFiles"; // TODO: commonise this with other CASCADE builders - read from params
+		String dataDirectory = "data"; // TODO: commonise this with other CASCADE builders - read from params
 		String categoryFile = dataDirectory + "/DEFRA_pro_env_categories.csv";
 		String profileFile = dataDirectory + "/200profiles.csv";
 		try
@@ -233,9 +233,9 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		{ 
 			loader = new ShapefileLoader<Household>(Household.class, file.toURL(), geog, myContext);
 			FileDataStoreFinder.getDataStore(file).dispose();
-			System.out.println("have shapefile initialised with " + file.toURL().toString() + ": starting load"); 
+			this.myContext.logger.debug("have shapefile initialised with " + file.toURL().toString() + ": starting load"); 
 			loader.load(); 
-			System.out.println("Agents loaded");
+			this.myContext.logger.debug("Agents loaded");
 		}
 		catch ( IOException e) 
 		{ 
@@ -438,10 +438,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 				pAgent.hasChestFreezer = true;
 			}
 
-			// if (Consts.DEBUG)
-			// System.out.println("Fridge; FridgeFreezer; Freezer: "+
-			// pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+
-			// (pAgent.hasUprightFreezer || pAgent.hasChestFreezer));
+			this.myContext.logger.trace("Fridge; FridgeFreezer; Freezer: "+ pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+ (pAgent.hasUprightFreezer || pAgent.hasChestFreezer));
 
 			// pAgent.coldApplianceProfile =
 			// InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR,
@@ -451,29 +448,29 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		}
 
 		/*
-		 * if(myContext.verbose) { System.out.println("HHs with Fridge: " +
+		 * if(myContext.verbose) { this.myContext.logger.debug("HHs with Fridge: " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasRefrigerator",true)).query()));
-		 * System.out.println("HHs with FridgeFreezer: " + (double)
+		 * this.myContext.logger.debug("HHs with FridgeFreezer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasFridgeFreezer",true)).query()));
-		 * System.out.println("HHs with UprightFreezer: " + (double)
+		 * this.myContext.logger.debug("HHs with UprightFreezer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasUprightFreezer",true)).query()));
-		 * System.out.println("HHs with ChestFreezer: " + (double)
+		 * this.myContext.logger.debug("HHs with ChestFreezer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasChestFreezer",true)).query()));
 		 * 
-		 * System.out.println("HHs with Fridge %: " + (double)
+		 * this.myContext.logger.debug("HHs with Fridge %: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasRefrigerator",true)).query()) / householdProsumers.size());
-		 * System.out.println("HHs with FridgeFreezer %: " + (double)
+		 * this.myContext.logger.debug("HHs with FridgeFreezer %: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasFridgeFreezer",true)).query()) / householdProsumers.size());
-		 * System.out.println("HHs with UprightFreezer %: " + (double)
+		 * this.myContext.logger.debug("HHs with UprightFreezer %: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasUprightFreezer",true)).query()) / householdProsumers.size());
-		 * System.out.println("HHs with ChestFreezer %: " + (double)
+		 * this.myContext.logger.debug("HHs with ChestFreezer %: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasChestFreezer",true)).query()) / householdProsumers.size()); }
 		 */
@@ -500,7 +497,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		{
 			int occupancy = thisAgent.getNumOccupants();
 			double randomVar = RandomHelper.nextDouble();
-			// if (Consts.DEBUG) System.out.println("randomVar: "+randomVar);
+			this.myContext.logger.trace("randomVar: "+randomVar);
 			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
 			{
 				thisAgent.hasWashingMachine = true;
@@ -531,41 +528,41 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		}
 
 		/*
-		 * if(myContext.verbose) { System.out.println("Percentages:");
-		 * System.out.println("households with occupancy 1 : " + (double)
+		 * if(myContext.verbose) { this.myContext.logger.debug("Percentages:");
+		 * this.myContext.logger.debug("households with occupancy 1 : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",1)).query()) / householdProsumers.size());
-		 * System.out.println("households with occupancy 2 : " + (double)
+		 * this.myContext.logger.debug("households with occupancy 2 : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",2)).query()) / householdProsumers.size());
-		 * System.out.println("households with occupancy 3 : " + (double)
+		 * this.myContext.logger.debug("households with occupancy 3 : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",3)).query()) / householdProsumers.size());
-		 * System.out.println("households with occupancy 4 : " + (double)
+		 * this.myContext.logger.debug("households with occupancy 4 : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",4)).query()) / householdProsumers.size());
-		 * System.out.println("households with occupancy 5 : " + (double)
+		 * this.myContext.logger.debug("households with occupancy 5 : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",5)).query()) / householdProsumers.size());
-		 * System.out.println("households with occupancy 6 : " + (double)
+		 * this.myContext.logger.debug("households with occupancy 6 : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",6)).query()) / householdProsumers.size());
-		 * System.out.println("households with occupancy 7 : " + (double)
+		 * this.myContext.logger.debug("households with occupancy 7 : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",7)).query()) / householdProsumers.size());
-		 * System.out.println("households with occupancy 8 : " + (double)
+		 * this.myContext.logger.debug("households with occupancy 8 : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",8)).query()) / householdProsumers.size());
-		 * System.out.println("Washing Mach : " + (double)
+		 * this.myContext.logger.debug("Washing Mach : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasWashingMachine",true)).query()) / householdProsumers.size());
-		 * System.out.println("Washer Dryer : " + (double)
+		 * this.myContext.logger.debug("Washer Dryer : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasWasherDryer",true)).query()) / householdProsumers.size());
-		 * System.out.println("Tumble Dryer: " + (double)
+		 * this.myContext.logger.debug("Tumble Dryer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasTumbleDryer",true)).query()) / householdProsumers.size());
-		 * System.out.println("Dish Washer : " + (double)
+		 * this.myContext.logger.debug("Dish Washer : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasDishWasher",true)).query()) / householdProsumers.size()); }
 		 */
@@ -576,14 +573,12 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	 */
 	private void initializeProbabilityDistributions()
 	{
-		System.out.println("Random seed is" + RandomHelper.getSeed());
+		this.myContext.logger.debug("Random seed is" + RandomHelper.getSeed());
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		// if (Consts.DEBUG) System.out.println("  ArrayUtils.sum(drawOffDist)"+
-		// ArrayUtils.sum(drawOffDist));
+		this.myContext.logger.trace("  ArrayUtils.sum(drawOffDist)"+ArrayUtils.sum(drawOffDist));
 		myContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
 		// if (Consts.DEBUG)
-		// System.out.println("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+
-		// ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+		this.myContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
 
 		myContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
 		myContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
@@ -618,7 +613,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	 * ArrayList prosumersWithElecWaterHeatList =
 	 * IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
 	 * 
-	 * //if (Consts.DEBUG) System.out.println("ArrayList.size: WaterHeat "+
+	 * this.myContext.logger.trace("ArrayList.size: WaterHeat "+
 	 * prosumersWithElecWaterHeatList.size());
 	 * AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true,
 	 * prosumersWithElecWaterHeatList.iterator());
@@ -999,7 +994,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		//add time jitter
 		double jitterFactor = RandomHelper.nextDouble() - 0.5d;
 	
-		//if (Consts.DEBUG) System.out.println("ProsumerFactory: Applying jitter" + jitterFactor);
+		this.myContext.logger.trace("ProsumerFactory: Applying jitter" + jitterFactor);
 	
 		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
 		for (int i = 1; i < (newProfile.length - 1); i++)

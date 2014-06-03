@@ -80,7 +80,7 @@ public class ESCO extends AggregatorAgent{
 
 	public ESCO()
 	{
-		System.out.println("Constructed an unparameterised ESCO");
+		this.mainContext.logger.debug("Constructed an unparameterised ESCO");
 	}
 	
 

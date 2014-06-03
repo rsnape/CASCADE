@@ -48,9 +48,9 @@ public class Initializer implements ModelInitializer {
 		public void runInitialize(RunState runState, Context context,
 				Parameters runParams) {
 			// if (Consts.DEBUG)
-			// System.out.println("Begining of runInitialize");
+			this.mainContext.logger.trace("Begining of runInitialize");
 			// if (Consts.DEBUG)
-			// System.out.println("this is runInitialize method test");
+			this.mainContext.logger.trace("this is runInitialize method test");
 			// will be executed at initialization.
 
 			/*
@@ -68,7 +68,7 @@ public class Initializer implements ModelInitializer {
 
 			CascadeContext cascadeContext = (CascadeContext) context;
 			// if (Consts.DEBUG)
-			// System.out.println("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
+			this.mainContext.logger.trace("Initializer:: runInitialize method test: "+cascadeContext.getTickPerDay());
 				GUIRegistry guiRegis = runState.getGUIRegistry();
 
 				RSApplication
@@ -89,7 +89,7 @@ public class Initializer implements ModelInitializer {
 					Pair<GUIRegistryType, Collection<JComponent>> typeAndCompPair = typeAndCompIter
 							.next();
 					GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
-					// if (Consts.DEBUG) System.out.println("guiRegisType: "+
+					this.mainContext.logger.trace("guiRegisType: "+
 					// guiRegisType);
 					if (guiRegisType == GUIRegistryType.CHART) {
 						Collection<JComponent> chartCollection = typeAndCompPair
@@ -102,14 +102,14 @@ public class Initializer implements ModelInitializer {
 					}
 					Collection<JComponent> compCol = typeAndCompPair
 							.getSecond();
-					// if (Consts.DEBUG) System.out.println("compCol: "+
+					this.mainContext.logger.trace("compCol: "+
 					// compCol);
 					Iterator<JComponent> compIter = compCol.iterator();
 					while (compIter.hasNext()) {
 						JComponent comp = compIter.next();
 						if (guiRegisType == GUIRegistryType.CHART) {
 							// if (Consts.DEBUG)
-							// System.out.println("chartTitle: "+((ChartPanel)
+							this.mainContext.logger.trace("chartTitle: "+((ChartPanel)
 							// comp).getChart().getTitle().getText());
 						}
 						// if (Consts.DEBUG) System.out.print("Comp Name: "+
@@ -123,7 +123,7 @@ public class Initializer implements ModelInitializer {
 							// if (Consts.DEBUG) System.out.print(" SubComp: "+
 							// comp.getComponent(0));
 						}
-						// if (Consts.DEBUG) System.out.println(" Comp class: "+
+						this.mainContext.logger.trace(" Comp class: "+
 						// comp.getClass());
 					}
 
@@ -160,7 +160,7 @@ public class Initializer implements ModelInitializer {
 
 				// runParams.
 				// if (Consts.DEBUG)
-				// System.out.println("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
+				this.mainContext.logger.trace("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
 				// +++++++++++++++++++++++++++++++++++++
 
 
@@ -177,7 +177,7 @@ public class Initializer implements ModelInitializer {
 							System.out
 									.println("Redirected System.out to this file, namely "
 											+ Consts.DEBUG_OUTPUT_FILE);
-							System.out.println("Initializer action added with batch mode = " + runState.getRunInfo().isBatch());
+							this.mainContext.logger.debug("Initializer action added with batch mode = " + runState.getRunInfo().isBatch());
 						}
 
 					} catch (FileNotFoundException e) {
@@ -196,7 +196,7 @@ public class Initializer implements ModelInitializer {
 
 		public void accept(ControllerActionVisitor visitor) {
 			// if (Consts.DEBUG)
-			// System.out.println("Initializer:: accept test "+visitor.toString());
+			this.mainContext.logger.trace("Initializer:: accept test "+visitor.toString());
 
 		}
 	}

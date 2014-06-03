@@ -56,7 +56,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 		Network windFarmNet = this.mainContext.getEconomicNetwork();
 		Iterable<RepastEdge> iter = windFarmNet.getEdges();
 /*		if(Consts.DEBUG) {
-				System.out.println(this.getAgentName()+" " +this.toString()+ " has "+ windFarmNet.size() + " links in wind farm network");
+				this.mainContext.logger.debug(this.getAgentName()+" " +this.toString()+ " has "+ windFarmNet.size() + " links in wind farm network");
 			}
 */		
 		for (RepastEdge edge : iter) {
@@ -78,9 +78,9 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 
 		List<ProsumerAgent> customers = customersList;
 		double sumDemand = 0;
-		//if (Consts.DEBUG) System.out.println(" customers list size: "+customers.size());
+		this.mainContext.logger.trace(" customers list size: "+customers.size());
 		for (ProsumerAgent a : customers)	{
-			//if (Consts.DEBUG) System.out.println(" id: "+a.agentID+" ND: "+a.getNetDemand());
+			this.mainContext.logger.trace(" id: "+a.agentID+" ND: "+a.getNetDemand());
 			if (a instanceof WindGeneratorProsumer){
 				sumDemand = sumDemand + a.getNetDemand();
 			}
@@ -89,7 +89,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 		//The Aggregators deal in MW, but the Wind Farm Prosumers calculate generation in Watts.
 		//A conversion is therefore carried out here.
 		setNetDemand((sumDemand/1E6));
-		//if (Consts.DEBUG) System.out.println("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+		this.mainContext.logger.trace("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
 		
 		return sumDemand;
 	}
@@ -116,7 +116,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 	}
 	
 	public void marketPreStep() {
-		//System.out.println(" initializeMarketStep (SupplierCo) "+this.id);
+		this.mainContext.logger.trace(" initializeMarketStep (SupplierCo) "+this.id);
 		int settlementPeriod = mainContext.getSettlementPeriod();
 	
 		switch (settlementPeriod) {
@@ -137,7 +137,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 	@Override
 	public void bizPreStep() {
 		// TODO Auto-generated method stub
-//		if (Consts.DEBUG) System.out.println(" ============ WindFarmAggregator pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
+this.mainContext.logger.trace(" ============ WindFarmAggregator pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		timeTick = mainContext.getTickCount();	
 		timeslotOfDay = mainContext.getTimeslotOfDay();
 		customers = getCustomersList();
@@ -169,7 +169,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 			for (int i=0; i<this.arr_day_D.length; i++) {
 				System.out.print(this.arr_day_D[i] + ",");
 				}
-			System.out.println("");
+			this.mainContext.logger.debug("");
 		}
 */		
 	}
@@ -182,11 +182,11 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 	public WindFarmAggregator(CascadeContext context, MarketMessageBoard messageBoard, double maxGen) {
 
 		super(context, messageBoard, BMU_CATEGORY.GEN_T, BMU_TYPE.GEN_WIND, maxGen);
-		if (Consts.DEBUG) System.out.println("Wind Farm Aggregator created ");
+		this.mainContext.logger.debug("Wind Farm Aggregator created ");
 
 		this.ticksPerDay = context.getNbOfTickPerDay();
 
-		if (Consts.DEBUG) System.out.println("WindFarmAggregator ticksPerDay "+ ticksPerDay);
+		this.mainContext.logger.debug("WindFarmAggregator ticksPerDay "+ ticksPerDay);
 		
 		this.arr_day_D = new double[ticksPerDay];
 		

@@ -312,9 +312,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	public double getCurrentPriceSignal()
 	{
 		double time = RepastEssentials.GetTickCount();
-		// if (Consts.DEBUG) System.out.println(
-		// time+" getCurrentPriceSignal: "+priceSignal[(int) time %
-		// priceSignal.length]);
+		this.mainContext.logger.trace(time+" getCurrentPriceSignal: "+priceSignal[(int) time % priceSignal.length]);
 		if (priceSignal == null || time < 0)
 		{
 			return 0;
@@ -406,10 +404,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 
 	public double getCurrentPriceElasticityFactor_e()
 	{
-		// if (Consts.DEBUG) System.out.println(
-		// RepastEssentials.GetTickCount()+" getCurrentPriceElasticityFactor_e: "+arr_i_e[(int)
-		// RepastEssentials.GetTickCount() % ticksPerDay]);
-
+		this.mainContext.logger.debug(RepastEssentials.GetTickCount()+" getCurrentPriceElasticityFactor_e: "+arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay]);
 		return arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay];
 	}
 
@@ -553,8 +548,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	{
 		double price;
 		double x;
-		if (Consts.DEBUG)
-			System.out.println(" setPriceSignalRoscoeAndAult ");
+		this.mainContext.logger.debug("entering setPriceSignalRoscoeAndAult ");
 		for (int i = 0; i < priceSignal.length; i++)
 		{
 			// Note that the division by 10 is to convert the units of predicted
@@ -565,8 +559,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 			price = (double) (A * Math.exp(B * x) + C);
 			if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 			{
-				if (Consts.DEBUG)
-					System.out.println("AggregatorAgent: Price at tick" + i + " is " + price);
+				this.mainContext.logger.debug("AggregatorAgent: Price at tick" + i + " is " + price);
 			}
 			if (price > Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH)
 			{

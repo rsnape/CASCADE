@@ -37,7 +37,7 @@ import uk.ac.dmu.iesd.cascade.util.DatedTimeSeries;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 import cern.jet.random.Poisson;
 
-public class AdoptionContext extends CascadeContext{
+public class AdoptionContext extends CascadeContext {
 	
 	public static final double FIT_EXPORT_TARIFF = 45;
 	public Poisson nextThoughtGenerator = RandomHelper.createPoisson(30.0);
@@ -76,7 +76,6 @@ public class AdoptionContext extends CascadeContext{
 	}
 
 	DateFormat ukDateParser = new SimpleDateFormat("dd/MM/yyyy");
-	public Logger logger;
 	DisplayGIS styledDisplay;
 	DatedTimeSeries<TreeMap<Integer,Integer>> PVFITs = new DatedTimeSeries<TreeMap<Integer,Integer>>(); // Holds PV feed in tarriffs in system
 										// capacity vs. tenths of
@@ -89,20 +88,7 @@ public class AdoptionContext extends CascadeContext{
 	WeakHashMap<String,Integer> agentCounts = new WeakHashMap<String,Integer>();
 	Calendar simTime = new GregorianCalendar();
 	public Date simStartDate;
-/*	public double[] insolationArray;
-	public double[] windSpeedArray;
-	public double[] airTemperatureArray;
-	public double[] airDensityArray;
-	public int weatherDataLength;
-	private int ticksPerDay;
-	public EmpiricalWalker drawOffGenerator;
-	public EmpiricalWalker occupancyGenerator;
-	public Normal waterUsageGenerator;
-	public Normal buildingLossRateGenerator;
-	public Normal thermalMassGenerator;
-	public Uniform coldAndWetApplTimeslotDelayRandDist;
-	public EmpiricalWalker wetApplProbDistGenerator;
-	private Network<?> economicNetwork;*/
+
 
 	/******************
 	 * This method steps the model's internal gregorian calendar on each model
@@ -150,31 +136,6 @@ public class AdoptionContext extends CascadeContext{
     	
     	this.logger.debug("Returning  = " + ukDateParser.format(retVal));
     	
-/*    	if (now.before(parseUKDate("31/10/2011")))
-    	{
-			returnDate = parseUKDate("01/04/2035");
-    	}
-    	else if (now.after(parseUKDate("31/10/2011")) && now.before(parseUKDate("12/12/2011")))
-    	{
-    		returnDate = parseUKDate("12/12/2011");
-    	}
-    	else if (now.after(parseUKDate("12/12/2011")) && now.before(parseUKDate("19/01/2012")))
-    	{
-    		returnDate = parseUKDate("01/08/2012");
-    	}
-    	else
-    	{
-    		//tariffs reviewed every 3 months
-    		Date d = new Date();
-    		d.setMonth((now.getMonth() / 3)*3);
-    		d.setYear(now.getYear());
-    		d.setDate(1);
-    		Calendar cal = Calendar.getInstance();
-    		cal.setTime(d);
-    		cal.add( Calendar.MONTH, 3);
-    		returnDate = cal.getTime();
-    	}*/
-    	
     	return retVal;
     }
 
@@ -219,15 +180,6 @@ public class AdoptionContext extends CascadeContext{
     	
     	this.logger.trace("returning fit for capacity " + cap + " = " + retVal);
     	return retVal;
-    	
-		/*Iterator<Integer> iterator = tariffNow.keySet().iterator();
-		while (iterator.hasNext()) {
-			Integer key = iterator.next();
-			if (key >= cap) {
-				this.logger.trace("Returning value for up to " + key);
-				return tariffNow.get(key);
-			}
-		}*/
 	}
 
 	int getAgentCount(Class clazz) {
@@ -274,84 +226,11 @@ public class AdoptionContext extends CascadeContext{
 	}
 	
 	public AdoptionContext(Context context,String date) {
-		super(context);
-		
-		
-		// set up a logger for the adoption context
-		logger = Logger.getLogger("AdoptionLogger");
-		logger.removeAllAppenders();
-		logger.setLevel(Level.DEBUG); //Set this to TRACE for full log files.  Can filter what is actually output below
-		ConsoleAppender console = new ConsoleAppender(new AdoptionLogLayout());
-		console.setName("ConsoleOutput");
-		console.setThreshold(Level.INFO);
-		console.activateOptions(); // Needed or the appender appends everything from the logger
-		
-		logger.addAppender(console);
-		logger.setAdditivity(false);
-		
-		FileAppender traceFile;
-		try 
-		{
-			String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
-			traceFile = new FileAppender(new AdoptionLogLayout(),"output/myTrace"+parsedDate+".log");
-			//traceFile.setMaxFileSize("1024000");
-			//traceFile.setMaxBackupIndex(0);
-			traceFile.setName("traceFileOutput");
-			traceFile.setThreshold(Level.DEBUG);
-			traceFile.activateOptions(); // Needed or the appender appends everything from the logger
-			
-			logger.addAppender(traceFile);
-
-		} catch (IOException e1) {
-			this.logger.warn("Creating file appender for logger failed");
-			e1.printStackTrace();
-		}
-
-		logger.info("Adoption Context instantiated and logger configured");
-		logger.info(logger);
-		
-		logger.setAdditivity(false);
-		
+		super(context);		
 		simStartDate = parseUKDate(date);
 		simTime.setTime(simStartDate);
 		
-
-
 		//this.addContextListener(new CountUpdater());
-	}
-
-	// @ScheduledMethod(start=0,interval=0)
-	// public void registerDisplayStyle()
-	// {
-	// GUIRegistry reg = RunState.getInstance().getGUIRegistry();
-	//
-	// DefaultDisplayData<Household> displayData = new
-	// DefaultDisplayData<Household>(this);
-	// for (Object proj : this.getProjections())
-	// {
-	// displayData.addProjection(((Projection)proj).getName());
-	// }
-	// styledDisplay = new DisplayGIS(displayData);
-	// styledDisplay.registerAgentStyle(Household.class.getCanonicalName(), new
-	// HouseholdTwoDStyle(), 0);
-	// styledDisplay.init();
-	// reg.addDisplay("New 2D display", GUIRegistryType.DISPLAY, styledDisplay);
-	// styledDisplay.createPanel();
-	// }
-	//
-	// @ScheduledMethod(start=1,interval=1)
-	// public void updateDisplay()
-	// {
-	// styledDisplay.update();
-	// }
-	
-	class AdoptionLogLayout extends SimpleLayout
-	{
-		@Override
-		public String format(LoggingEvent ev)
-		{
-			return "[Tick " + RepastEssentials.GetTickCount() + "; "  + (ev.timeStamp-ev.getStartTime()) + "] : " + ev.getLevel().toString() + " - " + ev.getRenderedMessage() + "\n"; 
-		}
 	}
 	
 	public int dateToTick(Date d)

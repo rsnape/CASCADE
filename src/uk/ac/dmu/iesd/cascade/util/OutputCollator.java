@@ -76,7 +76,7 @@ public class OutputCollator
 		
 		FilenameFilter filter = new NameStartsFilter(fileToCollat);
 		File[] subFiles = d.listFiles(filter);
-		System.out.println(Arrays.toString(subFiles));
+		this.mainContext.logger.debug(Arrays.toString(subFiles));
 		CSVWriter out = new CSVWriter(baseDir.concat(File.separator).concat("CollatedOutput.csv"), false);
 		String[][] writeDS = null;
 		int fileNum=0;

@@ -2,6 +2,7 @@ package uk.ac.dmu.iesd.cascade.context;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,10 +12,15 @@ import java.util.Iterator;
 
 import javax.swing.JComponent;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.spi.LoggingEvent;
+
 import repast.simphony.context.Context;
 import repast.simphony.context.DefaultContext;
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.ISchedule;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
@@ -69,13 +75,15 @@ public class CascadeContext extends DefaultContext{
 	 * start and stored for the entire duration of the simulation.
 	 * 
 	 */
+	
+	public Logger logger;
 
 	// Note at the moment, no geographical info is needed to read the weather
 	// this is because weather is a flat file and not spatially differentiated
 
-	int weatherDataLength; // length of arrays - note that it is a condition that each row of the input file
-	// represents one time step, but the model is agnostic to what time period each
-	// tick represents.
+	int weatherDataLength; 	// length of arrays - note that it is a condition that each row of the input file
+							// represents one time step, but the model is agnostic to what time period each
+							// tick represents.
 	double[] insolationArray; //Note this is an integrated value in Wh per metre squared
 	double[] windSpeedArray;// instantaneous value
 	double[] windDirectionArray; // Direction in degrees from North.  May not be needed as yet, but useful to have potentially
@@ -530,7 +538,7 @@ public class CascadeContext extends DefaultContext{
 					SnapshotTaker snapshotTaker = snapshotTakerArrList.get(i);
 					String fileName = getFileNameForChart(i);
 					if (fileName != "") {
-						//if (Consts.DEBUG) System.out.println("takeSnapshot: fileName is empty");
+						this.logger.trace("takeSnapshot: fileName is empty");
 						File file = new File(fileName);
 						snapshotTaker.save(file, "png");
 					}
@@ -538,7 +546,7 @@ public class CascadeContext extends DefaultContext{
 
 			} catch (IOException e) {
 				// Print out the exception that occurred
-				 System.out.println("CascadeContext: Unable to takeSnapshot "+e.getMessage());
+				 this.logger.debug("CascadeContext: Unable to takeSnapshot "+e.getMessage());
 			}
 		}
 
@@ -565,37 +573,12 @@ public class CascadeContext extends DefaultContext{
 	 ******************/
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep() {
-		//if (Consts.DEBUG) System.out.println("calendarStep()");
+		this.logger.trace("calendarStep()");
 		simulationCalendar.add(GregorianCalendar.MINUTE, Consts.MINUTES_PER_DAY / ticksPerDay);
 	}
 	
 	public Date getDateTime() {
 		return simulationCalendar.getTime();
-	}
-
-	/**
-     * Constructs the cascade context 
-     * 
-     */
-	public CascadeContext(Context<?> context)
-	{
-		super(context.getId(), context.getTypeID());
-		if (verbose)
-			System.out.println("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
-
-		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
-
-		while (projIterator.hasNext()) {
-			Projection<?> proj = projIterator.next();
-			this.addProjection(proj);
-			if (verbose)
-				System.out.println("CascadeContext: Added projection: "+ proj.getName());
-		}
-
-		this.setId(context.getId());
-		this.setTypeID(context.getTypeID());
-		
-
 	}
 	
 	//----------------
@@ -633,51 +616,6 @@ public class CascadeContext extends DefaultContext{
 		return getTimeslotOfDay();
 	}
 	
-	/*public Network getNetworkOfRegisteredPxTraders(){
-		return this.networkOfRegisteredPxTraders;
-	}
-	
-	public Network getNetworkOfRegisteredBMTraders(){
-		return this.networkOfRegisteredBMTraders;
-	}
-	
-	public ArrayList<IPxTrader> getListOfRegisteredPxTraders() {
-		ArrayList<IPxTrader> aListOfPxTranders = new ArrayList<IPxTrader>();
-
-		Network pxTradersNet = getNetworkOfRegisteredPxTraders();
-		Iterable<RepastEdge> edgeIter = pxTradersNet.getEdges();
-		if(verbose) 
-			System.out.println("There are "+ pxTradersNet.size() + " registered PxTraders");
-		for (RepastEdge edge : edgeIter) {
-			Object obj = edge.getTarget();
-			if (obj instanceof IPxTrader)
-				aListOfPxTranders.add((IPxTrader) obj);    		
-			else
-				System.err.println(this.getClass()+"::Wrong Class Type: IPxTrader agent is expected");
-		}
-		return aListOfPxTranders;
-	} 
-	
-	
-	public ArrayList<IBMTrader> getListOfRegisteredBMTraders() {
-		ArrayList<IBMTrader> aListOfBMTranders = new ArrayList<IBMTrader>();
-
-		Network bmTradersNet = getNetworkOfRegisteredBMTraders();
-		Iterable<RepastEdge> edgeIter = bmTradersNet.getEdges();
-		if(verbose) 
-			System.out.println("There are "+ bmTradersNet.size() + " registered BMTraders");
-		for (RepastEdge edge : edgeIter) {
-			Object obj = edge.getTarget();
-			if (obj instanceof IBMTrader)
-				aListOfBMTranders.add((IBMTrader) obj);    		
-			else
-				System.err.println(this.getClass()+"::Wrong Class Type: IBMTrader agent is expected");
-		}
-		return aListOfBMTranders;
-	}	
-	
-	*/
-	
 	public ArrayList<IPxTrader> getListOfPxTraders() {
 		ArrayList<IPxTrader> aListOfPxTraders = new ArrayList<IPxTrader>();
 		Iterable<IPxTrader> pxTraderIter = (Iterable<IPxTrader>) (this.getObjects(IPxTrader.class));
@@ -711,15 +649,93 @@ public class CascadeContext extends DefaultContext{
 	public void setGasPercentage(int percentageOfHHProsWithGas)
 	{
 		this.gasHeatedPercentage = percentageOfHHProsWithGas;
-		
 	}
 	
 	public int getGasPercentage()
 	{
 		return this.gasHeatedPercentage;
-		
 	}
 	
+	void initDedicatedLogger(String name)
+	{
+		Level logLevel = Level.toLevel((String)RepastEssentials.GetParameter("loggingLevel"));
+		// set up a this.logger for the adoption context
+		this.logger = Logger.getLogger(name);
+		this.logger.removeAllAppenders();
+		this.logger.setLevel(logLevel); //Set this to TRACE for full log files.  Can filter what is actually output below
+		this.logger.setAdditivity(false);
+		
+		ConsoleAppender console = new ConsoleAppender(new CascadeLogLayout());
+		console.setName("ConsoleOutput");
+		console.setThreshold(Level.INFO);
+		console.activateOptions(); // Needed or the appender appends everything from the this.logger
+
+		this.logger.addAppender(console);
+
+		FileAppender traceFile;
+		try 
+		{
+			String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
+			traceFile = new FileAppender(new CascadeLogLayout(),"cascade_"+parsedDate+"_"+logLevel.toString()+".log");
+			//traceFile.setMaxFileSize("1024000");
+			//traceFile.setMaxBackupIndex(0);
+			traceFile.setName("traceFileOutput");
+			traceFile.setThreshold(logLevel);
+			traceFile.activateOptions(); // Needed or the appender appends everything from the this.logger
+
+			this.logger.addAppender(traceFile);
+
+		} catch (IOException e1) {
+			this.logger.warn("Creating file appender for this.logger failed");
+			e1.printStackTrace();
+		}
+
+		this.logger.info("Cascade Context instantiated and this.logger configured");
+		this.logger.info(this.logger);
+
+		this.logger.setAdditivity(false);
+	}
 	
+	void initPipeToNullLogger()
+	{
+		this.logger = Logger.getLogger("nullLog");
+		this.logger.removeAllAppenders();
+		this.logger.setLevel(Level.OFF);
+		this.logger.setAdditivity(false);
+	}
+
+	/**
+     * Constructs the cascade context 
+     * 
+     */
+	public CascadeContext(Context<?> context)
+	{
+		super(context.getId(), context.getTypeID());
+		initDedicatedLogger(Consts.CASCADE_LOGGER_NAME);
+		
+		this.logger.trace("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
+
+		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
+
+		while (projIterator.hasNext()) {
+			Projection<?> proj = projIterator.next();
+			this.addProjection(proj);
+			this.logger.trace("CascadeContext: Added projection: "+ proj.getName());
+		}
+
+		this.setId(context.getId());
+		this.setTypeID(context.getTypeID());
+	}
+	
+
+	
+	class CascadeLogLayout extends SimpleLayout
+	{
+		@Override
+		public String format(LoggingEvent ev)
+		{
+			return "[Tick " + RepastEssentials.GetTickCount() + "; "  + (ev.timeStamp-LoggingEvent.getStartTime()) + "] : " + ev.getLevel().toString() + " - " + ev.getRenderedMessage() + "\n"; 
+		}
+	}
 	
 }

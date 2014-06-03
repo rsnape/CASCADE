@@ -135,7 +135,7 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator {
 		FileWriter writer;
 		try {
 			int offset = (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) * 48;
-			//System.out.println("-> " + (RepastEssentials.GetTickCount() - offset));
+			this.mainContext.logger.trace("-> " + (RepastEssentials.GetTickCount() - offset));
 			if((RepastEssentials.GetTickCount() - offset) == 0) {
 				writer = new FileWriter("IndustriesAndCommercialOutput.csv", false);
 				writer.append("k");
@@ -196,7 +196,7 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator {
 			int start =  mainContext.getTickCount() - offset;
 			int end = start + lengthOfProfile;
 			int i = 0;
-			//System.out.println("[updateSingleNonDomesticPower()] From: " + start + " to: " + end);
+			this.mainContext.logger.trace("[updateSingleNonDomesticPower()] From: " + start + " to: " + end);
 			for(int j=start; j<end; j++) {
 				SubsetOfNormaliseINDOPower[i] = NormaliseINDOPower[j%lengthOfProfile];
 				i++;
@@ -221,7 +221,7 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator {
 		for(int i=0; i<lengthOfProfile; i++) {
 		//	System.out.print(totalSpaceHeatDemand[i] + ",");
 		}
-		System.out.println("\n");
+		this.mainContext.logger.debug("\n");
 		
 		// update single non domestic demand
 		//double [] singleNonDomesticDemand = new double[this.ticksPerDay];
@@ -262,7 +262,7 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator {
 		int start = this.ticksPerDay * dayOfWeek;
 		int end = start + this.ticksPerDay;
 		int i = 0;
-		//System.out.println("[updateSingleNonDomesticDemand()] From: " + start + " to: " + end);
+		this.mainContext.logger.trace("[updateSingleNonDomesticDemand()] From: " + start + " to: " + end);
 		for(int j=start; j<end; j++) {
 			// convert from GW to kWh on half hourly timeslot
 			SingleNonDomesticDemand[i] = this.SingleNonDomesticPower[j] * 1e9/2d;

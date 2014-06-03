@@ -45,7 +45,7 @@ public class TrainingSigFactoryTest {
 		{
 			double [] s = defaultFactory.generateSignal(t);
 			sigs.add(s);
-			System.out.println(Arrays.toString(s));
+			this.mainContext.logger.debug(Arrays.toString(s));
 			for (int i = 0; i < s.length ; i++)
 			{
 				tempDataset.addValue((Number)s[i], t.name(), i);

@@ -151,7 +151,7 @@ public class ConfigureProsumerPane extends WizardWorkingPane implements ActionLi
 				}
 			}
 			
-			System.out.println("Configuration attribute added to DOM document");
+			this.mainContext.logger.debug("Configuration attribute added to DOM document");
 			/**
 			 * Old idea to instatiate the objects here - better to put it into a file and then run from the file
 			 */

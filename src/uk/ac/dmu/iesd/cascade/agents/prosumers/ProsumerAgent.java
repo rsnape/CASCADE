@@ -246,7 +246,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @see #getNetDemand
 	 */
 	public void setNetDemand(double nd) {
-		//if (Consts.DEBUG) System.out.println("HHP: setND: "+nd);
+		this.mainContext.logger.trace("HHP: setND: "+nd);
 		this.netDemand = nd;
 	}
 	
@@ -341,7 +341,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * @param validTime - the time (in ticks) from which the signal is valid
 	 */
 	public boolean receiveValueSignal(double[] signal, int length) {
-		//if (Consts.DEBUG) System.out.println("ProsumerAgent:: receiveValueSignal()");
+		this.mainContext.logger.trace("ProsumerAgent:: receiveValueSignal()");
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();
@@ -357,11 +357,11 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 			double[] tempArray;
 
 			int signalOffset = time - validTime;
-			//if (Consts.DEBUG) System.out.println("time: "+time+ " validTime"+validTime);
+			this.mainContext.logger.trace("time: "+time+ " validTime"+validTime);
 			if (signalOffset != 0)
 			{
 
-				System.out.println("ProsumerAgent: Signal valid from time other than current time");
+				this.mainContext.logger.debug("ProsumerAgent: Signal valid from time other than current time");
 
 				newSignalLength = newSignalLength - signalOffset;
 			}
@@ -369,7 +369,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 			if ((getPredictedCostSignal() == null) || (newSignalLength != predictedCostSignal.length))
 			{
 			
-				 System.out.println("ProsumerAgent: Re-defining length of signal in agent" + agentID);
+				 this.mainContext.logger.debug("ProsumerAgent: Re-defining length of signal in agent" + agentID);
 			
 				setPredictedCostSignal(new double[newSignalLength]);
 			}

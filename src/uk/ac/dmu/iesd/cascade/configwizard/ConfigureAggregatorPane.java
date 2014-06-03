@@ -132,7 +132,7 @@ public class ConfigureAggregatorPane extends WizardWorkingPane implements Action
 		retPanel.setMinimumSize(panelSize);
 		retPanel.setPreferredSize(panelSize);
 		retPanel.setMaximumSize(panelSize);
-		System.out.println("Setting minimum size to " + (this.getWidth() - 20) + "," + 30);
+		this.mainContext.logger.debug("Setting minimum size to " + (this.getWidth() - 20) + "," + 30);
 		retPanel.setLayout(new BoxLayout(retPanel,BoxLayout.X_AXIS));
 		JTextArea l = new JTextArea(s);
 		l.setMinimumSize(labelSize);
@@ -163,7 +163,7 @@ public class ConfigureAggregatorPane extends WizardWorkingPane implements Action
 		retPanel.validate();
 		JTextArea l = new JTextArea("Parameter name");
 		l.setMinimumSize(labelSize);
-		System.out.println("Setting label dimensions to " + (retPanel.getWidth()/2-5) + "," + 30);
+		this.mainContext.logger.debug("Setting label dimensions to " + (retPanel.getWidth()/2-5) + "," + 30);
 		l.setPreferredSize(l.getMinimumSize());
 		l.setMaximumSize(l.getMinimumSize());
 		l.setBackground(null);
@@ -203,7 +203,7 @@ public class ConfigureAggregatorPane extends WizardWorkingPane implements Action
 				}
 			}
 			
-			System.out.println("Configuration attribute added to DOM document");
+			this.mainContext.logger.debug("Configuration attribute added to DOM document");
 			/**
 			 * Old idea to instatiate the objects here - better to put it into a file and then run from the file
 			 */

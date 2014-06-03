@@ -14,7 +14,6 @@ import repast.simphony.space.projection.ProjectionEvent;
 import repast.simphony.space.projection.ProjectionEvent.Type;
 import repast.simphony.space.projection.ProjectionListener;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
-import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
@@ -85,7 +84,7 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 	
 	public void bizPreStep() {
 		
-		System.out.println("At tick "+RepastEssentials.GetTickCount()+" demand = "+this.getNetDemand());
+		this.mainContext.logger.debug("At tick "+RepastEssentials.GetTickCount()+" demand = "+this.getNetDemand());
 		ArrayList<ProsumerAgent> customers = getCustomersList();
 		//broadcastSignalToCustomers(this.getCurrPrice(), customers);
 		broadcastSignalToCustomers(ArrayUtils.normalizeValues(this.laggedPrice), customers);
@@ -98,8 +97,8 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		if (mip != null)
 		{
 		this.laggedPrice[this.laggedPrice.length - 1] = mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay];
-		System.out.println("Added MIP to lagged array = "+mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay]);
-		System.out.println("BMP = "+this.messageBoard.getBMP());
+		this.mainContext.logger.debug("Added MIP to lagged array = "+mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay]);
+		this.mainContext.logger.debug("BMP = "+this.messageBoard.getBMP());
 		}
 	}
 	
@@ -109,9 +108,9 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		for (ProsumerAgent c : customers)
 		{
 			totalDemand += c.getNetDemand();
-			//System.out.println("Prosumer " + c.getAgentName() + " adds " + c.getNetDemand() + ".  Has smart control = " + ((HouseholdProsumer) c).getHasSmartControl());
+			this.mainContext.logger.trace("Prosumer " + c.getAgentName() + " adds " + c.getNetDemand());
 		}
-		System.out.println(this.getAgentName() + this.getID()+" has total demand "+totalDemand);
+		this.mainContext.logger.debug(this.getAgentName() + this.getID()+" has total demand "+totalDemand);
 
 		this.arr_baselineProfile[this.mainContext.getTimeslotOfDay()] = totalDemand;
 		this.setNetDemand(-totalDemand); //Convention in CASCADE is becoming demand is viewed as -ve, generation +ve
@@ -146,13 +145,12 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		
 		Iterable<RepastEdge> iter = economicNet.getEdges(this);
-		if(Consts.DEBUG) {
-			//System.out.println(This.class+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
-		}
+		this.mainContext.logger.trace(this.getAgentName()+ " has "+ economicNet.size() + " links in economic network");
+
 
 		for (RepastEdge edge : iter) {
 			Object linkSource = edge.getTarget();
-			//if (Consts.DEBUG) System.out.println("RECO linkSource " + linkSource);
+			this.mainContext.logger.trace("RECO linkSource " + linkSource);
 			if (linkSource instanceof ProsumerAgent){
 				c.add((ProsumerAgent) linkSource);    		
 			}

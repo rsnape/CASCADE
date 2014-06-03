@@ -3,6 +3,7 @@ package uk.ac.dmu.iesd.cascade.market.astem.operators;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.market.IMarket;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.data.ImbalData;
@@ -18,6 +19,8 @@ import uk.ac.dmu.iesd.cascade.market.data.PxPD;
  */
 
 public class MarketMessageBoard implements IMarket {
+	
+	CascadeContext mainContext;
 	
 	private static ArrayList<PxPD> list_PX_products;
 	private static double[] arr_IMBAL;
@@ -106,12 +109,17 @@ public class MarketMessageBoard implements IMarket {
 			sp+=ASTEMConsts.PX_PRODUCT_ID_8H; //+16
 		}
 		
-		//System.out.println("MB: PxProducts");
+		this.mainContext.logger.trace("MB: PxProducts");
 		//TestHelper.printListOfPxPD(list_PX_products);
 	}
 	
+	public void setContext(CascadeContext c)
+	{
+		this.mainContext = c;
+	}
+	
 	public MarketMessageBoard() {
-
+		
 		this.arr_IMBAL = new double[ASTEMConsts.T_PER_DAY];
 		this.arr_INDMAR = new double[ASTEMConsts.T_PER_DAY];
 		this.arr_oldIMBAL= new double[ASTEMConsts.T_PER_DAY];

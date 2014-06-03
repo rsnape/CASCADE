@@ -143,7 +143,7 @@ public class ProsumerFactory implements IProsumerFactory {
 		//add time jitter
 		double jitterFactor = RandomHelper.nextDouble() - 0.5d;
 
-		//if (Consts.DEBUG) System.out.println("ProsumerFactory: Applying jitter" + jitterFactor);
+		this.mainContext.logger.trace("ProsumerFactory: Applying jitter" + jitterFactor);
 
 		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
 		for (int i = 1; i < (newProfile.length - 1); i++)
@@ -262,7 +262,7 @@ public class ProsumerFactory implements IProsumerFactory {
 				i++;
 			}
 		
-			if (Consts.DEBUG) System.out.println("DEFRA Customer segment is" + custSegment);
+			this.mainContext.logger.debug("DEFRA Customer segment is" + custSegment);
 		
 			HouseholdProsumer prAgent = this.createHouseholdProsumer(ArrayUtils.convertStringArrayToDoubleArray(defraProfiles.getColumn("demand" + (custSegment - 1))), true);
 

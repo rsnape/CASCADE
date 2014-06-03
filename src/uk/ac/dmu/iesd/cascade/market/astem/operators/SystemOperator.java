@@ -70,7 +70,7 @@ public class SystemOperator {
 		Network bmuNet = mainContext.getNetworkOfRegisteredBMUs();
 		Iterable<RepastEdge> edgeIter = bmuNet.getEdges();
 		if(Consts.VERBOSE) 
-			System.out.println("SO has access to "+ bmuNet.size() + " registered BMUs");
+			this.mainContext.logger.debug("SO has access to "+ bmuNet.size() + " registered BMUs");
 		for (RepastEdge edge : edgeIter) {
 			Object obj = edge.getTarget();
 			if (obj instanceof BMU)
@@ -82,7 +82,7 @@ public class SystemOperator {
 	} */
 
 	private LinkedHashMap fetchPNs(ArrayList<ITrader> listOfITraders) {
-		//System.out.println("------ SO: recievePNs");
+		this.mainContext.logger.trace("------ SO: recievePNs");
         LinkedHashMap mapOfPNs = new LinkedHashMap();
 		for (ITrader bmu : listOfITraders){	
 			mapOfPNs.put(bmu.getID(), bmu.getPN());
@@ -93,7 +93,7 @@ public class SystemOperator {
 	
 	private double[] calculateNDF(LinkedHashMap <Integer, double[]> mapOfPNs) {
 		
-		//System.out.println("calculateNDF()");
+		this.mainContext.logger.trace("calculateNDF()");
 		
 		double [][] arr_ij_pn = new double [CollectionUtils.numOfRowsWithNegValInCollection(mapOfPNs.values())][mainContext.ticksPerDay];
 		int i=0;
@@ -110,7 +110,7 @@ public class SystemOperator {
 
 	private double[] calculateINDGEN(LinkedHashMap <Integer, double[]> mapOfPNs) {
 		
-		//System.out.println("calculateINDGEN()");
+		this.mainContext.logger.trace("calculateINDGEN()");
 
 		double [][] arr_ij_pn = new double [CollectionUtils.numOfRowsWithPosValInCollection(mapOfPNs.values())][mainContext.ticksPerDay];
 		int i=0;
@@ -122,7 +122,7 @@ public class SystemOperator {
 			}	
 		}
 		
-		//System.out.println(ArrayUtils.toString(arr_ij_pn));
+		this.mainContext.logger.trace(ArrayUtils.toString(arr_ij_pn));
 		
 		return ArraysUtils.sumOfCols2DDoubleArray(arr_ij_pn);
 	}
@@ -138,9 +138,9 @@ public class SystemOperator {
 		double sumOfMaxGen= 0;
 		for (ITrader bmu : listOfITraders){	
 			sumOfMaxGen += bmu.getMaxGenCap();
-			//System.out.println("bmuMaxGenCap: "+bmu.getMaxGenCap());
+			this.mainContext.logger.trace("bmuMaxGenCap: "+bmu.getMaxGenCap());
 		}
-		//System.out.println("SumOfBmuMaxGenCap: "+sumOfMaxGen);
+		this.mainContext.logger.trace("SumOfBmuMaxGenCap: "+sumOfMaxGen);
 
 		for (int i=0; i<indMargin.length; i++)
 			indMargin[i]= sumOfMaxGen-imbalArray[i];
@@ -156,7 +156,7 @@ public class SystemOperator {
 	}
 	
 	private LinkedHashMap<IBMTrader, ArrayList<BOD>> fetchBODs(List<ITrader> listOfITraders) {
-		//System.out.println("------ SO: fetchBOD");
+		this.mainContext.logger.trace("------ SO: fetchBOD");
 		//Received BOD are in the form of list
 		LinkedHashMap<IBMTrader, ArrayList<BOD>> map_IBMTrader2bod = new LinkedHashMap <IBMTrader, ArrayList<BOD>>();
 		
@@ -227,8 +227,8 @@ public class SystemOperator {
 
 
 	private void sendBOAtoEachIBMTrader(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {	
-		//System.out.println("SO: sendBOAtoEachBMU() called");
-		//System.out.println("size of mapOfBMUID2ListOfBOAs: "+mapOfBMU2ListOfBOAs.size());
+		this.mainContext.logger.trace("SO: sendBOAtoEachBMU() called");
+		this.mainContext.logger.trace("size of mapOfBMUID2ListOfBOAs: "+mapOfBMU2ListOfBOAs.size());
 
 		Set <IBMTrader> bmuSet =  mapOfIBMTrader2ListOfBOAs.keySet();
 		
@@ -238,18 +238,18 @@ public class SystemOperator {
 	}
 	
 	private void sendBOAtoSettlementCo(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {	
-		//System.out.println("SO: sendBOAtoSettlementCo() called");
+		this.mainContext.logger.trace("SO: sendBOAtoSettlementCo() called");
 		this.settlementCo.recieveBOAs(mapOfIBMTrader2ListOfBOAs); // @TODO: send a clone/copy not the original ref
 	}
 	
 	/*
 	private void sendBOAtoEachBMU_old(List<BMU> listOfBMUs, HashMap<Integer, ArrayList<BOD>> mapBMU_ID2ListOfBODs) {	
-		System.out.println("SO: sendBOAtoEachBMU() called");
-		System.out.println("size of listOfBMUs: "+listOfBMUs.size());
-		System.out.println("size of mapBMU_ID2ListOfBODs: "+mapBMU_ID2ListOfBODs.size());
+		this.mainContext.logger.debug("SO: sendBOAtoEachBMU() called");
+		this.mainContext.logger.debug("size of listOfBMUs: "+listOfBMUs.size());
+		this.mainContext.logger.debug("size of mapBMU_ID2ListOfBODs: "+mapBMU_ID2ListOfBODs.size());
 
 		for (BMU bmu : listOfBMUs){	
-			System.out.println(bmu.getID());
+			this.mainContext.logger.debug(bmu.getID());
 		}
 		
 		Set<Integer> keySet = mapBMU_ID2ListOfBODs.keySet();
@@ -377,7 +377,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 	@ScheduledMethod(start = Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP, interval = 1, shuffle = false, priority = Consts.SO_PRIORITY_SECOND)
 	public void step() {
 
-		//if (Consts.DEBUG) System.out.println("--SO: "+TestHelper.getEnvInfoInString(mainContext));
+		this.mainContext.logger.trace("--SO: "+TestHelper.getEnvInfoInString(mainContext));
 		
 		//TestUtils.printPNs(map_PN);
 	
@@ -387,7 +387,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 			//this.list_BMU = getBMUList();
 			//this.list_IBMTrader = mainContext.getListOfRegisteredBMTraders();
 			this.list_ITrader = mainContext.getListOfTraders();
-		     //   System.out.println("list_ITrader.size: "+ list_ITrader.size());
+		     this.mainContext.logger.trace("list_ITrader.size: "+ list_ITrader.size());
 		}
 		
 		//String[] labels={"NDF:", "INDGEN:", "IMBAL:", "INDMAR:"};
@@ -398,15 +398,15 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 			map_dmuID2PN = fetchPNs(list_ITrader);
 			//TestHelper.printMapOfPNs(map_dmuID2PN);
 			arr_NDF = calculateNDF(map_dmuID2PN);
-			//System.out.println("NDF" + Arrays.toString(arr_NDF));
+			this.mainContext.logger.trace("NDF" + Arrays.toString(arr_NDF));
 			arr_INDGEN= calculateINDGEN(map_dmuID2PN); //indicated generation
-			//System.out.println("indGEN" + Arrays.toString(arr_INDGEN));
+			this.mainContext.logger.trace("indGEN" + Arrays.toString(arr_INDGEN));
 
 			arr_IMBAL = calculateIMBAL(arr_NDF, arr_INDGEN);  //imbalance 
-			//System.out.println("IMBAL" + Arrays.toString(arr_IMBAL));
+			this.mainContext.logger.trace("IMBAL" + Arrays.toString(arr_IMBAL));
 
 			arr_INDMAR = calculateINDMAR(list_ITrader, arr_IMBAL); //idicator margine
-			//System.out.println("IndMar" + Arrays.toString(arr_INDMAR));
+			this.mainContext.logger.trace("IndMar" + Arrays.toString(arr_INDMAR));
 					
 			//TestHelper.writeOutput("SO_sp", true, arr_IMBAL);
 
@@ -421,7 +421,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 			arr_NDF = calculateNDF(map_dmuID2PN);
 			arr_INDGEN = calculateINDGEN(map_dmuID2PN);
 			arr_IMBAL = calculateIMBAL(arr_NDF, arr_INDGEN);
-			//System.out.println("IMBAL" + Arrays.toString(arr_IMBAL));
+			this.mainContext.logger.trace("IMBAL" + Arrays.toString(arr_IMBAL));
 
 			arr_INDMAR = calculateINDMAR(list_ITrader, arr_IMBAL);
 			//TestHelper.writeOutput("SO_sp", true, labels, arr_NDF, arr_INDGEN, arr_IMBAL, arr_INDMAR);
@@ -438,7 +438,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 			arr_NDF = calculateNDF(map_dmuID2PN);
 			arr_INDGEN = calculateINDGEN(map_dmuID2PN);
 			arr_IMBAL = calculateIMBAL(arr_NDF, arr_INDGEN);
-			//System.out.println("IMBAL" + Arrays.toString(arr_IMBAL));
+			this.mainContext.logger.trace("IMBAL" + Arrays.toString(arr_IMBAL));
 
 			arr_INDMAR = calculateINDMAR(list_ITrader, arr_IMBAL);
 			//TestHelper.writeOutput("SO_sp", true, arr_IMBAL);
@@ -454,7 +454,7 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 			arr_NDF = calculateNDF(map_dmuID2PN);
 			arr_INDGEN = calculateINDGEN(map_dmuID2PN);
 			arr_IMBAL = calculateIMBAL(arr_NDF, arr_INDGEN);
-			//System.out.println("IMBAL" + Arrays.toString(arr_IMBAL));
+			this.mainContext.logger.trace("IMBAL" + Arrays.toString(arr_IMBAL));
 
 			arr_INDMAR = calculateINDMAR(list_ITrader, arr_IMBAL);
 			//TestHelper.writeOutput("SO_sp", true, arr_IMBAL);
@@ -473,11 +473,11 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 		if (!mainContext.isMarketFirstDay()) {					
 
 			map_IBMTrader2ListOfBODs = fetchBODs(list_ITrader); 
-			//System.out.println(" ----printBOD before generatingBOAs ");
+			this.mainContext.logger.trace(" ----printBOD before generatingBOAs ");
 			//TestHelper.printMapListOfBODs(map_IBMTrader2ListOfBODs);
-			//System.out.println("arr_oldIMBAL" + Arrays.toString(arr_oldIMBAL));
+			this.mainContext.logger.trace("arr_oldIMBAL" + Arrays.toString(arr_oldIMBAL));
 			map_IBMTrader2ListOfBOAs = generateBOA(map_IBMTrader2ListOfBODs, settlementPeriod, arr_oldIMBAL);
-			//System.out.println(" ***printBOD AFTER generatingBOAs ");
+			this.mainContext.logger.trace(" ***printBOD AFTER generatingBOAs ");
 			//TestHelper.printMapListOfBODs(map_IBMTrader2ListOfBODs);
 			sendBOAtoEachIBMTrader(map_IBMTrader2ListOfBODs);
 			sendBOAtoSettlementCo(map_IBMTrader2ListOfBODs);
@@ -486,9 +486,9 @@ private ArrayList<ImbalData> calculate2hImbalance(double[] imbalArray, double to
 		}
 		
 		if (settlementPeriod == 47) {
-			System.out.println("DEMAND: " + Arrays.toString(arr_NDF));
-			System.out.println("GENERATION: " + Arrays.toString(arr_INDGEN));
-			System.out.println("IMBALANCE: " + Arrays.toString(arr_IMBAL));
+			this.mainContext.logger.debug("DEMAND: " + Arrays.toString(arr_NDF));
+			this.mainContext.logger.debug("GENERATION: " + Arrays.toString(arr_INDGEN));
+			this.mainContext.logger.debug("IMBALANCE: " + Arrays.toString(arr_IMBAL));
 			//TestHelper.printMapListOfBODs(map_IBMTrader2ListOfBOAs);
 		}
 

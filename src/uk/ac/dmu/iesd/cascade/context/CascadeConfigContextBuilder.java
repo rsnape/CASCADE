@@ -105,13 +105,13 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		NodeList marketElements = this.doc.getDocumentElement().getElementsByTagName("market");
 		if (marketElements.getLength() == 0)
 		{
-			System.out.println("No market element found, so building market as default");
+			this.cascadeMainContext.logger.debug("No market element found, so building market as default");
 				buildMarket();
 		}
 		else
 		{
 			 // TODO: should we handle multiple markets?
-			System.out.println("Market element value : " + marketElements.item(0).getChildNodes().item(0).getNodeValue());
+			this.cascadeMainContext.logger.debug("Market element value : " + marketElements.item(0).getChildNodes().item(0).getNodeValue());
 			if (!marketElements.item(0).getChildNodes().item(0).getNodeValue().equals("false"))
 			{
 				buildMarket();
@@ -141,8 +141,8 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 
 		} catch (SAXParseException err)
 		{
-			System.out.println("** Parsing error" + ", line " + err.getLineNumber() + ", uri " + err.getSystemId());
-			System.out.println(" " + err.getMessage());
+			this.cascadeMainContext.logger.debug("** Parsing error" + ", line " + err.getLineNumber() + ", uri " + err.getSystemId());
+			this.cascadeMainContext.logger.debug(" " + err.getMessage());
 
 		} catch (SAXException e)
 		{
@@ -167,14 +167,11 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 	 */
 	private void initializeProbabilityDistributions()
 	{
-		System.out.println("Random seed is" + RandomHelper.getSeed());
+		this.cascadeMainContext.logger.debug("Random seed is" + RandomHelper.getSeed());
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		// if (Consts.DEBUG) System.out.println("  ArrayUtils.sum(drawOffDist)"+
-		// ArrayUtils.sum(drawOffDist));
+		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)"+ ArrayUtils.sum(drawOffDist));
 		cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
-		// if (Consts.DEBUG)
-		// System.out.println("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+
-		// ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
 
 		cascadeMainContext.occupancyGenerator = RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
 		cascadeMainContext.waterUsageGenerator = RandomHelper.createNormal(0, 1);
@@ -202,6 +199,9 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		cascadeMainContext.add(settlementCo);
 
 		messageBoard = new MarketMessageBoard();
+		cascadeMainContext.add(messageBoard);
+		messageBoard.setContext(cascadeMainContext);
+
 
 		sysOp = new SystemOperator(cascadeMainContext, settlementCo, messageBoard);
 		cascadeMainContext.add(sysOp);
@@ -435,7 +435,7 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		try
 		{
 			CSVReader baseProfileCSVReader = new CSVReader(dmu_BaseProfiles_File);
-			System.out.println("baseProfileCSVReader created");
+			this.cascadeMainContext.logger.debug("baseProfileCSVReader created");
 			baseProfileCSVReader.parseByColumn();
 
 			mapOfTypeName2BaseProfileArray.put("DEM_LARGE", ArrayUtils.convertStringArrayToDoubleArray(baseProfileCSVReader.getColumn("DEM_LARGE")));
@@ -494,7 +494,7 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		{
 			int occupancy = thisAgent.getNumOccupants();
 			double randomVar = RandomHelper.nextDouble();
-			//if (Consts.DEBUG) System.out.println("randomVar: "+randomVar);
+			this.cascadeMainContext.logger.trace("randomVar: "+randomVar);
 			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
 			{
 				thisAgent.hasWashingMachine = true;
@@ -526,19 +526,19 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		
 		if(cascadeMainContext.verbose)
 		{
-			System.out.println("Percentages:");
-			System.out.println("households with occupancy 1 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",1)).query()) / householdProsumers.size());
-			System.out.println("households with occupancy 2 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",2)).query()) / householdProsumers.size());
-			System.out.println("households with occupancy 3 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",3)).query()) / householdProsumers.size());
-			System.out.println("households with occupancy 4 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",4)).query()) / householdProsumers.size());
-			System.out.println("households with occupancy 5 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",5)).query()) / householdProsumers.size());
-			System.out.println("households with occupancy 6 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",6)).query()) / householdProsumers.size());
-			System.out.println("households with occupancy 7 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",7)).query()) / householdProsumers.size());
-			System.out.println("households with occupancy 8 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",8)).query()) / householdProsumers.size());
-			System.out.println("Washing Mach : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWashingMachine",true)).query()) / householdProsumers.size());
-			System.out.println("Washer Dryer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWasherDryer",true)).query()) / householdProsumers.size());
-			System.out.println("Tumble Dryer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasTumbleDryer",true)).query()) / householdProsumers.size());
-			System.out.println("Dish Washer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("Percentages:");
+			this.cascadeMainContext.logger.debug("households with occupancy 1 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",1)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("households with occupancy 2 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",2)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("households with occupancy 3 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",3)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("households with occupancy 4 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",4)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("households with occupancy 5 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",5)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("households with occupancy 6 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",6)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("households with occupancy 7 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",7)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("households with occupancy 8 : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "numOccupants",8)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("Washing Mach : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWashingMachine",true)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("Washer Dryer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasWasherDryer",true)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("Tumble Dryer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasTumbleDryer",true)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("Dish Washer : " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasDishWasher",true)).query()) / householdProsumers.size());
 		}
 	}
 	
@@ -577,7 +577,7 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 
 		ArrayList prosumersWithElecWaterHeatList = IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
 
-		//if (Consts.DEBUG) System.out.println("ArrayList.size: WaterHeat "+ prosumersWithElecWaterHeatList.size());
+		this.cascadeMainContext.logger.trace("ArrayList.size: WaterHeat "+ prosumersWithElecWaterHeatList.size());
 		AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true, prosumersWithElecWaterHeatList.iterator());
 
 		Iterator iter = prosumersWithElecWaterHeatList.iterator();
@@ -649,7 +649,7 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 				pAgent.hasChestFreezer = true;
 			}
 			
-			//if (Consts.DEBUG) System.out.println("Fridge; FridgeFreezer; Freezer: "+  pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+ (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)); 
+			this.cascadeMainContext.logger.trace("Fridge; FridgeFreezer; Freezer: "+  pAgent.hasRefrigerator +" "+pAgent.hasFridgeFreezer + " "+ (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)); 
 
 			//pAgent.coldApplianceProfile = InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.DAYS_PER_YEAR, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer && pAgent.hasChestFreezer));
 			pAgent.setColdAppliancesProfiles(InitialProfileGenUtils.melodyStokesColdApplianceGen(Consts.NB_OF_DAYS_LOADED_DEMAND, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)));
@@ -657,15 +657,15 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		
 		if(cascadeMainContext.verbose)
 		{
-			System.out.println("HHs with Fridge: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasRefrigerator",true)).query()));
-			System.out.println("HHs with FridgeFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasFridgeFreezer",true)).query()));
-			System.out.println("HHs with UprightFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasUprightFreezer",true)).query()));
-			System.out.println("HHs with ChestFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasChestFreezer",true)).query()));
+			this.cascadeMainContext.logger.debug("HHs with Fridge: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasRefrigerator",true)).query()));
+			this.cascadeMainContext.logger.debug("HHs with FridgeFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasFridgeFreezer",true)).query()));
+			this.cascadeMainContext.logger.debug("HHs with UprightFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasUprightFreezer",true)).query()));
+			this.cascadeMainContext.logger.debug("HHs with ChestFreezer: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasChestFreezer",true)).query()));
 
-			System.out.println("HHs with Fridge %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasRefrigerator",true)).query()) / householdProsumers.size());
-			System.out.println("HHs with FridgeFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasFridgeFreezer",true)).query()) / householdProsumers.size());
-			System.out.println("HHs with UprightFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasUprightFreezer",true)).query()) / householdProsumers.size());
-			System.out.println("HHs with ChestFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasChestFreezer",true)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("HHs with Fridge %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasRefrigerator",true)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("HHs with FridgeFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasFridgeFreezer",true)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("HHs with UprightFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasUprightFreezer",true)).query()) / householdProsumers.size());
+			this.cascadeMainContext.logger.debug("HHs with ChestFreezer %: " + (double) IterableUtils.count((new PropertyEquals(cascadeMainContext, "hasChestFreezer",true)).query()) / householdProsumers.size());
 		}
 	}
 	

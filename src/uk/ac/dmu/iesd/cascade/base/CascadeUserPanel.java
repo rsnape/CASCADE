@@ -97,7 +97,7 @@ public class CascadeUserPanel extends JPanel implements ActionListener, Property
         else if (e.getSource() == buildButton) {
             if (this.builderFile != null)
             {
-            	System.out.println("this is where we'll call the XML reader on file "+ this.builderFile.getAbsolutePath());
+            	this.mainContext.logger.debug("this is where we'll call the XML reader on file "+ this.builderFile.getAbsolutePath());
             }
         }
         else if (e.getSource() == designButton) {
@@ -114,7 +114,7 @@ public class CascadeUserPanel extends JPanel implements ActionListener, Property
 	    Object source = eProp.getSource();
 	    if (source == fileNameBox) {
 	        String fName = (String)fileNameBox.getValue();
-	        System.out.println(fName);
+	        this.mainContext.logger.debug(fName);
 	        if (fName == null)
 	        {
 	        	fName = fileNameBox.getText();
@@ -133,7 +133,7 @@ public class CascadeUserPanel extends JPanel implements ActionListener, Property
 	        }
 	        
 	        fileNameBox.setValue(fName);
-	        System.out.println("Detected that filenamebox manually changed");
+	        this.mainContext.logger.debug("Detected that filenamebox manually changed");
         	
         	}
 		

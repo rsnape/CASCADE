@@ -119,7 +119,7 @@ public class CSVReader {
 
 		if(Consts.DEBUG)
 		{
-			if (Consts.DEBUG) System.out.println("Parsed file - " + numCols + " columns and " + numRows + " rows.");
+			this.mainContext.logger.debug("Parsed file - " + numCols + " columns and " + numRows + " rows.");
 		}
 	}
 	
@@ -214,7 +214,7 @@ public class CSVReader {
 
 		if(Consts.DEBUG)
 		{
-			if (Consts.DEBUG) System.out.println("Parsed file - " + numCols + " columns and " + numRows + " rows.");
+			this.mainContext.logger.debug("Parsed file - " + numCols + " columns and " + numRows + " rows.");
 		}
 	}
 

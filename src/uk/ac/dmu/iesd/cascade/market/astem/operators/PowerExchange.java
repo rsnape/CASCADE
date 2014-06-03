@@ -54,7 +54,7 @@ public class PowerExchange {
 		Network bmuNet = mainContext.getNetworkOfRegisteredBMUs();
 		Iterable<RepastEdge> edgeIter = bmuNet.getEdges();
 		if(Consts.VERBOSE) 
-			System.out.println("PX has access to "+ bmuNet.size() + " registered BMUs");
+			this.mainContext.logger.debug("PX has access to "+ bmuNet.size() + " registered BMUs");
 		for (RepastEdge edge : edgeIter) {
 			Object obj = edge.getTarget();
 			if (obj instanceof BMU)
@@ -66,7 +66,7 @@ public class PowerExchange {
 	} */
 
 	private  LinkedHashMap<IPxTrader, ArrayList<BSOD>> fetchBSOfromIPxTraders(List<IPxTrader> listOfIPxTraders){
-		//System.out.println("------ PX: fetchBSOD");
+		this.mainContext.logger.trace("------ PX: fetchBSOD");
 		//Received BSOD are in the form of list
         LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSOD = new  LinkedHashMap<IPxTrader, ArrayList<BSOD>>();
 		
@@ -77,7 +77,7 @@ public class PowerExchange {
 	}
 	
 	/*private ArrayList<BSOD> fetchBSOfromBMUs_old(List<BMU> listOfBMUs, HashMap<Integer, ArrayList<BSOD>> mapListOfBSODs){
-		//System.out.println("------ PX: fetchBSOD");
+		this.mainContext.logger.trace("------ PX: fetchBSOD");
 		//Received BSOD are in the form of list
 		ArrayList<BSOD> bsodList = new ArrayList<BSOD>();
 		if (!mapListOfBSODs.isEmpty())
@@ -95,7 +95,7 @@ public class PowerExchange {
 	
 	private LinkedHashMap<IPxTrader, ArrayList<BSOD>> generateAcceptance(LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTraders2ListOfBSODs){
 
-		//System.out.println("Px:: generateAcceptance()");
+		this.mainContext.logger.trace("Px:: generateAcceptance()");
 		ArrayList<ArrayList <BSOD>> buyersListOfBSODList = new ArrayList <ArrayList <BSOD>>();
 		ArrayList<ArrayList <BSOD>> sellersListOfBSODList = new ArrayList <ArrayList <BSOD>>();
 
@@ -158,10 +158,10 @@ public class PowerExchange {
 			}
 		}
 
-		//System.out.println("BEfor sort: buyersBSODListPosVol:");
+		this.mainContext.logger.trace("BEfor sort: buyersBSODListPosVol:");
 		//TestHelper.printListOfBSOD(buyersBSODListPosVol);
 
-		//System.out.println("before sort: buyersBSODListNegVol:");
+		this.mainContext.logger.trace("before sort: buyersBSODListNegVol:");
 		//TestHelper.printListOfBSOD(buyersBSODListNegVol);
 
 		
@@ -169,21 +169,21 @@ public class PowerExchange {
 		Collections.sort(buyersBSODListPosVol, SortComparatorUtils.PX_PRICE_ASCENDING_ORDER); 
 		Collections.sort(buyersBSODListNegVol, SortComparatorUtils.PX_PRICE_ASCENDING_ORDER); 
 
-		//System.out.println("AFter sort (buyers):");
+		this.mainContext.logger.trace("AFter sort (buyers):");
 		//TestHelper.printListOfBSOD(buyersBSODListPosVol);
 		//TestHelper.printListOfBSOD(buyersBSODListNegVol);
 
-		//System.out.println("BEfor sort: sellersBSODListPosVol:");
+		this.mainContext.logger.trace("BEfor sort: sellersBSODListPosVol:");
 		//TestHelper.printListOfBSOD(sellersBSODListPosVol);
 
-		//System.out.println("before sort: sellersBSODListNegVol:");
+		this.mainContext.logger.trace("before sort: sellersBSODListNegVol:");
 		//TestHelper.printListOfBSOD(sellersBSODListNegVol);
 
 
 		Collections.sort(sellersBSODListPosVol, SortComparatorUtils.PX_PRICE_DESCENDING_ORDER); 
 		Collections.sort(sellersBSODListNegVol, SortComparatorUtils.PX_PRICE_DESCENDING_ORDER); 
 
-		//System.out.println("AFter sort (sellers):");
+		this.mainContext.logger.trace("AFter sort (sellers):");
 		//TestHelper.printListOfBSOD(sellersBSODListPosVol);
 		//TestHelper.printListOfBSOD(sellersBSODListNegVol);
 
@@ -218,7 +218,7 @@ public class PowerExchange {
 			}			 
 		}
 
-		//System.out.println(" Accepted BSODs: ");
+		this.mainContext.logger.trace(" Accepted BSODs: ");
 		//TestHelper.printMapListOfBSODs(mapOfBMUs2ListOfBSODs);
 
 		return mapOfIPxTraders2ListOfBSODs;
@@ -226,9 +226,9 @@ public class PowerExchange {
 	}
 	
 	private void sendAcceptanceToEachIPxTrader(LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSODs) {	
-		//System.out.println("PX: sendAcceptanceToEachBMU() called");
-		//System.out.println("size of listOfBMUs: "+listOfBMUs.size());
-		//System.out.println("size of sendAcceptanceToEachBMU: "+mapOfBMU2ListOfBSODs.size());
+		this.mainContext.logger.trace("PX: sendAcceptanceToEachBMU() called");
+		this.mainContext.logger.trace("size of listOfBMUs: "+listOfBMUs.size());
+		this.mainContext.logger.trace("size of sendAcceptanceToEachBMU: "+mapOfBMU2ListOfBSODs.size());
 
 		Set <IPxTrader> bmuSet =  mapOfIPxTrader2ListOfBSODs.keySet();
 		
@@ -287,7 +287,7 @@ public class PowerExchange {
 			if ( sumOfVolumes[i] !=0)
 				arr_MIP[i] = sumOfProducts[i] / sumOfVolumes[i];
 		}
-		//System.out.println("arr_MIP: "+Arrays.toString(arr_MIP));
+		this.mainContext.logger.trace("arr_MIP: "+Arrays.toString(arr_MIP));
 
 		return arr_MIP;
 	}
@@ -300,7 +300,7 @@ public class PowerExchange {
 	@ScheduledMethod(start = Consts.AGGREGATOR_PROFILE_BUILDING_SP + Consts.AGGREGATOR_TRAINING_SP, interval = 1, shuffle = false, priority = Consts.PX_PRIORITY_FOURTH)
 	public void step() {
 		
-		//if (Consts.DEBUG) System.out.println("--Px: "+TestHelper.getEnvInfoInString(mainContext));
+		this.mainContext.logger.trace("--Px: "+TestHelper.getEnvInfoInString(mainContext));
 
 		int settlementPeriod = mainContext.getSettlementPeriod();
 		
@@ -353,7 +353,7 @@ public class PowerExchange {
 			 */
 			this.arr_reversePrice = calculateMIP(arr_sumOfProductsTraded, arr_sumOfVolumesTraded);
 			messageBoard.setMIP(arr_reversePrice);
-			//System.out.println(arr_reversePrice[settlementPeriod]);
+			this.mainContext.logger.trace(arr_reversePrice[settlementPeriod]);
 			
 			Arrays.fill(arr_sumOfProductsTraded, 0);
 			Arrays.fill(arr_sumOfVolumesTraded, 0);
