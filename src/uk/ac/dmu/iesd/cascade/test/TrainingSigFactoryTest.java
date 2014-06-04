@@ -3,11 +3,13 @@ package uk.ac.dmu.iesd.cascade.test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.util.ChartUtils;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.TRAINING_S_SHAPE;
@@ -45,7 +47,7 @@ public class TrainingSigFactoryTest {
 		{
 			double [] s = defaultFactory.generateSignal(t);
 			sigs.add(s);
-			this.mainContext.logger.debug(Arrays.toString(s));
+			Logger.getLogger(Consts.CASCADE_LOGGER_NAME).debug(Arrays.toString(s));
 			for (int i = 0; i < s.length ; i++)
 			{
 				tempDataset.addValue((Number)s[i], t.name(), i);
