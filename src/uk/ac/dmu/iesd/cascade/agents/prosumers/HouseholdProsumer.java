@@ -1292,8 +1292,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 			if (hasSmartControl){
 				
 				this.mainContext.logger.trace("--beforCallToUpdate; time: "+time);
-				double [] cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + this.mainContext.ticksPerDay);
-				this.mainContext.logger.trace("BEFORE cold_1day: "+ Arrays.toString(cold_1day));
 
 				mySmartController.update(time);
 				
@@ -1306,9 +1304,6 @@ public class HouseholdProsumer extends ProsumerAgent{
 				{
 					this.wetApplianceProfile = calculateCombinedWetAppliancesProfile(this.wetApplianceProfiles);
 				}
-
-				cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + this.mainContext.ticksPerDay);
-				this.mainContext.logger.trace("AFTER cold_1day: "+ Arrays.toString(cold_1day));
 
 				currentSmartProfiles = mySmartController.getCurrentProfiles();
 				
