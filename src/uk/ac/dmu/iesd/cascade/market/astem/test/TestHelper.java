@@ -28,26 +28,26 @@ import uk.ac.dmu.iesd.cascade.market.data.PxPD;
 public class TestHelper {
 
 	public static void printMapOfPNs(WeakHashMap mapOfPNs) {
-		System.out.println("TestUtils:: map of PNs (size="+mapOfPNs.size()+"):");
+		this.mainContext.logger.debug("TestUtils:: map of PNs (size="+mapOfPNs.size()+"):");
 		Set keySet = mapOfPNs.keySet();
 
 		for (Object key : keySet){	
 			mapOfPNs.get(key);	
-			System.out.println("key" +key.toString()+" "+Arrays.toString((double[])mapOfPNs.get(key)));
+			this.mainContext.logger.debug("key" +key.toString()+" "+Arrays.toString((double[])mapOfPNs.get(key)));
 		}
 	}
 
 	public static void printListOfBODs(ArrayList<BOD> listOfBODs) {
-		System.out.println("TestUtilstils:: list of BODs (size="+listOfBODs.size()+"):");
+		this.mainContext.logger.debug("TestUtilstils:: list of BODs (size="+listOfBODs.size()+"):");
 		for (BOD bod : listOfBODs){	
-			System.out.println(bod.toString());		
+			this.mainContext.logger.debug(bod.toString());		
 		}
 	}
 	
 	/*
 	public static void printMapListOfBODs(WeakHashMap<BMU, ArrayList<BOD>> mapListOfBODs) {
 
-		System.out.println("TestUtils:: map of BODs (size="+mapListOfBODs.size()+"):");
+		this.mainContext.logger.debug("TestUtils:: map of BODs (size="+mapListOfBODs.size()+"):");
 		Set<BMU> bmuSet = mapListOfBODs.keySet();
 
 		for (BMU bmu : bmuSet){	
@@ -59,7 +59,7 @@ public class TestHelper {
 
 	public static void printMapListOfBODs(WeakHashMap<IBMTrader, ArrayList<BOD>> mapListOfBODs) {
 
-		System.out.println("TestUtils:: map of BODs (size="+mapListOfBODs.size()+"):");
+		this.mainContext.logger.debug("TestUtils:: map of BODs (size="+mapListOfBODs.size()+"):");
 		Set<IBMTrader> bmuSet = mapListOfBODs.keySet();
 
 		for (IBMTrader bmu : bmuSet){	
@@ -69,29 +69,29 @@ public class TestHelper {
 	}
 
 	public static void printListOfImbalData(ArrayList<ImbalData> list_imbalData) {
-		System.out.println("TestHelper:: list of ImbalDs (size="+list_imbalData.size()+"):");
+		this.mainContext.logger.debug("TestHelper:: list of ImbalDs (size="+list_imbalData.size()+"):");
 
 		for (ImbalData imbalData: list_imbalData)
-			System.out.println("vol: "+imbalData.getVolume()+ ", flag: "+ imbalData.flag);
+			this.mainContext.logger.debug("vol: "+imbalData.getVolume()+ ", flag: "+ imbalData.flag);
 	}
 
 	public static void printListOfPxPD(ArrayList<PxPD> list_PxPD) {
-		System.out.println("list of PxPD (size="+list_PxPD.size()+"):");
+		this.mainContext.logger.debug("list of PxPD (size="+list_PxPD.size()+"):");
 		for (PxPD pxPD: list_PxPD)
-			System.out.println("pID: "+ pxPD.getProductID()+ ", sp_sIndex: "+ pxPD.getStartSPIndex()+ ", vol: "+pxPD.getVolume());
+			this.mainContext.logger.debug("pID: "+ pxPD.getProductID()+ ", sp_sIndex: "+ pxPD.getStartSPIndex()+ ", vol: "+pxPD.getVolume());
 	}
 
 	public static void printListOfBSOD(ArrayList<BSOD> list_BSOD) {
-		System.out.println("list of BSODs (size="+list_BSOD.size()+"):");
+		this.mainContext.logger.debug("list of BSODs (size="+list_BSOD.size()+"):");
 		for (BSOD bsod : list_BSOD)
-			System.out.println("ownerID: "+ bsod.getOwnerID()+ ", vol: "+ bsod.getVolume()+
+			this.mainContext.logger.debug("ownerID: "+ bsod.getOwnerID()+ ", vol: "+ bsod.getVolume()+
 					", price: "+bsod.getPrice() + ", productID: "+bsod.getProductID() + 
 					"("+bsod.getProductIDInHour()+")" +
 					", startSPIndex: "+ bsod.getStartSPIndex() + ", accepted: "+ bsod.accepted);
 	}
 
 	/*public static void printMapListOfBSODs(WeakHashMap<BMU, ArrayList<BSOD>> mapListOfBSODs) {	
-		System.out.println("TestUtils:: map of BOSDs (size="+mapListOfBSODs.size()+"):");
+		this.mainContext.logger.debug("TestUtils:: map of BOSDs (size="+mapListOfBSODs.size()+"):");
 		Set<BMU> bmuSet = mapListOfBSODs.keySet();
 
 		for (BMU bmu : bmuSet){	
@@ -102,7 +102,7 @@ public class TestHelper {
 	} */
 	
 	public static void printMapListOfBSODs(WeakHashMap<ITrader, ArrayList<BSOD>> mapListOfBSODs) {	
-		System.out.println("TestUtils:: map of BOSDs (size="+mapListOfBSODs.size()+"):");
+		this.mainContext.logger.debug("TestUtils:: map of BOSDs (size="+mapListOfBSODs.size()+"):");
 		Set<ITrader> bmuSet = mapListOfBSODs.keySet();
 
 		for (ITrader bmu : bmuSet){	
