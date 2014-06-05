@@ -17,9 +17,11 @@ import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.ITrader;
 import uk.ac.dmu.iesd.cascade.market.astem.base.ASTEMConsts;
 import uk.ac.dmu.iesd.cascade.market.astem.data.ImbalData;
+import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
 import uk.ac.dmu.iesd.cascade.market.astem.util.ArraysUtils;
 import uk.ac.dmu.iesd.cascade.market.astem.util.CollectionUtils;
 import uk.ac.dmu.iesd.cascade.market.astem.util.SortComparatorUtils;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 /**
  * 
@@ -228,7 +230,6 @@ public class SystemOperator {
 
 	private void sendBOAtoEachIBMTrader(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs) {	
 		this.mainContext.logger.trace("SO: sendBOAtoEachBMU() called");
-		this.mainContext.logger.trace("size of mapOfBMUID2ListOfBOAs: "+mapOfBMU2ListOfBOAs.size());
 
 		Set <IBMTrader> bmuSet =  mapOfIBMTrader2ListOfBOAs.keySet();
 		

@@ -51,7 +51,6 @@ public class ChartUtils {
 		ArrayList<SnapshotTaker>  snapshotTakerArrList = new ArrayList<SnapshotTaker>();
 		while ( compIter.hasNext() ){
 			ChartPanel chartComp = (ChartPanel) compIter.next();
-			this.mainContext.logger.trace(chartComp.getChart().getTitle().getText());
 			SnapshotTaker snapshotTaker = new SnapshotTaker(chartComp);
 			snapshotTakerArrList.add(snapshotTaker);
 		}
@@ -63,7 +62,6 @@ public class ChartUtils {
 
 		ISchedule schedule = RunEnvironment.getInstance().getCurrentSchedule();
 		//ScheduleParameters params = ScheduleParameters.createOneTime(1);
-		this.mainContext.logger.trace("chartCompCol: null?: "+getChartCompCollection());
 		//if ((chartSnapshotOn) && (getChartCompCollection() != null)){
 		ScheduleParameters params = ScheduleParameters.createRepeating(0, interval,ScheduleParameters.LAST_PRIORITY);
 		schedule.schedule(params, context, "takeSnapshot"); 

@@ -6,6 +6,8 @@ package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
 import java.util.WeakHashMap;
 
+import org.apache.log4j.Logger;
+
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
@@ -143,7 +145,7 @@ public class ProsumerFactory implements IProsumerFactory {
 		//add time jitter
 		double jitterFactor = RandomHelper.nextDouble() - 0.5d;
 
-		this.mainContext.logger.trace("ProsumerFactory: Applying jitter" + jitterFactor);
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).trace("ProsumerFactory: Applying jitter" + jitterFactor);
 
 		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
 		for (int i = 1; i < (newProfile.length - 1); i++)

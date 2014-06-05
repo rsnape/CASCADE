@@ -12,6 +12,7 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
+import uk.ac.dmu.iesd.cascade.market.astem.test.TestHelper;
 import uk.ac.dmu.iesd.cascade.market.astem.util.SortComparatorUtils;
 import uk.ac.dmu.iesd.cascade.market.data.BSOD;
 import uk.ac.dmu.iesd.cascade.market.data.PxPD;
@@ -227,8 +228,8 @@ public class PowerExchange {
 	
 	private void sendAcceptanceToEachIPxTrader(LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSODs) {	
 		this.mainContext.logger.trace("PX: sendAcceptanceToEachBMU() called");
-		this.mainContext.logger.trace("size of listOfBMUs: "+listOfBMUs.size());
-		this.mainContext.logger.trace("size of sendAcceptanceToEachBMU: "+mapOfBMU2ListOfBSODs.size());
+		this.mainContext.logger.trace("size of listOfBMUs: "+list_IPxTrader.size());
+		this.mainContext.logger.trace("size of sendAcceptanceToEachBMU: "+map_dmu2ListOfBSOD.size());
 
 		Set <IPxTrader> bmuSet =  mapOfIPxTrader2ListOfBSODs.keySet();
 		

@@ -797,10 +797,8 @@ public class ArrayUtils {
 	public static boolean isSumEqualZero(double[] floatArray) {	
 		boolean sumIsEqualZero = false;
 		double sum= sum(floatArray);
-		if (sum ==0)
-			sumIsEqualZero=true;
-		this.mainContext.logger.trace("ArryUtils.isSumEqualZero: "+sum);
-		return sumIsEqualZero;
+
+		return (sum == 0);
 	}
 
 	/**

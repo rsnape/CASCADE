@@ -15,6 +15,8 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.dmu.iesd.cascade.base.Consts;
 
 /**
@@ -117,10 +119,7 @@ public class CSVReader {
 			}
 		}
 
-		if(Consts.DEBUG)
-		{
-			this.mainContext.logger.debug("Parsed file - " + numCols + " columns and " + numRows + " rows.");
-		}
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).info("Parsed file " + this.CSVFileName + ": " + numCols + " columns and " + numRows + " rows.");
 	}
 	
 	/*
@@ -212,10 +211,8 @@ public class CSVReader {
 			}
 		}
 
-		if(Consts.DEBUG)
-		{
-			this.mainContext.logger.debug("Parsed file - " + numCols + " columns and " + numRows + " rows.");
-		}
+		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).info("Parsed file " + this.CSVFileName + ": " + numCols + " columns and " + numRows + " rows.");
+
 	}
 
 	public String[] getColumn(String colName){

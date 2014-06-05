@@ -159,8 +159,6 @@ public class AddAggregatorPane extends WizardWorkingPane implements ActionListen
 			
 		if (validatesOK)
 		{
-			this.mainContext.logger.debug("This is where we add "+n+" Aggregator agents with class "+selectedAggregator.getName()+" to the config XML");
-
 			/**
 			 * Old idea to instatiate the objects here - better to put it into a file and then run from the file
 			 */
@@ -178,7 +176,6 @@ public class AddAggregatorPane extends WizardWorkingPane implements ActionListen
 			getWorkingElement().setAttributeNode(sName);
 			root.appendChild(getWorkingElement());
 			
-			this.mainContext.logger.debug("Aggregator element added to DOM document");
 /*			createdAggregators = new ArrayList();
 			for (int i =0; i < n; i++)
 			{

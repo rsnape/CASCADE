@@ -79,7 +79,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent {
 	 * 	
 	 * @see CascadeContext 
 	 */
-	protected CascadeContext mainContext;
+	public CascadeContext mainContext;
 	
 
 	/**

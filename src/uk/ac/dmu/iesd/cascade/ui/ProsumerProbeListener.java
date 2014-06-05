@@ -193,7 +193,6 @@ public class ProsumerProbeListener implements ProbeListener {
 				JButton allPieChartButton = new JButton("Click here to see demands Pie Chart of  ALL HHPros");
 				allPieChartButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
-					   this.mainContext.logger.trace(" mouseClicked: ");
 						IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
 						ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
 						DefaultPieDataset pieDatasetOfAvgDemandOfAllHHProsConsumption = createPieDataset4AvgDemandOfAllHHPros(list_hhProsumers);
@@ -208,7 +207,6 @@ public class ProsumerProbeListener implements ProbeListener {
 				JButton allBarChartButton = new JButton("Click here to see demands Stacked Bar of  ALL HHPros");
 				allBarChartButton.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
-					   this.mainContext.logger.trace(" mouseClicked: ");
 						IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = mainContext.getObjects(HouseholdProsumer.class);
 						ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
 						CategoryTableXYDataset barDatasetOfAllHHProsConsumption = createStackedBarDataset4DemandOfAllHHPros(list_hhProsumers);

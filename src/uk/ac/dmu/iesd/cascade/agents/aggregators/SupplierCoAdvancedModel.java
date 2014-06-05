@@ -295,9 +295,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		Iterable<RepastEdge> iter = economicNet.getEdges(this);
-		if(Consts.DEBUG) {
-			this.mainContext.logger.debug(this.getAgentName()+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
-		}
+		this.mainContext.logger.debug(this.getAgentName()+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
 
 		for (RepastEdge edge : iter) {
 			Object linkSource = edge.getTarget();
@@ -358,11 +356,9 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList,int timeOfDay, double[][] hist_arr_B) {
 		double sumDemand = 0d;
 		
-		if (Consts.DEBUG) 
-		{
-			this.mainContext.logger.debug(" ====updateHistoryArray==== ");
-			this.mainContext.logger.debug("Entering loop through all customers to add their net Demands to history ");
-		}
+
+		this.mainContext.logger.debug(" ====updateHistoryArray==== ");
+		this.mainContext.logger.debug("Entering loop through all customers to add their net Demands to history ");
 		for (ProsumerAgent a : customersList) {
 			sumDemand = sumDemand + a.getNetDemand();
 		
@@ -391,10 +387,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	 * @return double array of average baseline aggregate demands 
 	 */
 	private double[] calculateBADfromHistoryArray(double[][] hist_arr_2D) {	
-		if (Consts.DEBUG) 
-		{
-			this.mainContext.logger.debug("RECO: calcualteBADfromHistoy: hist_arrr_2D "+ ArrayUtils.toString(hist_arr_2D));
-		}
+		this.mainContext.logger.debug("RECO: calcualteBADfromHistoy: hist_arrr_2D "+ ArrayUtils.toString(hist_arr_2D));
 		return ArrayUtils.avgCols2DDoubleArray(hist_arr_2D);	
 	}
 	
@@ -403,18 +396,12 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		List<ProsumerAgent> customers = customersList;
 		double sumDemand = 0;
-		if (Consts.DEBUG)
-		{
-			this.mainContext.logger.debug(" customers list size: "+customers.size() + " - entering loop to add all net demands");
-		}
+		this.mainContext.logger.debug(" customers list size: "+customers.size() + " - entering loop to add all net demands");
 		for (ProsumerAgent a : customers)	{
 			sumDemand = sumDemand + a.getNetDemand();
 		}
 		setNetDemand(sumDemand);
-		if (Consts.DEBUG) 
-		{
-			this.mainContext.logger.debug("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
-		}
+		this.mainContext.logger.debug("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
 		
 		return sumDemand;
 	}
@@ -566,10 +553,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 			this.mainContext.logger.debug( "RECO: Apache Optim Exc (Illegal arg exc): "+e.getCause() );
 		}
 		
-		if (Consts.DEBUG)
-		{
-			this.mainContext.logger.debug("Optimisation converged on value " + minValue.getValue() + " at point " + minValue.getPoint() + " with ref " + minValue.getPointRef());
-		}
+		this.mainContext.logger.debug("Optimisation converged on value " + minValue.getValue() + " at point " + minValue.getPoint() + " with ref " + minValue.getPointRef());
 
 		double[] newOpt_S= minValue.getPoint();
 		minFunct.setPrintD(true);
@@ -788,12 +772,9 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	}
 */
 
-	public void bizPreStep() {
-
-		if (Consts.DEBUG) 
-		{
-			this.mainContext.logger.debug(" ============ SupplierCO pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
-		}
+	public void bizPreStep() 
+	{
+		this.mainContext.logger.debug(" ============ SupplierCO pre_step ========= DayCount: "+ mainContext.getDayCount()+",Timeslot: "+mainContext.getTimeslotOfDay()+",TickCount: "+mainContext.getTickCount() );
 		timeTick = mainContext.getTickCount();	
 		timeslotOfDay = mainContext.getTimeslotOfDay();
 
@@ -980,7 +961,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 				DeltaBm[deltaRow] = DeltaB.clone();
 				SBprodm[deltaRow] = SBprod.clone();	
 				
-				if (Consts.DEBUG && mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2)
+				if (mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE+Consts.AGGREGATOR_TRAINING_PERIODE))-2)
 				{
 					writeOutput("output1_TrainingPhase_day_",true,arr_i_C, arr_i_norm_C, arr_i_B, arr_last_training_D, arr_i_S, arr_i_e,  arr_ij_k);
 				}

@@ -132,7 +132,6 @@ public class ConfigureAggregatorPane extends WizardWorkingPane implements Action
 		retPanel.setMinimumSize(panelSize);
 		retPanel.setPreferredSize(panelSize);
 		retPanel.setMaximumSize(panelSize);
-		this.mainContext.logger.debug("Setting minimum size to " + (this.getWidth() - 20) + "," + 30);
 		retPanel.setLayout(new BoxLayout(retPanel,BoxLayout.X_AXIS));
 		JTextArea l = new JTextArea(s);
 		l.setMinimumSize(labelSize);
@@ -163,7 +162,6 @@ public class ConfigureAggregatorPane extends WizardWorkingPane implements Action
 		retPanel.validate();
 		JTextArea l = new JTextArea("Parameter name");
 		l.setMinimumSize(labelSize);
-		this.mainContext.logger.debug("Setting label dimensions to " + (retPanel.getWidth()/2-5) + "," + 30);
 		l.setPreferredSize(l.getMinimumSize());
 		l.setMaximumSize(l.getMinimumSize());
 		l.setBackground(null);
@@ -202,28 +200,6 @@ public class ConfigureAggregatorPane extends WizardWorkingPane implements Action
 					this.getWorkingElement().setAttributeNode(attr);
 				}
 			}
-			
-			this.mainContext.logger.debug("Configuration attribute added to DOM document");
-			/**
-			 * Old idea to instatiate the objects here - better to put it into a file and then run from the file
-			 */
-/*			createdAggregators = new ArrayList();
-			for (int i =0; i < n; i++)
-			{
-				try
-				{
-					
-					createdAggregators.add(selectedAggregator.newInstance());
-				} catch (InstantiationException e)
-				{
-					System.err.println(e.getMessage());
-					e.printStackTrace();
-				} catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				}
-			}*/
-			
 		}
 		
 		return validatesOK;

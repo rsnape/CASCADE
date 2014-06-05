@@ -151,29 +151,7 @@ public class ConfigureProsumerPane extends WizardWorkingPane implements ActionLi
 				}
 			}
 			
-			this.mainContext.logger.debug("Configuration attribute added to DOM document");
-			/**
-			 * Old idea to instatiate the objects here - better to put it into a file and then run from the file
-			 */
-			
 			this.setWorkingElement((Element)this.getWorkingElement().getParentNode());
-/*			createdAggregators = new ArrayList();
-			for (int i =0; i < n; i++)
-			{
-				try
-				{
-					
-					createdAggregators.add(selectedAggregator.newInstance());
-				} catch (InstantiationException e)
-				{
-					System.err.println(e.getMessage());
-					e.printStackTrace();
-				} catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				}
-			}*/
-			
 		}
 		
 		return validatesOK;

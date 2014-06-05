@@ -874,13 +874,16 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		this.myContext.setSocialNetwork(socialNet);
 	}
 
-	Household createHouseholdProsumer(WeakHashMap <Integer, double[]> map_nbOfOcc2OtherDemand, int occupancyModeOrNb, boolean addNoise, boolean hasGas) {
-		
+	Household createHouseholdProsumer(WeakHashMap <Integer, double[]> map_nbOfOcc2OtherDemand, int occupancyModeOrNb, boolean addNoise, boolean hasGas) 
+	{
 		int numOfOccupant = occupancyModeOrNb;
-		if (occupancyModeOrNb == Consts.RANDOM) {
+		if (occupancyModeOrNb == Consts.RANDOM) 
+		{
 			numOfOccupant = myContext.occupancyGenerator.nextInt() + 1;
 			if (numOfOccupant > map_nbOfOcc2OtherDemand.size())
+			{
 				numOfOccupant = map_nbOfOcc2OtherDemand.size();
+			}
 		}
 		double[] arr_otherDemand=null;
 		if (false){//myContext.signalMode == Consts.SIGNAL_MODE_SMART) {

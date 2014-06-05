@@ -80,7 +80,7 @@ public class WindFarmAggregator extends BMPxTraderAggregator {
 		double sumDemand = 0;
 		this.mainContext.logger.trace(" customers list size: "+customers.size());
 		for (ProsumerAgent a : customers)	{
-			this.mainContext.logger.trace(" id: "+a.agentID+" ND: "+a.getNetDemand());
+			this.mainContext.logger.trace(" id: "+a.getAgentID()+" ND: "+a.getNetDemand());
 			if (a instanceof WindGeneratorProsumer){
 				sumDemand = sumDemand + a.getNetDemand();
 			}

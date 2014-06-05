@@ -498,12 +498,10 @@ public class HouseholdProsumer extends ProsumerAgent{
 		double returnAmount = 0;
 
 		returnAmount = returnAmount + CHPGeneration() + windGeneration() + hydroGeneration() + thermalGeneration() + PVGeneration();
-		if (Consts.DEBUG)
+
+		if (returnAmount != 0)
 		{
-			if (returnAmount != 0 && Consts.DEBUG)
-			{
-				this.mainContext.logger.debug("HouseholdProsumer:: Generating " + returnAmount);
-			}
+			this.mainContext.logger.debug("HouseholdProsumer:: Generating " + returnAmount);
 		}
 		return returnAmount;
 	}
@@ -602,7 +600,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 		}
 		
 		// (20/01/12) Check if sum of <recordedHeatPumpDemand> is consistent at end day 
-		if(timeOfDay == 47 && Consts.DEBUG)
+		if(timeOfDay == 47)
 		{
 			this.mainContext.logger.trace("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(recordedHeatPumpDemand));
 		}
@@ -704,10 +702,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			{
 				demand = (this.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP) * ((double) 24 / this.mainContext.ticksPerDay);
 				this.currentInternalTemp = this.currentInternalTemp + ((demand - maintenanceEnergy) / this.buildingThermalMass);
-				if (Consts.DEBUG)
-				{
-				   this.mainContext.logger.debug("HouseholdProsumer:: Heatpump on max, can't regain set point currentInternalTemp2: "+ currentInternalTemp);
-				}
+				this.mainContext.logger.debug("HouseholdProsumer:: Heatpump on max, can't regain set point currentInternalTemp2: "+ currentInternalTemp);
 
 			}
 			else
@@ -763,11 +758,12 @@ public class HouseholdProsumer extends ProsumerAgent{
 	 * @param time
 	 * @return double giving sum of baseDemand for the day.
 	 */
-	private double calculateFixedDayTotalDemand(int time) {
+	private double calculateFixedDayTotalDemand(int time) 
+	{
 		int baseProfileIndex = time % arr_otherDemandProfile.length;
-		this.mainContext.logger.trace(" baseDemandProfile "+ Arrays.toString(baseDemandProfile));
+		this.mainContext.logger.trace(" baseDemandProfile "+ Arrays.toString(arr_otherDemandProfile));
 		this.mainContext.logger.trace(" baseProfileIndex "+ baseProfileIndex);
-		this.mainContext.logger.trace("  calculateFixedDayTotalDemand: array2Sum: "+ Arrays.toString(Arrays.copyOfRange(baseDemandProfile,baseProfileIndex,baseProfileIndex+this.mainContext.ticksPerDay - 1)));
+		this.mainContext.logger.trace("  calculateFixedDayTotalDemand: array2Sum: "+ Arrays.toString(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+this.mainContext.ticksPerDay - 1)));
 		return ArrayUtils.sum(Arrays.copyOfRange(arr_otherDemandProfile,baseProfileIndex,baseProfileIndex+this.mainContext.ticksPerDay - 1));
 	}
 
@@ -822,7 +818,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 			
 			double myE = dailyElasticity[time % this.mainContext.ticksPerDay];
 			//double eChange = mainContext.hhProsumerElasticityTest.nextDouble();
-			this.mainContext.logger.trace("eChange: "+ eChange);
+			//this.mainContext.logger.trace("eChange: "+ eChange);
 			//myE = myE + eChange;
 			//myDemand = myDemand * (1 - ((predictedCostNow / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % this.mainContext.ticksPerDay]));
 			
@@ -846,20 +842,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 			}
 		
 
-			if (Consts.DEBUG)
+			if (false) 
 			{
-				if (false) {
 				//if (mainContext.isBeginningOfDay()) {
-					
-					this.mainContext.logger.debug("============================");
-					this.mainContext.logger.debug("dailyDemand: "+ Arrays.toString(arr_otherDemandProfile));
-					this.mainContext.logger.debug("dailyElasticity: "+ Arrays.toString(dailyElasticity));
-					this.mainContext.logger.debug("predictedCostSignal: "+ Arrays.toString(getPredictedCostSignal()));
-					this.mainContext.logger.debug("predictedCostSignal: "+predictedCostSignal);
-					this.mainContext.logger.debug("predictedCostNow * myE: "+predictedCostSignal * myE);
-					this.mainContext.logger.debug("dailyElasticity[time % this.mainContext.ticksPerDay]: "+dailyElasticity[time % this.mainContext.ticksPerDay]);
-					this.mainContext.logger.debug("HouseholdProsumer:: Based on predicted cost = " + predictedCostSignal + " demand set to " + (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % this.mainContext.ticksPerDay])) + " of initial " );
-				}
+			
+				this.mainContext.logger.debug("============================");
+				this.mainContext.logger.debug("dailyDemand: "+ Arrays.toString(arr_otherDemandProfile));
+				this.mainContext.logger.debug("dailyElasticity: "+ Arrays.toString(dailyElasticity));
+				this.mainContext.logger.debug("predictedCostSignal: "+ Arrays.toString(getPredictedCostSignal()));
+				this.mainContext.logger.debug("predictedCostSignal: "+predictedCostSignal);
+				this.mainContext.logger.debug("predictedCostNow * myE: "+predictedCostSignal * myE);
+				this.mainContext.logger.debug("dailyElasticity[time % this.mainContext.ticksPerDay]: "+dailyElasticity[time % this.mainContext.ticksPerDay]);
+				this.mainContext.logger.debug("HouseholdProsumer:: Based on predicted cost = " + predictedCostSignal + " demand set to " + (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * dailyElasticity[time % this.mainContext.ticksPerDay])) + " of initial " );
 			}
 		}
 	
@@ -916,15 +910,11 @@ public class HouseholdProsumer extends ProsumerAgent{
 		double returnAmount = currentBase + currentCold + currentWet + currentHeat+currentEV;
 
      
-		if (Consts.DEBUG)
+		if (returnAmount != 0)
 		{
-			if (returnAmount != 0)
-			{
-				this.mainContext.logger.trace("HouseholdProsumer:: Total demand (not net against generation) " + returnAmount);
-			}
+			this.mainContext.logger.trace("HouseholdProsumer:: Total demand (not net against generation) " + returnAmount);
 		}
 		 
-		//double returnAmount = currentBase;
 		return returnAmount;
 	}
 
@@ -971,17 +961,15 @@ public class HouseholdProsumer extends ProsumerAgent{
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);			                   	                                             
 		}
 		System.arraycopy(daysOptimisedDemand, 0, smartOptimisedProfile, time % smartOptimisedProfile.length, this.mainContext.ticksPerDay);
-		if (Consts.DEBUG)
+		if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
 		{
-			if (ArrayUtils.sum(daysOptimisedDemand) != inelasticTotalDayDemand)
-			{
-				//TODO: This always gets triggerd - I wonder if the "day" i'm taking
-				//here and in the inelasticdemand method are "off-by-one"
-				this.mainContext.logger.trace("HouseholdProsumer:: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
-			}
-
-			this.mainContext.logger.trace("HouseholdProsumer:: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+			//TODO: This always gets triggerd - I wonder if the "day" i'm taking
+			//here and in the inelasticdemand method are "off-by-one"
+			this.mainContext.logger.trace("HouseholdProsumer:: optimised signal has varied the demand !!! In error !" + (ArrayUtils.sum(daysOptimisedDemand) - inelasticTotalDayDemand));
 		}
+
+		this.mainContext.logger.trace("HouseholdProsumer:: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+
 	}
 
 	private void learnSmartAdoptionDecision(int time)
@@ -1304,19 +1292,18 @@ public class HouseholdProsumer extends ProsumerAgent{
 			if (hasSmartControl){
 				
 				this.mainContext.logger.trace("--beforCallToUpdate; time: "+time);
-				//double [] cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + this.mainContext.ticksPerDay);
-				this.mainContext.logger.trace("BEFORE cold_1day: "+ Arrays.toString(cold_1day));
 
 				mySmartController.update(time);
 				
 				if (this.isHasColdAppliances())
+				{
 					this.coldApplianceProfile = calculateCombinedColdAppliancesProfile(this.coldApplianceProfiles);
+				}
 				
 				if (this.isHasWetAppliances())
+				{
 					this.wetApplianceProfile = calculateCombinedWetAppliancesProfile(this.wetApplianceProfiles);
-
-				//cold_1day = Arrays.copyOfRange(coldApplianceProfile,(time % coldApplianceProfile.length) , (time % coldApplianceProfile.length) + this.mainContext.ticksPerDay);
-				this.mainContext.logger.trace("AFTER cold_1day: "+ Arrays.toString(cold_1day));
+				}
 
 				currentSmartProfiles = mySmartController.getCurrentProfiles();
 				
@@ -1329,7 +1316,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 			//***Richard output test for prosumer behaviour***
 
-			if (sampleOutput != null && Consts.DEBUG)
+			if (sampleOutput != null)
 			{
 				sampleOutput.appendText("day: "+ mainContext.getDayCount() + ", timeStep " + time);
 				sampleOutput.appendText("baseDemandProfile: ");
@@ -1355,7 +1342,7 @@ public class HouseholdProsumer extends ProsumerAgent{
 
 		}
 		
-		this.mainContext.logger.trace("  HHpro: getHasElectricalSpaceHeat: "+ getHasElectricalSpaceHeat());
+		this.mainContext.logger.trace("  HHpro: getHasElectricalSpaceHeat: "+ isHasElectricalSpaceHeat());
 
 		if (this.isHasElectricalSpaceHeat())
 			this.setPoint = this.optimisedSetPointProfile[timeOfDay];

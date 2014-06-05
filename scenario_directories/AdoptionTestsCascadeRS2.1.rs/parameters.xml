@@ -82,7 +82,7 @@
 						
 		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
-						defaultValue="dataFiles" 
+						defaultValue="data" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -101,16 +101,16 @@
 						
 		/>
 				<parameter name="hhWithGasPercentage" displayName="householdsWithGas%" type="int" 
-						defaultValue="0" 
+						defaultValue="0"
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
-				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
-						defaultValue="false" 
+				<parameter name="loggingLevel" displayName="Logging level" type="java.lang.String" 
+						defaultValue="DEBUG" 
 						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
-									
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									values="TRACE DEBUG INFO WARN ERROR OFF "									
 		/>
 		</parameters>
 

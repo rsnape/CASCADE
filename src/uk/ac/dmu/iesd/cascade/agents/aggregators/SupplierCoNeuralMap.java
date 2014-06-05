@@ -18,6 +18,7 @@ import org.apache.commons.mathforsimplex.optimization.linear.LinearConstraint;
 import org.apache.commons.mathforsimplex.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.mathforsimplex.optimization.linear.Relationship;
 import org.apache.commons.mathforsimplex.optimization.linear.SimplexSolver;
+import org.apache.log4j.Level;
 import org.jgap.Chromosome;
 import org.jgap.Configuration;
 import org.jgap.FitnessFunction;
@@ -286,9 +287,7 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator{
 		//List<RepastEdge> linkages = RepastEssentials.GetOutEdges("CascadeContextMain/economicNetwork", this); //Ideally this must be avoided, changing the context name, will create a bug difficult to find
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		Iterable<RepastEdge> iter = economicNet.getEdges(this);
-		if(Consts.DEBUG) {
-			this.mainContext.logger.trace(This.class+" " +this.toString()+ " has "+ economicNet.size() + " links in economic network");
-		}
+		this.mainContext.logger.trace(this.getAgentName()+ " has "+ economicNet.size() + " links in economic network");
 
 		for (RepastEdge edge : iter) {
 			Object linkSource = edge.getTarget();
@@ -356,9 +355,10 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator{
 		double sumDemand = 0d;
 		
 		this.mainContext.logger.trace(" ====updateHistoryArray==== ");
-		for (ProsumerAgent a : customersList) {
+		for (ProsumerAgent a : customersList) 
+		{
 			sumDemand = sumDemand + a.getNetDemand();
-			this.mainContext.logger.trace(" ID: "+a.agentID+" ND: "+a.getNetDemand());
+			this.mainContext.logger.trace(" ID: "+a.getAgentID()+" ND: "+a.getNetDemand());
 		
 		}
 
@@ -395,9 +395,9 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator{
 		List<ProsumerAgent> customers = customersList;
 		double sumDemand = 0;
 		this.mainContext.logger.trace(" custmoers list size: "+customers.size());
-		for (ProsumerAgent a : customers)	{
-			
-			this.mainContext.logger.trace(" id: "+a.agentID+" ND: "+a.getNetDemand());
+		for (ProsumerAgent a : customers)	
+		{
+			this.mainContext.logger.trace(" id: "+a.getAgentID()+" ND: "+a.getNetDemand());
 			sumDemand = sumDemand + a.getNetDemand();
 			//sum_e = sum_e+a.getElasticityFactor();
 		}
@@ -996,7 +996,8 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator{
 
 		//min.print("MinimCD_output.txt");
 
-		if (Consts.DEBUG)	{
+		if (this.mainContext.logger.getLevel().equals(Level.TRACE))	
+		{
 			// Print results to a text file
 			//min.print("MinimCD_output.txt");
 
