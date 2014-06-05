@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<context>
-<aggregator class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator" number="8" shortName="GenericBMPxTraderAggregator" type="GEN_COAL"/>
-<aggregator class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator" number="3" shortName="GenericBMPxTraderAggregator" type="GEN_CCGT"/>
-<aggregator class="uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag" number="1" shortName="PassThroughAggregatorWithLag">
-<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.Household" number="500" shortName="Household"/>
-</aggregator>
-</context>

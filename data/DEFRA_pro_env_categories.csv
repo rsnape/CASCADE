@@ -1,0 +1,8 @@
+DEFRA_category,DEFRA_label,Population_fraction,Economic_ability,Microgen_propensity,Insulation_propensity,HEMS_propensity,EV_propensity,Habit_factor
+1,Positive Greens,0.18,1,0.001,0.7,0.5,0.5,0.6
+2,Waste watchers,0.12,0.75,0.0005,0.7,0.5,0.5,0.7
+3,Concerned consumers,0.14,0.75,0.0005,0.4,0.2,0.5,0.7
+4,Sideline supporters,0.14,0.2,0.0002,0.4,0.05,0.2,0.7
+5,Cautious participants,0.14,0.5,0.00025,0.4,0.2,0.2,0.8
+6,Stalled starters,0.1,0.2,0.000025,0.4,0.05,0.2,0.9
+7,Honestly disengaged,0.18,0.2,0.0000025,0.05,0.05,0.05,0.9

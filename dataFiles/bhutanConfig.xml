@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<context>
-<market>false</market>
-<aggregator class="uk.ac.dmu.iesd.cascade.agents.aggregators.BhutanVillage" number="1" shortName="BhutanVillage">
-<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.BhutanHydro" number="1" shortName="BhutanHydro"/>
-<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.BhutanHousehold" number="150" shortName="BhutanHousehold"/>
-</aggregator>
-</context>

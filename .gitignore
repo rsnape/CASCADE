@@ -20,10 +20,12 @@ Repast.settings
 *.txt
 *.tab
 *.pdf
+*xls*
 
 !cascade.rs/*
 !dataFiles/*
+!data/*
 java*
-*xls*
+
 DebugOutput*
 output/*

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context>
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="1" type = "GEN_COAL">
+	</aggregator>
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="2" type = "GEN_CCGT">
+	</aggregator>
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="64" type = "GEN_WIND">
+	</aggregator>
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="5" type = "DEM_LARGE">
+	</aggregator>
+		<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="1" type = "DEM_SMALL">
+	</aggregator>
+	<!-- Generate 3 aggregators with households instead of the SMALL_DEM generic aggregators -->
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag"
+		number="2">
+		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="500">
+			<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+		</prosumer>
+	</aggregator>
+</context>
