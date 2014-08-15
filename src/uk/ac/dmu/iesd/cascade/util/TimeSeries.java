@@ -15,14 +15,32 @@ import java.util.TreeMap;
 public abstract class TimeSeries<K extends Comparable, T> {	
 	
 	SortedMap<K,T> datapoints;
+	T beforeAllTimesValue = null;
+
+	/**
+	 * @param beforeAllTimesValue the beforeAllTimesValue to set
+	 */
+	public void setBeforeAllTimesValue(T beforeAllTimesValue) {
+		this.beforeAllTimesValue = beforeAllTimesValue;
+	}
 
 	public T getValue(K time)
 	{
+		
 		if (datapoints.containsKey(time))
 		{
 			return datapoints.get(time);
 		}
-		return datapoints.get(datapoints.headMap(time).lastKey());
+		
+		SortedMap prevVals = datapoints.headMap(time);
+		
+		T retVal = beforeAllTimesValue;
+		
+		if (!prevVals.isEmpty())
+		{
+			retVal = datapoints.get(prevVals.lastKey());
+		}
+		return retVal;
 	}
 	
 	public void putValue(K time, T value)

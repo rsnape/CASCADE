@@ -18,7 +18,7 @@ import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 
 public class Household extends HouseholdProsumer {
-	private int PVCapital = 5000000;        // Cost in tenths of pence
+	private int PVCapital = 5000000;        // Budget in tenths of pence
 	private int smartContCapital = 750000; 
 	
 	private Geography<Household> myGeography;

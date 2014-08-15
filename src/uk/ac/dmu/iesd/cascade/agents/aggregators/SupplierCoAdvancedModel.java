@@ -609,7 +609,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 	private void writeOutput(String dirName, String fileName, boolean addInfoHeader, double[] C, double[] NC, double[] B, double[] D, double[] S, double[] e, double[][] k) {
 		File dir = new File(dirName);
 		if (!dir.exists()){
-			dir.mkdir();
+			dir.mkdirs();
 		}
 		String fullPath = dirName.concat(File.separator).concat(fileName);
 		writeOutput(fullPath,addInfoHeader,C,NC,B,D,S,e,k);
