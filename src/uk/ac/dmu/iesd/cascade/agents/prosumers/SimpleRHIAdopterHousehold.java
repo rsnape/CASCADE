@@ -3,6 +3,7 @@ package uk.ac.dmu.iesd.cascade.agents.prosumers;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import repast.simphony.context.Context;
@@ -14,12 +15,12 @@ import repast.simphony.space.gis.Geography;
 import repast.simphony.util.ContextUtils;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.HEATING_TYPE;
-import uk.ac.dmu.iesd.cascade.behaviour.psychological.cognitive.SCTModel;
 import uk.ac.dmu.iesd.cascade.context.AdoptionContext;
 import uk.ac.dmu.iesd.cascade.context.RHIContext;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 
-public class RHIAdopterHousehold extends HouseholdProsumer
+public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 {
 	private int RHICapital = 5000000; // Budget in tenths of pence
 	private int smartContCapital = 750000;
@@ -37,6 +38,9 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 
 	private boolean renewableHeatAdopted;
 
+	private boolean heatingBroken = false;
+	private int daysBroken = 0;
+	private HEATING_TYPE currentHeating = HEATING_TYPE.GRID_GAS;
 	public HEATING_TYPE RHIEligibleHeatingOwned;
 
 	/**
@@ -45,6 +49,26 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	public HEATING_TYPE getRHIEligibleHeatingOwned()
 	{
 		return this.RHIEligibleHeatingOwned;
+	}
+
+	public int getHasGSHP()
+	{
+		return (this.RHIEligibleHeatingOwned == HEATING_TYPE.GND_SOURCE_HP) ? 1 : 0;
+	}
+
+	public int getHasASHP()
+	{
+		return (this.RHIEligibleHeatingOwned == HEATING_TYPE.AIR_SOURCE_HP) ? 1 : 0;
+	}
+
+	public int getHasBiomass()
+	{
+		return (this.RHIEligibleHeatingOwned == HEATING_TYPE.BIOMASS) ? 1 : 0;
+	}
+
+	public int getHasSolarThermal()
+	{
+		return (this.RHIEligibleHeatingOwned == HEATING_TYPE.SOLAR_THERMAL) ? 1 : 0;
 	}
 
 	/**
@@ -56,11 +80,9 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		this.RHIEligibleHeatingOwned = rHIEligibleHeatingOwned;
 	}
 
-	private Geography<RHIAdopterHousehold> myGeography;
-	private ArrayList<RHIAdopterHousehold> myNeighboursCache;
+	private Geography<SimpleRHIAdopterHousehold> myGeography;
+	private ArrayList<SimpleRHIAdopterHousehold> myNeighboursCache;
 	private int numCachedNeighbours;
-
-	private SCTModel RHIDecisionModel = new SCTModel();
 
 	private RHIContext mainContext = (RHIContext) super.mainContext;
 
@@ -79,7 +101,7 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	 * A prosumer agent's base name it can be reassigned (renamed) properly by
 	 * descendants of this class
 	 **/
-	protected static String agentBaseName = "Household";
+	protected static String agentBaseName = "SimpleRHIAdopter";
 
 	// private CascadeContext mainContext;
 	// public int defraCategory;
@@ -112,7 +134,7 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		return this.hasSmartControl ? 1 : 0;
 	}
 
-	@ScheduledMethod(start = 3, interval = 48, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
+	@ScheduledMethod(start = 49, interval = 48, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void checkTime()
 	{
 		if (this.mainContext == null)
@@ -124,13 +146,19 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 			}
 		}
 
+		if (RandomHelper.nextDouble() < this.mainContext.dailyChanceOfFailure)
+		{
+			this.heatingBroken = true;
+			this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime() - 1);
+		}
+
 		if (this.mainContext.getDateTime().getTime() > this.nextCogniscentDate.getTime()
 				&& this.mainContext.getDateTime().getTime() <= (this.nextCogniscentDate.getTime() + Consts.MSECS_PER_DAY))
 		{
 			this.mainContext.logger.debug(this.getAgentName() + " Thinking with RHI ownership = " + this.getHasRHI() + "..."
 					+ this.RHIlikelihood);
 			this.considerOptions(); // Could make the consideration further
-									// probabilistic...
+			// probabilistic...
 			this.mainContext.logger.debug("Resulting in RHI ownership = " + this.getHasRHI() + ", likelihood:" + this.RHIlikelihood
 					+ ", neightbours:" + this.numCachedNeighbours);
 
@@ -140,8 +168,22 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 					.getTickCount()) / (this.mainContext.ticksPerDay * 28)));
 			this.mainContext.logger.debug("New decision urgency = " + this.decisionUrgency + " from tariff available until tick: "
 					+ this.mainContext.dateToTick(this.mainContext.getRHIAvailableUntil()));
-			this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime()
-					+ ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
+
+			// If haven't adopted RHI set a new thinking date. Otherwise no
+			// point thinking again for the purposes of this simulation.
+			if (!this.getHasRHI())
+			{
+				if (this.heatingBroken)
+				{
+					this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime() + Consts.MSECS_PER_DAY - 1);
+					this.daysBroken++;
+				}
+				else
+				{
+					this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime()
+							+ ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
+				}
+			}
 		}
 	}
 
@@ -149,8 +191,8 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	{
 		this.RHIlikelihood = this.microgenPropensity;
 		this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.RHIlikelihood + "...");
-		this.checkTariffs();
-		this.calculateSCT();
+
+		double benefitInPence = this.checkEconomics();
 
 		if (RandomHelper.nextDouble() > this.habit)
 		{
@@ -161,81 +203,64 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		}
 
 		this.mainContext.logger.trace(this.agentName + " making decision based on likelihood of " + this.RHIlikelihood + "...");
-		this.makeDecision();
+		this.makeDecision(benefitInPence);
 	}
 
-	/**
-	 * 
-	 */
-	private void calculateSCT()
+	private void makeDecision(double benefit)
 	{
 
-		/*
-		 * Set perception of others' behaviour based on observed percentage
-		 */
-		this.RHIDecisionModel.setPerceptionOfOthers(this.observeNeighbours());
-		this.RHIDecisionModel.setSelfEfficacy(this.economicAbility); // Could do
-																		// this
-																		// one
-																		// off
-																		// at
-																		// initialisation
-		this.RHIDecisionModel.setOutcomeExpectation(this.decisionUrgency * this.economicSensitivity * this.perceivedRHIBenefit);
+		// It is assumed that net disbenefit (-ve benefit) will never be
+		// considered. This
+		// may in fact be too harsh - our benefit does not account for worries
+		// about gas prices increasing etc. On the other hand - it is likely
+		// that electricity prices will increase also.
 
-		/*
-		 * Set economic factors in socio structural construct. Note that a value
-		 * of 0 is an absolute veto
-		 */
-		double quote = this.mainContext.getRHISystemPrice(this.potentialRHICapacity, this.RHIEligibleHeatingTechnology);
-		if (this.RHICapital < quote || this.potentialRHICapacity == 0)
+		if (benefit > 0)
 		{
-			this.RHIDecisionModel.setSocioStructural(0);
-		}
-		else
-		{
-			double socioStructuralFactors = 0; // 0 = absolutely not, 1 =
-												// maximum likelihood
-			socioStructuralFactors = (this.RHICapital - quote) / this.RHICapital; // Cheaper
-																					// it
-																					// is,
-																					// the
-																					// more
-																					// attractive
-																					// -
-																					// free
-																					// =
-																					// socio
-																					// structural
-																					// of
-																					// 1
-			this.RHIDecisionModel.setSocioStructural(socioStructuralFactors);
-		}
+			this.mainContext.logger.trace(this.getAgentName() + " has microgen propensity " + this.microgenPropensity
+					+ " and RHI adoption likelihood " + this.RHIlikelihood);
 
-		this.RHIlikelihood = this.RHIDecisionModel.getGoal();
-	}
+			// Neighbour influence varies from +1 to -1
+			double neighbourInfluence = this.observeNeighbours();
+			double capitalCost = this.mainContext.getQuote(this.RHIEligibleHeatingTechnology);
 
-	private void makeDecision()
-	{
-		this.mainContext.logger.trace(this.getAgentName() + " has microgen propensity " + this.microgenPropensity
-				+ " and RHI adoption likelihood " + this.RHIlikelihood);
+			double paybackYears = capitalCost / (benefit / 100 * 365);
 
-		this.RHIDecisionModel.setAbsoluteBehaviourThreshold(this.getAdoptionThreshold());
-		this.RHIDecisionModel.calculateBehaviour();
+			this.mainContext.logger.info(this.agentName + " thinking with propensity " + this.microgenPropensity + ", neighbour inf "
+					+ neighbourInfluence + ", benefit " + benefit + "p / day, install quote £" + capitalCost + " and payback "
+					+ paybackYears + " years.");
 
-		this.mainContext.logger.debug("Calculated behaviour from SCT" + this.RHIDecisionModel.getBehaviour());
-
-		// if (RHIlikelihood > getAdoptionThreshold())
-		if (this.RHIDecisionModel.getBinaryBehaviourDecisionHardThreshold())
-		{
-			this.mainContext.logger.debug(this.agentName + " Adopted RHI");
-			this.setRHI();
-
-		}
-
-		if (false)// (ArrayUtils.sum(this.baseProfile)*RandomHelper.nextDouble()*365*100
-					// > smartContCapital)
-		{
-			this.setWattboxController();
+			if (paybackYears < 7)
+			{
+				// will consider the option at all if payback < the 7 years of
+				// the scheme -
+				// without this, the economics will not be considered.
+				this.mainContext.logger.debug("possible install - considering neighbours or exceptionally short payback");
+				
+				//PUt in all the influencing factors (+ve is good)
+				
+				double paybackInfluence = 1 - paybackYears / 7;
+				double hassleInfluence = 1 - this.mainContext.getHassleFactor(this.RHIEligibleHeatingTechnology);
+				
+				// Weightings of the various influences
+				double wHassle = 0.6;
+				double wPay = 0.3;
+				double wSocial = 0.1;
+				
+				double totalInfluence = wPay * paybackInfluence + wHassle * hassleInfluence + wSocial * neighbourInfluence;
+				
+				this.mainContext.logger.info("Testing " + totalInfluence + " against adoption threshold " + this.adoptionThreshold);
+				if (totalInfluence > this.adoptionThreshold)
+				{
+					this.setRHI();
+				}
+				
+				//Original simple condition produced realistic curves								
+				/*if (neighbourInfluence > 0 || paybackYears < 3)
+				{
+					this.setRHI();
+				}*/
+			}
 		}
 
 	}
@@ -245,20 +270,33 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	 */
 	public void setRHI()
 	{
-		this.renewableHeatAdopted = true;
-		this.ratedPowerRHI = this.potentialRHICapacity;
-		this.RHIEligibleHeatingOwned = this.RHIEligibleHeatingTechnology;
+		if (this.RHIEligibleHeatingTechnology != null)
+		{
+			this.renewableHeatAdopted = true;
+			this.ratedPowerRHI = this.potentialRHICapacity;
+			this.RHIEligibleHeatingOwned = this.RHIEligibleHeatingTechnology;
+			if (this.RHIEligibleHeatingOwned == HEATING_TYPE.AIR_SOURCE_HP || this.RHIEligibleHeatingOwned == HEATING_TYPE.GND_SOURCE_HP
+					|| this.RHIEligibleHeatingOwned == HEATING_TYPE.ELECTRIC_STORAGE)
+			{
+				// in theory you could have other forms of water heat, but seems
+				// unlikely. With storage space heat, likely to have immersion
+				// water
+				// heat.
+				this.initializeElectWaterHeatPar();
+				this.initializeElecSpaceHeatPar();
+			}
+			this.mainContext.logger.info("Adopted RHI tech " + this.RHIEligibleHeatingOwned);
+		}
 	}
 
-	private void checkTariffs()
+	private double checkEconomics()
 	{
-		double RHITariffPence = this.currentTariff() / 10; // Note that tariffs
-															// are stored as
-															// integer tenths of
-															// pence to aid
-															// precision
-
-		this.RHIlikelihood += this.economicSensitivity * RHITariffPence * this.decisionUrgency;
+		this.perceivedRHIBenefit = this.calculateDailyRHIBenefit(this.currentHeating, this.RHIEligibleHeatingTechnology);
+		// currently, this returns the rational hard benefit as calculated by
+		// calculateDailyRHIBenefit
+		// At some point, could add in a perception factor more akin to the full
+		// blown psychological model.
+		return this.perceivedRHIBenefit;
 	}
 
 	private double currentTariff()
@@ -268,14 +306,14 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 
 	private double observeNeighbours()
 	{
-		// TODO: Need to allow for positive and negative influence here,
-		// Not purely positive.
+		// TODO: Need to refine positive and negative influence here,
+		// Not purely positive. Currently pretty naive - 50:50 add or subract
 
 		this.mainContext.logger.trace("Observing neighbours");
-		ArrayList<RHIAdopterHousehold> neighbours = this.getNeighbours();
+		ArrayList<SimpleRHIAdopterHousehold> neighbours = this.getNeighbours();
 		int observedAdoption = 0;
 		int observed = 0;
-		for (RHIAdopterHousehold h : neighbours)
+		for (SimpleRHIAdopterHousehold h : neighbours)
 		{
 			this.mainContext.logger.trace("Into observation loop");
 			boolean observe = (RandomHelper.nextDouble() > 0.5);
@@ -289,6 +327,7 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 					boolean negativeImpression = (RandomHelper.nextDouble() > 0.5);
 					if (negativeImpression)
 					{
+						observedAdoption--;
 
 					}
 					else
@@ -300,7 +339,7 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 			}
 		}
 
-		this.mainContext.logger.trace("Returninglikelihood to agent " + this.getAgentName() + " based on " + observedAdoption + " of "
+		this.mainContext.logger.trace("Returning likelihood to agent " + this.getAgentName() + " based on " + observedAdoption + " of "
 				+ this.numCachedNeighbours + " neighbours observed to have RHI (" + observed + " observed this round)");
 
 		// Likelihood of adopting now - based on observation alone
@@ -313,12 +352,12 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	 * Note - OK to cache neighbours as static in this simulation. If households
 	 * may move to different physical houses, this would have to change.
 	 */
-	private ArrayList<RHIAdopterHousehold> getNeighbours()
+	private ArrayList<SimpleRHIAdopterHousehold> getNeighbours()
 	{
 
 		if (this.myNeighboursCache == null)
 		{
-			GeographyWithin<RHIAdopterHousehold> neighbourhood = new GeographyWithin<RHIAdopterHousehold>(this.myGeography,
+			GeographyWithin<SimpleRHIAdopterHousehold> neighbourhood = new GeographyWithin<SimpleRHIAdopterHousehold>(this.myGeography,
 					this.observedRadius, this);
 			this.myNeighboursCache = IterableUtils.Iterable2ArrayList(neighbourhood.query());
 			this.numCachedNeighbours = this.myNeighboursCache.size();
@@ -343,7 +382,7 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	 * @param context
 	 *            the context in which this agent is situated
 	 */
-	public RHIAdopterHousehold(RHIContext context)
+	public SimpleRHIAdopterHousehold(RHIContext context)
 	{
 		this(context, new double[48]);
 		// Date startTime = (Date) context.simStartDate.clone();
@@ -356,7 +395,7 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	/**
 	 * Test for Richard need no arg constructor for shapefile load
 	 */
-	public RHIAdopterHousehold()
+	public SimpleRHIAdopterHousehold()
 	{
 		super();
 	}
@@ -368,14 +407,25 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	 * decision times.
 	 * 
 	 */
-	public RHIAdopterHousehold(RHIContext context, double[] otherDemandProfile)
+	public SimpleRHIAdopterHousehold(RHIContext context, double[] otherDemandProfile)
 	{
 		super(context, otherDemandProfile);
 		this.agentName = "Household_" + this.agentID;
 		this.mainContext = context;
 		this.setStartDateAndFirstThought();
-		this.initialiseSCT();
 		context.logger.debug(this.agentName + " initialised, first thought at " + this.nextCogniscentDate.toGMTString());
+
+		if (RandomHelper.nextDouble() < 0.5)
+		{
+			this.currentHeating = HEATING_TYPE.OIL;
+		}
+		else
+		{
+			this.currentHeating = HEATING_TYPE.CALOR_GAS;
+		}
+
+		this.yearHistoryHeatingEnergy = new double[Consts.DAYS_PER_YEAR];
+		Arrays.fill(this.yearHistoryHeatingEnergy, 50);
 	}
 
 	public void setStartDateAndFirstThought()
@@ -383,30 +433,29 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		Date startTime = null;
 		try
 		{
-			startTime = (new SimpleDateFormat("dd/MM/yyyy")).parse("01/08/2014"); // TODO:
-																					// Nasty
-																					// -
-																					// nasty
-																					// -
-																					// hard
-																					// coded
-																					// start
-																					// date
-																					// :(
+			startTime = (new SimpleDateFormat("dd/MM/yyyy")).parse("01/08/2014"); 
+			// TODO:NastY -nasty -hard coded start date :(
+		}
+		catch (ParseException e)
+		{
+
+		}
+
+		// Date startTime = (Date) this.mainContext.simStartDate.clone();
+		// startTime.setTime(startTime.getTime() + ((long)
+		// (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
+		// this.nextCogniscentDate = startTime;
+
+		startTime.setTime(startTime.getTime() + ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
+		// this.nextCogniscentDate = startTime;
+		try
+		{
+			this.nextCogniscentDate = (new SimpleDateFormat("dd/MM/yyyy")).parse("01/08/2035");
 		}
 		catch (ParseException e)
 		{
 			System.err.println("Weird - I can't parse this fixed string that I've always parsed before");
 		}
-
-		// Date startTime = (Date) this.mainContext.simStartDate.clone();
-		// startTime.setTime(startTime.getTime() + ((long)
-		// (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 *
-		// 1000)));
-		// this.nextCogniscentDate = startTime;
-
-		startTime.setTime(startTime.getTime() + ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
-		this.nextCogniscentDate = startTime;
 		this.economicSensitivity = RandomHelper.nextDouble();
 		this.perceivedSmartControlBenefit = RandomHelper.nextDouble(); // comment
 																		// this
@@ -461,6 +510,7 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	double dailySaving = 0;
 	ArrayList<Double> dailySavings = new ArrayList<Double>();
 	private double dailyBaseTotal;
+	private double[] yearHistoryHeatingEnergy;
 
 	/*
 	 * Note - scheduled methods must be public in order that the scheduler can
@@ -514,11 +564,60 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	}
 
 	@ScheduledMethod(start = 49, interval = 48, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
-	public void estimateDailyRHIBenefit()
+	public void addDaysHeatingEnergyToYearHistory()
+	{
+		this.yearHistoryHeatingEnergy = ArrayUtils.rotate(this.yearHistoryHeatingEnergy, ArrayUtils.sum(this.dayHistoryHeatingEnergy));
+	}
+
+	public double calculateDailyRHIBenefit(HEATING_TYPE oldType, HEATING_TYPE newType)
 	{
 
-		double estimatedRHIGen = this.potentialRHICapacity;
-		this.perceivedRHIBenefit = estimatedRHIGen * this.currentTariff();
+		if (newType == null)
+		{
+			return 0;
+		}
+		else
+		{
+
+			// double estimatedRHIGen = this.potentialRHICapacity*24;
+			double estimatedRHIGen;
+
+			if (newType == HEATING_TYPE.SOLAR_THERMAL)
+			{
+				estimatedRHIGen = ArrayUtils.sum(this.getHistoricalWaterHeatDemand());
+			}
+			else
+			{
+				// estimatedRHIGen = ArrayUtils.sum(this
+				// .getDayHistoryHeatingEnergy());
+				estimatedRHIGen = ArrayUtils.avg(this.getYearHistoryHeatingEnergy());
+			}
+
+			this.mainContext.logger.info("calculating benefit of adopting " + newType + " over existing " + oldType + " with heat demand "
+					+ estimatedRHIGen + " kWh, setpoint " + this.setPoint + " temperature " + this.currentInternalTemp);
+			double directSavings = (RHIContext.heatingCostPerkWh.get(oldType) - RHIContext.heatingCostPerkWh.get(newType))
+					* estimatedRHIGen;
+			double RHITariffPence = this.currentTariff() / 10; // Note that
+																// tariffs
+																// are stored as
+																// integer
+																// tenths of
+																// pence to aid
+																// precision
+			double RHIincome = (estimatedRHIGen * RHITariffPence);
+			this.mainContext.logger.info("Gives RHI income of " + RHIincome + " added to direct savings of " + directSavings);
+
+			return (RHIincome + directSavings);
+		}
+	}
+
+	/**
+	 * @return
+	 */
+	private double[] getYearHistoryHeatingEnergy()
+	{
+		// TODO Auto-generated method stub
+		return this.yearHistoryHeatingEnergy;
 	}
 
 	@ScheduledMethod(start = 2600, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
@@ -527,22 +626,4 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 
 	}
 
-	private void initialiseSCT()
-	{
-		this.RHIDecisionModel.setWeightGoalToBehaviour(5);
-		this.RHIDecisionModel.setWeightSocioStructuralToOutcomeExp(4);
-		this.RHIDecisionModel.setWeightSocioStructuralToPerceptionOfOthers(2);
-		this.RHIDecisionModel.setWeightSelfEfficacyToOutcomeExp(5);
-		this.RHIDecisionModel.setWeightOutcomeExpToGoal(5);
-		this.RHIDecisionModel.setWeightPerceptionOfOthersToGoal(3);
-		this.RHIDecisionModel.setWeightSelfEfficacyToGoal(4);
-		this.RHIDecisionModel.setWeightSocioStructuralToGoal(5);
-		this.RHIDecisionModel.setWeightOutcomeExpToBehaviour(5);
-		this.RHIDecisionModel.setWeightPerceptionOfOthersToBehaviour(1);
-		this.RHIDecisionModel.setWeightSelfEfficacyToBehaviour(5);
-		this.RHIDecisionModel.setWeightSocioStructuralToBehaviour(5);
-		this.RHIDecisionModel.setWeightOutcomeToSelfEfficacy(4);
-		this.RHIDecisionModel.setWeightOutcomeToSocioStructural(1);
-		this.RHIDecisionModel.setWeightOutcomeToOutcomeExp(5);
-	}
 }
