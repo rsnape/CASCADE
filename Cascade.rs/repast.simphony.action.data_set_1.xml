@@ -1,35 +1,45 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>suppAdv</name>
-  <type>NON_AGGREGATE</type>
-  <sourceType>uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel</sourceType>
+  <name>AdopterCounts</name>
+  <type>AGGREGATE</type>
   <inclTick>true</inclTick>
-  <inclBatchRun>false</inclBatchRun>
-  <inclRandomSeed>false</inclRandomSeed>
+  <inclBatchRun>true</inclBatchRun>
+  <inclRandomSeed>true</inclRandomSeed>
   <scheduleParams>
     <start>1.0</start>
-    <interval>1.0</interval>
+    <interval>48.0</interval>
     <priority>-Infinity</priority>
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-1088473809</hashCode>
+    <hashCode>8034195</hashCode>
   </scheduleParams>
-  <atEnd>false</atEnd>
+  <atEnd>true</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>AgentName</string>
+      <string>TotalRHI</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>AgentName</id>
-        <className>uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel</className>
-        <methodName>getAgentName</methodName>
+        <id>TotalRHI</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.SimpleRHIAdopterHousehold</className>
+        <methodName>getHasRHINum</methodName>
+        <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>CurrentPriceSignal</string>
+      <string>ASHP</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>CurrentPriceSignal</id>
-        <className>uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel</className>
-        <methodName>getCurrentPriceSignal</methodName>
+        <id>ASHP</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.SimpleRHIAdopterHousehold</className>
+        <methodName>getHasASHP</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>GSHP</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>GSHP</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.SimpleRHIAdopterHousehold</className>
+        <methodName>getHasGSHP</methodName>
+        <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>

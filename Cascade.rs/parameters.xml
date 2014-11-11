@@ -32,7 +32,7 @@
 						
 		/>
 				<parameter name="RootDir" displayName="RootDir" type="java.lang.String" 
-						defaultValue="C:\RepastSimphony-2.0-beta\workspace\Cascade" 
+						defaultValue=".." 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -53,7 +53,6 @@
 						defaultValue="CascadeConfig.xml" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-									
 		/>
 				<parameter name="householdOtherDemandFile" displayName="householdOtherDemandFile" type="java.lang.String" 
 						defaultValue="hhOtherDemandProfiles_1D_half.csv" 
@@ -88,17 +87,17 @@
 						
 		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
-						defaultValue="dataFiles" 
+						defaultValue="data" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
-				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
+<!--				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
 						defaultValue="false" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
-		/>
+		/>  -->
 				<parameter name="signalMode" displayName="signal mode" type="int" 
 						defaultValue="2" 
 						isReadOnly="false" 
@@ -107,16 +106,16 @@
 						
 		/>
 				<parameter name="hhWithGasPercentage" displayName="householdsWithGas%" type="int" 
-						defaultValue="0" 
+						defaultValue="0"
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
-				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
-						defaultValue="false" 
+				<parameter name="loggingLevel" displayName="Logging level" type="java.lang.String" 
+						defaultValue="DEBUG" 
 						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
-									
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									values="TRACE DEBUG INFO WARN ERROR OFF "									
 		/>
 		</parameters>
 

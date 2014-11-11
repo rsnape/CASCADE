@@ -1,5 +1,5 @@
 <repast.simphony.visualization.editedStyle.DefaultEditedStyleData2D>
-  <shapeWkt>circle</shapeWkt>
+  <shapeWkt>triangle</shapeWkt>
   <size>15.0</size>
   <sizeMax>15.0</sizeMax>
   <sizeMin>1.0</sizeMin>
@@ -17,9 +17,9 @@
     <float>0.0</float>
   </labelColor>
   <color>
-    <float>0.0</float>
-    <float>0.0</float>
     <float>1.0</float>
+    <float>0.0</float>
+    <float>0.2</float>
   </color>
   <colorMax>
     <float>10.0</float>
@@ -36,5 +36,4 @@
     <float>1.0</float>
     <float>1.0</float>
   </colorScale>
-  <iconFile2D>icons/house.png</iconFile2D>
 </repast.simphony.visualization.editedStyle.DefaultEditedStyleData2D>
