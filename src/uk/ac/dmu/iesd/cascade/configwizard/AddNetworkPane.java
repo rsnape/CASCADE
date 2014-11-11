@@ -10,7 +10,7 @@ import org.w3c.dom.Document;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class AddNetworkPane extends WizardWorkingPane
 {
@@ -25,10 +25,14 @@ public class AddNetworkPane extends WizardWorkingPane
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder(this.getName());
 		this.setBorder(title);
-		}
+	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane#validateAndSaveToConfig()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane#validateAndSaveToConfig
+	 * ()
 	 */
 	@Override
 	public boolean validateAndSaveToConfig()

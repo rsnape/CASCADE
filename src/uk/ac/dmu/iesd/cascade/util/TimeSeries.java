@@ -9,86 +9,90 @@ import java.util.TreeMap;
 
 /**
  * @author Richard
- *
+ * 
  */
 @SuppressWarnings("rawtypes")
-public abstract class TimeSeries<K extends Comparable, T> {	
-	
-	SortedMap<K,T> datapoints;
+public abstract class TimeSeries<K extends Comparable, T>
+{
+
+	SortedMap<K, T> datapoints;
 	T beforeAllTimesValue = null;
 
 	/**
-	 * @param beforeAllTimesValue the beforeAllTimesValue to set
+	 * @param beforeAllTimesValue
+	 *            the beforeAllTimesValue to set
 	 */
-	public void setBeforeAllTimesValue(T beforeAllTimesValue) {
+	public void setBeforeAllTimesValue(T beforeAllTimesValue)
+	{
 		this.beforeAllTimesValue = beforeAllTimesValue;
 	}
 
 	public T getValue(K time)
 	{
-		
-		if (datapoints.containsKey(time))
+
+		if (this.datapoints.containsKey(time))
 		{
-			return datapoints.get(time);
+			return this.datapoints.get(time);
 		}
-		
-		SortedMap prevVals = datapoints.headMap(time);
-		
-		T retVal = beforeAllTimesValue;
-		
+
+		SortedMap prevVals = this.datapoints.headMap(time);
+
+		T retVal = this.beforeAllTimesValue;
+
 		if (!prevVals.isEmpty())
 		{
-			retVal = datapoints.get(prevVals.lastKey());
+			retVal = this.datapoints.get(prevVals.lastKey());
 		}
 		return retVal;
 	}
-	
+
 	public void putValue(K time, T value)
 	{
-		datapoints.put(time, value);
+		this.datapoints.put(time, value);
 	}
-	
+
 	public K getFirstKeyFollowing(K thisKey)
 	{
-		SortedMap<K,T> afterMap = datapoints.tailMap(thisKey);
+		SortedMap<K, T> afterMap = this.datapoints.tailMap(thisKey);
 		if (afterMap.size() == 0)
 		{
 			return null;
 		}
 		return afterMap.firstKey();
 	}
-	
+
 	public K getLastKeyBefore(K thisKey)
 	{
-		SortedMap<K,T> beforeMap = datapoints.headMap(thisKey);
+		SortedMap<K, T> beforeMap = this.datapoints.headMap(thisKey);
 		if (beforeMap.size() == 0)
 		{
 			return null;
 		}
 		return beforeMap.lastKey();
 	}
-	
+
 	public TimeSeries()
 	{
-		datapoints = new TreeMap<K, T>();
+		this.datapoints = new TreeMap<K, T>();
 	}
-	
+
 	public TimeSeries(Map<K, T> initMap)
 	{
-		datapoints = new TreeMap<K, T>();
+		this.datapoints = new TreeMap<K, T>();
 
 		for (K n : initMap.keySet())
 		{
-			datapoints.put(n, initMap.get(n));
+			this.datapoints.put(n, initMap.get(n));
 		}
 	}
 
+	@Override
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer();
-		for (K thisKey : datapoints.keySet())
+		for (K thisKey : this.datapoints.keySet())
 		{
-			sb.append(thisKey + " : " + datapoints.get(thisKey)+"\n");
+			sb.append(thisKey + " : " + this.datapoints.get(thisKey) + "\n");
 		}
 		return sb.toString();
 	}

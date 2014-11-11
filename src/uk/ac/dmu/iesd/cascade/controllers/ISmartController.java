@@ -7,9 +7,10 @@ import java.util.WeakHashMap;
 
 /**
  * @author jsnape
- *
+ * 
  */
-public interface ISmartController {
+public interface ISmartController
+{
 
 	/**
 	 * Method to tell the smart controller to gather the data that it needs and
@@ -20,13 +21,13 @@ public interface ISmartController {
 	public void update(int time);
 
 	/**
-	 * Method to extract the current profiles for controlled appliance / device usage
+	 * Method to extract the current profiles for controlled appliance / device
+	 * usage
 	 * 
-	 * @return a WeakHashMap containing whose keys describe the type of load profile and
-	 * 			whose values are floating point arrays of the current profile for the day
+	 * @return a WeakHashMap containing whose keys describe the type of load
+	 *         profile and whose values are floating point arrays of the current
+	 *         profile for the day
 	 */
-	public WeakHashMap<String,double[]> getCurrentProfiles();
-
-
+	public WeakHashMap<String, double[]> getCurrentProfiles();
 
 }

@@ -28,7 +28,7 @@ import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class AddAggregatorPane extends WizardWorkingPane implements ActionListener
 {
@@ -36,7 +36,7 @@ public class AddAggregatorPane extends WizardWorkingPane implements ActionListen
 	 * 
 	 */
 	private static final long serialVersionUID = -2573630327140722754L;
-	
+
 	JComboBox aggList;
 	JTextField numAgents;
 	JButton addProsumersToThisAggregator;
@@ -47,22 +47,21 @@ public class AddAggregatorPane extends WizardWorkingPane implements ActionListen
 	static String CONFIG_ALL = "1";
 	static String CONFIG_INDIVIDUAL = "2";
 	private int configType;
-	
-	
+
 	/**
 	 * @param configObject2
 	 */
 	public AddAggregatorPane(Document configObject2)
 	{
 		super();
-		
-		configObject = configObject2;
+
+		this.configObject = configObject2;
 		this.setName("Add Aggregators");
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder(this.getName());
 		this.setBorder(title);
-		this.setSize(WizardFrame.WIZARD_WINDOW_DEFAULT_WIDTH,WizardFrame.WIZARD_WINDOW_DEFAULT_HEIGHT);
-		
+		this.setSize(WizardFrame.WIZARD_WINDOW_DEFAULT_WIDTH, WizardFrame.WIZARD_WINDOW_DEFAULT_HEIGHT);
+
 		JPanel line1 = new JPanel();
 		line1.setBounds(8, 25, this.getWidth() - 20, 60);
 		JTextArea aggLabel = new JTextArea("Choose the aggregator class here");
@@ -72,14 +71,14 @@ public class AddAggregatorPane extends WizardWorkingPane implements ActionListen
 		aggLabel.setEditable(false);
 		aggLabel.setBackground(null);
 		aggLabel.setBounds(10, 0, 125, 44);
-		aggList = new JComboBox(WizardFrame.aggregatorClasses.toArray());
-		//aggList.setMinimumSize(new Dimension(400,25));
-		aggList.setBounds(144, 0, line1.getWidth()-170, 25);
-		//line1.setLayout(new BoxLayout(line1,BoxLayout.X_AXIS));
+		this.aggList = new JComboBox(WizardFrame.aggregatorClasses.toArray());
+		// aggList.setMinimumSize(new Dimension(400,25));
+		this.aggList.setBounds(144, 0, line1.getWidth() - 170, 25);
+		// line1.setLayout(new BoxLayout(line1,BoxLayout.X_AXIS));
 		line1.setLayout(null);
 		line1.add(aggLabel);
-		line1.add(aggList);
-		
+		line1.add(this.aggList);
+
 		JPanel line2 = new JPanel();
 		line2.setBounds(8, 95, this.getWidth() - 20, 60);
 		line2.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -90,138 +89,134 @@ public class AddAggregatorPane extends WizardWorkingPane implements ActionListen
 		numLabel.setEditable(false);
 		numLabel.setBackground(null);
 		numLabel.setBounds(10, 8, 239, 32);
-		numAgents = new JTextField("1");
-		numAgents.setBounds(264, 5, this.getWidth() - 310, 25);
-		line2.setLayout(null);		
+		this.numAgents = new JTextField("1");
+		this.numAgents.setBounds(264, 5, this.getWidth() - 310, 25);
+		line2.setLayout(null);
 		line2.add(numLabel);
-		line2.add(numAgents);
-	
+		line2.add(this.numAgents);
+
 		JPanel configOptions = new JPanel();
 		configOptions.setBounds(8, 164, 249, 99);
 		TitledBorder optBorder = BorderFactory.createTitledBorder("Configuration options");
-		configOptions.setBorder(optBorder); 
-		configOptions.setLayout(new BoxLayout(configOptions,BoxLayout.Y_AXIS));
+		configOptions.setBorder(optBorder);
+		configOptions.setLayout(new BoxLayout(configOptions, BoxLayout.Y_AXIS));
 		JRadioButton opt1 = new JRadioButton("Use default configuration", true);
-		opt1.setActionCommand(this.NO_CONFIG);
+		opt1.setActionCommand(AddAggregatorPane.NO_CONFIG);
 		opt1.addActionListener(this);
 		JRadioButton opt2 = new JRadioButton("Set config to apply to all these aggregators", false);
-		opt2.setActionCommand(this.CONFIG_ALL);
+		opt2.setActionCommand(AddAggregatorPane.CONFIG_ALL);
 		opt2.addActionListener(this);
 		JRadioButton opt3 = new JRadioButton("Configure each of these individually", false);
-		opt3.setActionCommand(this.CONFIG_INDIVIDUAL);
+		opt3.setActionCommand(AddAggregatorPane.CONFIG_INDIVIDUAL);
 		opt3.addActionListener(this);
 
-		opts = new ButtonGroup();
-		opts.add(opt1);
-		opts.add(opt2);
-		opts.add(opt3);
+		this.opts = new ButtonGroup();
+		this.opts.add(opt1);
+		this.opts.add(opt2);
+		this.opts.add(opt3);
 		configOptions.add(opt1);
 		configOptions.add(opt2);
 		configOptions.add(opt3);
-		setLayout(null);
-		
-		
+		this.setLayout(null);
+
 		this.add(line1);
 		this.add(line2);
-		this.add(configOptions);		
+		this.add(configOptions);
 	}
 
-	
-	
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane#validateAndSaveToConfig()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane#validateAndSaveToConfig
+	 * ()
 	 */
 	@Override
 	public boolean validateAndSaveToConfig()
 	{
 		boolean validatesOK = true;
 		int n = 0;
-		Class<? extends AggregatorAgent> selectedAggregator=null;
-		
-		String num = numAgents.getText();
+		Class<? extends AggregatorAgent> selectedAggregator = null;
+
+		String num = this.numAgents.getText();
 		try
 		{
-			n=Integer.parseInt(num);
+			n = Integer.parseInt(num);
 		}
 		catch (NumberFormatException e)
 		{
 			validatesOK = false;
 		}
-		
-		if (aggList.getSelectedIndex() >= 0)
+
+		if (this.aggList.getSelectedIndex() >= 0)
 		{
-			selectedAggregator = (Class<? extends AggregatorAgent>) aggList.getSelectedItem();
+			selectedAggregator = (Class<? extends AggregatorAgent>) this.aggList.getSelectedItem();
 		}
 		else
 		{
 			validatesOK = false;
 		}
-			
+
 		if (validatesOK)
 		{
 			/**
-			 * Old idea to instatiate the objects here - better to put it into a file and then run from the file
+			 * Old idea to instatiate the objects here - better to put it into a
+			 * file and then run from the file
 			 */
-			
+
 			Element root = this.configObject.getDocumentElement();
-			this.setWorkingElement(configObject.createElement("aggregator"));
-			Attr className = configObject.createAttribute("class");
+			this.setWorkingElement(this.configObject.createElement("aggregator"));
+			Attr className = this.configObject.createAttribute("class");
 			className.setValue(selectedAggregator.getName());
-			Attr sName = configObject.createAttribute("shortName");
+			Attr sName = this.configObject.createAttribute("shortName");
 			sName.setValue(selectedAggregator.getSimpleName());
-			Attr numAggs = configObject.createAttribute("number");
+			Attr numAggs = this.configObject.createAttribute("number");
 			numAggs.setValue(num);
-			getWorkingElement().setAttributeNode(className);
-			getWorkingElement().setAttributeNode(numAggs);
-			getWorkingElement().setAttributeNode(sName);
-			root.appendChild(getWorkingElement());
-			
-/*			createdAggregators = new ArrayList();
-			for (int i =0; i < n; i++)
-			{
-				try
-				{
-					
-					createdAggregators.add(selectedAggregator.newInstance());
-				} catch (InstantiationException e)
-				{
-					System.err.println(e.getMessage());
-					e.printStackTrace();
-				} catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				}
-			}*/
-			
+			this.getWorkingElement().setAttributeNode(className);
+			this.getWorkingElement().setAttributeNode(numAggs);
+			this.getWorkingElement().setAttributeNode(sName);
+			root.appendChild(this.getWorkingElement());
+
+			/*
+			 * createdAggregators = new ArrayList(); for (int i =0; i < n; i++)
+			 * { try {
+			 * 
+			 * createdAggregators.add(selectedAggregator.newInstance()); } catch
+			 * (InstantiationException e) { System.err.println(e.getMessage());
+			 * e.printStackTrace(); } catch (IllegalAccessException e) {
+			 * e.printStackTrace(); } }
+			 */
+
 		}
-		
+
 		return validatesOK;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0)
 	{
-		if (arg0.getSource() == addProsumersToThisAggregator)
+		if (arg0.getSource() == this.addProsumersToThisAggregator)
 		{
-			WizardPane thisPane = (WizardPane)this.getParent();
-			validateAndSaveToConfig();
+			WizardPane thisPane = (WizardPane) this.getParent();
+			this.validateAndSaveToConfig();
 			thisPane.remove(this);
-			thisPane.add(new AddProsumerPane(configObject, this.getWorkingElement()));
+			thisPane.add(new AddProsumerPane(this.configObject, this.getWorkingElement()));
 		}
 		else if (arg0.getSource() instanceof JRadioButton)
 		{
-			configType = Integer.parseInt(((JRadioButton)arg0.getSource()).getActionCommand());
+			this.configType = Integer.parseInt(((JRadioButton) arg0.getSource()).getActionCommand());
 		}
 
-		
 	}
 
-	protected JTextField getNumAgents() {
-		return numAgents;
+	protected JTextField getNumAgents()
+	{
+		return this.numAgents;
 	}
 }

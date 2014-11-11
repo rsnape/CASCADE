@@ -10,7 +10,7 @@ import org.w3c.dom.Document;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class AddInputFilePane extends WizardWorkingPane
 {
@@ -27,8 +27,12 @@ public class AddInputFilePane extends WizardWorkingPane
 		this.setBorder(title);
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane#validateAndSaveToConfig()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane#validateAndSaveToConfig
+	 * ()
 	 */
 	@Override
 	public boolean validateAndSaveToConfig()

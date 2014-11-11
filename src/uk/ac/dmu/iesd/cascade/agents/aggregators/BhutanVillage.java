@@ -13,7 +13,7 @@ import uk.ac.dmu.iesd.cascade.util.IterableUtils;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class BhutanVillage extends AggregatorAgent
 {
@@ -21,8 +21,12 @@ public class BhutanVillage extends AggregatorAgent
 	private double actualVoltage;
 	private BhutanHydro myGen = null;
 
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#paramStringReport()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#paramStringReport
+	 * ()
 	 */
 	@Override
 	protected String paramStringReport()
@@ -31,19 +35,29 @@ public class BhutanVillage extends AggregatorAgent
 		return "BhutanVillage class representing a village with a small Hydro generator feeding some houses with rice cookers";
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#bizPreStep()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#bizPreStep()
 	 */
 	@Override
 	public void bizPreStep()
 	{
-		if (myGen == null)
+		if (this.myGen == null)
 		{
-			myGen = (BhutanHydro) mainContext.getRandomObjects(BhutanHydro.class, 1).iterator().next(); // Very Hacky - shouldn't know this.
+			this.myGen = (BhutanHydro) this.mainContext.getRandomObjects(BhutanHydro.class, 1).iterator().next(); // Very
+																													// Hacky
+																													// -
+																													// shouldn't
+																													// know
+																													// this.
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#bizStep()
 	 */
 	@Override
@@ -51,7 +65,7 @@ public class BhutanVillage extends AggregatorAgent
 	{
 		double thisStepDemand = 0;
 		this.actualVoltage = this.nominalVoltage;
-		
+
 		for (Object o : this.mainContext.getEconomicNetwork().getAdjacent(this))
 		{
 			if (o instanceof ProsumerAgent)
@@ -59,17 +73,18 @@ public class BhutanVillage extends AggregatorAgent
 				thisStepDemand += ((ProsumerAgent) o).getNetDemand();
 			}
 		}
-		
+
 		if (thisStepDemand < 0)
 		{
-			//over demand - work out brownout conditions
+			// over demand - work out brownout conditions
 			double brownoutVoltage = this.nominalVoltage;
-			
+
 			double fullRes = -1;
-			
-			ArrayList hhs = IterableUtils.Iterable2ArrayList(mainContext.getAgentLayer(BhutanHousehold.class));
-			
-			for (Object o : hhs) // don't like this implementation - means we know too much about the prosumer!!
+
+			ArrayList hhs = IterableUtils.Iterable2ArrayList(this.mainContext.getAgentLayer(BhutanHousehold.class));
+
+			for (Object o : hhs) // don't like this implementation - means we
+									// know too much about the prosumer!!
 			{
 				BhutanHousehold hh = (BhutanHousehold) o;
 				if (fullRes == -1)
@@ -80,32 +95,34 @@ public class BhutanVillage extends AggregatorAgent
 				{
 					fullRes = 1.0 / ((1.0 / fullRes) + (1.0 / hh.getResistance()));
 				}
-				
+
 			}
-			
-			brownoutVoltage = Math.sqrt(myGen.getCapacity()*1000 * fullRes);
-			myGen.setVoltage(brownoutVoltage);
-			
-			for (Object o : hhs) // don't like this implementation - means we know too much about the prosumer!!
+
+			brownoutVoltage = Math.sqrt(this.myGen.getCapacity() * 1000 * fullRes);
+			this.myGen.setVoltage(brownoutVoltage);
+
+			for (Object o : hhs) // don't like this implementation - means we
+									// know too much about the prosumer!!
 			{
 				BhutanHousehold hh = (BhutanHousehold) o;
 				hh.setVoltage(brownoutVoltage);
 			}
-			
+
 			this.actualVoltage = brownoutVoltage;
-			
-			thisStepDemand = 0; // the voltage lowering will lower all demands - equalising supply and demand
+
+			thisStepDemand = 0; // the voltage lowering will lower all demands -
+								// equalising supply and demand
 		}
-		
+
 		this.setNetDemand(thisStepDemand);
-	
+
 	}
-	
+
 	public double getVillageVoltage()
 	{
 		return this.actualVoltage;
 	}
-	
+
 	public BhutanVillage(CascadeContext context)
 	{
 		this.mainContext = context;

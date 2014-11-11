@@ -29,7 +29,9 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 public class ProportionalWattboxController implements ISmartController
 {
 
-	static final double[] INITIALIZATION_TEMPS = { 7, 7, 7, 7, 7, 7, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 17, 17, 16, 16, 15, 15, 14, 14, 12, 12, 10, 10, 8, 8, 7, 7 };
+	static final double[] INITIALIZATION_TEMPS =
+	{ 7, 7, 7, 7, 7, 7, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 17, 17, 16, 16, 15,
+			15, 14, 14, 12, 12, 10, 10, 8, 8, 7, 7 };
 	HouseholdProsumer owner;
 	WattboxUserProfile userProfile;
 	WattboxLifestyle userLifestyle;
@@ -75,7 +77,9 @@ public class ProportionalWattboxController implements ISmartController
 	private double maxHeatPumpElecDemandPerTick;
 	private double expectedNextDaySpaceHeatCost;
 	private double maxImmersionHeatPerTick;
-	private double[] noElecHeatingDemand = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	private double[] noElecHeatingDemand =
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0 };
 
 	// Uniform coldAndWetApplTimeslotDelayRandDist; //temp
 
@@ -92,50 +96,58 @@ public class ProportionalWattboxController implements ISmartController
 	 * updates the occupancy profiles, probabilities of occupancy and lifestyle
 	 * and optimises profiles based on this
 	 */
+	@Override
 	public void update(int timeStep)
 	{
-		checkForNewAppliancesAndUpdateConstants();
+		this.checkForNewAppliancesAndUpdateConstants();
 
-		double[] ownersCostSignal = owner.getPredictedCostSignal();
-		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep % ownersCostSignal.length + ticksPerDay);
+		double[] ownersCostSignal = this.owner.getPredictedCostSignal();
+		this.dayPredictedCostSignal = Arrays.copyOfRange(ownersCostSignal, timeStep % ownersCostSignal.length, timeStep
+				% ownersCostSignal.length + this.ticksPerDay);
 		/**** TODO: Be aware of below - means signal goes neg and pos ****/
 		// this.dayPredictedCostSignal =
 		// ArrayUtils.offset(ArrayUtils.multiply(this.dayPredictedCostSignal,
 		// predictedCostToRealCostA),realCostOffsetb);
 
-		if (owner.isHasElectricalSpaceHeat())
+		if (this.owner.isHasElectricalSpaceHeat())
 		{
-			this.setPointProfile = Arrays.copyOf(owner.getSetPointProfile(), owner.getSetPointProfile().length);
+			this.setPointProfile = Arrays.copyOf(this.owner.getSetPointProfile(), this.owner.getSetPointProfile().length);
 			this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
 			this.currentTempProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
-			this.heatPumpDemandProfile = calculateEstimatedSpaceHeatPumpDemand(this.setPointProfile);
-		} else
+			this.heatPumpDemandProfile = this.calculateEstimatedSpaceHeatPumpDemand(this.setPointProfile);
+		}
+		else
 		{
-			this.heatPumpDemandProfile = Arrays.copyOf(noElecHeatingDemand, noElecHeatingDemand.length);
+			this.heatPumpDemandProfile = Arrays.copyOf(this.noElecHeatingDemand, this.noElecHeatingDemand.length);
 		}
 
-		if (owner.isHasElectricalWaterHeat())
+		if (this.owner.isHasElectricalWaterHeat())
 		{
-			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(), (timeStep % owner.getBaselineHotWaterVolumeProfile().length), (timeStep % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
-			this.waterHeatDemandProfile = ArrayUtils.multiply(hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP));
-		} else
+			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(this.owner.getBaselineHotWaterVolumeProfile(), (timeStep % this.owner
+					.getBaselineHotWaterVolumeProfile().length), (timeStep % this.owner.getBaselineHotWaterVolumeProfile().length)
+					+ this.ticksPerDay);
+			this.waterHeatDemandProfile = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY
+					/ Consts.KWH_TO_JOULE_CONVERSION_FACTOR
+					* (this.owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP));
+		}
+		else
 		{
-			this.waterHeatDemandProfile = Arrays.copyOf(noElecHeatingDemand, noElecHeatingDemand.length);
+			this.waterHeatDemandProfile = Arrays.copyOf(this.noElecHeatingDemand, this.noElecHeatingDemand.length);
 		}
 
-		if (coldAppliancesControlled && owner.isHasColdAppliances())
+		if (this.coldAppliancesControlled && this.owner.isHasColdAppliances())
 		{
-			gapColdLoadProbabilistic(timeStep);
+			this.gapColdLoadProbabilistic(timeStep);
 		}
 
-		if (wetAppliancesControlled && owner.isHasWetAppliances())
+		if (this.wetAppliancesControlled && this.owner.isHasWetAppliances())
 		{
-			optimiseWetProfileProbabilistic(timeStep);
+			this.optimiseWetProfileProbabilistic(timeStep);
 		}
-		
-		if (eVehicleControlled && owner.hasElectricVehicle)
+
+		if (this.eVehicleControlled && this.owner.hasElectricVehicle)
 		{
-			optimiseElecVehicleProfileProbabilistic(timeStep);
+			this.optimiseElecVehicleProfileProbabilistic(timeStep);
 		}
 
 		// Note - optimise space heating first. This is so that we can look for
@@ -143,29 +155,30 @@ public class ProportionalWattboxController implements ISmartController
 		// heat pump limit and add the cost of using immersion heater (COP 0.9)
 		// to top
 		// up water heating if the heat pump is too great
-		if (spaceHeatingControlled && owner.isHasElectricalSpaceHeat())
+		if (this.spaceHeatingControlled && this.owner.isHasElectricalSpaceHeat())
 		{
 			// optimiseSetPointProfile();
-			assignSetPointsProbabilistic();
-			/*if (Consts.DEBUG)
-			{
-				this.mainContext.logger.debug("Optimised set point profile = " + Arrays.toString(this.setPointProfile));
-			}*/
+			this.assignSetPointsProbabilistic();
+			/*
+			 * if (Consts.DEBUG) {
+			 * this.mainContext.logger.debug("Optimised set point profile = " +
+			 * Arrays.toString(this.setPointProfile)); }
+			 */
 		}
 
-		if (waterHeatingControlled && owner.isHasElectricalWaterHeat())
+		if (this.waterHeatingControlled && this.owner.isHasElectricalWaterHeat())
 		{
-			placeWaterHeatingProportional();
+			this.placeWaterHeatingProportional();
 		}
 
-		if (eVehicleControlled && owner.isHasElectricVehicle())
+		if (this.eVehicleControlled && this.owner.isHasElectricVehicle())
 		{
-			optimiseEVProfile();
+			this.optimiseEVProfile();
 		}
 
 		// At the end of the step, set the temperature profile for today's
 		// (which will be yesterday's when it is used)
-		this.priorDayExternalTempProfile = owner.getContext().getAirTemperature(timeStep, ticksPerDay);
+		this.priorDayExternalTempProfile = this.owner.getContext().getAirTemperature(timeStep, this.ticksPerDay);
 	}
 
 	/**
@@ -173,38 +186,40 @@ public class ProportionalWattboxController implements ISmartController
 	 */
 	private void optimiseElecVehicleProfileProbabilistic(int timeStep)
 	{
-		double[] baseRequirement = owner.getEVProfile();
+		double[] baseRequirement = this.owner.getEVProfile();
 
-		double[] baseDay = Arrays.copyOfRange(baseRequirement, (timeStep % baseRequirement.length), (timeStep % baseRequirement.length) + ticksPerDay);
+		double[] baseDay = Arrays.copyOfRange(baseRequirement, (timeStep % baseRequirement.length), (timeStep % baseRequirement.length)
+				+ this.ticksPerDay);
 		// Check for null EV Profile - possible if owner just acquired an EV
 		if (this.EVChargingProfile == null)
 		{
 			this.EVChargingProfile = Arrays.copyOf(baseDay, baseDay.length);
 		}
 		double Qtot = ArrayUtils.sum(baseDay);
-		
-		//Given the design, it is possible that the owner has an electric vehicle, but is
-		//not making a journey.
-		if (Qtot==0)
+
+		// Given the design, it is possible that the owner has an electric
+		// vehicle, but is
+		// not making a journey.
+		if (Qtot == 0)
 		{
 			return;
 		}
-		
+
 		int loadStart = 14;
-		while (baseDay[loadStart]==0)
+		while (baseDay[loadStart] == 0)
 		{
 			loadStart++;
 		}
-		
+
 		double[] endOfSig = Arrays.copyOfRange(this.dayPredictedCostSignal, loadStart, this.dayPredictedCostSignal.length);
-		double[] EVattractivity = new double[endOfSig.length+14];
-		System.arraycopy(endOfSig,0,EVattractivity,0,endOfSig.length);
-		System.arraycopy(this.dayPredictedCostSignal,0,EVattractivity,endOfSig.length,14);
-		
+		double[] EVattractivity = new double[endOfSig.length + 14];
+		System.arraycopy(endOfSig, 0, EVattractivity, 0, endOfSig.length);
+		System.arraycopy(this.dayPredictedCostSignal, 0, EVattractivity, endOfSig.length, 14);
+
 		double Smax = ArrayUtils.max(EVattractivity);
-		for (int i  = 0; i < EVattractivity.length; i++)
+		for (int i = 0; i < EVattractivity.length; i++)
 		{
-			EVattractivity[i]=Smax-EVattractivity[i];
+			EVattractivity[i] = Smax - EVattractivity[i];
 		}
 
 		double Asum = ArrayUtils.sum(EVattractivity);
@@ -212,16 +227,16 @@ public class ProportionalWattboxController implements ISmartController
 		int attIndex = 0;
 		for (int i = loadStart; i < baseDay.length; i++)
 		{
-			this.EVChargingProfile[i] = Qtot*EVattractivity[attIndex]/Asum;
+			this.EVChargingProfile[i] = Qtot * EVattractivity[attIndex] / Asum;
 			attIndex++;
 		}
 		for (int i = 0; i < 14; i++)
 		{
-			this.EVChargingProfile[i] = Qtot*EVattractivity[attIndex]/Asum;
+			this.EVChargingProfile[i] = Qtot * EVattractivity[attIndex] / Asum;
 		}
-		
-		owner.setOptimisedEVProfile(this.EVChargingProfile);
-				
+
+		this.owner.setOptimisedEVProfile(this.EVChargingProfile);
+
 	}
 
 	/**
@@ -238,14 +253,18 @@ public class ProportionalWattboxController implements ISmartController
 
 		int Nt = 1;// The maximum shutoff time for cold load
 
-		WeakHashMap<String, double[]> coldApplianceProfiles = owner.getColdAppliancesProfiles();
+		WeakHashMap<String, double[]> coldApplianceProfiles = this.owner.getColdAppliancesProfiles();
 		double[] fridge_loads = coldApplianceProfiles.get(Consts.COLD_APP_FRIDGE_ORIGINAL);
 		double[] freezer_loads = coldApplianceProfiles.get(Consts.COLD_APP_FREEZER_ORIGINAL);
 		double[] fridge_freezer_loads = coldApplianceProfiles.get(Consts.COLD_APP_FRIDGEFREEZER_ORIGINAL);
 
-		double[] fridge_loads_day = Arrays.copyOfRange(fridge_loads, (timeStep % fridge_loads.length), (timeStep % fridge_loads.length) + ticksPerDay);
-		double[] freezer_loads_day = Arrays.copyOfRange(freezer_loads, (timeStep % freezer_loads.length), (timeStep % freezer_loads.length) + ticksPerDay);
-		double[] fridge_freezer_loads_day = Arrays.copyOfRange(fridge_freezer_loads, (timeStep % fridge_freezer_loads.length), (timeStep % fridge_freezer_loads.length) + ticksPerDay);
+		double[] fridge_loads_day = Arrays.copyOfRange(fridge_loads, (timeStep % fridge_loads.length), (timeStep % fridge_loads.length)
+				+ this.ticksPerDay);
+		double[] freezer_loads_day = Arrays.copyOfRange(freezer_loads, (timeStep % freezer_loads.length), (timeStep % freezer_loads.length)
+				+ this.ticksPerDay);
+		double[] fridge_freezer_loads_day = Arrays
+				.copyOfRange(fridge_freezer_loads, (timeStep % fridge_freezer_loads.length), (timeStep % fridge_freezer_loads.length)
+						+ this.ticksPerDay);
 
 		// %Begin by eliminating the negative signal slots as we won't want to
 		// gap them
@@ -255,7 +274,9 @@ public class ProportionalWattboxController implements ISmartController
 		for (int i = 0; i < 48; i++)
 		{
 			if (S[i] < 0)
+			{
 				S[i] = 0;
+			}
 		}
 
 		for (int i = 1; i < 48; i++)
@@ -267,7 +288,9 @@ public class ProportionalWattboxController implements ISmartController
 		double n = RandomHelper.nextDouble();
 		int k = 0; // %throw dice and initialise index
 		while (S[k] < n)
+		{
 			k++;
+		}
 
 		double fridgeLoss = 0;
 		double freezerLoss = 0;
@@ -299,10 +322,11 @@ public class ProportionalWattboxController implements ISmartController
 
 		ArrayUtils.replaceRange(coldApplianceProfiles.get(Consts.COLD_APP_FREEZER), freezer_loads_day, timeStep % freezer_loads.length);
 		ArrayUtils.replaceRange(coldApplianceProfiles.get(Consts.COLD_APP_FRIDGE), fridge_loads_day, timeStep % fridge_loads.length);
-		ArrayUtils.replaceRange(coldApplianceProfiles.get(Consts.COLD_APP_FRIDGEFREEZER), fridge_freezer_loads_day, timeStep % fridge_freezer_loads.length);
-		owner.setColdAppliancesProfiles(coldApplianceProfiles); // actually
-																// unecessary as
-																// done in place
+		ArrayUtils.replaceRange(coldApplianceProfiles.get(Consts.COLD_APP_FRIDGEFREEZER), fridge_freezer_loads_day, timeStep
+				% fridge_freezer_loads.length);
+		this.owner.setColdAppliancesProfiles(coldApplianceProfiles); // actually
+		// unecessary as
+		// done in place
 	}
 
 	/**
@@ -313,18 +337,26 @@ public class ProportionalWattboxController implements ISmartController
 	{
 		if (ArrayUtils.max(this.dayPredictedCostSignal) == ArrayUtils.min(this.dayPredictedCostSignal))
 		{
-			// If flat signal, do nothing.  Note that this can't work if the demand was elastic, but this purely deals with WITHIN DAY
+			// If flat signal, do nothing. Note that this can't work if the
+			// demand was elastic, but this purely deals with WITHIN DAY
 			// allocation.
-			
+
 			this.mainContext.logger.debug("Flat signal - do nothing");
-			
+
 			this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
 			return;
 		}
 
 		double[] ExtTemp = this.priorDayExternalTempProfile.clone();
-		double Tex = ArrayUtils.max(ExtTemp);//ArrayUtils.sum(ExtTemp) / ExtTemp.length;
-		double Trm = ArrayUtils.max(owner.getSetPointProfile());//20; // %Fixed room temperature at this stage
+		double Tex = ArrayUtils.max(ExtTemp);// ArrayUtils.sum(ExtTemp) /
+												// ExtTemp.length;
+		double Trm = ArrayUtils.max(this.owner.getSetPointProfile());// 20; //
+																		// %Fixed
+																		// room
+																		// temperature
+																		// at
+																		// this
+																		// stage
 		int Nt = 2;// Consts.HEAT_PUMP_MIN_SWITCHOFF; // %Fixed no of timeslots
 					// to
 					// 'gap' at this stage
@@ -336,24 +368,17 @@ public class ProportionalWattboxController implements ISmartController
 		for (int i = 0; i < 48; i++)
 		{
 			if (S[i] < 0)
-				S[i] = 0;
-		}
-		
-/*		// Start of test.  this looks at signal over whole switch off period, not just start
-		double[] Stemp = new double[S.length];
-		for (int j = 0; j < S.length - Nt+1; j++)
-		{
-			double p = 0;
-			for (int k = 0; k < Nt; k++)
 			{
-				p+=S[j+k];
+				S[i] = 0;
 			}
-			p /= Nt;
-			Stemp[j] = p;
 		}
-		S=Stemp;
-		// end of test
-*/
+
+		/*
+		 * // Start of test. this looks at signal over whole switch off period,
+		 * not just start double[] Stemp = new double[S.length]; for (int j = 0;
+		 * j < S.length - Nt+1; j++) { double p = 0; for (int k = 0; k < Nt;
+		 * k++) { p+=S[j+k]; } p /= Nt; Stemp[j] = p; } S=Stemp; // end of test
+		 */
 		S = ArrayUtils.normalizeValues(S, 1, false); // Normalise values
 		for (int i = 1; i < 48; i++)
 		{
@@ -362,9 +387,9 @@ public class ProportionalWattboxController implements ISmartController
 		}
 		S = ArrayUtils.normalizeValues(S, 1, false); // Normalise values for CDF
 
-		//if (this.owner.getAgentID()==1 || this.owner.getAgentID() == 100)
-			//System.err.println("CDF ="+Arrays.toString(S));
-		
+		// if (this.owner.getAgentID()==1 || this.owner.getAgentID() == 100)
+		// System.err.println("CDF ="+Arrays.toString(S));
+
 		double[] AggL = new double[48];// zeros(1,48); %Initialise total
 										// responsive load
 		double[] BaseL = new double[48];// %Initialise total baseline load
@@ -377,7 +402,7 @@ public class ProportionalWattboxController implements ISmartController
 		// double Tdrop = Trm -
 		// ((Trm-Tex)*Math.exp(-1.0*Nt/owner.tau)+Tex);//%Work out temp drop
 		// from each gapped timeslot
-		double Tdrop = (Trm - Tex) * owner.freeRunningTemperatureLossPerTickMultiplier;
+		double Tdrop = (Trm - Tex) * this.owner.freeRunningTemperatureLossPerTickMultiplier;
 		if (Tdrop < 0.5)// && max(S)>0.01 %If S not null do response
 		{
 			// L=ArrayUtils.offset(L,(Nt*(Trm-Tex)*(owner.buildingHeatLossRate/1000)/((48-Nt)*0.9*CoP)));//%Add
@@ -407,7 +432,7 @@ public class ProportionalWattboxController implements ISmartController
 			{
 				this.setPointProfile[i] += addedBefore;
 				totDrop += Tdrop;
-				this.setPointProfile[i] -=totDrop; // set to =0 For test
+				this.setPointProfile[i] -= totDrop; // set to =0 For test
 
 			}
 			for (int i = k + Nt; i < 48; i++)
@@ -428,10 +453,11 @@ public class ProportionalWattboxController implements ISmartController
 	 */
 	private void placeWaterHeatingProportional()
 	{
-		
+
 		if (ArrayUtils.max(this.dayPredictedCostSignal) == ArrayUtils.min(this.dayPredictedCostSignal))
 		{
-			// If null signal, do nothing.  Note that this can't work if the demand was elastic, but this purely deals with WITHIN DAY
+			// If null signal, do nothing. Note that this can't work if the
+			// demand was elastic, but this purely deals with WITHIN DAY
 			// allocation.
 			return;
 		}
@@ -439,12 +465,14 @@ public class ProportionalWattboxController implements ISmartController
 		// Note! This should be constant as yet, because
 		// hotWaterVolumeDemandProfile =owner.baseHotWaterVolumeDemProfile
 		// which is changed only on initialisation
-		double[] baseArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)) / Consts.DOMESTIC_HEAT_PUMP_WATER_COP);
-		this.mainContext.logger.trace("hotWaterVolumeDemandProfile: "+ Arrays.toString(hotWaterVolumeDemandProfile));
+		double[] baseArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY
+				/ Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP))
+				/ Consts.DOMESTIC_HEAT_PUMP_WATER_COP);
+		this.mainContext.logger.trace("hotWaterVolumeDemandProfile: " + Arrays.toString(this.hotWaterVolumeDemandProfile));
 
 		this.waterHeatDemandProfile = new double[baseArray.length];// Arrays.copyOf(baseArray,
 																	// baseArray.length);
-		this.mainContext.logger.trace("waterHeatDemandProfile: "+ Arrays.toString(waterHeatDemandProfile));
+		this.mainContext.logger.trace("waterHeatDemandProfile: " + Arrays.toString(this.waterHeatDemandProfile));
 
 		// double[] totalHeatDemand = ArrayUtils.add(this.heatPumpDemandProfile,
 		// spreadWaterDemand(baseArray));
@@ -456,14 +484,15 @@ public class ProportionalWattboxController implements ISmartController
 			if (Sk > 0)
 			{
 
-				double[] Wd = createAttractivityCDFFromSignal(i);
+				double[] Wd = this.createAttractivityCDFFromSignal(i);
 
 				double n = RandomHelper.nextDouble();// %Throw a dice again and
 														// reset k
 				int k = 0;
 				while (k < Wd.length && Wd[k] < n)
+				{
 					k++;// %find k value in which to do this water heating
-				
+				}
 
 				try
 				{
@@ -471,14 +500,15 @@ public class ProportionalWattboxController implements ISmartController
 				}
 				catch (ArrayIndexOutOfBoundsException e)
 				{
-					System.err.println("k="+k+";i="+i+"; baselength="+waterHeatDemandProfile.length+": "+Wd.length+Arrays.toString(Wd));
-					System.err.println(Arrays.toString(this.dayPredictedCostSignal)); 
+					System.err.println("k=" + k + ";i=" + i + "; baselength=" + this.waterHeatDemandProfile.length + ": " + Wd.length
+							+ Arrays.toString(Wd));
+					System.err.println(Arrays.toString(this.dayPredictedCostSignal));
 					System.err.println("On day" + this.mainContext.getDayCount());
 				}
-				
+
 				for (int m = k; m < i; m++)
 				{
-					this.waterHeatDemandProfile[m] += (Sk / (owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)) * 0.5);// %Top
+					this.waterHeatDemandProfile[m] += (Sk / (this.owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)) * 0.5);// %Top
 					// up
 					// for
 					// losses - estimated at 0.5 deg C per half hour
@@ -494,8 +524,8 @@ public class ProportionalWattboxController implements ISmartController
 	 */
 	private double[] createAttractivityCDFFromSignal(int i)
 	{
-		double[] Wd = new double[dayPredictedCostSignal.length];
-		double[] pre_prices = Arrays.copyOfRange(dayPredictedCostSignal, 0, i + 1);
+		double[] Wd = new double[this.dayPredictedCostSignal.length];
+		double[] pre_prices = Arrays.copyOfRange(this.dayPredictedCostSignal, 0, i + 1);
 
 		double Smax = ArrayUtils.max(pre_prices); // %find highest S value
 		pre_prices = ArrayUtils.multiply(pre_prices, -1/*
@@ -534,8 +564,6 @@ public class ProportionalWattboxController implements ISmartController
 		}
 		return Wd;
 	}
-	
-
 
 	/**
 	 * A method to allow Wattbox to be dynamic in the sense of monitoring its
@@ -548,19 +576,20 @@ public class ProportionalWattboxController implements ISmartController
 		// the wattbox assigns load only according to the rated heat pump and
 		// immersion capacity
 		// of its owner
-		this.maxHeatPumpElecDemandPerTick = (owner.ratedPowerHeatPump * (double) 24 / ticksPerDay);
-		this.maxImmersionHeatPerTick = Consts.MAX_DOMESTIC_IMMERSION_POWER * (double) 24 / ticksPerDay;
+		this.maxHeatPumpElecDemandPerTick = (this.owner.ratedPowerHeatPump * 24 / this.ticksPerDay);
+		this.maxImmersionHeatPerTick = Consts.MAX_DOMESTIC_IMMERSION_POWER * 24 / this.ticksPerDay;
 	}
 
 	/**
 	 * method to return all the optimised profiles currently held by this
 	 * Wattbox
 	 */
+	@Override
 	public WeakHashMap<String, double[]> getCurrentProfiles()
 	{
 		WeakHashMap<String, double[]> returnMap = new WeakHashMap<String, double[]>();
-		returnMap.put("HeatPump", optimisedSetPointProfile);
-		returnMap.put("WaterHeat", waterHeatDemandProfile);
+		returnMap.put("HeatPump", this.optimisedSetPointProfile);
+		returnMap.put("WaterHeat", this.waterHeatDemandProfile);
 		return returnMap;
 	}
 
@@ -584,28 +613,32 @@ public class ProportionalWattboxController implements ISmartController
 	 */
 	private void optimiseWetProfileProbabilistic(int timeStep)
 	{
-		this.mainContext.logger.trace("==OptimiseWetProfil for a  "+ owner.getAgentID()+"; timeStep: "+ timeStep);
-		this.mainContext.logger.trace("dayPredictedCostSignal: "+ Arrays.toString(dayPredictedCostSignal));
+		this.mainContext.logger.trace("==OptimiseWetProfil for a  " + this.owner.getAgentID() + "; timeStep: " + timeStep);
+		this.mainContext.logger.trace("dayPredictedCostSignal: " + Arrays.toString(this.dayPredictedCostSignal));
 
 		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
 		{
 			// No point doing anything if passed a null signal
 			return;
 		}
-		
-		WeakHashMap<String, double[]> wetApplianceProfiles = owner.getWetAppliancesProfiles();
+
+		WeakHashMap<String, double[]> wetApplianceProfiles = this.owner.getWetAppliancesProfiles();
 		double[] washer_loads = wetApplianceProfiles.get(Consts.WET_APP_WASHER_ORIGINAL);
 		double[] dryer_loads = wetApplianceProfiles.get(Consts.WET_APP_DRYER_ORIGINAL);
 		double[] dishwasher_loads = wetApplianceProfiles.get(Consts.WET_APP_DISHWASHER_ORIGINAL);
 
-		double[] washer_loads_day = Arrays.copyOfRange(washer_loads, (timeStep % washer_loads.length), (timeStep % washer_loads.length) + ticksPerDay);
-		double[] dryer_loads_day = Arrays.copyOfRange(dryer_loads, (timeStep % dryer_loads.length), (timeStep % dryer_loads.length) + ticksPerDay);
-		double[] dishwasher_loads_day = Arrays.copyOfRange(dishwasher_loads, (timeStep % dishwasher_loads.length), (timeStep % dishwasher_loads.length) + ticksPerDay);
+		double[] washer_loads_day = Arrays.copyOfRange(washer_loads, (timeStep % washer_loads.length), (timeStep % washer_loads.length)
+				+ this.ticksPerDay);
+		double[] dryer_loads_day = Arrays.copyOfRange(dryer_loads, (timeStep % dryer_loads.length), (timeStep % dryer_loads.length)
+				+ this.ticksPerDay);
+		double[] dishwasher_loads_day = Arrays
+				.copyOfRange(dishwasher_loads, (timeStep % dishwasher_loads.length), (timeStep % dishwasher_loads.length)
+						+ this.ticksPerDay);
 
 		int Tw = Consts.MAX_ALLOWED_WET_APP_MOVE;
-		this.mainContext.logger.trace("BEFORE washer_loads_day: "+ Arrays.toString(washer_loads_day));
-		this.mainContext.logger.trace("BEFORE dryer_loads_day: "+ Arrays.toString(dryer_loads_day));
-		this.mainContext.logger.trace("BEFORE dishwasher_loads_day: "+ Arrays.toString(dishwasher_loads_day));
+		this.mainContext.logger.trace("BEFORE washer_loads_day: " + Arrays.toString(washer_loads_day));
+		this.mainContext.logger.trace("BEFORE dryer_loads_day: " + Arrays.toString(dryer_loads_day));
+		this.mainContext.logger.trace("BEFORE dishwasher_loads_day: " + Arrays.toString(dishwasher_loads_day));
 
 		// Extract cycles
 		ArrayList<double[]> washCycles = new ArrayList<double[]>();
@@ -666,7 +699,7 @@ public class ProportionalWattboxController implements ISmartController
 			{
 				i++;
 			}
-			moveWetLoad(c, dayPredictedCostSignal, Tw, i);
+			this.moveWetLoad(c, this.dayPredictedCostSignal, Tw, i);
 		}
 
 		for (double[] c : dryCycles)
@@ -676,7 +709,7 @@ public class ProportionalWattboxController implements ISmartController
 			{
 				i++;
 			}
-			moveWetLoad(c, dayPredictedCostSignal, Tw, i);
+			this.moveWetLoad(c, this.dayPredictedCostSignal, Tw, i);
 		}
 
 		for (double[] c : dishwashCycles)
@@ -686,7 +719,7 @@ public class ProportionalWattboxController implements ISmartController
 			{
 				i++;
 			}
-			moveWetLoad(c, dayPredictedCostSignal, Tw, i);
+			this.moveWetLoad(c, this.dayPredictedCostSignal, Tw, i);
 		}
 
 		double[] newWash = new double[washer_loads_day.length];
@@ -711,8 +744,8 @@ public class ProportionalWattboxController implements ISmartController
 		ArrayUtils.replaceRange(wetApplianceProfiles.get(Consts.WET_APP_DRYER), newDry, timeStep % dryer_loads.length);
 
 		ArrayUtils.replaceRange(wetApplianceProfiles.get(Consts.WET_APP_DISHWASHER), newDish, timeStep % dishwasher_loads.length);
-		
-		owner.setWetAppliancesProfiles(wetApplianceProfiles);
+
+		this.owner.setWetAppliancesProfiles(wetApplianceProfiles);
 
 	}
 
@@ -779,17 +812,16 @@ public class ProportionalWattboxController implements ISmartController
 	 * @return the estimated demand profile or null if the set point profile is
 	 *         not physically achievable
 	 */
-	private double[] calculateEstimatedSpaceHeatPumpDemand(
-			double[] localSetPointArray)
+	private double[] calculateEstimatedSpaceHeatPumpDemand(double[] localSetPointArray)
 	{
-		double[] energyProfile = new double[ticksPerDay];
-		double[] deltaT = ArrayUtils.add(localSetPointArray, ArrayUtils.negate(priorDayExternalTempProfile));
+		double[] energyProfile = new double[this.ticksPerDay];
+		double[] deltaT = ArrayUtils.add(localSetPointArray, ArrayUtils.negate(this.priorDayExternalTempProfile));
 		// int availableHeatRecoveryTicks = ticksPerDay;
 		double maxRecoveryPerTick = 0.5d * Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE; // i.e.
 																								// later
 		// double internalTemp = this.setPointProfile[0];
 
-		for (int i = 0; i < ticksPerDay; i++)
+		for (int i = 0; i < this.ticksPerDay; i++)
 		{
 			// --availableHeatRecoveryTicks;
 			// currentTempProfile[i] = internalTemp;
@@ -798,7 +830,8 @@ public class ProportionalWattboxController implements ISmartController
 			if (i > 0)
 			{
 				tempChange = localSetPointArray[i] - localSetPointArray[i - 1];
-			} else
+			}
+			else
 			{
 				tempChange = localSetPointArray[i] - this.setPointProfile[0];
 			}
@@ -807,13 +840,15 @@ public class ProportionalWattboxController implements ISmartController
 			// ((owner.buildingHeatLossRate /
 			// Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY
 			// / ticksPerDay);
-			double setPointMaintenanceEnergy = (this.setPointProfile[i] - priorDayExternalTempProfile[i]) * ((owner.getBuildingHeatLossRate() / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)) * (Consts.SECONDS_PER_DAY / ticksPerDay);
+			double setPointMaintenanceEnergy = (this.setPointProfile[i] - this.priorDayExternalTempProfile[i])
+					* ((this.owner.getBuildingHeatLossRate() / Consts.KWH_TO_JOULE_CONVERSION_FACTOR))
+					* (Consts.SECONDS_PER_DAY / this.ticksPerDay);
 
 			// tempChangePower can be -ve if the temperature is falling. If
 			// tempChangePower magnitude
 			// is greater than or equal to setPointMaintenance, the heat pump is
 			// off.
-			double tempChangeEnergy = tempChange * owner.getBuildingThermalMass();
+			double tempChangeEnergy = tempChange * this.owner.getBuildingThermalMass();
 
 			// Although the temperature profiles supplied should be such that
 			// the heat
@@ -852,12 +887,12 @@ public class ProportionalWattboxController implements ISmartController
 				heatPumpEnergyNeeded = 0;
 			}
 
-			if (heatPumpEnergyNeeded > (owner.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP * 24 / ticksPerDay))
+			if (heatPumpEnergyNeeded > (this.owner.ratedPowerHeatPump * Consts.DOMESTIC_HEAT_PUMP_SPACE_COP * 24 / this.ticksPerDay))
 			{
 				// This profiel produces a value that exceeds the total capacity
 				// of the
 				// heat pump and is therefore unachievable.
-				this.mainContext.logger.trace("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded );
+				this.mainContext.logger.trace("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded);
 				// Can't satisfy this demand for this set point profile, return
 				// null
 				return null;
@@ -896,13 +931,13 @@ public class ProportionalWattboxController implements ISmartController
 		super();
 
 		this.owner = owner;
-		ticksPerDay = owner.getContext().getNbOfTickPerDay();
+		this.ticksPerDay = owner.getContext().getNbOfTickPerDay();
 		// this.priorDayExternalTempProfile =
 		// Arrays.copyOf(INITIALIZATION_TEMPS, INITIALIZATION_TEMPS.length);
 		// Initialise with a flat external temperature - thus no incentive to
 		// move demand on first day of use.
-		this.priorDayExternalTempProfile = new double[ticksPerDay];
-		Arrays.fill(priorDayExternalTempProfile, Consts.INITIALISATION_EXTERNAL_TEMP);
+		this.priorDayExternalTempProfile = new double[this.ticksPerDay];
+		Arrays.fill(this.priorDayExternalTempProfile, Consts.INITIALISATION_EXTERNAL_TEMP);
 
 		if (owner.isHasElectricalSpaceHeat())
 		{
@@ -911,7 +946,9 @@ public class ProportionalWattboxController implements ISmartController
 
 		if (owner.isHasElectricalWaterHeat())
 		{
-			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(), ((Math.max(0, (int) RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length), ((Math.max(0, (int) RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) + ticksPerDay);
+			this.hotWaterVolumeDemandProfile = Arrays.copyOfRange(owner.getBaselineHotWaterVolumeProfile(), ((Math
+					.max(0, (int) RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length), ((Math
+					.max(0, (int) RepastEssentials.GetTickCount())) % owner.getBaselineHotWaterVolumeProfile().length) + this.ticksPerDay);
 		}
 
 		if (owner.hasElectricVehicle)
@@ -919,9 +956,9 @@ public class ProportionalWattboxController implements ISmartController
 			double[] baseEVProfile = owner.getEVProfile();
 			this.EVChargingProfile = Arrays.copyOf(baseEVProfile, baseEVProfile.length);
 		}
-		
-		this.maxHeatPumpElecDemandPerTick = (owner.ratedPowerHeatPump * (double) 24 / ticksPerDay);
-		this.maxImmersionHeatPerTick = Consts.MAX_DOMESTIC_IMMERSION_POWER * (double) 24 / ticksPerDay;
+
+		this.maxHeatPumpElecDemandPerTick = (owner.ratedPowerHeatPump * 24 / this.ticksPerDay);
+		this.maxImmersionHeatPerTick = Consts.MAX_DOMESTIC_IMMERSION_POWER * 24 / this.ticksPerDay;
 
 	}
 

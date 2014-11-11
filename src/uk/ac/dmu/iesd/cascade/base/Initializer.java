@@ -1,9 +1,5 @@
 package uk.ac.dmu.iesd.cascade.base;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +16,6 @@ import repast.simphony.engine.controller.ControllerActionVisitor;
 import repast.simphony.engine.controller.NullAbstractControllerAction;
 import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.GUIRegistryType;
-import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunEnvironmentBuilder;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.parameter.Parameters;
@@ -39,14 +34,16 @@ import uk.ac.dmu.iesd.cascade.ui.TicksToDaysFormatter;
  * @version $Revision: 1.0 $ $Date: 2011/07/18 12:00:00 $
  * 
  */
-public class Initializer implements ModelInitializer {
+public class Initializer implements ModelInitializer
+{
 
 	// private TickListener tickListener = null;
 
-	class CascadeGuiCustomiserAction extends NullAbstractControllerAction 
+	class CascadeGuiCustomiserAction extends NullAbstractControllerAction
 	{
-		public void runInitialize(RunState runState, Context context,
-				Parameters runParams) {
+		@Override
+		public void runInitialize(RunState runState, Context context, Parameters runParams)
+		{
 			System.out.println("Begining of model Intializer runInitialize");
 
 			// will be executed at initialization.
@@ -65,16 +62,11 @@ public class Initializer implements ModelInitializer {
 			 */
 
 			CascadeContext cascadeContext = (CascadeContext) context;
-			cascadeContext.logger.trace("Initializer:: runInitialize method test: "+cascadeContext.getNbOfTickPerDay());
+			cascadeContext.logger.trace("Initializer:: runInitialize method test: " + cascadeContext.getNbOfTickPerDay());
 			GUIRegistry guiRegis = runState.getGUIRegistry();
 
-			RSApplication
-			.getRSApplicationInstance()
-			.getGui()
-			.setTickCountFormatter(
-					new TicksToDaysFormatter(cascadeContext));
-			RSApplication.getRSApplicationInstance().getGui()
-			.updateTickCountLabel(0);
+			RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
+			RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
 			// Collection <Pair<GUIRegistryType,Collection<JComponent>>>
 			// typeAndComp = guiRegis.getTypesAndComponents();
 			Collection typeAndComp = guiRegis.getTypesAndComponents();
@@ -82,42 +74,43 @@ public class Initializer implements ModelInitializer {
 			// typeAndCompIter = typeAndComp.iterator();
 			Iterator<Pair> typeAndCompIter = typeAndComp.iterator();
 
-			while (typeAndCompIter.hasNext()) {
+			while (typeAndCompIter.hasNext())
+			{
 				Pair<GUIRegistryType, Collection<JComponent>> typeAndCompPair = typeAndCompIter.next();
 				GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
-				cascadeContext.logger.trace("guiRegisType: "+ guiRegisType);
-				if (guiRegisType == GUIRegistryType.CHART) {
-					Collection<JComponent> chartCollection = typeAndCompPair
-							.getSecond();
+				cascadeContext.logger.trace("guiRegisType: " + guiRegisType);
+				if (guiRegisType == GUIRegistryType.CHART)
+				{
+					Collection<JComponent> chartCollection = typeAndCompPair.getSecond();
 					cascadeContext.setChartCompCollection(chartCollection);
 
 				}
-				if (guiRegisType == GUIRegistryType.DISPLAY) {
+				if (guiRegisType == GUIRegistryType.DISPLAY)
+				{
 
 				}
-				Collection<JComponent> compCol = typeAndCompPair
-						.getSecond();
-				cascadeContext.logger.trace("compCol: "+ compCol);
+				Collection<JComponent> compCol = typeAndCompPair.getSecond();
+				cascadeContext.logger.trace("compCol: " + compCol);
 				Iterator<JComponent> compIter = compCol.iterator();
-				while (compIter.hasNext()) {
+				while (compIter.hasNext())
+				{
 					JComponent comp = compIter.next();
-					if (guiRegisType == GUIRegistryType.CHART) {
-						cascadeContext.logger.trace("chartTitle: "+((ChartPanel) comp).getChart().getTitle().getText());
+					if (guiRegisType == GUIRegistryType.CHART)
+					{
+						cascadeContext.logger.trace("chartTitle: " + ((ChartPanel) comp).getChart().getTitle().getText());
 					}
 
-					cascadeContext.logger.trace(" Comp class: "+ comp.getClass());
+					cascadeContext.logger.trace(" Comp class: " + comp.getClass());
 				}
 
 			}
 
 			List<IDisplay> listOfDisplays = guiRegis.getDisplays();
-			for (IDisplay display : listOfDisplays) 
+			for (IDisplay display : listOfDisplays)
 			{
-				if (display instanceof DisplayOGL2D) 
+				if (display instanceof DisplayOGL2D)
 				{
-					((DisplayOGL2D) display)
-					.addProbeListener(new ProsumerProbeListener(
-							cascadeContext));
+					((DisplayOGL2D) display).addProbeListener(new ProsumerProbeListener(cascadeContext));
 				}
 			}
 
@@ -133,32 +126,34 @@ public class Initializer implements ModelInitializer {
 			 * tickListener.tickCountUpdated(mainContext.getTickCount()); }
 			 */
 
-			RSApplication.getRSApplicationInstance().addCustomUserPanel(
-					customPanel);
+			RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
 
-			//	RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
-			RSApplication.getRSApplicationInstance().getGui()
-			.updateTickCountLabel(0);
+			// RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new
+			// TicksToDaysFormatter(cascadeContext));
+			RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
 
 			// runParams.
 			// if (Consts.DEBUG)
-			cascadeContext.logger.trace("Initializer:: ChartSnapshotInterval: "+runParams.getValue("chartSnapshotInterval"));
+			cascadeContext.logger.trace("Initializer:: ChartSnapshotInterval: " + runParams.getValue("chartSnapshotInterval"));
 			// +++++++++++++++++++++++++++++++++++++
 
 		}
 
-		public String toString() 
+		@Override
+		public String toString()
 		{
 			return "Custom Action Test";
 		}
 
+		@Override
 		public void accept(ControllerActionVisitor visitor)
 		{
-			//Place holder - possibly test this later
+			// Place holder - possibly test this later
 		}
 	}
 
-	public void initialize(Scenario scen, RunEnvironmentBuilder builder) 
+	@Override
+	public void initialize(Scenario scen, RunEnvironmentBuilder builder)
 	{
 		scen.addMasterControllerAction(new CascadeGuiCustomiserAction());
 

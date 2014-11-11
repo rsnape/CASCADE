@@ -57,22 +57,22 @@ public class WizardPane extends JPanel implements ActionListener
 		this.setLocation(0, 0);
 		this.setLayout(null);
 		this.buttonPanel = new JPanel();
-		this.buttonPanel.setSize(this.getWidth(), this.DEFAULT_BUTTON_HEIGHT + 2 * this.DEFAULT_MARGIN);
-		this.buttonPanel.setLocation(0, this.getHeight() - buttonPanel.getHeight());
+		this.buttonPanel.setSize(this.getWidth(), WizardPane.DEFAULT_BUTTON_HEIGHT + 2 * WizardPane.DEFAULT_MARGIN);
+		this.buttonPanel.setLocation(0, this.getHeight() - this.buttonPanel.getHeight());
 		this.buttonPanel.setLayout(null);
 
-		this.addAgents = createBottomButton(buttonPanel, "Add Another Aggregator", 50, this.DEFAULT_MARGIN);
-		this.addProsumers = createBottomButton(buttonPanel, "Add Prosumers to Aggregator", 200, this.DEFAULT_MARGIN);
-		this.addContextFiles = createBottomButton(buttonPanel, "Add Context Files", 350, this.DEFAULT_MARGIN);
+		this.addAgents = this.createBottomButton(this.buttonPanel, "Add Another Aggregator", 50, WizardPane.DEFAULT_MARGIN);
+		this.addProsumers = this.createBottomButton(this.buttonPanel, "Add Prosumers to Aggregator", 200, WizardPane.DEFAULT_MARGIN);
+		this.addContextFiles = this.createBottomButton(this.buttonPanel, "Add Context Files", 350, WizardPane.DEFAULT_MARGIN);
 		this.buttonPanel.removeAll();
 
-		this.finish = createBottomButton(buttonPanel, "Finish", 500, this.DEFAULT_MARGIN);
+		this.finish = this.createBottomButton(this.buttonPanel, "Finish", 500, WizardPane.DEFAULT_MARGIN);
 		this.finish.setVerticalAlignment(SwingConstants.CENTER);
-		this.next = createBottomButton(buttonPanel, "Next", 50, this.DEFAULT_MARGIN);
+		this.next = this.createBottomButton(this.buttonPanel, "Next", 50, WizardPane.DEFAULT_MARGIN);
 		this.next.setVerticalAlignment(SwingConstants.CENTER);
 
 		this.buttonPanel.setVisible(true);
-		addAgents.doClick();
+		this.addAgents.doClick();
 		this.add(this.buttonPanel);
 		this.add(this.workingPanel);
 		this.setVisible(true);
@@ -85,14 +85,13 @@ public class WizardPane extends JPanel implements ActionListener
 	 * @param j
 	 * @return
 	 */
-	private JButton createBottomButton(JPanel addObjectsButtonPanel2,
-			String label, int i, int j)
+	private JButton createBottomButton(JPanel addObjectsButtonPanel2, String label, int i, int j)
 	{
 		JButton wizardButton = new JButton("<html><center>" + label + "</center></html>");
 		wizardButton.setVerticalAlignment(SwingConstants.TOP);
 		addObjectsButtonPanel2.add(wizardButton);
 		wizardButton.setLocation(i, j);
-		wizardButton.setSize(DEFAULT_BUTTON_WIDTH, DEFAULT_BUTTON_HEIGHT);
+		wizardButton.setSize(WizardPane.DEFAULT_BUTTON_WIDTH, WizardPane.DEFAULT_BUTTON_HEIGHT);
 		wizardButton.addActionListener(this);
 		return wizardButton;
 	}
@@ -117,7 +116,7 @@ public class WizardPane extends JPanel implements ActionListener
 				boolean validatedOK = this.workingPanel.validateAndSaveToConfig();
 				if (!validatedOK)
 				{
-					carryOn = triggerWarning();
+					carryOn = this.triggerWarning();
 				}
 			}
 
@@ -127,21 +126,25 @@ public class WizardPane extends JPanel implements ActionListener
 				if (src == this.addAgents)
 				{
 					nextPane = new AddAggregatorPane(this.configObject);
-				} else if (src == this.addContextFiles)
+				}
+				else if (src == this.addContextFiles)
 				{
 					nextPane = new AddInputFilePane(this.configObject);
 
-				} else if (src == this.addProsumers)
+				}
+				else if (src == this.addProsumers)
 				{
 					Element currentAggregator = this.workingPanel.getWorkingElement();
 					nextPane = new AddProsumerPane(this.configObject, currentAggregator);
-				} else if (src == this.next)
+				}
+				else if (src == this.next)
 				{
 					if (this.workingPanel instanceof AddAggregatorPane)
 					{
 						Element currentAggregator = this.workingPanel.getWorkingElement();
 						nextPane = new ConfigureAggregatorPane(this.configObject, currentAggregator);
-					} else
+					}
+					else
 					{
 						nextPane = new ConfigureProsumerPane(this.configObject, this.workingPanel.getWorkingElement());
 					}
@@ -156,7 +159,8 @@ public class WizardPane extends JPanel implements ActionListener
 						this.buttonPanel.add(this.addContextFiles);
 						this.buttonPanel.add(this.addAgents);
 						this.buttonPanel.add(this.addProsumers);
-					} else
+					}
+					else
 					{
 						this.buttonPanel.add(this.next);
 					}
@@ -165,14 +169,14 @@ public class WizardPane extends JPanel implements ActionListener
 					this.buttonPanel.validate();
 					this.buttonPanel.repaint();
 
-					replacePanes(nextPane);
+					this.replacePanes(nextPane);
 				}
 
 				if (src == this.finish)
 				{
 					JFileChooser fDialog = new JFileChooser(System.getProperty("user.dir"));
-					fDialog.setFileFilter(new FileNameExtensionFilter("XML Files","*.xml"));
-					
+					fDialog.setFileFilter(new FileNameExtensionFilter("XML Files", "*.xml"));
+
 					int returnVal = fDialog.showSaveDialog(null);
 
 					// JFrame saveAs = new JFrame();
@@ -189,7 +193,8 @@ public class WizardPane extends JPanel implements ActionListener
 						try
 						{
 							transformer = transformerFactory.newTransformer();
-						} catch (TransformerConfigurationException e1)
+						}
+						catch (TransformerConfigurationException e1)
 						{
 							System.err.println("Couldn't configure Transformer to turn configuration into file");
 							e1.printStackTrace();
@@ -206,7 +211,8 @@ public class WizardPane extends JPanel implements ActionListener
 						try
 						{
 							transformer.transform(source, result);
-						} catch (TransformerException e1)
+						}
+						catch (TransformerException e1)
 						{
 							System.err.println("Failed to convert the configuration Document object into a file");
 							e1.printStackTrace();
@@ -227,8 +233,10 @@ public class WizardPane extends JPanel implements ActionListener
 	private boolean triggerWarning()
 	{
 		JFrame warningFrame = new JFrame();
-		Object[] options = { "Yes", "No" };
-		int n = JOptionPane.showOptionDialog(warningFrame, "The data in this window failed to validate and therefore will not be added.  Do you wish to continue?", "Validation failure", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		Object[] options =
+		{ "Yes", "No" };
+		int n = JOptionPane
+				.showOptionDialog(warningFrame, "The data in this window failed to validate and therefore will not be added.  Do you wish to continue?", "Validation failure", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 
 		return n == 0 ? true : false;
 	}

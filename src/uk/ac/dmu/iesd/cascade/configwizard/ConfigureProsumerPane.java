@@ -25,47 +25,53 @@ import org.w3c.dom.Element;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class ConfigureProsumerPane extends WizardWorkingPane implements ActionListener
 {
-	
+
 	class AttrComponent extends JPanel
 	{
 		private JTextArea label;
 		private JTextField value;
+
 		/**
-		 * @param label the label to set
+		 * @param label
+		 *            the label to set
 		 */
 		public void setLabel(JTextArea label)
 		{
 			this.label = label;
 			this.add(label);
 		}
+
 		/**
 		 * @return the label
 		 */
 		public JTextArea getLabel()
 		{
-			return label;
+			return this.label;
 		}
+
 		/**
-		 * @param value the value to set
+		 * @param value
+		 *            the value to set
 		 */
 		public void setValue(JTextField value)
 		{
 			this.value = value;
 			this.add(value);
 		}
+
 		/**
 		 * @return the value
 		 */
 		public JTextField getValue()
 		{
-			return value;
-		}		
+			return this.value;
+		}
 	}
-	
+
 	JComboBox aggList;
 	JTextField numAgents;
 	JButton addProsumersToThisAggregator;
@@ -76,43 +82,41 @@ public class ConfigureProsumerPane extends WizardWorkingPane implements ActionLi
 	static String CONFIG_ALL = "1";
 	static String CONFIG_INDIVIDUAL = "2";
 	private int configType;
-	
+
 	private JPanel contents;
-	
+
 	/**
 	 * @param configObject2
 	 */
 	public ConfigureProsumerPane(Document configObject2, Element workingElement)
 	{
 		super();
-		configObject = configObject2;
+		this.configObject = configObject2;
 		this.setWorkingElement(workingElement);
 		String proClassName = workingElement.getAttribute("shortName");
-		
+
 		this.setName("Configure Prosumer of type " + proClassName);
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder(this.getName());
 		this.setBorder(title);
-		this.setSize(WizardFrame.WIZARD_WINDOW_DEFAULT_WIDTH,WizardFrame.WIZARD_WINDOW_DEFAULT_HEIGHT);
-		
+		this.setSize(WizardFrame.WIZARD_WINDOW_DEFAULT_WIDTH, WizardFrame.WIZARD_WINDOW_DEFAULT_HEIGHT);
+
 		this.contents = new JPanel();
-		contents.setLayout(new BoxLayout(contents,BoxLayout.Y_AXIS));
+		this.contents.setLayout(new BoxLayout(this.contents, BoxLayout.Y_AXIS));
 		if (proClassName.equals("GenericBMPxTraderAggregator"))
 		{
-			JPanel confRow = createAtributeConf("type");
-			contents.add(confRow);
+			JPanel confRow = this.createAtributeConf("type");
+			this.contents.add(confRow);
 		}
 		else
 		{
 			JTextArea noConfigMessage = new JTextArea("No config required for this aggregator type");
-			contents.add(noConfigMessage);
+			this.contents.add(noConfigMessage);
 		}
-		
-		this.add(contents);
+
+		this.add(this.contents);
 	}
 
-	
-	
 	/**
 	 * @param string
 	 * @return
@@ -120,67 +124,68 @@ public class ConfigureProsumerPane extends WizardWorkingPane implements ActionLi
 	private JPanel createAtributeConf(String s)
 	{
 		AttrComponent retPanel = new AttrComponent();
-		retPanel.setLayout(new BoxLayout(retPanel,BoxLayout.X_AXIS));
+		retPanel.setLayout(new BoxLayout(retPanel, BoxLayout.X_AXIS));
 		retPanel.setLabel(new JTextArea(s));
 		retPanel.setValue(new JTextField("Replace this with field value"));
 		return retPanel;
 	}
 
-
-
-
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane#validateAndSaveToConfig()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.configwizard.WizardWorkingPane#validateAndSaveToConfig
+	 * ()
 	 */
 	@Override
 	public boolean validateAndSaveToConfig()
 	{
 		boolean validatesOK = true;
-		
-		
+
 		if (validatesOK)
 		{
-			for (Component c : contents.getComponents())
+			for (Component c : this.contents.getComponents())
 			{
 				if (c instanceof AttrComponent)
 				{
 					AttrComponent a = (AttrComponent) c;
-					Attr attr = configObject.createAttribute(a.getLabel().getText());
+					Attr attr = this.configObject.createAttribute(a.getLabel().getText());
 					attr.setValue(a.getValue().getText());
 					this.getWorkingElement().setAttributeNode(attr);
 				}
 			}
-			
-			this.setWorkingElement((Element)this.getWorkingElement().getParentNode());
+
+			this.setWorkingElement((Element) this.getWorkingElement().getParentNode());
 		}
-		
+
 		return validatesOK;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0)
 	{
-		if (arg0.getSource() == addProsumersToThisAggregator)
+		if (arg0.getSource() == this.addProsumersToThisAggregator)
 		{
-			WizardPane thisPane = (WizardPane)this.getParent();
-			validateAndSaveToConfig();
+			WizardPane thisPane = (WizardPane) this.getParent();
+			this.validateAndSaveToConfig();
 			thisPane.remove(this);
-			thisPane.add(new AddProsumerPane(configObject, this.getWorkingElement()));
+			thisPane.add(new AddProsumerPane(this.configObject, this.getWorkingElement()));
 		}
 		else if (arg0.getSource() instanceof JRadioButton)
 		{
-			configType = Integer.parseInt(((JRadioButton)arg0.getSource()).getActionCommand());
+			this.configType = Integer.parseInt(((JRadioButton) arg0.getSource()).getActionCommand());
 		}
 
-		
 	}
 
-	protected JTextField getNumAgents() {
-		return numAgents;
+	protected JTextField getNumAgents()
+	{
+		return this.numAgents;
 	}
 }

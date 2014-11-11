@@ -38,11 +38,11 @@ import uk.ac.dmu.iesd.cascade.util.ObservableComponent;
  * 
  *          Version history (for intermediate steps see Git repository history)
  * 
- * 			1.0 - initial version including boiler plate stuff and netDemand etc.(JRS)
- *          1.1 - Implements ICognitiveAgent (Babak) 
- *          1.2 - Made the class abstract; modified the constructor, added/modified/removed
- *          fields/methods made some methods abstract (Babak) 
- *          1.3 - Modified the base class for ASTEM market integration, notably by adding category
+ *          1.0 - initial version including boiler plate stuff and netDemand
+ *          etc.(JRS) 1.1 - Implements ICognitiveAgent (Babak) 1.2 - Made the
+ *          class abstract; modified the constructor, added/modified/removed
+ *          fields/methods made some methods abstract (Babak) 1.3 - Modified the
+ *          base class for ASTEM market integration, notably by adding category
  *          and type (Babak)
  */
 public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
@@ -160,22 +160,22 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 
 	public double getMaxGenCap()
 	{
-		return maxGen;
+		return this.maxGen;
 	}
 
 	public double getMinDemCap()
 	{
-		return minDem;
+		return this.minDem;
 	}
 
 	public BMU_CATEGORY getCategory()
 	{
-		return category;
+		return this.category;
 	}
 
 	public BMU_TYPE getType()
 	{
-		return type;
+		return this.type;
 	}
 
 	public String getCategoryAsString()
@@ -219,10 +219,11 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 * 
 	 * @return a string representation of this agent
 	 **/
+	@Override
 	@ProbeID()
 	public String toString()
 	{
-		return getClass().getName() + " " + getID();
+		return this.getClass().getName() + " " + this.getID();
 	}
 
 	/**
@@ -253,9 +254,9 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 */
 	public String getAgentName()
 	{
-		if (this.agentName == null && !nameExplicitlySet)
+		if (this.agentName == null && !this.nameExplicitlySet)
 		{
-			this.agentName = this.agentBaseName + " (" + this.getClass().getSimpleName() + " " + this.id + ")";
+			this.agentName = AggregatorAgent.agentBaseName + " (" + this.getClass().getSimpleName() + " " + this.id + ")";
 		}
 		return this.agentName;
 	}
@@ -270,7 +271,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	public void setAgentName(String name)
 	{
 		this.agentName = name;
-		nameExplicitlySet = true;
+		this.nameExplicitlySet = true;
 	}
 
 	/**
@@ -300,7 +301,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 		this.netDemand = nd;
 		if (this.arr_day_D != null)
 		{
-			this.arr_day_D[(int) RepastEssentials.GetTickCount() % ticksPerDay] = nd;
+			this.arr_day_D[(int) RepastEssentials.GetTickCount() % this.ticksPerDay] = nd;
 		}
 	}
 
@@ -312,13 +313,13 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	public double getCurrentPriceSignal()
 	{
 		double time = RepastEssentials.GetTickCount();
-		this.mainContext.logger.trace(time+" getCurrentPriceSignal: "+priceSignal[(int) time % priceSignal.length]);
-		if (priceSignal == null || time < 0)
+		this.mainContext.logger.trace(time + " getCurrentPriceSignal: " + this.priceSignal[(int) time % this.priceSignal.length]);
+		if (this.priceSignal == null || time < 0)
 		{
 			return 0;
 		}
-		
-		return priceSignal[(int) time % priceSignal.length];
+
+		return this.priceSignal[(int) time % this.priceSignal.length];
 	}
 
 	/*
@@ -345,7 +346,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 
 	public double getCostAtTick_C(int i)
 	{
-		return arr_i_C[i];
+		return this.arr_i_C[i];
 	}
 
 	/**
@@ -355,46 +356,61 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 
 	public double getCurrentCost_C()
 	{
-		return arr_i_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+		return this.arr_i_C[(int) RepastEssentials.GetTickCount() % this.ticksPerDay];
 	}
 
 	public double getCurrentNormalizedCost_C()
 	{
-		if (arr_i_norm_C.length > 0)
-			return arr_i_norm_C[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+		if (this.arr_i_norm_C.length > 0)
+		{
+			return this.arr_i_norm_C[(int) RepastEssentials.GetTickCount() % this.ticksPerDay];
+		}
 		else
+		{
 			return -1;
+		}
 	}
 
 	public double getCurrentBaseline_B()
 	{
-		return arr_i_B[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+		return this.arr_i_B[(int) RepastEssentials.GetTickCount() % this.ticksPerDay];
 	}
 
 	public double getDayPredictedCost()
 	{
-		if (dailyPredictedCost.size() > 1)
-			return dailyPredictedCost.get(mainContext.getDayCount() - 1);
-		// return dailyPredictedCost.get(mainContext.getDayCount());
-
+		if (this.dailyPredictedCost.size() > 1)
+		{
+			return this.dailyPredictedCost.get(this.mainContext.getDayCount() - 1);
+			// return dailyPredictedCost.get(mainContext.getDayCount());
+		}
 		else
+		{
 			return 0;
+		}
 	}
 
 	public double getDayActualCost()
 	{
-		if (dailyActualCost.size() > 1)
-			return dailyActualCost.get(mainContext.getDayCount() - 1);
+		if (this.dailyActualCost.size() > 1)
+		{
+			return this.dailyActualCost.get(this.mainContext.getDayCount() - 1);
+		}
 		else
+		{
 			return 0;
+		}
 	}
 
 	public double getCostDifference()
 	{
-		if (mainContext.getDayCount() <= Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
+		if (this.mainContext.getDayCount() <= Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
+		{
 			return 0;
+		}
 		else
-			return getDayPredictedCost() - getDayActualCost();
+		{
+			return this.getDayPredictedCost() - this.getDayActualCost();
+		}
 	}
 
 	public double getCumulativeCostSaving()
@@ -404,8 +420,9 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 
 	public double getCurrentPriceElasticityFactor_e()
 	{
-		this.mainContext.logger.debug(RepastEssentials.GetTickCount()+" getCurrentPriceElasticityFactor_e: "+arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay]);
-		return arr_i_e[(int) RepastEssentials.GetTickCount() % ticksPerDay];
+		this.mainContext.logger.debug(RepastEssentials.GetTickCount() + " getCurrentPriceElasticityFactor_e: "
+				+ this.arr_i_e[(int) RepastEssentials.GetTickCount() % this.ticksPerDay]);
+		return this.arr_i_e[(int) RepastEssentials.GetTickCount() % this.ticksPerDay];
 	}
 
 	/**
@@ -414,7 +431,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 */
 	public double getBaselineStdDev()
 	{
-		double val = new StandardDeviation().evaluate(arr_i_B, ArrayUtils.avg(arr_i_B));
+		double val = new StandardDeviation().evaluate(this.arr_i_B, ArrayUtils.avg(this.arr_i_B));
 		return val;
 	}
 
@@ -424,7 +441,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 */
 	public double getNetDemandStdDev()
 	{
-		double val = new StandardDeviation().evaluate(arr_day_D, ArrayUtils.avg(arr_day_D));
+		double val = new StandardDeviation().evaluate(this.arr_day_D, ArrayUtils.avg(this.arr_day_D));
 		return val;
 	}
 
@@ -454,9 +471,10 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 *            the observer (IObsever) who wants to be added and updated when
 	 *            a specific state changes or event occurs
 	 */
+	@Override
 	public void addObserver(IObserver anIObserver)
 	{
-		observableProxy.addObserver(anIObserver);
+		this.observableProxy.addObserver(anIObserver);
 	}
 
 	/**
@@ -466,17 +484,19 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 *            the observer (IObsever) who wants to be removed from the
 	 *            observers' list
 	 */
+	@Override
 	public void deleteObserver(IObserver anIObserver)
 	{
-		observableProxy.deleteObserver(anIObserver);
+		this.observableProxy.deleteObserver(anIObserver);
 	}
 
 	/**
 	 * Clears the list of observers
 	 */
+	@Override
 	public void deleteObservers()
 	{
-		observableProxy.deleteObservers();
+		this.observableProxy.deleteObservers();
 	}
 
 	/**
@@ -484,9 +504,10 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 * 
 	 * @return number (count) of observers (in the list)
 	 */
+	@Override
 	public int countObservers()
 	{
-		return observableProxy.countObservers();
+		return this.observableProxy.countObservers();
 	}
 
 	/**
@@ -506,7 +527,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 */
 	protected void notifyObservers(Object obs, Object changeCodeArg)
 	{
-		observableProxy.notifyObservers(obs, changeCodeArg);
+		this.observableProxy.notifyObservers(obs, changeCodeArg);
 	}
 
 	// ------------------------------------------------------------------------------
@@ -522,25 +543,25 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 
 	void setPriceSignalFlatRate(double price)
 	{
-		double[] oldPrice = priceSignal;
-		Arrays.fill(priceSignal, price);
-		priceSignalChanged = Arrays.equals(priceSignal, oldPrice);
+		double[] oldPrice = this.priceSignal;
+		Arrays.fill(this.priceSignal, price);
+		this.priceSignalChanged = Arrays.equals(this.priceSignal, oldPrice);
 	}
 
 	void setPriceSignalEconomySeven(double highprice, double lowprice)
 	{
 		// Hack to change E7 tariff at 07:30
-		int morningChangeTimeIndex = (int) (ticksPerDay / (24 / 7.5));
+		int morningChangeTimeIndex = (int) (this.ticksPerDay / (24 / 7.5));
 		// Hack to change E7 tariff at 23:30
-		int eveningChangeTimeIndex = (int) (ticksPerDay / (24 / 23.5));
-		double[] oldPrice = Arrays.copyOf(priceSignal, priceSignal.length);
+		int eveningChangeTimeIndex = (int) (this.ticksPerDay / (24 / 23.5));
+		double[] oldPrice = Arrays.copyOf(this.priceSignal, this.priceSignal.length);
 
-		for (int offset = 0; offset < priceSignal.length; offset = offset + ticksPerDay)
+		for (int offset = 0; offset < this.priceSignal.length; offset = offset + this.ticksPerDay)
 		{
-			Arrays.fill(priceSignal, offset, offset + morningChangeTimeIndex, lowprice);
-			Arrays.fill(priceSignal, offset + morningChangeTimeIndex, offset + eveningChangeTimeIndex, highprice);
-			Arrays.fill(priceSignal, offset + eveningChangeTimeIndex, offset + priceSignal.length, lowprice);
-			priceSignalChanged = Arrays.equals(priceSignal, oldPrice);
+			Arrays.fill(this.priceSignal, offset, offset + morningChangeTimeIndex, lowprice);
+			Arrays.fill(this.priceSignal, offset + morningChangeTimeIndex, offset + eveningChangeTimeIndex, highprice);
+			Arrays.fill(this.priceSignal, offset + eveningChangeTimeIndex, offset + this.priceSignal.length, lowprice);
+			this.priceSignalChanged = Arrays.equals(this.priceSignal, oldPrice);
 		}
 	}
 
@@ -549,14 +570,15 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 		double price;
 		double x;
 		this.mainContext.logger.debug("entering setPriceSignalRoscoeAndAult ");
-		for (int i = 0; i < priceSignal.length; i++)
+		for (int i = 0; i < this.priceSignal.length; i++)
 		{
 			// Note that the division by 10 is to convert the units of predicted
 			// customer demand
 			// to those compatible with capacities expressed in GW.
 			// TODO: unify units throughout the model
-			x = (predictedCustomerDemand[i % ticksPerDay] / 10) / (Consts.MAX_SUPPLY_CAPACITY_GWATTS - Consts.MAX_GENERATOR_CAPACITY_GWATTS);
-			price = (double) (A * Math.exp(B * x) + C);
+			x = (this.predictedCustomerDemand[i % this.ticksPerDay] / 10)
+					/ (Consts.MAX_SUPPLY_CAPACITY_GWATTS - Consts.MAX_GENERATOR_CAPACITY_GWATTS);
+			price = A * Math.exp(B * x) + C;
 			if ((Boolean) RepastEssentials.GetParameter("verboseOutput"))
 			{
 				this.mainContext.logger.debug("AggregatorAgent: Price at tick" + i + " is " + price);
@@ -565,9 +587,9 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 			{
 				price = Consts.MAX_SYSTEM_BUY_PRICE_PNDSPERMWH;
 			}
-			priceSignal[i] = price;
+			this.priceSignal[i] = price;
 		}
-		priceSignalChanged = true;
+		this.priceSignalChanged = true;
 	}
 
 	void setPriceSignalExpIncreaseOnOverCapacity(int time)
@@ -590,16 +612,19 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 		// predictedCustomerDemand.length];
 		predictedInstantaneousDemand = 0;
 
-		if (netDemand > predictedInstantaneousDemand)
+		if (this.netDemand > predictedInstantaneousDemand)
 		{
-			priceSignal[(int) time % priceSignal.length] = (double) (priceSignal[(int) time % priceSignal.length] * (1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
+			this.priceSignal[time % this.priceSignal.length] = this.priceSignal[time % this.priceSignal.length]
+					* (1.25 - Math.exp(-(this.netDemand - predictedInstantaneousDemand)));
 			// Now introduce some prediction - it was high today, so moderate
 			// tomorrow...
-			if (priceSignal.length > ((int) time % priceSignal.length + ticksPerDay))
+			if (this.priceSignal.length > (time % this.priceSignal.length + this.ticksPerDay))
 			{
-				priceSignal[(int) time % priceSignal.length + ticksPerDay] = (double) (priceSignal[(int) time % priceSignal.length + ticksPerDay] * (1.25 - Math.exp(-(netDemand - predictedInstantaneousDemand))));
+				this.priceSignal[time % this.priceSignal.length + this.ticksPerDay] = this.priceSignal[time % this.priceSignal.length
+						+ this.ticksPerDay]
+						* (1.25 - Math.exp(-(this.netDemand - predictedInstantaneousDemand)));
 			}
-			priceSignalChanged = true;
+			this.priceSignalChanged = true;
 		}
 	}
 
@@ -622,26 +647,25 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 		// predictedInstantaneousDemand = predictedCustomerDemand[(int) time %
 		// predictedCustomerDemand.length];
 
-		priceSignal = ArrayUtils.multiply(overallSystemDemand, 1 / ArrayUtils.max(overallSystemDemand));
+		this.priceSignal = ArrayUtils.multiply(this.overallSystemDemand, 1 / ArrayUtils.max(this.overallSystemDemand));
 	}
 
 	void setPriceSignalZero()
 	{
-		Arrays.fill(priceSignal, 0f);
-		priceSignalChanged = true;
+		Arrays.fill(this.priceSignal, 0f);
+		this.priceSignalChanged = true;
 	}
 
 	/*
 	 * helper methods
 	 */
-	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts,
-			double time, int broadcastLength)
+	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength)
 	{
 
 		// To avoid computational load (and realistically model a reasonable
 		// broadcast strategy)
 		// only prepare and transmit the price signal if it has changed.
-		if (priceSignalChanged)
+		if (this.priceSignalChanged)
 		{
 			// populate the broadcast signal with the price signal starting from
 			// now and continuing for
@@ -649,18 +673,19 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 			// necessary to pad the
 			// broadcast signal out.
 			double[] broadcastSignal = new double[broadcastLength];
-			int numCopies = (int) Math.floor((broadcastLength - 1) / priceSignal.length);
-			int startIndex = (int) time % priceSignal.length;
-			System.arraycopy(priceSignal, startIndex, broadcastSignal, 0, priceSignal.length - startIndex);
+			int numCopies = (int) Math.floor((broadcastLength - 1) / this.priceSignal.length);
+			int startIndex = (int) time % this.priceSignal.length;
+			System.arraycopy(this.priceSignal, startIndex, broadcastSignal, 0, this.priceSignal.length - startIndex);
 			for (int i = 1; i <= numCopies; i++)
 			{
-				int addIndex = (priceSignal.length - startIndex) * i;
-				System.arraycopy(priceSignal, 0, broadcastSignal, addIndex, priceSignal.length);
+				int addIndex = (this.priceSignal.length - startIndex) * i;
+				System.arraycopy(this.priceSignal, 0, broadcastSignal, addIndex, this.priceSignal.length);
 			}
 
-			if (broadcastLength > (((numCopies + 1) * priceSignal.length) - startIndex))
+			if (broadcastLength > (((numCopies + 1) * this.priceSignal.length) - startIndex))
 			{
-				System.arraycopy(priceSignal, 0, broadcastSignal, ((numCopies + 1) * priceSignal.length) - startIndex, broadcastLength - (((numCopies + 1) * priceSignal.length) - startIndex));
+				System.arraycopy(this.priceSignal, 0, broadcastSignal, ((numCopies + 1) * this.priceSignal.length) - startIndex, broadcastLength
+						- (((numCopies + 1) * this.priceSignal.length) - startIndex));
 			}
 
 			for (ProsumerAgent a : broadcastCusts)
@@ -675,7 +700,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 			}
 		}
 
-		priceSignalChanged = false;
+		this.priceSignalChanged = false;
 	}
 
 	/**
@@ -713,10 +738,10 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	 */
 	public AggregatorAgent(CascadeContext context)
 	{
-		this.id = agentIDCounter++;
+		this.id = AggregatorAgent.agentIDCounter++;
 
 		this.mainContext = context;
-		observableProxy = new ObservableComponent();
+		this.observableProxy = new ObservableComponent();
 
 		this.ticksPerDay = context.getNbOfTickPerDay();
 
@@ -751,16 +776,16 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	{
 		this(context);
 
-		category = cat;
-		type = t;
+		this.category = cat;
+		this.type = t;
 
-		arr_PN = new double[ticksPerDay];
-		arr_oldPN = new double[ticksPerDay];
+		this.arr_PN = new double[this.ticksPerDay];
+		this.arr_oldPN = new double[this.ticksPerDay];
 
 	}
 
 	public AggregatorAgent()
 	{
-		this.id = agentIDCounter++;
+		this.id = AggregatorAgent.agentIDCounter++;
 	}
 }

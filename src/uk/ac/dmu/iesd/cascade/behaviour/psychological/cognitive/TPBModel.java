@@ -10,24 +10,26 @@ import uk.ac.dmu.iesd.cascade.behaviour.psychological.SimpleRelationship;
 
 /**
  * @author jsnape
- *
+ * 
  */
-public class TPBModel extends SimpleModel {
+public class TPBModel extends SimpleModel
+{
 
 	/**
 	 * Create a generic TPB model with constructs and relationships
 	 * 
-	 * This could be extended to add a richer model which incorporates
-	 * empirical data
+	 * This could be extended to add a richer model which incorporates empirical
+	 * data
 	 */
-	TPBModel() {
+	TPBModel()
+	{
 		super();
-		
-		Construct attitude = new SimpleConstruct("Attitude",0.7f);
-		Construct sn = new SimpleConstruct("Subjective Norm",0.1f);
-		Construct pbc = new SimpleConstruct("Perceived Behavioural Control",0.2f);
-		Construct intention = new SimpleConstruct("Intention",0.2f);
-		Construct behaviour = new SimpleConstruct("Behaviour",0.0f);
+
+		Construct attitude = new SimpleConstruct("Attitude", 0.7f);
+		Construct sn = new SimpleConstruct("Subjective Norm", 0.1f);
+		Construct pbc = new SimpleConstruct("Perceived Behavioural Control", 0.2f);
+		Construct intention = new SimpleConstruct("Intention", 0.2f);
+		Construct behaviour = new SimpleConstruct("Behaviour", 0.0f);
 		this.addConstruct(attitude);
 		this.addConstruct(sn);
 		this.addConstruct(pbc);

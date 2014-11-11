@@ -9,10 +9,11 @@ import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 
 /**
  * @author jsnape
- *
- * Minimal implementation of the ISmartContoller interface
+ * 
+ *         Minimal implementation of the ISmartContoller interface
  */
-public class BasicSmartController implements ISmartController {
+public class BasicSmartController implements ISmartController
+{
 
 	ProsumerAgent owner;
 
@@ -24,27 +25,33 @@ public class BasicSmartController implements ISmartController {
 	 * 
 	 * Note - this may include learning algorithms if appropriate
 	 */
+	@Override
 	public void update(int timeStep)
 	{
 
 	}
 
 	/**
-	 * Method to extract the current profiles for controlled appliance / device usage
+	 * Method to extract the current profiles for controlled appliance / device
+	 * usage
 	 * 
-	 * @return a WeakHashMap containing whose keys describe the type of load profile and
-	 * 			whose values are floating point arrays of the current profile for the day
+	 * @return a WeakHashMap containing whose keys describe the type of load
+	 *         profile and whose values are floating point arrays of the current
+	 *         profile for the day
 	 */
+	@Override
 	public WeakHashMap getCurrentProfiles()
 	{
-		//TODO: This does nothing !!!
+		// TODO: This does nothing !!!
 		return new WeakHashMap();
 	}
 
 	/**
-	 * @param dayPredictedCostSignal the dayPredictedCostSignal to set
+	 * @param dayPredictedCostSignal
+	 *            the dayPredictedCostSignal to set
 	 */
-	public void setDayPredictedCostSignal(double[] dayPredictedCostSignal) {
+	public void setDayPredictedCostSignal(double[] dayPredictedCostSignal)
+	{
 		this.dayPredictedCostSignal = dayPredictedCostSignal;
 	}
 
