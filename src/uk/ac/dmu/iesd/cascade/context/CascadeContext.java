@@ -843,7 +843,8 @@ public class CascadeContext extends DefaultContext
 
 		ConsoleAppender console = new ConsoleAppender(new CascadeLogLayout());
 		console.setName("ConsoleOutput");
-		console.setThreshold(Level.INFO);
+		console.setThreshold(Level.INFO); //Never output more detail than "INFO" to the console.  May get less,
+		                                  // if the main level above is set to e.g. WARN, FATAL or OFF
 		console.activateOptions(); // Needed or the appender appends everything
 									// from the this.logger
 
