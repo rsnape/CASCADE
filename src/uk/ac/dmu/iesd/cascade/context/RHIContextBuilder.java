@@ -17,6 +17,7 @@ import repast.simphony.context.space.graph.NetworkGenerator;
 import repast.simphony.context.space.graph.WattsBetaSmallWorldGenerator;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.PropertyEquals;
@@ -53,6 +54,7 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 	private Parameters params; // parameters for the model run environment
 	private RHIContext myContext;
 	WeakHashMap<Integer, double[]> map_nbOfOccToOtherDemand;
+	private String dataDirectoryPath;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -90,10 +92,8 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		 */
 		CSVReader defraCategories = null;
 		CSVReader defraProfiles = null;
-		String dataDirectory = "data"; // TODO: commonise this with other
-										// CASCADE builders - read from params
-		String categoryFile = dataDirectory + "/DEFRA_pro_env_categories.csv";
-		String profileFile = dataDirectory + "/200profiles.csv";
+		String categoryFile = dataDirectoryPath + "/DEFRA_pro_env_categories.csv";
+		String profileFile = dataDirectoryPath + "/200profiles.csv";
 		try
 		{
 			defraCategories = new CSVReader(categoryFile);
@@ -135,7 +135,7 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		}
 		else
 		{
-			this.populateFromShapefile(dataDirectory + "/probDomesticLE2.shp", leicesterGeography);
+			this.populateFromShapefile(dataDirectoryPath + "/probDomesticLE2.shp", leicesterGeography);
 		}
 
 		households = IterableUtils.Iterable2ArrayList(this.myContext.getObjects(SimpleRHIAdopterHousehold.class));
@@ -252,6 +252,14 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		 */
 
 		this.populateContext();
+		
+		if (RepastEssentials.GetParameter("lastTick") != null)
+		{
+			Double startToEndSim = (Double) RepastEssentials.GetParameter("lastTick");
+			ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(startToEndSim, ScheduleParameters.LAST_PRIORITY);
+			RunEnvironment.getInstance().getCurrentSchedule().schedule(scheduleParams, this.myContext, "endSim", new Object[]{});
+		}
+		
 		return this.myContext;
 	}
 
@@ -313,6 +321,7 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		// get the parameters from the current run environment
 		this.params = RunEnvironment.getInstance().getParameters();
 		String dataFileFolderPath = (String) this.params.getValue("dataFileFolder");
+		String rootPath = (String) this.params.getValue("rootDir");
 		String weatherFileName = (String) this.params.getValue("weatherFile");
 		String systemDemandFileName = (String) this.params.getValue("systemBaseDemandFile");
 		String householdOtherDemandFilename = (String) this.params.getValue("householdOtherDemandFile");
@@ -338,7 +347,8 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		/*
 		 * Read in the necessary data files and store to the context
 		 */
-		File dataDirectory = new File(dataFileFolderPath);
+		this.dataDirectoryPath = rootPath+File.separator+dataFileFolderPath;
+		File dataDirectory = new File(dataDirectoryPath);
 		File weatherFile = new File(dataDirectory, weatherFileName);
 		CSVReader weatherReader = null;
 		new File(dataDirectory, systemDemandFileName);
@@ -704,8 +714,8 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 
 		this.myContext.logger.info("Adding supplier company");
 
-		SupplierCoAdvancedModel firstRecoAggregator = new SupplierCoAdvancedModel(this.myContext);
-		this.myContext.add(firstRecoAggregator);
+	//	SupplierCoAdvancedModel firstRecoAggregator = new SupplierCoAdvancedModel(this.myContext);
+	//	this.myContext.add(firstRecoAggregator);
 
 		/**
 		 * (02/07/12) DF
@@ -718,7 +728,7 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		// myContext.add(singleNonDomestic);
 
 		this.myContext.logger.info("Building supplier company network");
-		this.buildOtherNetworks(firstRecoAggregator);
+	//	this.buildOtherNetworks(firstRecoAggregator);
 
 		this.myContext.logger.info("All agents added to supplier co network");
 
