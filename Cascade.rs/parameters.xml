@@ -31,7 +31,7 @@
 									values="1 24 48 96 288 1440 "
 						
 		/>
-				<parameter name="RootDir" displayName="RootDir" type="java.lang.String" 
+				<parameter name="rootDir" displayName="rootDir" type="java.lang.String" 
 						defaultValue=".." 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
@@ -44,7 +44,7 @@
 									
 		/>
 				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
-						defaultValue="oneFlatDayWeather.csv" 
+						defaultValue="weatherProfiles_1Ywind81.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -112,10 +112,34 @@
 									
 		/>
 				<parameter name="loggingLevel" displayName="Logging level" type="java.lang.String" 
-						defaultValue="DEBUG" 
+						defaultValue="OFF" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									values="TRACE DEBUG INFO WARN ERROR OFF "									
+		/>
+						<parameter name="wEconomic" displayName="wEconomic" type="double" 
+						defaultValue="0.3" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+						<parameter name="wHassle" displayName="wHassle" type="double" 
+						defaultValue="0.4" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+						<parameter name="lastTick" displayName="lastTick" type="double" 
+						defaultValue="52560" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+						<parameter name="wSocial" displayName="wSocial" type="double" 
+						defaultValue="0.4" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
 		/>
 		</parameters>
 
