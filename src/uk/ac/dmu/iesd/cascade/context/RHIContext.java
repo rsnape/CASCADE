@@ -364,7 +364,7 @@ public class RHIContext extends AdoptionContext
 			// TODO: Assumption here on deemed load per household as DECC
 			// methodology not yet found
 			int numAdopters = this.getNumberWith(t);
-			System.err.println(t + " has " + numAdopters + " adopters");
+			this.logger.info(t + " has " + numAdopters + " adopters");
 			int deemedAnnualLoad = numAdopters * 20 * 365; // (20 kWh per day -
 															// assumption)
 			return deemedAnnualLoad * techTariff;

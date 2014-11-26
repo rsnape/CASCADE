@@ -1358,7 +1358,7 @@ public class HouseholdProsumer extends ProsumerAgent
 		}
 		else
 		{
-			System.err.println("No water heating!!!");
+			this.mainContext.logger.debug("No electric water heating!!!  Initialising Electrical water heat load all zero");
 
 			double[] noWaterHeating = new double[this.mainContext.ticksPerDay];
 			// double[] noWaterHeating = new double[this.lengthOfDemandProfile];
