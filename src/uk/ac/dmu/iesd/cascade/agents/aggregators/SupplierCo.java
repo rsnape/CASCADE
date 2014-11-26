@@ -330,12 +330,18 @@ public class SupplierCo extends BMPxTraderAggregator
 		// will create a bug difficult to find
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		Iterable<RepastEdge> iter = economicNet.getEdges(this);
-		this.mainContext.logger.trace(this.getAgentName() + " has " + economicNet.size() + " links in economic network");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.getAgentName() + " has " + economicNet.size() + " links in economic network");
+		}
 
 		for (RepastEdge edge : iter)
 		{
 			Object linkSource = edge.getTarget();
-			this.mainContext.logger.trace("RECO linkSource " + linkSource);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("RECO linkSource " + linkSource);
+			}
 			if (linkSource instanceof ProsumerAgent)
 			{
 				// if (!(linkSource instanceof WindGeneratorProsumer)){ //
@@ -365,7 +371,10 @@ public class SupplierCo extends BMPxTraderAggregator
 	{
 		boolean isEndOfProfilBuilding = true;
 		int daysSoFar = this.mainContext.getDayCount();
-		this.mainContext.logger.trace("ADPBPC: daySoFar: " + daysSoFar + " < 7?");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("ADPBPC: daySoFar: " + daysSoFar + " < 7?");
+		}
 
 		if (daysSoFar < Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
 		{
@@ -390,8 +399,14 @@ public class SupplierCo extends BMPxTraderAggregator
 	{
 		boolean isEndOfTraining = true;
 		int daysSoFar = this.mainContext.getDayCount();
-		this.mainContext.logger.trace("days so far: " + daysSoFar);
-		this.mainContext.logger.trace("TrainingPeriodC: daySoFar: " + daysSoFar + " < 55?");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("days so far: " + daysSoFar);
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("TrainingPeriodC: daySoFar: " + daysSoFar + " < 55?");
+		}
 		if (daysSoFar < (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
 		{
 			isEndOfTraining = false;
@@ -419,11 +434,17 @@ public class SupplierCo extends BMPxTraderAggregator
 	{
 		double sumDemand = 0d;
 
-		this.mainContext.logger.trace(" ====updateHistoryArray==== ");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" ====updateHistoryArray==== ");
+		}
 		for (ProsumerAgent a : customersList)
 		{
 			sumDemand = sumDemand + a.getNetDemand();
-			this.mainContext.logger.trace(" ID: " + a.getAgentID() + " ND: " + a.getNetDemand());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(" ID: " + a.getAgentID() + " ND: " + a.getNetDemand());
+			}
 
 		}
 
@@ -460,7 +481,10 @@ public class SupplierCo extends BMPxTraderAggregator
 	 */
 	private double[] calculateBADfromHistoryArray(double[][] hist_arr_2D)
 	{
-		this.mainContext.logger.trace("RECO: calcualteBADfromHistoy: hist_arrr_2D " + ArrayUtils.toString(hist_arr_2D));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("RECO: calcualteBADfromHistoy: hist_arrr_2D " + ArrayUtils.toString(hist_arr_2D));
+		}
 		return ArrayUtils.avgCols2DDoubleArray(hist_arr_2D);
 	}
 
@@ -469,17 +493,26 @@ public class SupplierCo extends BMPxTraderAggregator
 
 		List<ProsumerAgent> customers = customersList;
 		double sumDemand = 0;
-		this.mainContext.logger.trace(" custmoers list size: " + customers.size());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" custmoers list size: " + customers.size());
+		}
 		for (ProsumerAgent a : customers)
 		{
 
-			this.mainContext.logger.trace(" id: " + a.getAgentID() + " ND: " + a.getNetDemand());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(" id: " + a.getAgentID() + " ND: " + a.getNetDemand());
+			}
 			sumDemand = sumDemand + a.getNetDemand();
 			// sum_e = sum_e+a.getElasticityFactor();
 		}
 
 		this.setNetDemand(sumDemand);
-		this.mainContext.logger.trace("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+		}
 
 		return sumDemand;
 	}
@@ -578,7 +611,10 @@ public class SupplierCo extends BMPxTraderAggregator
 			List<ProsumerAgent> paList = broadcasteesList;
 			for (ProsumerAgent agent : paList)
 			{
-				this.mainContext.logger.trace("sendSignalType_S, send signal to " + agent.toString());
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("sendSignalType_S, send signal to " + agent.toString());
+				}
 				// isSignalSentSuccessfully = agent.receiveSignal(arr_i_S,
 				// arr_i_S.length, Consts.SIGNAL_TYPE.S);
 				isSignalSentSuccessfully = agent.receiveValueSignal(this.arr_i_S, this.arr_i_S.length);
@@ -619,8 +655,14 @@ public class SupplierCo extends BMPxTraderAggregator
 			 * s[othertimes] = -1/47 (at each timeslot)
 			 */
 			this.arr_i_S = this.buildSignal(signalType, timeslot);
-			this.mainContext.logger.trace(timeslot + Arrays.toString(this.arr_i_S));
-			this.mainContext.logger.trace(ArrayUtils.isSumEqualZero(this.arr_i_S));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(timeslot + Arrays.toString(this.arr_i_S));
+			}
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(ArrayUtils.isSumEqualZero(this.arr_i_S));
+			}
 			this.priceSignal = this.arr_i_S;
 			isSignalSentSuccessfully = this.sendSignal(signalType, this.arr_i_S, broadcasteesList, timeslot);
 			break;
@@ -689,7 +731,10 @@ public class SupplierCo extends BMPxTraderAggregator
 	private void calculateDisplacementFactors_k(double[] arr_D, double[] arr_B, double[] arr_S, double[] arr_e, double[][] arr_k)
 	{
 
-		this.mainContext.logger.trace(" $ RECO: Calculate k $");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" $ RECO: Calculate k $");
+		}
 
 		double e = 0;
 		double b = 1;
@@ -711,19 +756,27 @@ public class SupplierCo extends BMPxTraderAggregator
 		}
 
 		/*
-		 * this.mainContext.logger.debug(" D= "+ arr_D[i]);
-		 * this.mainContext.logger.debug(" B= "+ b);
-		 * this.mainContext.logger.debug(" s= "+ s);
-		 * this.mainContext.logger.debug(" e= "+ e);
-		 * this.mainContext.logger.debug(" deltaB_i: "+ deltaB_i);
-		 * this.mainContext.logger.debug(" (s*e*b): "+ (s*e*b));
-		 * this.mainContext.logger.debug(" (s*b): "+ (s*b));
+		 * if ( * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" D= "+ arr_D[i]); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" B= "+ b); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" s= "+ s); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" e= "+ e); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" deltaB_i: "+ deltaB_i); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" (s*e*b): "+ (s*e*b)); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" (s*b): "+ (s*b)); }
 		 * 
 		 * this.mainContext.logger.debug(" deltaB_i - (s*e*b) : "+ (deltaB_i -
 		 * (s*e*b)));
 		 * this.mainContext.logger.debug(" deltaB_i - (s*e*b)/(s*b) : "+
-		 * (deltaB_i - (s*e*b))/(s*b));
-		 * this.mainContext.logger.debug(" (s*e*b): "+ (s*e*b));
+		 * (deltaB_i - (s*e*b))/(s*b)); if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" (s*e*b): "+ (s*e*b)); }
 		 */
 
 		arr_k[i][i] = (deltaB_i - (s * e * b)) / (s * b); // 0; <- what does
@@ -732,7 +785,10 @@ public class SupplierCo extends BMPxTraderAggregator
 															// zero?
 
 		// if (arr_k[i][i] !=0)
-		this.mainContext.logger.trace(" arr_k[i][i] (" + i + "," + i + ")= " + arr_k[i][i]);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" arr_k[i][i] (" + i + "," + i + ")= " + arr_k[i][i]);
+		}
 
 		for (int j = i + 1; j < this.ticksPerDay; j++)
 		{
@@ -759,7 +815,10 @@ public class SupplierCo extends BMPxTraderAggregator
 			double deltaB_j = arr_D[j] - b_j;
 			arr_k[j][i] = deltaB_j / (s * b);
 			// if (arr_k[j][i] !=0)
-			this.mainContext.logger.trace(" arr_k[j][i] (" + j + "," + i + ")= " + arr_k[j][i]);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(" arr_k[j][i] (" + j + "," + i + ")= " + arr_k[j][i]);
+			}
 		}
 	}
 
@@ -795,7 +854,10 @@ public class SupplierCo extends BMPxTraderAggregator
 		double b = 1;
 		double s = 1; // / Change this value to test for particular index!!!
 		// double s=-1;
-		this.mainContext.logger.trace(" £ RECO: Calculate e £");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" £ RECO: Calculate e £");
+		}
 
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
@@ -808,14 +870,22 @@ public class SupplierCo extends BMPxTraderAggregator
 		}
 
 		/*
-		 * this.mainContext.logger.debug(" arr_D= " + Arrays.toString(arr_D));
-		 * this.mainContext.logger.debug(" arr_B= " + Arrays.toString(arr_B));
-		 * this.mainContext.logger.debug(" sum_D= " + sum_D);
-		 * this.mainContext.logger.debug(" sum_B= " + sum_B);
-		 * this.mainContext.logger.debug(" b= " + b);
-		 * this.mainContext.logger.debug(" s= " + s);
-		 * this.mainContext.logger.debug(" s= " + (s*b));
-		 * this.mainContext.logger.debug(" sumD-sumB=" + (sum_D - sum_B));
+		 * if ( * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" arr_D= " + Arrays.toString(arr_D)); }
+		 * if ( * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" arr_B= " + Arrays.toString(arr_B)); }
+		 * if ( * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" sum_D= " + sum_D); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" sum_B= " + sum_B); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" b= " + b); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" s= " + s); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" s= " + (s*b)); } if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug(" sumD-sumB=" + (sum_D - sum_B)); }
 		 */
 
 		e = (sum_D - sum_B) / (s * b);
@@ -836,7 +906,10 @@ public class SupplierCo extends BMPxTraderAggregator
 	{
 
 		double e = 0;
-		this.mainContext.logger.trace(" £ RECO: Calculate e new £");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" £ RECO: Calculate e new £");
+		}
 
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
@@ -853,7 +926,10 @@ public class SupplierCo extends BMPxTraderAggregator
 		}
 		else
 		{
-			this.mainContext.logger.trace("E Factor: " + sum_SxB);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("E Factor: " + sum_SxB);
+			}
 			// Not sure what is the right value to assign
 			// Current assumption:
 			// if each prosummer will assign e factors (48 timeslot) between 0
@@ -873,7 +949,10 @@ public class SupplierCo extends BMPxTraderAggregator
 		// double[] arr_e, double[][] arr_ij_k, double[] arr_S ) throws
 		// OptimizationException, FunctionEvaluationException,
 		// IllegalArgumentException {
-		this.mainContext.logger.trace("---------------RECO: Apache Simplex minimisation (Babak implementation) ---------");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("---------------RECO: Apache Simplex minimisation (Babak implementation) ---------");
+		}
 
 		ArrayRealVector coefficientsArrRealVect = new ArrayRealVector();
 		double constantTerm = 0d;
@@ -888,7 +967,10 @@ public class SupplierCo extends BMPxTraderAggregator
 				if (i != j)
 				{
 					coefficentOf_SjKijBi_ArrList.add(arr_ij_k[i][j] * arr_B[i]);
-					this.mainContext.logger.trace("RECO: coeff SjKijBj: " + constantTerm);
+					if (this.mainContext.logger.isTraceEnabled())
+					{
+						this.mainContext.logger.trace("RECO: coeff SjKijBj: " + constantTerm);
+					}
 				}
 			}
 		}
@@ -930,7 +1012,10 @@ public class SupplierCo extends BMPxTraderAggregator
 		// double y = solution.getPoint()[1];
 		// double min = solution.getValue();
 
-		this.mainContext.logger.trace("RECO: Apache Simplex Solver:: Min value obtained " + solution.getValue());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("RECO: Apache Simplex Solver:: Min value obtained " + solution.getValue());
+		}
 		// if (solution != null)
 		double[] newOpt_S = solution.getPoint();
 
@@ -955,7 +1040,10 @@ public class SupplierCo extends BMPxTraderAggregator
 		// double[] arr_e, double[][] arr_ij_k, double[] arr_S ) throws
 		// OptimizationException, FunctionEvaluationException,
 		// IllegalArgumentException {
-		this.mainContext.logger.trace("---------------RECO: Apache minimisation (SimplexSolver) ---------");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("---------------RECO: Apache minimisation (SimplexSolver) ---------");
+		}
 
 		double[] newOpt_S = Arrays.copyOf(arr_S, arr_S.length);
 
@@ -1020,9 +1108,18 @@ public class SupplierCo extends BMPxTraderAggregator
 		{
 			RealPointValuePair optimum = myOpt.optimize(costFunc, constraints, GoalType.MINIMIZE, false);
 			newOpt_S = optimum.getPoint();
-			this.mainContext.logger.trace("Used apache commons Simplex to find optimium " + Arrays.toString(newOpt_S));
-			this.mainContext.logger.trace("In " + myOpt.getIterations() + " iterations ");
-			this.mainContext.logger.trace("Value " + optimum.getValue());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Used apache commons Simplex to find optimium " + Arrays.toString(newOpt_S));
+			}
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("In " + myOpt.getIterations() + " iterations ");
+			}
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Value " + optimum.getValue());
+			}
 		}
 		catch (OptimizationException e)
 		{
@@ -1039,7 +1136,10 @@ public class SupplierCo extends BMPxTraderAggregator
 		// double[] arr_e, double[][] arr_ij_k, double[] arr_S ) throws
 		// OptimizationException, FunctionEvaluationException,
 		// IllegalArgumentException {
-		this.mainContext.logger.trace("---------------RECO: Apache minimisation (Nelder Mead) ---------");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("---------------RECO: Apache minimisation (Nelder Mead) ---------");
+		}
 
 		NelderMead apacheNelderMead = new NelderMead();
 		// or:
@@ -1096,16 +1196,25 @@ public class SupplierCo extends BMPxTraderAggregator
 		}
 		catch (@SuppressWarnings("deprecation") OptimizationException e)
 		{
-			this.mainContext.logger.debug("RECO: Apache Optim Exc (Optim exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("RECO: Apache Optim Exc (Optim exc): " + e.getCause());
+			}
 		}
 		catch (FunctionEvaluationException e)
 		{
-			this.mainContext.logger.debug("RECO: Apache Optim Exc (Funct eval exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("RECO: Apache Optim Exc (Funct eval exc): " + e.getCause());
+			}
 		}
 
 		catch (IllegalArgumentException e)
 		{
-			this.mainContext.logger.debug("RECO: Apache Optim Exc (Illegal arg exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("RECO: Apache Optim Exc (Illegal arg exc): " + e.getCause());
+			}
 		}
 
 		/*
@@ -1174,7 +1283,10 @@ public class SupplierCo extends BMPxTraderAggregator
 
 		// get the minimum value
 		double minimum = min.getMinimum();
-		this.mainContext.logger.trace("RECO: Minimum = " + minimum);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("RECO: Minimum = " + minimum);
+		}
 
 		// get values of y and z at minimum
 		double[] param = min.getParamValues();
@@ -1187,18 +1299,33 @@ public class SupplierCo extends BMPxTraderAggregator
 			// min.print("MinimCD_output.txt");
 
 			// Output the results to screen
-			this.mainContext.logger.trace("RECO: Minimum = " + min.getMinimum());
-			this.mainContext.logger.trace("RECO: Min (S) sum = " + ArrayUtils.sum(param));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("RECO: Minimum = " + min.getMinimum());
+			}
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("RECO: Min (S) sum = " + ArrayUtils.sum(param));
+			}
 
 			for (int i = 0; i < param.length; i++)
 			{
-				this.mainContext.logger.trace("RECO: Flanagan Value of s at the minimum for " + i + " ticktime is: " + param[i]);
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("RECO: Flanagan Value of s at the minimum for " + i + " ticktime is: " + param[i]);
+				}
 			}
-			this.mainContext.logger.trace("RECO:: Flanagan optimisation evaluated function " + minFunct.getNumEvals() + " times");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("RECO:: Flanagan optimisation evaluated function " + minFunct.getNumEvals() + " times");
+			}
 		}
 
 		double[] newOpt_S = param;
-		this.mainContext.logger.trace("Minimum achieved is " + min.getMinimum());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("Minimum achieved is " + min.getMinimum());
+		}
 		return newOpt_S;
 	}
 
@@ -1274,7 +1401,10 @@ public class SupplierCo extends BMPxTraderAggregator
 	private void updateCumulativeSaving(double savingAmount)
 	{
 		int daysSoFar = this.mainContext.getDayCount();
-		this.mainContext.logger.trace("days so far: " + daysSoFar);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("days so far: " + daysSoFar);
+		}
 		if (daysSoFar > (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
 		{
 			this.cumulativeCostSaving += savingAmount;
@@ -1439,7 +1569,10 @@ public class SupplierCo extends BMPxTraderAggregator
 			double[][] arr_ij_k)
 	{
 
-		this.mainContext.logger.trace(" --REEA-- ");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" --REEA-- ");
+		}
 
 		double[] actualShift = ArrayUtils.add(arr_hist_1D, ArrayUtils.negate(arr_i_B));
 
@@ -1527,7 +1660,10 @@ public class SupplierCo extends BMPxTraderAggregator
 	@Override
 	public void marketPreStep()
 	{
-		this.mainContext.logger.trace(" initializeMarketStep (SupplierCo) " + this.id);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" initializeMarketStep (SupplierCo) " + this.id);
+		}
 		this.settlementPeriod = this.mainContext.getSettlementPeriod();
 
 		switch (this.settlementPeriod)
@@ -1640,7 +1776,10 @@ public class SupplierCo extends BMPxTraderAggregator
 								.minimise_CD_Apache_Nelder_Mead(this.arr_i_norm_C, this.arr_i_B, this.arr_i_e, this.arr_ij_k, this.arr_i_S);
 						break;
 					}
-					this.mainContext.logger.trace(" arr_i_S: " + Arrays.toString(this.arr_i_S));
+					if (this.mainContext.logger.isTraceEnabled())
+					{
+						this.mainContext.logger.trace(" arr_i_S: " + Arrays.toString(this.arr_i_S));
+					}
 
 					this.broadcastSignalToCustomers(this.arr_i_S, this.customers);
 

@@ -93,7 +93,10 @@ public class ESCO extends AggregatorAgent
 
 	public ESCO()
 	{
-		this.mainContext.logger.debug("Constructed an unparameterised ESCO");
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("Constructed an unparameterised ESCO");
+		}
 	}
 
 }

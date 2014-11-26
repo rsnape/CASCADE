@@ -90,10 +90,16 @@ public class WindFarmAggregator extends BMPxTraderAggregator
 
 		List<ProsumerAgent> customers = customersList;
 		double sumDemand = 0;
-		this.mainContext.logger.trace(" customers list size: " + customers.size());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" customers list size: " + customers.size());
+		}
 		for (ProsumerAgent a : customers)
 		{
-			this.mainContext.logger.trace(" id: " + a.getAgentID() + " ND: " + a.getNetDemand());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(" id: " + a.getAgentID() + " ND: " + a.getNetDemand());
+			}
 			if (a instanceof WindGeneratorProsumer)
 			{
 				sumDemand = sumDemand + a.getNetDemand();
@@ -104,7 +110,10 @@ public class WindFarmAggregator extends BMPxTraderAggregator
 		// generation in Watts.
 		// A conversion is therefore carried out here.
 		this.setNetDemand((sumDemand / 1E6));
-		this.mainContext.logger.trace("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+		}
 
 		return sumDemand;
 	}
@@ -140,7 +149,10 @@ public class WindFarmAggregator extends BMPxTraderAggregator
 	@Override
 	public void marketPreStep()
 	{
-		this.mainContext.logger.trace(" initializeMarketStep (SupplierCo) " + this.id);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" initializeMarketStep (SupplierCo) " + this.id);
+		}
 		int settlementPeriod = this.mainContext.getSettlementPeriod();
 
 		switch (settlementPeriod)
@@ -226,11 +238,17 @@ public class WindFarmAggregator extends BMPxTraderAggregator
 	{
 
 		super(context, messageBoard, BMU_CATEGORY.GEN_T, BMU_TYPE.GEN_WIND, maxGen);
-		this.mainContext.logger.debug("Wind Farm Aggregator created ");
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("Wind Farm Aggregator created ");
+		}
 
 		this.ticksPerDay = context.getNbOfTickPerDay();
 
-		this.mainContext.logger.debug("WindFarmAggregator ticksPerDay " + this.ticksPerDay);
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("WindFarmAggregator ticksPerDay " + this.ticksPerDay);
+		}
 
 		this.arr_day_D = new double[this.ticksPerDay];
 

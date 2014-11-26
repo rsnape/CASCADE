@@ -55,11 +55,9 @@ import cern.jet.random.Uniform;
  * 
  *          Version history (for intermediate steps see Git repository history
  * 
- *          1.1 - File Initial scenario creator (??) 
- *          1.2 - Class name has been
+ *          1.1 - File Initial scenario creator (??) 1.2 - Class name has been
  *          changed Boolean verbose variable has been added Name of some
- *          variables changed Babak 
- *          1.3 - float values changed to double
+ *          variables changed Babak 1.3 - float values changed to double
  * 
  * 
  */
@@ -80,11 +78,17 @@ public class CascadeContext extends DefaultContext
 	// Note at the moment, no geographical info is needed to read the weather
 	// this is because weather is a flat file and not spatially differentiated
 
-	int weatherDataLength; // length of arrays - note that it is a condition that each row of the input file
-							// represents one time step, but the model is agnostic to what time period each tick represents.
-	double[] insolationArray; // Note this is an integrated value in Wh per metre squared
+	int weatherDataLength; // length of arrays - note that it is a condition
+							// that each row of the input file
+							// represents one time step, but the model is
+							// agnostic to what time period each tick
+							// represents.
+	double[] insolationArray; // Note this is an integrated value in Wh per
+								// metre squared
 	double[] windSpeedArray;// instantaneous value
-	double[] windDirectionArray; // Direction in degrees from North. May not be needed as yet, but useful to have potentially
+	double[] windDirectionArray; // Direction in degrees from North. May not be
+									// needed as yet, but useful to have
+									// potentially
 	double[] airTemperatureArray; // instantaneous value
 	double[] airDensityArray; // instantaneous value
 	double[] systemPriceSignalDataArray;
@@ -672,7 +676,10 @@ public class CascadeContext extends DefaultContext
 					String fileName = this.getFileNameForChart(i);
 					if (fileName != "")
 					{
-						this.logger.trace("takeSnapshot: fileName is empty");
+						if (this.logger.isTraceEnabled())
+						{
+							this.logger.trace("takeSnapshot: fileName is empty");
+						}
 						File file = new File(fileName);
 						snapshotTaker.save(file, "png");
 					}
@@ -682,7 +689,10 @@ public class CascadeContext extends DefaultContext
 			catch (IOException e)
 			{
 				// Print out the exception that occurred
-				this.logger.debug("CascadeContext: Unable to takeSnapshot " + e.getMessage());
+				if (this.logger.isDebugEnabled())
+				{
+					this.logger.debug("CascadeContext: Unable to takeSnapshot " + e.getMessage());
+				}
 			}
 		}
 
@@ -713,7 +723,10 @@ public class CascadeContext extends DefaultContext
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep()
 	{
-		this.logger.trace("calendarStep()");
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("calendarStep()");
+		}
 		this.simulationCalendar.add(Calendar.MINUTE, Consts.MINUTES_PER_DAY / this.ticksPerDay);
 	}
 
@@ -843,8 +856,11 @@ public class CascadeContext extends DefaultContext
 
 		ConsoleAppender console = new ConsoleAppender(new CascadeLogLayout());
 		console.setName("ConsoleOutput");
-		console.setThreshold(Level.INFO); //Never output more detail than "INFO" to the console.  May get less,
-		                                  // if the main level above is set to e.g. WARN, FATAL or OFF
+		console.setThreshold(Level.INFO); // Never output more detail than
+											// "INFO" to the console. May get
+											// less,
+											// if the main level above is set to
+											// e.g. WARN, FATAL or OFF
 		console.activateOptions(); // Needed or the appender appends everything
 									// from the this.logger
 
@@ -888,7 +904,10 @@ public class CascadeContext extends DefaultContext
 		super(context.getId(), context.getTypeID());
 		this.initDedicatedLogger(Consts.CASCADE_LOGGER_NAME);
 
-		this.logger.trace("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("CascadeContext created with context " + context.getId() + " and type " + context.getTypeID());
+		}
 
 		Iterator<Projection<?>> projIterator = context.getProjections().iterator();
 
@@ -896,7 +915,10 @@ public class CascadeContext extends DefaultContext
 		{
 			Projection<?> proj = projIterator.next();
 			this.addProjection(proj);
-			this.logger.trace("CascadeContext: Added projection: " + proj.getName());
+			if (this.logger.isTraceEnabled())
+			{
+				this.logger.trace("CascadeContext: Added projection: " + proj.getName());
+			}
 		}
 
 		this.setId(context.getId());

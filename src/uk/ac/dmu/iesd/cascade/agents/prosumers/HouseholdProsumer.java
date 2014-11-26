@@ -570,7 +570,10 @@ public class HouseholdProsumer extends ProsumerAgent
 
 		if (returnAmount != 0)
 		{
-			this.mainContext.logger.debug("HouseholdProsumer:: Generating " + returnAmount);
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("HouseholdProsumer:: Generating " + returnAmount);
+			}
 		}
 		return returnAmount;
 	}
@@ -674,11 +677,17 @@ public class HouseholdProsumer extends ProsumerAgent
 	{
 		this.recordedHeatPumpDemand[this.timeOfDay] = 0;
 
-		this.mainContext.logger.trace("Calculating heating demand");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("Calculating heating demand");
+		}
 
 		if (this.isHasElectricalSpaceHeat())
 		{
-			this.mainContext.logger.trace(" ^^^hasElecSpaceheat ");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(" ^^^hasElecSpaceheat ");
+			}
 			// TODO: this assumes only space heat and always uses heat pump -
 			// expand for other forms of electrical heating
 			this.recordedHeatPumpDemand[this.timeOfDay] += potentialElecDemand / Consts.DOMESTIC_HEAT_PUMP_SPACE_COP;
@@ -689,7 +698,10 @@ public class HouseholdProsumer extends ProsumerAgent
 		// end day
 		if (this.timeOfDay == 47)
 		{
-			this.mainContext.logger.trace("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(this.recordedHeatPumpDemand));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("SUM(RecordedHeatPumpDemand: " + ArrayUtils.sum(this.recordedHeatPumpDemand));
+			}
 		}
 
 		if (this.isHasElectricalWaterHeat())
@@ -793,7 +805,10 @@ public class HouseholdProsumer extends ProsumerAgent
 																																	// email
 																																	// (24/01/12)
 
-		this.mainContext.logger.debug(maintenanceEnergy + " to maintain temp, plus " + heatingEnergy + " to heat up");
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug(maintenanceEnergy + " to maintain temp, plus " + heatingEnergy + " to heat up");
+		}
 
 		double[] hotWaterEnergy = ArrayUtils.multiply(this.getBaselineHotWaterVolumeProfile(), Consts.WATER_SPECIFIC_HEAT_CAPACITY
 				/ Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)));
@@ -828,14 +843,20 @@ public class HouseholdProsumer extends ProsumerAgent
 			// temperature
 			this.currentInternalTemp -= (this.currentInternalTemp - this.mainContext.getAirTemperature(timeStep))
 					* this.freeRunningTemperatureLossPerTickMultiplier;
-			this.mainContext.logger.trace("HouseholdProsumer:: Heating system off - currentInternalTemp: " + this.currentInternalTemp);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("HouseholdProsumer:: Heating system off - currentInternalTemp: " + this.currentInternalTemp);
+			}
 			this.dayHistoryHeatingEnergy[this.timeOfDay] = 0;
 
 		}
 		else
 		{
 			double energyDemand = this.calculateSpaceHeatEnergyDemand(timeStep);
-			this.mainContext.logger.trace("Adding " + energyDemand + " to the historical heat energy array");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Adding " + energyDemand + " to the historical heat energy array");
+			}
 			if (energyDemand > (this.maxHeatPerTimestep))
 			{
 				// If the energy demand to raise to set point in this particular
@@ -866,13 +887,17 @@ public class HouseholdProsumer extends ProsumerAgent
 				}
 				this.currentInternalTemp = this.setPoint;
 				this.dayHistoryHeatingEnergy[this.timeOfDay] = energyDemand;
-				this.mainContext.logger.trace("HouseholdProsumer:: Heatpump on until current internal temperature regains set point");
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("HouseholdProsumer:: Heatpump on until current internal temperature regains set point");
+				}
 			}
 		}
 
 		/*
-		 * if (this.agentID == 1) {
-		 * this.mainContext.logger.debug("==================");
+		 * if (this.agentID == 1) { if ( *
+		 * this.mainContext.logger.isDebugEnabled()) {
+		 * this.mainContext.logger.debug("=================="); }
 		 * this.mainContext.logger.debug("Tick " + this.time + "; " +
 		 * this.agentName + " internal temperature: " +
 		 * this.currentInternalTemp); this.mainContext.logger.debug("demand: "+
@@ -924,8 +949,14 @@ public class HouseholdProsumer extends ProsumerAgent
 	private double calculateFixedDayTotalDemand(int time)
 	{
 		int baseProfileIndex = time % this.arr_otherDemandProfile.length;
-		this.mainContext.logger.trace(" baseDemandProfile " + Arrays.toString(this.arr_otherDemandProfile));
-		this.mainContext.logger.trace(" baseProfileIndex " + baseProfileIndex);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" baseDemandProfile " + Arrays.toString(this.arr_otherDemandProfile));
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" baseProfileIndex " + baseProfileIndex);
+		}
 		this.mainContext.logger.trace("  calculateFixedDayTotalDemand: array2Sum: "
 				+ Arrays.toString(Arrays.copyOfRange(this.arr_otherDemandProfile, baseProfileIndex, baseProfileIndex
 						+ this.mainContext.ticksPerDay - 1)));
@@ -994,7 +1025,10 @@ public class HouseholdProsumer extends ProsumerAgent
 
 		myDemand = this.arr_otherDemandProfile[time % this.arr_otherDemandProfile.length];
 		// if (myDemand <0)
-		this.mainContext.logger.trace("*myDemand: " + myDemand);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("*myDemand: " + myDemand);
+		}
 
 		// Adapt behaviour somewhat. Note that this does not enforce total
 		// demand the same over a day.
@@ -1016,7 +1050,9 @@ public class HouseholdProsumer extends ProsumerAgent
 			double myE = this.dailyElasticity[time % this.mainContext.ticksPerDay];
 			// double eChange =
 			// mainContext.hhProsumerElasticityTest.nextDouble();
+			// if ( this.mainContext.logger.isTraceEnabled()) {
 			// this.mainContext.logger.trace("eChange: "+ eChange);
+			// }
 			// myE = myE + eChange;
 			// myDemand = myDemand * (1 - ((predictedCostNow /
 			// Consts.NORMALIZING_MAX_COST) * dailyElasticity[time %
@@ -1033,7 +1069,8 @@ public class HouseholdProsumer extends ProsumerAgent
 				 * this.numOccupants); this.mainContext.logger.debug("pos: "+
 				 * time % arr_otherDemandProfile.length);
 				 * 
-				 * this.mainContext.logger.debug("myElast: "+ myE);
+				 * if ( * this.mainContext.logger.isDebugEnabled()) {
+				 * this.mainContext.logger.debug("myElast: "+ myE); }
 				 * this.mainContext.logger.debug("costSig: "+
 				 * predictedCostSignal);
 				 * this.mainContext.logger.debug("myDemand (before): "+
@@ -1042,12 +1079,14 @@ public class HouseholdProsumer extends ProsumerAgent
 				 * arr_otherDemandProfile[time %
 				 * arr_otherDemandProfile.length]);
 				 * this.mainContext.logger.debug("myDemand (after ): "+myDemand
-				 * +", costSignal:"+predictedCostSignal);
-				 * this.mainContext.logger.debug();
+				 * +", costSignal:"+predictedCostSignal); if ( *
+				 * this.mainContext.logger.isDebugEnabled()) {
+				 * this.mainContext.logger.debug(); }
 				 * this.mainContext.logger.debug("myDemand (all): "+
 				 * Arrays.toString(arr_otherDemandProfile));
 				 * 
-				 * this.mainContext.logger.debug("====================== ");
+				 * if ( * this.mainContext.logger.isDebugEnabled()) {
+				 * this.mainContext.logger.debug("====================== "); }
 				 */
 			}
 
@@ -1055,12 +1094,30 @@ public class HouseholdProsumer extends ProsumerAgent
 			{
 				// if (mainContext.isBeginningOfDay()) {
 
-				this.mainContext.logger.debug("============================");
-				this.mainContext.logger.debug("dailyDemand: " + Arrays.toString(this.arr_otherDemandProfile));
-				this.mainContext.logger.debug("dailyElasticity: " + Arrays.toString(this.dailyElasticity));
-				this.mainContext.logger.debug("predictedCostSignal: " + Arrays.toString(this.getPredictedCostSignal()));
-				this.mainContext.logger.debug("predictedCostSignal: " + predictedCostSignal);
-				this.mainContext.logger.debug("predictedCostNow * myE: " + predictedCostSignal * myE);
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("============================");
+				}
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("dailyDemand: " + Arrays.toString(this.arr_otherDemandProfile));
+				}
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("dailyElasticity: " + Arrays.toString(this.dailyElasticity));
+				}
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("predictedCostSignal: " + Arrays.toString(this.getPredictedCostSignal()));
+				}
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("predictedCostSignal: " + predictedCostSignal);
+				}
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("predictedCostNow * myE: " + predictedCostSignal * myE);
+				}
 				this.mainContext.logger.debug("dailyElasticity[time % this.mainContext.ticksPerDay]: "
 						+ this.dailyElasticity[time % this.mainContext.ticksPerDay]);
 				this.mainContext.logger.debug("HouseholdProsumer:: Based on predicted cost = "
@@ -1090,13 +1147,19 @@ public class HouseholdProsumer extends ProsumerAgent
 	private double smartDemand(int time, double potentialElecDemand)
 	{
 
-		this.mainContext.logger.trace("HHPro: smartDemand() time: " + time);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("HHPro: smartDemand() time: " + time);
+		}
 		// Evaluate behaviour applies elasticity behaviour to the base
 		// (non-displaceable) load.
 		double currentBase = this.evaluateElasticBehaviour(time);
 		double currentCold = this.coldApplianceDemand();
 
-		this.mainContext.logger.trace("currentColdDemand is: " + currentCold);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("currentColdDemand is: " + currentCold);
+		}
 
 		double currentWet = this.wetApplianceDemand();
 		double currentEV = this.getOptimisedEVDemand();
@@ -1130,7 +1193,10 @@ public class HouseholdProsumer extends ProsumerAgent
 
 		if (returnAmount != 0)
 		{
-			this.mainContext.logger.trace("HouseholdProsumer:: Total demand (not net against generation) " + returnAmount);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("HouseholdProsumer:: Total demand (not net against generation) " + returnAmount);
+			}
 		}
 
 		return returnAmount;
@@ -1192,7 +1258,10 @@ public class HouseholdProsumer extends ProsumerAgent
 					+ (ArrayUtils.sum(daysOptimisedDemand) - this.inelasticTotalDayDemand));
 		}
 
-		this.mainContext.logger.trace("HouseholdProsumer:: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("HouseholdProsumer:: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+		}
 
 	}
 
@@ -1246,7 +1315,10 @@ public class HouseholdProsumer extends ProsumerAgent
 	public void setWaterHeatProfile(double[] waterHeatProfile)
 	{
 		this.waterHeatElectricalDemandProfile = waterHeatProfile;
-		this.mainContext.logger.trace("setWaterHeatProfile:    " + Arrays.toString(waterHeatProfile));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("setWaterHeatProfile:    " + Arrays.toString(waterHeatProfile));
+		}
 	}
 
 	/**
@@ -1268,7 +1340,8 @@ public class HouseholdProsumer extends ProsumerAgent
 		 * testing revising elasticity calculation
 		 * System.out.print("Prosumer Elasticity: "); for(int i=0; i<
 		 * dailyElasticity.length; i++) { System.out.print(dailyElasticity[i] +
-		 * ","); } this.mainContext.logger.debug("");
+		 * if ( * ","); } this.mainContext.logger.isDebugEnabled()) { ","); }
+		 * this.mainContext.logger.debug(""); }
 		 */
 	}
 
@@ -1319,7 +1392,10 @@ public class HouseholdProsumer extends ProsumerAgent
 		// share the needed water equally between occupants
 		double drawOffPerOccupant = dailyHotWaterUsage / this.getNumOccupants();
 
-		this.mainContext.logger.trace("hotWaterNeededProfile: " + Arrays.toString(hotWaterNeededProfile));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("hotWaterNeededProfile: " + Arrays.toString(hotWaterNeededProfile));
+		}
 
 		// Assign one draw off per occupant, at a time generated from the
 		// statistics gathered
@@ -1329,20 +1405,35 @@ public class HouseholdProsumer extends ProsumerAgent
 			hotWaterNeededProfile[this.mainContext.drawOffGenerator.nextInt()] = drawOffPerOccupant;
 		}
 
-		this.mainContext.logger.trace("drawOffGenerator x 100times");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("drawOffGenerator x 100times");
+		}
 		// for (int i = 0; i < 100; i++) {
-		this.mainContext.logger.trace(this.mainContext.drawOffGenerator.nextInt());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.mainContext.drawOffGenerator.nextInt());
+		}
 		// }
 
-		this.mainContext.logger.trace("AFTER drawOffGen");
-		this.mainContext.logger.trace("hotWaterNeededProfile: " + Arrays.toString(hotWaterNeededProfile));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("AFTER drawOffGen");
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("hotWaterNeededProfile: " + Arrays.toString(hotWaterNeededProfile));
+		}
 
 		double[] baselineHotWaterVolumeProfile = Arrays.copyOf(hotWaterNeededProfile, hotWaterNeededProfile.length);
 		this.setBaselineHotWaterVolumeProfile(baselineHotWaterVolumeProfile);
 		this.waterHeatEnergyDemandProfile = ArrayUtils.multiply(baselineHotWaterVolumeProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY
 				/ Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP)));
 
-		this.mainContext.logger.trace("setBaselineHotWaterVolumeProfile:    " + Arrays.toString(baselineHotWaterVolumeProfile));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("setBaselineHotWaterVolumeProfile:    " + Arrays.toString(baselineHotWaterVolumeProfile));
+		}
 	}
 
 	public void initializeElectWaterHeatPar()
@@ -1358,7 +1449,10 @@ public class HouseholdProsumer extends ProsumerAgent
 		}
 		else
 		{
-			this.mainContext.logger.debug("No electric water heating!!!  Initialising Electrical water heat load all zero");
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("No electric water heating!!!  Initialising Electrical water heat load all zero");
+			}
 
 			double[] noWaterHeating = new double[this.mainContext.ticksPerDay];
 			// double[] noWaterHeating = new double[this.lengthOfDemandProfile];
@@ -1431,7 +1525,10 @@ public class HouseholdProsumer extends ProsumerAgent
 	{
 		boolean isEndOfProfilBuilding = true;
 		int daysSoFar = this.mainContext.getDayCount();
-		this.mainContext.logger.trace("ADPBPC: daySoFar: " + daysSoFar + " < 7?");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("ADPBPC: daySoFar: " + daysSoFar + " < 7?");
+		}
 
 		if (daysSoFar < Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
 		{
@@ -1516,7 +1613,10 @@ public class HouseholdProsumer extends ProsumerAgent
 		this.time = (int) RepastEssentials.GetTickCount();
 		this.timeOfDay = (this.time % this.mainContext.ticksPerDay);
 
-		this.mainContext.logger.trace("checkWeather");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("checkWeather");
+		}
 		this.checkWeather(this.time);
 
 		// Do all the "once-per-day" things here
@@ -1538,12 +1638,18 @@ public class HouseholdProsumer extends ProsumerAgent
 			// needs
 			// calculating here
 			this.inelasticTotalDayDemand = this.calculateFixedDayTotalDemand(this.time);
-			this.mainContext.logger.trace("  HHpro: inelasticTotalDayDemand: " + this.inelasticTotalDayDemand);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("  HHpro: inelasticTotalDayDemand: " + this.inelasticTotalDayDemand);
+			}
 
 			if (this.hasSmartControl)
 			{
 
-				this.mainContext.logger.trace("--beforCallToUpdate; time: " + this.time);
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("--beforCallToUpdate; time: " + this.time);
+				}
 
 				this.mySmartController.update(this.time);
 
@@ -1603,7 +1709,10 @@ public class HouseholdProsumer extends ProsumerAgent
 
 		}
 
-		this.mainContext.logger.trace("  HHpro: getHasElectricalSpaceHeat: " + this.isHasElectricalSpaceHeat());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("  HHpro: getHasElectricalSpaceHeat: " + this.isHasElectricalSpaceHeat());
+		}
 
 		if (this.isHasElectricalSpaceHeat())
 		{
@@ -1615,19 +1724,28 @@ public class HouseholdProsumer extends ProsumerAgent
 		// Every step we do these actions
 		if (this.hasSmartControl)
 		{
-			this.mainContext.logger.trace("Setting demand via smart control");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Setting demand via smart control");
+			}
 			this.setNetDemand(this.smartDemand(this.time, potentialElecDemand) - this.currentGeneration());
 		}
 		else if (this.hasSmartMeter && this.exercisesBehaviourChange)
 		{
-			this.mainContext.logger.trace("Setting demand via elasticity and smart meter");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Setting demand via elasticity and smart meter");
+			}
 			this.learnBehaviourChange();
 			this.setNetDemand(this.evaluateElasticBehaviour(this.time));
 			this.learnSmartAdoptionDecision(this.time);
 		}
 		else
 		{
-			this.mainContext.logger.trace("Setting demand with no smart control or elasticity");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Setting demand with no smart control or elasticity");
+			}
 
 			// No adaptation case - Note that as there has been no adaptation
 			// above, smartDemand will simply return the base

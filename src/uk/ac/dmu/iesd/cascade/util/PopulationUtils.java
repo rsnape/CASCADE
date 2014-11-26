@@ -28,9 +28,18 @@ public class PopulationUtils
 		IndexedIterable<HouseholdProsumer> householdProsumers = thisContext.getObjects(HouseholdProsumer.class);
 		int totalPopulation = IterableUtils.count(householdProsumers);
 
-		thisContext.logger.trace("Population proportions");
-		thisContext.logger.trace("======================");
-		thisContext.logger.trace("There are " + totalPopulation + "agents");
+		if (thisContext.logger.isTraceEnabled())
+		{
+			thisContext.logger.trace("Population proportions");
+		}
+		if (thisContext.logger.isTraceEnabled())
+		{
+			thisContext.logger.trace("======================");
+		}
+		if (thisContext.logger.isTraceEnabled())
+		{
+			thisContext.logger.trace("There are " + totalPopulation + "agents");
+		}
 		for (int i = 1; i <= Consts.OCCUPANCY_PROBABILITY_ARRAY.length; i++)
 		{
 			Query<HouseholdProsumer> occ1Query = new PropertyEquals(thisContext, "numOccupants", i);

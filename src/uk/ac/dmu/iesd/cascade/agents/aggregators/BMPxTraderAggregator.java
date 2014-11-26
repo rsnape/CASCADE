@@ -145,7 +145,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 
 	private double[] calculateStochasticPN(double[] baselineProfile, double mFactor)
 	{
-		this.mainContext.logger.trace("calculateStochasticPN: " + mFactor);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("calculateStochasticPN: " + mFactor);
+		}
 
 		double[] randomPN = new double[this.ticksPerDay];
 		double avg = ArraysUtils.avg(baselineProfile);
@@ -156,15 +159,24 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 			Normal normalDist = RandomHelper.createNormal(baselineProfile[i], sd);
 			randomPN[i] = normalDist.nextDouble();
 		}
-		this.mainContext.logger.trace("randomPN: " + Arrays.toString(randomPN));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("randomPN: " + Arrays.toString(randomPN));
+		}
 
 		return randomPN;
 	}
 
 	private double[] initializePN(double[] baselineProfile)
 	{
-		this.mainContext.logger.trace("initializePN (baselineProf): " + Arrays.toString(baselineProfile));
-		this.mainContext.logger.trace(" initializePN " + this.id + " -- " + TestHelper.getEnvInfoInString(this.mainContext));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("initializePN (baselineProf): " + Arrays.toString(baselineProfile));
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" initializePN " + this.id + " -- " + TestHelper.getEnvInfoInString(this.mainContext));
+		}
 
 		double[] initializedArray = baselineProfile;
 
@@ -179,7 +191,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 			// initializedArray=
 			// baselineProfile;//calculateStochasticPN(baselineProfile, 0.01);
 			initializedArray = this.calculateStochasticPN(baselineProfile, 0.01);
-			this.mainContext.logger.trace("initializedArray GENCOAL: " + Arrays.toString(baselineProfile));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("initializedArray GENCOAL: " + Arrays.toString(baselineProfile));
+			}
 			break;
 		case GEN_CCGT:
 			// initializedArray= baselineProfile;
@@ -388,7 +403,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	@Override
 	public void recieveBOA(ArrayList<BOD> listOfBOD)
 	{
-		this.mainContext.logger.trace("BMU (" + this.getAgentName() + "): recieveBOA() called");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("BMU (" + this.getAgentName() + "): recieveBOA() called");
+		}
 		// should they recieve or go to fetch?
 		// if (!list_BOA.isEmpty())
 		// list_BOA.clear();
@@ -397,7 +415,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		{
 			this.list_BOA.add(bod);
 		}
-		this.mainContext.logger.trace("BOA after they are recieved:");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("BOA after they are recieved:");
+		}
 		// TestUtils.printBODs(list_BOA);
 	}
 
@@ -413,7 +434,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	@Override
 	public void recieveBSOA(ArrayList<BSOD> listOfBSOD)
 	{
-		this.mainContext.logger.trace("SupplierCo (" + this.getAgentName() + "): recieveBSOD() called");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("SupplierCo (" + this.getAgentName() + "): recieveBSOD() called");
+		}
 
 		this.list_BSOD = new ArrayList<BSOD>();
 		for (BSOD bsod : listOfBSOD)
@@ -433,7 +457,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		if (this.category == BMU_CATEGORY.GEN_T)
 		{
 
-			this.mainContext.logger.trace("getMarginPC:: is T type");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("getMarginPC:: is T type");
+			}
 			switch (pairID)
 			{
 			case 1:
@@ -473,7 +500,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		else if (this.category == BMU_CATEGORY.DEM_S)
 		{
 
-			this.mainContext.logger.trace("getMarginPC:: is S type");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("getMarginPC:: is S type");
+			}
 
 			switch (pairID)
 			{
@@ -727,7 +757,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 			updatedE = (reward * this.getExperiment()) / (ASTEMConsts.BMU_BO_NUM_OF_CHOICE - 1);
 		}
 
-		this.mainContext.logger.trace("updatedE=" + updatedE);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("updatedE=" + updatedE);
+		}
 
 		return updatedE;
 	}
@@ -738,7 +771,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		{
 			propensityArray[i] = (1 - this.getRegency()) * propensityArray[i] + this.updateExperience(i, acceptedIndex, Math.abs(accBO));
 		}
-		this.mainContext.logger.trace("propensityArray=" + Arrays.toString(propensityArray));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("propensityArray=" + Arrays.toString(propensityArray));
+		}
 
 		return propensityArray;
 	}
@@ -778,10 +814,16 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 
 				this.mainContext.logger.trace("Regis. Gen: "
 						+ RandomHelper.getDefaultRegistry().getGenerator(RandomRegistry.DEFAULT_GENERATOR).toString());
-				this.mainContext.logger.trace("RH. Gen: " + RandomHelper.getGenerator(RandomRegistry.DEFAULT_GENERATOR).clone());
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("RH. Gen: " + RandomHelper.getGenerator(RandomRegistry.DEFAULT_GENERATOR).clone());
+				}
 
 				int ind = randDist.nextInt(); // check the value return by this.
-				this.mainContext.logger.trace("EmpWalker output index: " + ind);
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("EmpWalker output index: " + ind);
+				}
 				double[] boArray = boa.getBOArray();
 				boa.setSubmittedBO(boArray[ind]);
 				boa.isAccepted = false;
@@ -794,30 +836,48 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	private ArrayList<BOD> initializeBOD(int sp, double[] marginArray)
 	{
 
-		this.mainContext.logger.trace("BOA after they are recieved:");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("BOA after they are recieved:");
+		}
 		// TestUtils.printBODs(list_BOA);
 		ArrayList<BOD> listOfBOD = null;
 		switch (this.type)
 		{
 		case GEN_COAL:
 			listOfBOD = this.generateBOD4Gen(sp, marginArray);
-			this.mainContext.logger.trace("marginArray:Coal: " + Arrays.toString(marginArray));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("marginArray:Coal: " + Arrays.toString(marginArray));
+			}
 			break;
 		case GEN_CCGT:
 			listOfBOD = this.generateBOD4Gen(sp, marginArray);
-			this.mainContext.logger.trace("marginArray:CCGT: " + Arrays.toString(marginArray));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("marginArray:CCGT: " + Arrays.toString(marginArray));
+			}
 			break;
 		case GEN_WIND:
 			listOfBOD = this.generateBOD4WindGen(sp, marginArray);
-			this.mainContext.logger.trace("marginArray:Wind: " + Arrays.toString(marginArray));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("marginArray:Wind: " + Arrays.toString(marginArray));
+			}
 			break;
 		case DEM_LARGE:
 			listOfBOD = this.generateBOD4DemLarge(sp, marginArray);
-			this.mainContext.logger.trace("marginArray:DEM_LARG: " + Arrays.toString(marginArray));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("marginArray:DEM_LARG: " + Arrays.toString(marginArray));
+			}
 			break;
 		case DEM_SMALL:
 			listOfBOD = this.generateBOD4DemSmall(sp, marginArray);
-			this.mainContext.logger.trace("marginArray:DEM_SMALL: " + Arrays.toString(marginArray));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("marginArray:DEM_SMALL: " + Arrays.toString(marginArray));
+			}
 			break;
 		}
 
@@ -847,7 +907,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	public void marketPreStep()
 	{
 
-		this.mainContext.logger.trace(" initializeMarketStep " + this.id + " -- " + TestHelper.getEnvInfoInString(this.mainContext));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" initializeMarketStep " + this.id + " -- " + TestHelper.getEnvInfoInString(this.mainContext));
+		}
 
 		this.settlementPeriod = this.mainContext.getSettlementPeriod();
 
@@ -858,7 +921,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 			// this.arr_PN = this.arr_day_B;
 			this.arr_PN = this.initializePN(this.arr_baselineProfile);
 			// this.arr_PN = initializePN_temp(arr_baselineProfile);
-			this.mainContext.logger.trace("arr_PN: " + Arrays.toString(this.arr_PN));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("arr_PN: " + Arrays.toString(this.arr_PN));
+			}
 
 			break;
 		}
@@ -869,8 +935,14 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 	public void marketStep()
 	{
 
-		this.mainContext.logger.trace("-marketStep (-------------------------");
-		this.mainContext.logger.trace("--marketStep (BMPxTraderAgg): " + TestHelper.getEnvInfoInString(this.mainContext));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("-marketStep (-------------------------");
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("--marketStep (BMPxTraderAgg): " + TestHelper.getEnvInfoInString(this.mainContext));
+		}
 
 		// printBMUInfo();
 
@@ -880,18 +952,30 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		{
 
 		case 19:
-			this.mainContext.logger.trace("BMU: gotPxProd");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("BMU: gotPxProd");
+			}
 			// TestUtils.printListOfPxPD(list_PX_products);
 			this.list_PX_products = this.getPxProductFromSOMessageBoard();
 			this.list_BSOD = this.generateBSOforPX(this.list_PX_products, this.arr_PN);
-			this.mainContext.logger.trace("Printing BSOD list");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Printing BSOD list");
+			}
 			// TestHelper.printListOfBSOD(list_BSOD);
 
 			break;
 		case 21:
-			this.mainContext.logger.trace("PN (BEFORE UPDATE): " + Arrays.toString(this.arr_PN));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("PN (BEFORE UPDATE): " + Arrays.toString(this.arr_PN));
+			}
 			this.arr_PN = this.updatePN(this.list_BSOD, this.arr_PN);
-			this.mainContext.logger.trace("PN (AFTER UPDATE): " + Arrays.toString(this.arr_PN));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("PN (AFTER UPDATE): " + Arrays.toString(this.arr_PN));
+			}
 
 			break;
 		case 27:
@@ -916,9 +1000,15 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 
 		case 47: // end of day
 			this.arr_oldPN = this.updateOldPN(this.arr_PN, this.arr_oldPN);
-			this.mainContext.logger.trace("arr_oldPN: " + Arrays.toString(this.arr_oldPN));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("arr_oldPN: " + Arrays.toString(this.arr_oldPN));
+			}
 			this.arr_Margin = this.updateMarginForBM(this.arr_oldPN);
-			this.mainContext.logger.trace("arr_Margin: " + Arrays.toString(this.arr_Margin));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("arr_Margin: " + Arrays.toString(this.arr_Margin));
+			}
 
 			break;
 		}
@@ -926,7 +1016,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 		if (this.mainContext.isMarketFirstDay() && this.settlementPeriod == 47)
 		{
 			this.list_BOD = this.initializeBOD(0, this.arr_Margin);
-			this.mainContext.logger.trace("BODs after initialisation:");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("BODs after initialisation:");
+			}
 			// TestHelper.printListOfBODs(list_BOD);
 
 		}

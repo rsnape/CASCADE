@@ -341,7 +341,10 @@ public class ProportionalWattboxController implements ISmartController
 			// demand was elastic, but this purely deals with WITHIN DAY
 			// allocation.
 
-			this.mainContext.logger.debug("Flat signal - do nothing");
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("Flat signal - do nothing");
+			}
 
 			this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile, this.setPointProfile.length);
 			return;
@@ -468,11 +471,17 @@ public class ProportionalWattboxController implements ISmartController
 		double[] baseArray = ArrayUtils.multiply(this.hotWaterVolumeDemandProfile, Consts.WATER_SPECIFIC_HEAT_CAPACITY
 				/ Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP))
 				/ Consts.DOMESTIC_HEAT_PUMP_WATER_COP);
-		this.mainContext.logger.trace("hotWaterVolumeDemandProfile: " + Arrays.toString(this.hotWaterVolumeDemandProfile));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("hotWaterVolumeDemandProfile: " + Arrays.toString(this.hotWaterVolumeDemandProfile));
+		}
 
 		this.waterHeatDemandProfile = new double[baseArray.length];// Arrays.copyOf(baseArray,
 																	// baseArray.length);
-		this.mainContext.logger.trace("waterHeatDemandProfile: " + Arrays.toString(this.waterHeatDemandProfile));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("waterHeatDemandProfile: " + Arrays.toString(this.waterHeatDemandProfile));
+		}
 
 		// double[] totalHeatDemand = ArrayUtils.add(this.heatPumpDemandProfile,
 		// spreadWaterDemand(baseArray));
@@ -613,8 +622,14 @@ public class ProportionalWattboxController implements ISmartController
 	 */
 	private void optimiseWetProfileProbabilistic(int timeStep)
 	{
-		this.mainContext.logger.trace("==OptimiseWetProfil for a  " + this.owner.getAgentID() + "; timeStep: " + timeStep);
-		this.mainContext.logger.trace("dayPredictedCostSignal: " + Arrays.toString(this.dayPredictedCostSignal));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("==OptimiseWetProfil for a  " + this.owner.getAgentID() + "; timeStep: " + timeStep);
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("dayPredictedCostSignal: " + Arrays.toString(this.dayPredictedCostSignal));
+		}
 
 		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
 		{
@@ -636,9 +651,18 @@ public class ProportionalWattboxController implements ISmartController
 						+ this.ticksPerDay);
 
 		int Tw = Consts.MAX_ALLOWED_WET_APP_MOVE;
-		this.mainContext.logger.trace("BEFORE washer_loads_day: " + Arrays.toString(washer_loads_day));
-		this.mainContext.logger.trace("BEFORE dryer_loads_day: " + Arrays.toString(dryer_loads_day));
-		this.mainContext.logger.trace("BEFORE dishwasher_loads_day: " + Arrays.toString(dishwasher_loads_day));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("BEFORE washer_loads_day: " + Arrays.toString(washer_loads_day));
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("BEFORE dryer_loads_day: " + Arrays.toString(dryer_loads_day));
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("BEFORE dishwasher_loads_day: " + Arrays.toString(dishwasher_loads_day));
+		}
 
 		// Extract cycles
 		ArrayList<double[]> washCycles = new ArrayList<double[]>();
@@ -892,7 +916,10 @@ public class ProportionalWattboxController implements ISmartController
 				// This profiel produces a value that exceeds the total capacity
 				// of the
 				// heat pump and is therefore unachievable.
-				this.mainContext.logger.trace("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded);
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded);
+				}
 				// Can't satisfy this demand for this set point profile, return
 				// null
 				return null;

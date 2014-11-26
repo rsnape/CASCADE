@@ -282,7 +282,10 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 	 */
 	public void setNetDemand(double nd)
 	{
-		this.mainContext.logger.trace("HHP: setND: " + nd);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("HHP: setND: " + nd);
+		}
 		this.netDemand = nd;
 	}
 
@@ -389,7 +392,10 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 	 */
 	public boolean receiveValueSignal(double[] signal, int length)
 	{
-		this.mainContext.logger.trace("ProsumerAgent:: receiveValueSignal()");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("ProsumerAgent:: receiveValueSignal()");
+		}
 		boolean success = true;
 		// Can only receive if we have a smart meter to receive data
 		int validTime = (int) RepastEssentials.GetTickCount();
@@ -407,11 +413,17 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 			double[] tempArray;
 
 			int signalOffset = time - validTime;
-			this.mainContext.logger.trace("time: " + time + " validTime" + validTime);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("time: " + time + " validTime" + validTime);
+			}
 			if (signalOffset != 0)
 			{
 
-				this.mainContext.logger.debug("ProsumerAgent: Signal valid from time other than current time");
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("ProsumerAgent: Signal valid from time other than current time");
+				}
 
 				newSignalLength = newSignalLength - signalOffset;
 			}
@@ -419,7 +431,10 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 			if ((this.getPredictedCostSignal() == null) || (newSignalLength != this.predictedCostSignal.length))
 			{
 
-				this.mainContext.logger.debug("ProsumerAgent: Re-defining length of signal in agent" + this.agentID);
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("ProsumerAgent: Re-defining length of signal in agent" + this.agentID);
+				}
 
 				this.setPredictedCostSignal(new double[newSignalLength]);
 			}

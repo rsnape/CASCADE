@@ -64,15 +64,24 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 
 		this.readParamsAndInitializeArrays();
 		this.initializeProbabilityDistributions();
-		this.myContext.logger.debug("Got into the context builder");
-		this.myContext.logger.debug("Random seed is " + RepastEssentials.GetParameter("randomSeed").toString());
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Got into the context builder");
+		}
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Random seed is " + RepastEssentials.GetParameter("randomSeed").toString());
+		}
 
 		if (!context.isEmpty())
 		{
 			this.myContext.logger.warn("Context contains some stuff before the build!!");
 		}
 
-		this.myContext.logger.debug("Created Poisson distribution, ID " + this.myContext.nextThoughtGenerator.toString());
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Created Poisson distribution, ID " + this.myContext.nextThoughtGenerator.toString());
+		}
 		// myContext.setId("SmartGridTechnologyAdoption");
 		// myContext.setTypeID("SmartGridTechnologyAdoption");
 		/*
@@ -123,7 +132,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		Empirical myDist = RandomHelper.createEmpirical(ArrayUtils.convertStringArrayToDoubleArray(defraCategories
 				.getColumn("Population_fraction")), Empirical.NO_INTERPOLATION);
 
-		this.myContext.logger.trace("Empirical distribution set up to assign DEFRA categories by population fraction");
+		if (this.myContext.logger.isTraceEnabled())
+		{
+			this.myContext.logger.trace("Empirical distribution set up to assign DEFRA categories by population fraction");
+		}
 
 		ArrayList<SimpleRHIAdopterHousehold> households;
 
@@ -183,7 +195,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 				j++;
 			}
 
-			this.myContext.logger.trace(thisHousehold.getAgentName() + "DEFRA Customer segment is" + custSegment);
+			if (this.myContext.logger.isTraceEnabled())
+			{
+				this.myContext.logger.trace(thisHousehold.getAgentName() + "DEFRA Customer segment is" + custSegment);
+			}
 
 			thisHousehold.defraCategory = Integer.parseInt(defraCategories.getColumn("DEFRA_category")[custSegment - 1]);
 			thisHousehold.economicAbility = Double.parseDouble(defraCategories.getColumn("Economic_ability")[custSegment - 1]);
@@ -201,19 +216,19 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 			if (decVar < 0.25)
 			{
 				// thisHousehold.setRHIEligibleHeatingTechnology(HEATING_TYPE.BIOMASS);
-		//	}
-		//	else if (decVar < 0.15)
-			//{
+				// }
+				// else if (decVar < 0.15)
+				// {
 				thisHousehold.setRHIEligibleHeatingTechnology(HEATING_TYPE.GND_SOURCE_HP);
 			}
 			else if (decVar < 0.6)
 			{
 				thisHousehold.setRHIEligibleHeatingTechnology(HEATING_TYPE.AIR_SOURCE_HP);
 			}
-			//else if (decVar < 0.5)
-		//	{
-				// thisHousehold.setRHIEligibleHeatingTechnology(HEATING_TYPE.SOLAR_THERMAL);
-		//	}
+			// else if (decVar < 0.5)
+			// {
+			// thisHousehold.setRHIEligibleHeatingTechnology(HEATING_TYPE.SOLAR_THERMAL);
+			// }
 
 			/*
 			 * SEt up the initial number of houses ("seeds") with an RHI
@@ -228,19 +243,26 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 			thisHousehold.setAdoptionThreshold(0.25); // 0.5 too fast, 0.75 too
 														// slow.
 			thisHousehold.observedRadius = ObservationDist.nextDouble();
-			this.myContext.logger.debug(thisHousehold.getAgentName() + " observes " + thisHousehold.observedRadius);
+			if (this.myContext.logger.isDebugEnabled())
+			{
+				this.myContext.logger.debug(thisHousehold.getAgentName() + " observes " + thisHousehold.observedRadius);
+			}
 			this.myContext.logger.debug(thisHousehold.getAgentName() + " has " + thisHousehold.microgenPropensity
 					+ " and pre-assigned RHI tech = " + thisHousehold.getHasRHI());
 			tmp += thisHousehold.getHasRHI() ? 1 : 0;
 		}
 
 		this.myContext.setNumHouseholds(households.size());
-		this.myContext.logger.debug(tmp + " households out of " + households.size() + " have some RHI eligible heating assigned");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug(tmp + " households out of " + households.size() + " have some RHI eligible heating assigned");
+		}
 		this.myContext.logger.info(households.size() + " Households initialized and added to context and geography");
 
 		/*
-		 * if (writeInitialShapefile) {
-		 * myContext.logger.trace("Writing shapefile of initial conditions");
+		 * if (writeInitialShapefile) { if ( *
+		 * myContext.logger.isTraceEnabled()) {
+		 * myContext.logger.trace("Writing shapefile of initial conditions"); }
 		 * 
 		 * ShapefileWriter testWriter = new ShapefileWriter(leicesterGeography);
 		 * File outFile = new File(
@@ -252,14 +274,15 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		 */
 
 		this.populateContext();
-		
+
 		if (RepastEssentials.GetParameter("lastTick") != null)
 		{
 			Double startToEndSim = (Double) RepastEssentials.GetParameter("lastTick");
 			ScheduleParameters scheduleParams = ScheduleParameters.createOneTime(startToEndSim, ScheduleParameters.LAST_PRIORITY);
-			RunEnvironment.getInstance().getCurrentSchedule().schedule(scheduleParams, this.myContext, "endSim", new Object[]{});
+			RunEnvironment.getInstance().getCurrentSchedule().schedule(scheduleParams, this.myContext, "endSim", new Object[]
+			{});
 		}
-		
+
 		return this.myContext;
 	}
 
@@ -272,9 +295,15 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		{
 			loader = new ShapefileLoader<SimpleRHIAdopterHousehold>(SimpleRHIAdopterHousehold.class, file.toURL(), geog, this.myContext);
 			FileDataStoreFinder.getDataStore(file).dispose();
-			this.myContext.logger.debug("have shapefile initialised with " + file.toURL().toString() + ": starting load");
+			if (this.myContext.logger.isDebugEnabled())
+			{
+				this.myContext.logger.debug("have shapefile initialised with " + file.toURL().toString() + ": starting load");
+			}
 			loader.load();
-			this.myContext.logger.debug("Agents loaded");
+			if (this.myContext.logger.isDebugEnabled())
+			{
+				this.myContext.logger.debug("Agents loaded");
+			}
 		}
 		catch (IOException e)
 		{
@@ -347,7 +376,7 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		/*
 		 * Read in the necessary data files and store to the context
 		 */
-		this.dataDirectoryPath = rootPath+File.separator+dataFileFolderPath;
+		this.dataDirectoryPath = rootPath + File.separator + dataFileFolderPath;
 		File dataDirectory = new File(dataDirectoryPath);
 		File weatherFile = new File(dataDirectory, weatherFileName);
 		CSVReader weatherReader = null;
@@ -500,7 +529,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		{
 			int occupancy = thisAgent.getNumOccupants();
 			double randomVar = RandomHelper.nextDouble();
-			this.myContext.logger.trace("randomVar: " + randomVar);
+			if (this.myContext.logger.isTraceEnabled())
+			{
+				this.myContext.logger.trace("randomVar: " + randomVar);
+			}
 			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
 			{
 				thisAgent.hasWashingMachine = true;
@@ -534,7 +566,9 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		}
 
 		/*
-		 * if(myContext.verbose) { this.myContext.logger.debug("Percentages:");
+		 * if ( * if(myContext.verbose) {
+		 * this.myContext.logger.isDebugEnabled()) { if(myContext.verbose) {
+		 * this.myContext.logger.debug("Percentages:"); }
 		 * this.myContext.logger.debug("households with occupancy 1 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",1)).query()) / householdProsumers.size());
@@ -579,9 +613,15 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 	 */
 	private void initializeProbabilityDistributions()
 	{
-		this.myContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		}
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		this.myContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		if (this.myContext.logger.isTraceEnabled())
+		{
+			this.myContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		}
 		this.myContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
 		// if (Consts.DEBUG)
 		this.myContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
@@ -714,8 +754,9 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 
 		this.myContext.logger.info("Adding supplier company");
 
-	//	SupplierCoAdvancedModel firstRecoAggregator = new SupplierCoAdvancedModel(this.myContext);
-	//	this.myContext.add(firstRecoAggregator);
+		// SupplierCoAdvancedModel firstRecoAggregator = new
+		// SupplierCoAdvancedModel(this.myContext);
+		// this.myContext.add(firstRecoAggregator);
 
 		/**
 		 * (02/07/12) DF
@@ -728,7 +769,7 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		// myContext.add(singleNonDomestic);
 
 		this.myContext.logger.info("Building supplier company network");
-	//	this.buildOtherNetworks(firstRecoAggregator);
+		// this.buildOtherNetworks(firstRecoAggregator);
 
 		this.myContext.logger.info("All agents added to supplier co network");
 
@@ -761,7 +802,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		FitVal.put(5000, 100);
 		this.myContext.PVFITs.putValue(this.myContext.parseUKDate("01/12/2012"), FitVal);
 
-		this.myContext.logger.debug("Tariffs set to" + this.myContext.PVFITs);
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Tariffs set to" + this.myContext.PVFITs);
+		}
 
 	}
 
@@ -780,7 +824,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 
 		// Create the household social network before other agent types are
 		// added to the context.
-		this.myContext.logger.debug("find network factory");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("find network factory");
+		}
 
 		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);
 
@@ -789,7 +836,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		// Economic network should be hierarchical aggregator to prosumer
 		// TODO: Decide what economic network between aggregators looks like?
 		// TODO: i.e. what is market design for aggregators?
-		this.myContext.logger.debug("create economic net");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("create economic net");
+		}
 
 		Network economicNet = networkFactory.createNetwork("economicNetwork", this.myContext, directed);
 
@@ -801,10 +851,16 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 
 		// TODO: replace this with something better. Next iteration of code
 		// should probably take network design from a file
-		this.myContext.logger.debug("getting prosumer list");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("getting prosumer list");
+		}
 		Iterable<ProsumerAgent> agList = (this.myContext.getObjects(ProsumerAgent.class));
 
-		this.myContext.logger.debug("adding edges from list to supplier");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("adding edges from list to supplier");
+		}
 
 		for (ProsumerAgent prAgent : agList)
 		{
@@ -812,9 +868,15 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 															// computationally
 															// heavy. Why??
 			// infoNet.addEdge(firstAggregator, prAgent);
-			this.myContext.logger.trace("Added edge for " + prAgent.getAgentName());
+			if (this.myContext.logger.isTraceEnabled())
+			{
+				this.myContext.logger.trace("Added edge for " + prAgent.getAgentName());
+			}
 		}
-		this.myContext.logger.debug("setting economic net in context and returning");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("setting economic net in context and returning");
+		}
 
 		this.myContext.setEconomicNetwork(economicNet);
 
@@ -1037,7 +1099,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		// add time jitter
 		double jitterFactor = RandomHelper.nextDouble() - 0.5d;
 
-		this.myContext.logger.trace("ProsumerFactory: Applying jitter" + jitterFactor);
+		if (this.myContext.logger.isTraceEnabled())
+		{
+			this.myContext.logger.trace("ProsumerFactory: Applying jitter" + jitterFactor);
+		}
 
 		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
 		for (int i = 1; i < (newProfile.length - 1); i++)

@@ -138,7 +138,10 @@ public class MarketMessageBoard implements IMarket
 			sp += ASTEMConsts.PX_PRODUCT_ID_8H; // +16
 		}
 
-		this.mainContext.logger.trace("MB: PxProducts");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("MB: PxProducts");
+		}
 		// TestHelper.printListOfPxPD(list_PX_products);
 	}
 

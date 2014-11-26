@@ -85,7 +85,10 @@ public class SettlementCompany
 	public LinkedHashMap<Integer, double[]> fetchPreviousDayPNs(ArrayList<ITrader> listOfTraders)
 	{
 
-		this.mainContext.logger.trace("sc:: fetchPreviousDayPNs()");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("sc:: fetchPreviousDayPNs()");
+		}
 
 		LinkedHashMap<Integer, double[]> mapOfOldPNs = new LinkedHashMap<Integer, double[]>();
 		for (ITrader bmu : listOfTraders)
@@ -113,8 +116,9 @@ public class SettlementCompany
 
 	/*
 	 * private LinkedHashMap<BMU, ArrayList<BOD>>
-	 * fetchHistoricalBOA(ArrayList<BMU> listOfBMUs) {
-	 * this.mainContext.logger.debug("SC: fetchHistoricalBOA() is called");
+	 * fetchHistoricalBOA(ArrayList<BMU> listOfBMUs) { if ( *
+	 * this.mainContext.logger.isDebugEnabled()) {
+	 * this.mainContext.logger.debug("SC: fetchHistoricalBOA() is called"); }
 	 * 
 	 * LinkedHashMap<BMU, ArrayList<BOD>> mapOfListOfHistBOAs = new
 	 * LinkedHashMap<BMU, ArrayList<BOD>>();
@@ -136,7 +140,10 @@ public class SettlementCompany
 		ArrayList<BOD> listOfBODs = new ArrayList<BOD>();
 
 		// TestHelper.printMapListOfBODs(mapOfIBMTraders2ListOfBOAs);
-		this.mainContext.logger.trace("SC: mapOfIBMTraders2ListOfBOAs.size: " + mapOfIBMTraders2ListOfBOAs.size());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("SC: mapOfIBMTraders2ListOfBOAs.size: " + mapOfIBMTraders2ListOfBOAs.size());
+		}
 
 		Collection<ArrayList<BOD>> valCol = mapOfIBMTraders2ListOfBOAs.values();
 		for (ArrayList<BOD> arrBOD : valCol)
@@ -152,8 +159,14 @@ public class SettlementCompany
 			{
 				totalBidsVol = totalBidsVol + bod.getLevel();
 				sumOfProducts = sumOfProducts + (bod.getLevel() * bod.getSubmittedBO());
-				this.mainContext.logger.trace("SC: totalBidsVol: " + totalBidsVol);
-				this.mainContext.logger.trace("SC: sumOfProducts: " + sumOfProducts);
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("SC: totalBidsVol: " + totalBidsVol);
+				}
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("SC: sumOfProducts: " + sumOfProducts);
+				}
 			}
 		}
 
@@ -199,7 +212,10 @@ public class SettlementCompany
 	public void step()
 	{
 
-		this.mainContext.logger.trace("--SC: " + TestHelper.getEnvInfoInString(this.mainContext));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("--SC: " + TestHelper.getEnvInfoInString(this.mainContext));
+		}
 
 		int settlementPeriod = this.mainContext.getSettlementPeriod();
 
@@ -288,11 +304,20 @@ public class SettlementCompany
 
 			// System.out.print(this.getSBPforEachSP());
 
-			this.mainContext.logger.trace(", " + this.getSSPforEachSP());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(", " + this.getSSPforEachSP());
+			}
 			if (settlementPeriod == 47)
 			{
-				this.mainContext.logger.debug("SSP" + this.mainContext.getDayCount() + ": " + Arrays.toString(this.arr_SSP));
-				this.mainContext.logger.debug("SBP" + this.mainContext.getDayCount() + ": " + Arrays.toString(this.arr_SBP));
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("SSP" + this.mainContext.getDayCount() + ": " + Arrays.toString(this.arr_SSP));
+				}
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("SBP" + this.mainContext.getDayCount() + ": " + Arrays.toString(this.arr_SBP));
+				}
 			}
 		}
 

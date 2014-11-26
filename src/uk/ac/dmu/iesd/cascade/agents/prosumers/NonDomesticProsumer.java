@@ -221,7 +221,10 @@ public class NonDomesticProsumer extends ProsumerAgent
 
 		if (returnAmount != 0)
 		{
-			this.mainContext.logger.debug("NonDomesticProsumer: Generating " + returnAmount);
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("NonDomesticProsumer: Generating " + returnAmount);
+			}
 		}
 
 		return returnAmount;
@@ -410,7 +413,10 @@ public class NonDomesticProsumer extends ProsumerAgent
 					+ (ArrayUtils.sum(daysOptimisedDemand) - this.inelasticTotalDayDemand));
 		}
 
-		this.mainContext.logger.debug("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+		}
 	}
 
 	private void smartControlLearn(int time)
@@ -461,7 +467,10 @@ public class NonDomesticProsumer extends ProsumerAgent
 					+ (ArrayUtils.sum(daysOptimisedDemand) - this.inelasticTotalDayDemand));
 		}
 
-		this.mainContext.logger.debug("NonDomesticProsumer: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("NonDomesticProsumer: Saved " + (currentCost - ArrayUtils.sum(tempArray)) + " cost");
+		}
 	}
 
 	private void learnSmartAdoptionDecisionRemoveAll(int time)

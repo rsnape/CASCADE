@@ -148,7 +148,11 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 	private void considerOptions()
 	{
 		this.RHIlikelihood = this.microgenPropensity;
-		this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.RHIlikelihood + "...");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.RHIlikelihood
+					+ "...");
+		}
 		this.checkTariffs();
 		this.calculateSCT();
 
@@ -157,10 +161,16 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 			// habit change - introducing a longer term feedback,
 			// should be equivalent to norm shifting over the population.
 			this.microgenPropensity = this.RHIlikelihood;
-			this.mainContext.logger.trace("Updating propensity, i.e. changing habit, based on likelihood");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Updating propensity, i.e. changing habit, based on likelihood");
+			}
 		}
 
-		this.mainContext.logger.trace(this.agentName + " making decision based on likelihood of " + this.RHIlikelihood + "...");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.agentName + " making decision based on likelihood of " + this.RHIlikelihood + "...");
+		}
 		this.makeDecision();
 	}
 
@@ -222,12 +232,18 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		this.RHIDecisionModel.setAbsoluteBehaviourThreshold(this.getAdoptionThreshold());
 		this.RHIDecisionModel.calculateBehaviour();
 
-		this.mainContext.logger.debug("Calculated behaviour from SCT" + this.RHIDecisionModel.getBehaviour());
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("Calculated behaviour from SCT" + this.RHIDecisionModel.getBehaviour());
+		}
 
 		// if (RHIlikelihood > getAdoptionThreshold())
 		if (this.RHIDecisionModel.getBinaryBehaviourDecisionHardThreshold())
 		{
-			this.mainContext.logger.debug(this.agentName + " Adopted RHI");
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug(this.agentName + " Adopted RHI");
+			}
 			this.setRHI();
 
 		}
@@ -271,13 +287,19 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		// TODO: Need to allow for positive and negative influence here,
 		// Not purely positive.
 
-		this.mainContext.logger.trace("Observing neighbours");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("Observing neighbours");
+		}
 		ArrayList<RHIAdopterHousehold> neighbours = this.getNeighbours();
 		int observedAdoption = 0;
 		int observed = 0;
 		for (RHIAdopterHousehold h : neighbours)
 		{
-			this.mainContext.logger.trace("Into observation loop");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Into observation loop");
+			}
 			boolean observe = (RandomHelper.nextDouble() > 0.5);
 			observe = true; // for testing
 
@@ -322,7 +344,10 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 					this.observedRadius, this);
 			this.myNeighboursCache = IterableUtils.Iterable2ArrayList(neighbourhood.query());
 			this.numCachedNeighbours = this.myNeighboursCache.size();
-			this.mainContext.logger.trace(this.getAgentName() + " found neighbours : " + this.myNeighboursCache.toString());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(this.getAgentName() + " found neighbours : " + this.myNeighboursCache.toString());
+			}
 		}
 
 		this.mainContext.logger.trace(this.getAgentName() + " has " + this.numCachedNeighbours + " neighbours : "
@@ -375,7 +400,10 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		this.mainContext = context;
 		this.setStartDateAndFirstThought();
 		this.initialiseSCT();
-		context.logger.debug(this.agentName + " initialised, first thought at " + this.nextCogniscentDate.toGMTString());
+		if (context.logger.isDebugEnabled())
+		{
+			context.logger.debug(this.agentName + " initialised, first thought at " + this.nextCogniscentDate.toGMTString());
+		}
 	}
 
 	public void setStartDateAndFirstThought()

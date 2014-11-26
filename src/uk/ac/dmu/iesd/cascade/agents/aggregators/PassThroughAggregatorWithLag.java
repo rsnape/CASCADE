@@ -99,7 +99,10 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 	public void bizPreStep()
 	{
 
-		this.mainContext.logger.debug("At tick " + RepastEssentials.GetTickCount() + " demand = " + this.getNetDemand());
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("At tick " + RepastEssentials.GetTickCount() + " demand = " + this.getNetDemand());
+		}
 		ArrayList<ProsumerAgent> customers = this.getCustomersList();
 		// broadcastSignalToCustomers(this.getCurrPrice(), customers);
 		this.broadcastSignalToCustomers(ArrayUtils.normalizeValues(this.laggedPrice), customers);
@@ -114,7 +117,10 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 			this.laggedPrice[this.laggedPrice.length - 1] = mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay];
 			this.mainContext.logger.debug("Added MIP to lagged array = "
 					+ mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay]);
-			this.mainContext.logger.debug("BMP = " + this.messageBoard.getBMP());
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("BMP = " + this.messageBoard.getBMP());
+			}
 		}
 	}
 
@@ -126,9 +132,15 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		for (ProsumerAgent c : customers)
 		{
 			totalDemand += c.getNetDemand();
-			this.mainContext.logger.trace("Prosumer " + c.getAgentName() + " adds " + c.getNetDemand());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Prosumer " + c.getAgentName() + " adds " + c.getNetDemand());
+			}
 		}
-		this.mainContext.logger.debug(this.getAgentName() + this.getID() + " has total demand " + totalDemand);
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug(this.getAgentName() + this.getID() + " has total demand " + totalDemand);
+		}
 
 		this.arr_baselineProfile[this.mainContext.getTimeslotOfDay()] = totalDemand;
 		this.setNetDemand(-totalDemand); // Convention in CASCADE is becoming
@@ -170,12 +182,18 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		Network economicNet = this.mainContext.getEconomicNetwork();
 
 		Iterable<RepastEdge> iter = economicNet.getEdges(this);
-		this.mainContext.logger.trace(this.getAgentName() + " has " + economicNet.size() + " links in economic network");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.getAgentName() + " has " + economicNet.size() + " links in economic network");
+		}
 
 		for (RepastEdge edge : iter)
 		{
 			Object linkSource = edge.getTarget();
-			this.mainContext.logger.trace("RECO linkSource " + linkSource);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("RECO linkSource " + linkSource);
+			}
 			if (linkSource instanceof ProsumerAgent)
 			{
 				this.c.add((ProsumerAgent) linkSource);

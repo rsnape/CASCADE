@@ -67,7 +67,10 @@ public class AdoptionContext extends CascadeContext
 		{
 			if (ev.getType().equals(EventType.AGENT_ADDED) || ev.getType().equals(EventType.AGENT_REMOVED))
 			{
-				AdoptionContext.this.logger.trace("Context listener called for agent add / remove");
+				if (AdoptionContext.this.logger.isTraceEnabled())
+				{
+					AdoptionContext.this.logger.trace("Context listener called for agent add / remove");
+				}
 				String className = ev.getTarget().getClass().getName();
 				if (AdoptionContext.this.agentCounts.containsKey(className))
 				{
@@ -117,9 +120,15 @@ public class AdoptionContext extends CascadeContext
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = ScheduleParameters.FIRST_PRIORITY)
 	public void calendarStep()
 	{
-		this.logger.trace("Incrementing simulation date and time");
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Incrementing simulation date and time");
+		}
 		this.simTime.add(Calendar.MINUTE, this.getMsecsPerTick() / (1000 * 60));
-		this.logger.trace("Advancing date to " + this.ukDateParser.format(this.simTime.getTime()));
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Advancing date to " + this.ukDateParser.format(this.simTime.getTime()));
+		}
 	}
 
 	@ScheduledMethod(start = (48 * 365 * 7), interval = 0, shuffle = true, priority = ScheduleParameters.LAST_PRIORITY)
@@ -128,7 +137,10 @@ public class AdoptionContext extends CascadeContext
 		for (Object thisH : this.getObjects(Household.class))
 		{
 			Household h = (Household) thisH;
-			this.logger.trace(h.getAgentName() + " has had " + h.getNumThoughts());
+			if (this.logger.isTraceEnabled())
+			{
+				this.logger.trace(h.getAgentName() + " has had " + h.getNumThoughts());
+			}
 		}
 		RepastEssentials.EndSimulationRun();
 		this.logger = null; // remove reference to logger, so context can be
@@ -148,15 +160,24 @@ public class AdoptionContext extends CascadeContext
 		Date now = this.getDateTime();
 
 		retVal = this.PVFITs.getFirstKeyFollowing(now);
-		this.logger.debug("Finding key following " + this.ukDateParser.format(now));
+		if (this.logger.isDebugEnabled())
+		{
+			this.logger.debug("Finding key following " + this.ukDateParser.format(now));
+		}
 
 		if (retVal == null)
 		{
-			this.logger.debug("return last valid date as appears " + this.ukDateParser.format(now) + " is past last key");
+			if (this.logger.isDebugEnabled())
+			{
+				this.logger.debug("return last valid date as appears " + this.ukDateParser.format(now) + " is past last key");
+			}
 			retVal = this.PVFITs.getLastValidDate();
 		}
 
-		this.logger.debug("Returning  = " + this.ukDateParser.format(retVal));
+		if (this.logger.isDebugEnabled())
+		{
+			this.logger.debug("Returning  = " + this.ukDateParser.format(retVal));
+		}
 
 		return retVal;
 	}
@@ -186,7 +207,10 @@ public class AdoptionContext extends CascadeContext
 	{
 		Date now = this.getDateTime();
 
-		this.logger.trace("Getting PV tariff for capacity" + cap + " on date " + this.ukDateParser.format(now));
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Getting PV tariff for capacity" + cap + " on date " + this.ukDateParser.format(now));
+		}
 
 		if (now.before(this.PVFITs.getFirstDate()))
 		{
@@ -206,21 +230,33 @@ public class AdoptionContext extends CascadeContext
 			retVal = tariffNow.get(tariffNow.firstKey());
 		}
 
-		this.logger.trace("returning fit for capacity " + cap + " = " + retVal);
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("returning fit for capacity " + cap + " = " + retVal);
+		}
 		return retVal;
 	}
 
 	int getAgentCount(Class clazz)
 	{
-		this.logger.trace("Get Agent count for " + clazz.getName() + " called.");
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Get Agent count for " + clazz.getName() + " called.");
+		}
 		String className = clazz.getName();
 		if (this.agentCounts.containsKey(className))
 		{
-			this.logger.trace("Returning cached value");
+			if (this.logger.isTraceEnabled())
+			{
+				this.logger.trace("Returning cached value");
+			}
 			return this.agentCounts.get(className);
 		}
 
-		this.logger.trace("Counting and adding to cache");
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Counting and adding to cache");
+		}
 		int count = this.getObjects(clazz).size();
 		this.agentCounts.put(className, count);
 		return count;
@@ -235,17 +271,32 @@ public class AdoptionContext extends CascadeContext
 	 */
 	public double getAdoptionPercentage()
 	{
-		this.logger.trace("Get percentage called at " + System.nanoTime());
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Get percentage called at " + System.nanoTime());
+		}
 		Query<Household> adoptionQuery = new PropertyEquals<Household>(this, "hasPV", true);
 		Iterable<Household> agentsWithPV = adoptionQuery.query();
 		double ret = IterableUtils.count(agentsWithPV);
-		this.logger.trace("Got count at " + System.nanoTime());
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Got count at " + System.nanoTime());
+		}
 
-		this.logger.trace("Agents with PV count = " + ret);
-		this.logger.trace("Total = " + this.getAgentCount(Household.class));
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Agents with PV count = " + ret);
+		}
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Total = " + this.getAgentCount(Household.class));
+		}
 		ret *= 100;
 		ret /= this.getAgentCount(Household.class);
-		this.logger.trace("percentage = " + ret);
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("percentage = " + ret);
+		}
 		return ret;
 	}
 
@@ -344,7 +395,10 @@ public class AdoptionContext extends CascadeContext
 	{
 		Date now = this.getDateTime();
 
-		this.logger.trace("Getting PV price per kWh on date " + this.ukDateParser.format(now));
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Getting PV price per kWh on date " + this.ukDateParser.format(now));
+		}
 
 		if (now.before(this.PVCosts.getFirstDate()))
 		{

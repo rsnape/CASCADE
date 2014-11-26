@@ -153,7 +153,7 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		}
 
 		Date rightNow = this.mainContext.getDateTime();
-		
+
 		if (RandomHelper.nextDouble() < this.mainContext.dailyChanceOfFailure)
 		{
 			this.heatingBroken = true;
@@ -188,13 +188,16 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 				}
 				else
 				{
-					this.nextCogniscentDate.setTime(rightNow.getTime() + ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
+					this.nextCogniscentDate.setTime(rightNow.getTime()
+							+ ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
 				}
 			}
 		}
-		
-		// Only allow heating failure to last max 7 days between September and April
-		// This is equivalent to saying that they fix or re-install their incumbent
+
+		// Only allow heating failure to last max 7 days between September and
+		// April
+		// This is equivalent to saying that they fix or re-install their
+		// incumbent
 		// technology
 		if ((rightNow.getMonth() > 8 || rightNow.getMonth() < 5) && this.daysBroken > 7)
 		{
@@ -206,7 +209,11 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 	private void considerOptions()
 	{
 		this.RHIlikelihood = this.microgenPropensity;
-		this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.RHIlikelihood + "...");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.RHIlikelihood
+					+ "...");
+		}
 
 		double benefitInPence = this.checkEconomics();
 
@@ -215,10 +222,18 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 			// habit change - introducing a longer term feedback,
 			// should be equivalent to norm shifting over the population.
 			this.microgenPropensity = this.RHIlikelihood;
-			this.mainContext.logger.trace("Updating propensity, i.e. changing habit, based on likelihood");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Updating propensity, i.e. changing habit, based on likelihood");
+			}
+
 		}
 
-		this.mainContext.logger.trace(this.agentName + " making decision based on likelihood of " + this.RHIlikelihood + "...");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.agentName + " making decision based on likelihood of " + this.RHIlikelihood + "...");
+		}
+
 		this.makeDecision(benefitInPence);
 	}
 
@@ -251,27 +266,29 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 				// will consider the option at all if payback < the 7 years of
 				// the scheme -
 				// without this, the economics will not be considered.
-				this.mainContext.logger.debug("possible install - considering neighbours or exceptionally short payback");
-				
-				//PUt in all the influencing factors (+ve is good)
-				
+				if (this.mainContext.logger.isDebugEnabled())
+				{
+					this.mainContext.logger.debug("possible install - considering neighbours or exceptionally short payback");
+				}
+
+				// PUt in all the influencing factors (+ve is good)
+
 				double paybackInfluence = 1 - paybackYears / 7;
 				double hassleInfluence = 1 - this.mainContext.getHassleFactor(this.RHIEligibleHeatingTechnology);
-				
-				
+
 				double totalInfluence = wPay * paybackInfluence + wHassle * hassleInfluence + wSocial * neighbourInfluence;
-				
+
 				this.mainContext.logger.info("Testing " + totalInfluence + " against adoption threshold " + this.adoptionThreshold);
 				if (totalInfluence > this.adoptionThreshold)
 				{
 					this.setRHI();
 				}
-				
-				//Original simple condition produced realistic curves								
-				/*if (neighbourInfluence > 0 || paybackYears < 3)
-				{
-					this.setRHI();
-				}*/
+
+				// Original simple condition produced realistic curves
+				/*
+				 * if (neighbourInfluence > 0 || paybackYears < 3) {
+				 * this.setRHI(); }
+				 */
 			}
 		}
 
@@ -321,13 +338,21 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		// TODO: Need to refine positive and negative influence here,
 		// Not purely positive. Currently pretty naive - 50:50 add or subract
 
-		this.mainContext.logger.trace("Observing neighbours");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("Observing neighbours");
+		}
+
 		ArrayList<SimpleRHIAdopterHousehold> neighbours = this.getNeighbours();
 		int observedAdoption = 0;
 		int observed = 0;
 		for (SimpleRHIAdopterHousehold h : neighbours)
 		{
-			this.mainContext.logger.trace("Into observation loop");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Into observation loop");
+			}
+
 			boolean observe = (RandomHelper.nextDouble() > 0.5);
 			observe = true; // for testing
 
@@ -373,7 +398,11 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 					this.observedRadius, this);
 			this.myNeighboursCache = IterableUtils.Iterable2ArrayList(neighbourhood.query());
 			this.numCachedNeighbours = this.myNeighboursCache.size();
-			this.mainContext.logger.trace(this.getAgentName() + " found neighbours : " + this.myNeighboursCache.toString());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(this.getAgentName() + " found neighbours : " + this.myNeighboursCache.toString());
+			}
+
 		}
 
 		this.mainContext.logger.trace(this.getAgentName() + " has " + this.numCachedNeighbours + " neighbours : "
@@ -425,7 +454,10 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		this.agentName = "Household_" + this.agentID;
 		this.mainContext = context;
 		this.setStartDateAndFirstThought();
-		context.logger.debug(this.agentName + " initialised, first thought at " + this.nextCogniscentDate.toGMTString());
+		if (context.logger.isDebugEnabled())
+		{
+			context.logger.debug(this.agentName + " initialised, first thought at " + this.nextCogniscentDate.toGMTString());
+		}
 
 		if (RandomHelper.nextDouble() < 0.5)
 		{
@@ -435,13 +467,13 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		{
 			this.currentHeating = HEATING_TYPE.CALOR_GAS;
 		}
-		
+
 		getWeightsFromParamsIfAvailable();
 
 		this.yearHistoryHeatingEnergy = new double[Consts.DAYS_PER_YEAR];
 		Arrays.fill(this.yearHistoryHeatingEnergy, 50);
 	}
-	
+
 	private void getWeightsFromParamsIfAvailable()
 	{
 		try
@@ -451,7 +483,7 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		catch (IllegalParameterException e)
 		{
 			System.err.println(e.getMessage());
-			//Print error, but ignore - wPay will retain its default value.
+			// Print error, but ignore - wPay will retain its default value.
 		}
 
 		try
@@ -461,9 +493,9 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		catch (IllegalParameterException e)
 		{
 			System.err.println(e.getMessage());
-			//Print error, but ignore - wHassle will retain its default value.
+			// Print error, but ignore - wHassle will retain its default value.
 		}
-		
+
 		try
 		{
 			this.wSocial = (Double) RepastEssentials.GetParameter("wSocial");
@@ -471,9 +503,9 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		catch (IllegalParameterException e)
 		{
 			System.err.println(e.getMessage());
-			//Print error, but ignore - wSocial will retain its default value.
+			// Print error, but ignore - wSocial will retain its default value.
 		}
-		
+
 	}
 
 	public void setStartDateAndFirstThought()
@@ -481,7 +513,7 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		Date startTime = null;
 		try
 		{
-			startTime = (new SimpleDateFormat("dd/MM/yyyy")).parse("01/08/2014"); 
+			startTime = (new SimpleDateFormat("dd/MM/yyyy")).parse("01/08/2014");
 			// TODO:NastY -nasty -hard coded start date :(
 		}
 		catch (ParseException e)
@@ -491,7 +523,8 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 
 		// Date startTime = (Date) this.mainContext.simStartDate.clone();
 		// startTime.setTime(startTime.getTime() + ((long)
-		// (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));
+		// (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 *
+		// 1000)));
 		// this.nextCogniscentDate = startTime;
 
 		startTime.setTime(startTime.getTime() + ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * 24 * 60 * 60 * 1000)));

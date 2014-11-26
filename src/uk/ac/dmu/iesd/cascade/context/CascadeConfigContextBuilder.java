@@ -115,13 +115,20 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		NodeList marketElements = this.doc.getDocumentElement().getElementsByTagName("market");
 		if (marketElements.getLength() == 0)
 		{
-			this.cascadeMainContext.logger.debug("No market element found, so building market as default");
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug("No market element found, so building market as default");
+			}
 			this.buildMarket();
 		}
 		else
 		{
 			// TODO: should we handle multiple markets?
-			this.cascadeMainContext.logger.debug("Market element value : " + marketElements.item(0).getChildNodes().item(0).getNodeValue());
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug("Market element value : "
+						+ marketElements.item(0).getChildNodes().item(0).getNodeValue());
+			}
 			if (!marketElements.item(0).getChildNodes().item(0).getNodeValue().equals("false"))
 			{
 				this.buildMarket();
@@ -151,8 +158,14 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		}
 		catch (SAXParseException err)
 		{
-			this.cascadeMainContext.logger.debug("** Parsing error" + ", line " + err.getLineNumber() + ", uri " + err.getSystemId());
-			this.cascadeMainContext.logger.debug(" " + err.getMessage());
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug("** Parsing error" + ", line " + err.getLineNumber() + ", uri " + err.getSystemId());
+			}
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug(" " + err.getMessage());
+			}
 
 		}
 		catch (SAXException e)
@@ -179,9 +192,15 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 	 */
 	private void initializeProbabilityDistributions()
 	{
-		this.cascadeMainContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		if (this.cascadeMainContext.logger.isDebugEnabled())
+		{
+			this.cascadeMainContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		}
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		if (this.cascadeMainContext.logger.isTraceEnabled())
+		{
+			this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		}
 		this.cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
 		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
 				+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
@@ -482,7 +501,10 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		try
 		{
 			CSVReader baseProfileCSVReader = new CSVReader(dmu_BaseProfiles_File);
-			this.cascadeMainContext.logger.debug("baseProfileCSVReader created");
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug("baseProfileCSVReader created");
+			}
 			baseProfileCSVReader.parseByColumn();
 
 			this.mapOfTypeName2BaseProfileArray.put("DEM_LARGE", ArrayUtils.convertStringArrayToDoubleArray(baseProfileCSVReader
@@ -550,7 +572,10 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 		{
 			int occupancy = thisAgent.getNumOccupants();
 			double randomVar = RandomHelper.nextDouble();
-			this.cascadeMainContext.logger.trace("randomVar: " + randomVar);
+			if (this.cascadeMainContext.logger.isTraceEnabled())
+			{
+				this.cascadeMainContext.logger.trace("randomVar: " + randomVar);
+			}
 			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
 			{
 				thisAgent.hasWashingMachine = true;
@@ -585,7 +610,10 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 
 		if (CascadeContext.verbose)
 		{
-			this.cascadeMainContext.logger.debug("Percentages:");
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug("Percentages:");
+			}
 			this.cascadeMainContext.logger.debug("households with occupancy 1 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 1)).query())
 					/ householdProsumers.size());

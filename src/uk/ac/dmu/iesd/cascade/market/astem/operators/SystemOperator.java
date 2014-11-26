@@ -100,7 +100,10 @@ public class SystemOperator
 
 	private LinkedHashMap fetchPNs(ArrayList<ITrader> listOfITraders)
 	{
-		this.mainContext.logger.trace("------ SO: recievePNs");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("------ SO: recievePNs");
+		}
 		LinkedHashMap mapOfPNs = new LinkedHashMap();
 		for (ITrader bmu : listOfITraders)
 		{
@@ -112,7 +115,10 @@ public class SystemOperator
 	private double[] calculateNDF(LinkedHashMap<Integer, double[]> mapOfPNs)
 	{
 
-		this.mainContext.logger.trace("calculateNDF()");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("calculateNDF()");
+		}
 
 		double[][] arr_ij_pn = new double[CollectionUtils.numOfRowsWithNegValInCollection(mapOfPNs.values())][this.mainContext.ticksPerDay];
 		int i = 0;
@@ -132,7 +138,10 @@ public class SystemOperator
 	private double[] calculateINDGEN(LinkedHashMap<Integer, double[]> mapOfPNs)
 	{
 
-		this.mainContext.logger.trace("calculateINDGEN()");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("calculateINDGEN()");
+		}
 
 		double[][] arr_ij_pn = new double[CollectionUtils.numOfRowsWithPosValInCollection(mapOfPNs.values())][this.mainContext.ticksPerDay];
 		int i = 0;
@@ -146,7 +155,10 @@ public class SystemOperator
 			}
 		}
 
-		this.mainContext.logger.trace(ArrayUtils.toString(arr_ij_pn));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(ArrayUtils.toString(arr_ij_pn));
+		}
 
 		return ArraysUtils.sumOfCols2DDoubleArray(arr_ij_pn);
 	}
@@ -165,9 +177,15 @@ public class SystemOperator
 		for (ITrader bmu : listOfITraders)
 		{
 			sumOfMaxGen += bmu.getMaxGenCap();
-			this.mainContext.logger.trace("bmuMaxGenCap: " + bmu.getMaxGenCap());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("bmuMaxGenCap: " + bmu.getMaxGenCap());
+			}
 		}
-		this.mainContext.logger.trace("SumOfBmuMaxGenCap: " + sumOfMaxGen);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("SumOfBmuMaxGenCap: " + sumOfMaxGen);
+		}
 
 		for (int i = 0; i < indMargin.length; i++)
 		{
@@ -187,7 +205,10 @@ public class SystemOperator
 
 	private LinkedHashMap<IBMTrader, ArrayList<BOD>> fetchBODs(List<ITrader> listOfITraders)
 	{
-		this.mainContext.logger.trace("------ SO: fetchBOD");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("------ SO: fetchBOD");
+		}
 		// Received BOD are in the form of list
 		LinkedHashMap<IBMTrader, ArrayList<BOD>> map_IBMTrader2bod = new LinkedHashMap<IBMTrader, ArrayList<BOD>>();
 
@@ -275,7 +296,10 @@ public class SystemOperator
 
 	private void sendBOAtoEachIBMTrader(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs)
 	{
-		this.mainContext.logger.trace("SO: sendBOAtoEachBMU() called");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("SO: sendBOAtoEachBMU() called");
+		}
 
 		Set<IBMTrader> bmuSet = mapOfIBMTrader2ListOfBOAs.keySet();
 
@@ -288,7 +312,10 @@ public class SystemOperator
 
 	private void sendBOAtoSettlementCo(LinkedHashMap<IBMTrader, ArrayList<BOD>> mapOfIBMTrader2ListOfBOAs)
 	{
-		this.mainContext.logger.trace("SO: sendBOAtoSettlementCo() called");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("SO: sendBOAtoSettlementCo() called");
+		}
 		this.settlementCo.recieveBOAs(mapOfIBMTrader2ListOfBOAs); // @TODO: send
 																	// a
 																	// clone/copy
@@ -299,10 +326,12 @@ public class SystemOperator
 
 	/*
 	 * private void sendBOAtoEachBMU_old(List<BMU> listOfBMUs, HashMap<Integer,
-	 * ArrayList<BOD>> mapBMU_ID2ListOfBODs) {
-	 * this.mainContext.logger.debug("SO: sendBOAtoEachBMU() called");
+	 * ArrayList<BOD>> mapBMU_ID2ListOfBODs) { if ( *
+	 * this.mainContext.logger.isDebugEnabled()) {
+	 * this.mainContext.logger.debug("SO: sendBOAtoEachBMU() called"); } if ( *
+	 * this.mainContext.logger.isDebugEnabled()) {
 	 * this.mainContext.logger.debug("size of listOfBMUs: "+listOfBMUs.size());
-	 * this.mainContext.logger.debug("size of mapBMU_ID2ListOfBODs: "+
+	 * } this.mainContext.logger.debug("size of mapBMU_ID2ListOfBODs: "+
 	 * mapBMU_ID2ListOfBODs.size());
 	 * 
 	 * for (BMU bmu : listOfBMUs){ this.mainContext.logger.debug(bmu.getID()); }
@@ -446,7 +475,10 @@ public class SystemOperator
 	public void step()
 	{
 
-		this.mainContext.logger.trace("--SO: " + TestHelper.getEnvInfoInString(this.mainContext));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("--SO: " + TestHelper.getEnvInfoInString(this.mainContext));
+		}
 
 		// TestUtils.printPNs(map_PN);
 
@@ -457,7 +489,10 @@ public class SystemOperator
 			// this.list_BMU = getBMUList();
 			// this.list_IBMTrader = mainContext.getListOfRegisteredBMTraders();
 			this.list_ITrader = this.mainContext.getListOfTraders();
-			this.mainContext.logger.trace("list_ITrader.size: " + this.list_ITrader.size());
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("list_ITrader.size: " + this.list_ITrader.size());
+			}
 		}
 
 		// String[] labels={"NDF:", "INDGEN:", "IMBAL:", "INDMAR:"};
@@ -469,17 +504,29 @@ public class SystemOperator
 			this.map_dmuID2PN = this.fetchPNs(this.list_ITrader);
 			// TestHelper.printMapOfPNs(map_dmuID2PN);
 			this.arr_NDF = this.calculateNDF(this.map_dmuID2PN);
-			this.mainContext.logger.trace("NDF" + Arrays.toString(this.arr_NDF));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("NDF" + Arrays.toString(this.arr_NDF));
+			}
 			this.arr_INDGEN = this.calculateINDGEN(this.map_dmuID2PN); // indicated
 																		// generation
-			this.mainContext.logger.trace("indGEN" + Arrays.toString(this.arr_INDGEN));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("indGEN" + Arrays.toString(this.arr_INDGEN));
+			}
 
 			this.arr_IMBAL = this.calculateIMBAL(this.arr_NDF, this.arr_INDGEN); // imbalance
-			this.mainContext.logger.trace("IMBAL" + Arrays.toString(this.arr_IMBAL));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("IMBAL" + Arrays.toString(this.arr_IMBAL));
+			}
 
 			this.arr_INDMAR = this.calculateINDMAR(this.list_ITrader, this.arr_IMBAL); // idicator
 																						// margine
-			this.mainContext.logger.trace("IndMar" + Arrays.toString(this.arr_INDMAR));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("IndMar" + Arrays.toString(this.arr_INDMAR));
+			}
 
 			// TestHelper.writeOutput("SO_sp", true, arr_IMBAL);
 
@@ -494,7 +541,10 @@ public class SystemOperator
 			this.arr_NDF = this.calculateNDF(this.map_dmuID2PN);
 			this.arr_INDGEN = this.calculateINDGEN(this.map_dmuID2PN);
 			this.arr_IMBAL = this.calculateIMBAL(this.arr_NDF, this.arr_INDGEN);
-			this.mainContext.logger.trace("IMBAL" + Arrays.toString(this.arr_IMBAL));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("IMBAL" + Arrays.toString(this.arr_IMBAL));
+			}
 
 			this.arr_INDMAR = this.calculateINDMAR(this.list_ITrader, this.arr_IMBAL);
 			// TestHelper.writeOutput("SO_sp", true, labels, arr_NDF,
@@ -512,7 +562,10 @@ public class SystemOperator
 			this.arr_NDF = this.calculateNDF(this.map_dmuID2PN);
 			this.arr_INDGEN = this.calculateINDGEN(this.map_dmuID2PN);
 			this.arr_IMBAL = this.calculateIMBAL(this.arr_NDF, this.arr_INDGEN);
-			this.mainContext.logger.trace("IMBAL" + Arrays.toString(this.arr_IMBAL));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("IMBAL" + Arrays.toString(this.arr_IMBAL));
+			}
 
 			this.arr_INDMAR = this.calculateINDMAR(this.list_ITrader, this.arr_IMBAL);
 			// TestHelper.writeOutput("SO_sp", true, arr_IMBAL);
@@ -528,7 +581,10 @@ public class SystemOperator
 			this.arr_NDF = this.calculateNDF(this.map_dmuID2PN);
 			this.arr_INDGEN = this.calculateINDGEN(this.map_dmuID2PN);
 			this.arr_IMBAL = this.calculateIMBAL(this.arr_NDF, this.arr_INDGEN);
-			this.mainContext.logger.trace("IMBAL" + Arrays.toString(this.arr_IMBAL));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("IMBAL" + Arrays.toString(this.arr_IMBAL));
+			}
 
 			this.arr_INDMAR = this.calculateINDMAR(this.list_ITrader, this.arr_IMBAL);
 			// TestHelper.writeOutput("SO_sp", true, arr_IMBAL);
@@ -548,11 +604,20 @@ public class SystemOperator
 		{
 
 			this.map_IBMTrader2ListOfBODs = this.fetchBODs(this.list_ITrader);
-			this.mainContext.logger.trace(" ----printBOD before generatingBOAs ");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(" ----printBOD before generatingBOAs ");
+			}
 			// TestHelper.printMapListOfBODs(map_IBMTrader2ListOfBODs);
-			this.mainContext.logger.trace("arr_oldIMBAL" + Arrays.toString(this.arr_oldIMBAL));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("arr_oldIMBAL" + Arrays.toString(this.arr_oldIMBAL));
+			}
 			this.map_IBMTrader2ListOfBOAs = this.generateBOA(this.map_IBMTrader2ListOfBODs, settlementPeriod, this.arr_oldIMBAL);
-			this.mainContext.logger.trace(" ***printBOD AFTER generatingBOAs ");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(" ***printBOD AFTER generatingBOAs ");
+			}
 			// TestHelper.printMapListOfBODs(map_IBMTrader2ListOfBODs);
 			this.sendBOAtoEachIBMTrader(this.map_IBMTrader2ListOfBODs);
 			this.sendBOAtoSettlementCo(this.map_IBMTrader2ListOfBODs);
@@ -562,9 +627,18 @@ public class SystemOperator
 
 		if (settlementPeriod == 47)
 		{
-			this.mainContext.logger.debug("DEMAND: " + Arrays.toString(this.arr_NDF));
-			this.mainContext.logger.debug("GENERATION: " + Arrays.toString(this.arr_INDGEN));
-			this.mainContext.logger.debug("IMBALANCE: " + Arrays.toString(this.arr_IMBAL));
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("DEMAND: " + Arrays.toString(this.arr_NDF));
+			}
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("GENERATION: " + Arrays.toString(this.arr_INDGEN));
+			}
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("IMBALANCE: " + Arrays.toString(this.arr_IMBAL));
+			}
 			// TestHelper.printMapListOfBODs(map_IBMTrader2ListOfBOAs);
 		}
 

@@ -283,7 +283,9 @@ public class ProsumerFactory implements IProsumerFactory
 	 * = 0; while (custSegment < 1) { if (choiceVar < myDist.cdf(i)) {
 	 * custSegment = i; } i++; }
 	 * 
+	 * if ( * this.mainContext.logger.isDebugEnabled()) {
 	 * this.mainContext.logger.debug("DEFRA Customer segment is" + custSegment);
+	 * }
 	 * 
 	 * HouseholdProsumer prAgent =
 	 * this.createHouseholdProsumer(ArrayUtils.convertStringArrayToDoubleArray

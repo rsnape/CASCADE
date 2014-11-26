@@ -261,9 +261,15 @@ public class BasicTestContextBuilder implements ContextBuilder<Object>
 	 */
 	private void initializeProbabilityDistributions()
 	{
-		this.cascadeMainContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		if (this.cascadeMainContext.logger.isDebugEnabled())
+		{
+			this.cascadeMainContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		}
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		if (this.cascadeMainContext.logger.isTraceEnabled())
+		{
+			this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		}
 		this.cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
 		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
 				+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
@@ -358,7 +364,10 @@ public class BasicTestContextBuilder implements ContextBuilder<Object>
 		try
 		{
 			CSVReader baseProfileCSVReader = new CSVReader(dmu_BaseProfiles_File);
-			this.cascadeMainContext.logger.debug("baseProfileCSVReader created");
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug("baseProfileCSVReader created");
+			}
 			baseProfileCSVReader.parseByColumn();
 
 			mapOfTypeName2BaseProfileArray.put("DEM_LARGE", ArrayUtils.convertStringArrayToDoubleArray(baseProfileCSVReader

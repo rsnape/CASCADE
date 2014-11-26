@@ -278,17 +278,16 @@ public class RHIContext extends AdoptionContext
 		// = 3.6)
 		RHIContext.heatingCostPerkWh.put(HEATING_TYPE.SOLAR_THERMAL, 0.0); // Water
 																			// only
-		
+
 		this.hassleFactors = new WeakHashMap<Consts.HEATING_TYPE, Double>();
 		this.hassleFactors.put(HEATING_TYPE.AIR_SOURCE_HP, 0.7);
 		this.hassleFactors.put(HEATING_TYPE.BIOMASS, 0.5);
-		this.hassleFactors.put(HEATING_TYPE.CALOR_GAS, 0.1);		
+		this.hassleFactors.put(HEATING_TYPE.CALOR_GAS, 0.1);
 		this.hassleFactors.put(HEATING_TYPE.ELECTRIC_STORAGE, 0.3);
 		this.hassleFactors.put(HEATING_TYPE.GND_SOURCE_HP, 0.9);
 		this.hassleFactors.put(HEATING_TYPE.GRID_GAS, 0.1);
-		this.hassleFactors.put(HEATING_TYPE.OIL, 0.2);		
+		this.hassleFactors.put(HEATING_TYPE.OIL, 0.2);
 		this.hassleFactors.put(HEATING_TYPE.SOLAR_THERMAL, 0.4);
-
 
 	}
 
@@ -381,11 +380,17 @@ public class RHIContext extends AdoptionContext
 	 */
 	private int getNumberWith(HEATING_TYPE t)
 	{
-		this.logger.trace("Get number called at " + System.nanoTime());
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Get number called at " + System.nanoTime());
+		}
 		Query<RHIAdopterHousehold> adoptionQuery = new PropertyEquals<RHIAdopterHousehold>(this, "RHIEligibleHeatingOwned", t);
 		Iterable<RHIAdopterHousehold> agentsWithTypeT = adoptionQuery.query();
 		int ret = IterableUtils.count(agentsWithTypeT);
-		this.logger.trace("Got count at " + System.nanoTime() + " = " + ret);
+		if (this.logger.isTraceEnabled())
+		{
+			this.logger.trace("Got count at " + System.nanoTime() + " = " + ret);
+		}
 		return ret;
 	}
 
@@ -456,7 +461,10 @@ public class RHIContext extends AdoptionContext
 		Date retVal = new Date();
 		Date now = this.getDateTime();
 
-		this.logger.debug("Finding key following " + this.ukDateParser.format(now));
+		if (this.logger.isDebugEnabled())
+		{
+			this.logger.debug("Finding key following " + this.ukDateParser.format(now));
+		}
 
 		retVal = this.assesmentDates.getFirstKeyFollowing(now);
 
@@ -508,7 +516,7 @@ public class RHIContext extends AdoptionContext
 	}
 
 	public WeakHashMap<HEATING_TYPE, Double> hassleFactors;
-	
+
 	/**
 	 * @param rhiEligibleHeatingTechnology
 	 * @return

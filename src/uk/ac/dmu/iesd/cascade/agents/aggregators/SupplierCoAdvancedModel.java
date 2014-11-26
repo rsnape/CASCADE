@@ -390,8 +390,14 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	{
 		double sumDemand = 0d;
 
-		this.mainContext.logger.debug(" ====updateHistoryArray==== ");
-		this.mainContext.logger.debug("Entering loop through all customers to add their net Demands to history ");
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug(" ====updateHistoryArray==== ");
+		}
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("Entering loop through all customers to add their net Demands to history ");
+		}
 		for (ProsumerAgent a : customersList)
 		{
 			sumDemand = sumDemand + a.getNetDemand();
@@ -431,7 +437,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 */
 	private double[] calculateBADfromHistoryArray(double[][] hist_arr_2D)
 	{
-		this.mainContext.logger.debug("RECO: calcualteBADfromHistoy: hist_arrr_2D " + ArrayUtils.toString(hist_arr_2D));
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("RECO: calcualteBADfromHistoy: hist_arrr_2D " + ArrayUtils.toString(hist_arr_2D));
+		}
 		return ArrayUtils.avgCols2DDoubleArray(hist_arr_2D);
 	}
 
@@ -440,13 +449,19 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 
 		List<ProsumerAgent> customers = customersList;
 		double sumDemand = 0;
-		this.mainContext.logger.debug(" customers list size: " + customers.size() + " - entering loop to add all net demands");
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug(" customers list size: " + customers.size() + " - entering loop to add all net demands");
+		}
 		for (ProsumerAgent a : customers)
 		{
 			sumDemand = sumDemand + a.getNetDemand();
 		}
 		this.setNetDemand(sumDemand);
-		this.mainContext.logger.debug("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+		}
 
 		return sumDemand;
 	}
@@ -609,20 +624,29 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		catch (@SuppressWarnings("deprecation") OptimizationException e)
 		{
 			System.err.println("Optimization Exception");
-			this.mainContext.logger.debug("RECO: Apache Optim Exc (Optim exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("RECO: Apache Optim Exc (Optim exc): " + e.getCause());
+			}
 		}
 		catch (FunctionEvaluationException e)
 		{
 			System.err.println("Functino eval Exception");
 
-			this.mainContext.logger.debug("RECO: Apache Optim Exc (Funct eval exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("RECO: Apache Optim Exc (Funct eval exc): " + e.getCause());
+			}
 		}
 
 		catch (IllegalArgumentException e)
 		{
 			System.err.println("Illegal arg exception");
 
-			this.mainContext.logger.debug("RECO: Apache Optim Exc (Illegal arg exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("RECO: Apache Optim Exc (Illegal arg exc): " + e.getCause());
+			}
 		}
 
 		this.mainContext.logger.debug("Optimisation converged on value " + minValue.getValue() + " at point " + minValue.getPoint()
@@ -639,7 +663,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	private void updateCumulativeSaving(double savingAmount)
 	{
 		int daysSoFar = this.mainContext.getDayCount();
-		this.mainContext.logger.trace("days so far: " + daysSoFar);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("days so far: " + daysSoFar);
+		}
 		if (daysSoFar > (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
 		{
 			this.cumulativeCostSaving += savingAmount;
@@ -778,7 +805,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 			double[][] arr_ij_k)
 	{
 
-		this.mainContext.logger.trace(" --REEA-- ");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" --REEA-- ");
+		}
 
 		double[] actualShift = ArrayUtils.add(arr_hist_1D, ArrayUtils.negate(arr_i_B));
 

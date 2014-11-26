@@ -396,11 +396,17 @@ public class OriginalProportionalWattboxController implements ISmartController
 				/ Consts.KWH_TO_JOULE_CONVERSION_FACTOR * (this.owner.waterSetPoint - ArrayUtils.min(Consts.MONTHLY_MAINS_WATER_TEMP))
 				/ Consts.DOMESTIC_HEAT_PUMP_WATER_COP);
 
-		this.owner.mainContext.logger.trace("hotWaterVolumeDemandProfile: " + Arrays.toString(this.hotWaterVolumeDemandProfile));
+		if (this.owner.mainContext.logger.isTraceEnabled())
+		{
+			this.owner.mainContext.logger.trace("hotWaterVolumeDemandProfile: " + Arrays.toString(this.hotWaterVolumeDemandProfile));
+		}
 
 		this.waterHeatDemandProfile = new double[baseArray.length];// Arrays.copyOf(baseArray,
 																	// baseArray.length);
-		this.owner.mainContext.logger.trace("waterHeatDemandProfile: " + Arrays.toString(this.waterHeatDemandProfile));
+		if (this.owner.mainContext.logger.isTraceEnabled())
+		{
+			this.owner.mainContext.logger.trace("waterHeatDemandProfile: " + Arrays.toString(this.waterHeatDemandProfile));
+		}
 
 		// this.owner.mainContext.logger.trace("spreadWaterDemand(baseArray) : "+
 		// Arrays.toString(spreadWaterDemand(baseArray)));
@@ -533,8 +539,14 @@ public class OriginalProportionalWattboxController implements ISmartController
 	 */
 	private void optimiseWetProfileProbabilistic(int timeStep)
 	{
-		this.owner.mainContext.logger.trace("==OptimiseWetProfil for a  " + this.owner.getAgentID() + "; timeStep: " + timeStep);
-		this.owner.mainContext.logger.trace("dayPredictedCostSignal: " + Arrays.toString(this.dayPredictedCostSignal));
+		if (this.owner.mainContext.logger.isTraceEnabled())
+		{
+			this.owner.mainContext.logger.trace("==OptimiseWetProfil for a  " + this.owner.getAgentID() + "; timeStep: " + timeStep);
+		}
+		if (this.owner.mainContext.logger.isTraceEnabled())
+		{
+			this.owner.mainContext.logger.trace("dayPredictedCostSignal: " + Arrays.toString(this.dayPredictedCostSignal));
+		}
 
 		if (ArrayUtils.max(this.dayPredictedCostSignal) == 0 && ArrayUtils.min(this.dayPredictedCostSignal) == 0)
 		{
@@ -556,9 +568,18 @@ public class OriginalProportionalWattboxController implements ISmartController
 						+ this.ticksPerDay);
 
 		int Tw = Consts.MAX_ALLOWED_WET_APP_MOVE;
-		this.owner.mainContext.logger.trace("BEFORE washer_loads_day: " + Arrays.toString(washer_loads_day));
-		this.owner.mainContext.logger.trace("BEFORE dryer_loads_day: " + Arrays.toString(dryer_loads_day));
-		this.owner.mainContext.logger.trace("BEFORE dishwasher_loads_day: " + Arrays.toString(dishwasher_loads_day));
+		if (this.owner.mainContext.logger.isTraceEnabled())
+		{
+			this.owner.mainContext.logger.trace("BEFORE washer_loads_day: " + Arrays.toString(washer_loads_day));
+		}
+		if (this.owner.mainContext.logger.isTraceEnabled())
+		{
+			this.owner.mainContext.logger.trace("BEFORE dryer_loads_day: " + Arrays.toString(dryer_loads_day));
+		}
+		if (this.owner.mainContext.logger.isTraceEnabled())
+		{
+			this.owner.mainContext.logger.trace("BEFORE dishwasher_loads_day: " + Arrays.toString(dishwasher_loads_day));
+		}
 
 		// Extract cycles
 		ArrayList<double[]> washCycles = new ArrayList<double[]>();
@@ -812,7 +833,10 @@ public class OriginalProportionalWattboxController implements ISmartController
 				// This profiel produces a value that exceeds the total capacity
 				// of the
 				// heat pump and is therefore unachievable.
-				this.owner.mainContext.logger.trace("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded);
+				if (this.owner.mainContext.logger.isTraceEnabled())
+				{
+					this.owner.mainContext.logger.trace("Nulling the demand profile for energy needed " + heatPumpEnergyNeeded);
+				}
 				// Can't satisfy this demand for this set point profile, return
 				// null
 				return null;

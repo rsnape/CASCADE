@@ -274,9 +274,15 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 	 */
 	private void initializeProbabilityDistributions()
 	{
-		this.cascadeMainContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		if (this.cascadeMainContext.logger.isDebugEnabled())
+		{
+			this.cascadeMainContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		}
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		if (this.cascadeMainContext.logger.isTraceEnabled())
+		{
+			this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		}
 		this.cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
 		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
 				+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
@@ -419,7 +425,10 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 		try
 		{
 			CSVReader baseProfileCSVReader = new CSVReader(dmu_BaseProfiles_File);
-			this.cascadeMainContext.logger.debug("baseProfileCSVReader created");
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug("baseProfileCSVReader created");
+			}
 			baseProfileCSVReader.parseByColumn();
 
 			mapOfTypeName2BaseProfileArray.put("DEM_LARGE", ArrayUtils.convertStringArrayToDoubleArray(baseProfileCSVReader
@@ -651,14 +660,26 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 
 		ProsumerFactory prosumerFactory = FactoryFinder.createProsumerFactory(this.cascadeMainContext);
 
-		this.cascadeMainContext.logger.debug("-----------------------------");
-		this.cascadeMainContext.logger.debug("% Of HHPros With Gas: " + this.percentageOfHHProsWithGas + "%");
+		if (this.cascadeMainContext.logger.isDebugEnabled())
+		{
+			this.cascadeMainContext.logger.debug("-----------------------------");
+		}
+		if (this.cascadeMainContext.logger.isDebugEnabled())
+		{
+			this.cascadeMainContext.logger.debug("% Of HHPros With Gas: " + this.percentageOfHHProsWithGas + "%");
+		}
 
 		int nbOfHHProsWithGas = (this.numProsumers * this.percentageOfHHProsWithGas) / 100;
 		int nbOfHHProsWithElectricty = this.numProsumers - nbOfHHProsWithGas;
 
-		this.cascadeMainContext.logger.debug("# of HHPros With Gas: " + nbOfHHProsWithGas);
-		this.cascadeMainContext.logger.debug("# of HHPros With Electricty: " + nbOfHHProsWithElectricty);
+		if (this.cascadeMainContext.logger.isDebugEnabled())
+		{
+			this.cascadeMainContext.logger.debug("# of HHPros With Gas: " + nbOfHHProsWithGas);
+		}
+		if (this.cascadeMainContext.logger.isDebugEnabled())
+		{
+			this.cascadeMainContext.logger.debug("# of HHPros With Electricty: " + nbOfHHProsWithElectricty);
+		}
 
 		double[] hhOtherDemandArray = null; // Other elastic demand profiles
 											// array consists of electricity
@@ -698,7 +719,10 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 
 		this.cascadeMainContext.logger.debug("Total # of HHPros added to context: "
 				+ this.cascadeMainContext.getObjects(HouseholdProsumer.class).size());
-		this.cascadeMainContext.logger.debug("-----------------------------");
+		if (this.cascadeMainContext.logger.isDebugEnabled())
+		{
+			this.cascadeMainContext.logger.debug("-----------------------------");
+		}
 
 	}
 
@@ -723,7 +747,10 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 		{
 			int occupancy = thisAgent.getNumOccupants();
 			double randomVar = RandomHelper.nextDouble();
-			this.cascadeMainContext.logger.trace("randomVar: " + randomVar);
+			if (this.cascadeMainContext.logger.isTraceEnabled())
+			{
+				this.cascadeMainContext.logger.trace("randomVar: " + randomVar);
+			}
 			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
 			{
 				thisAgent.hasWashingMachine = true;
@@ -758,7 +785,10 @@ public class BasicWithMarketTestContextBuilder implements ContextBuilder<Object>
 
 		if (CascadeContext.verbose)
 		{
-			this.cascadeMainContext.logger.debug("Percentages:");
+			if (this.cascadeMainContext.logger.isDebugEnabled())
+			{
+				this.cascadeMainContext.logger.debug("Percentages:");
+			}
 			this.cascadeMainContext.logger.debug("households with occupancy 1 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 1)).query())
 					/ householdProsumers.size());

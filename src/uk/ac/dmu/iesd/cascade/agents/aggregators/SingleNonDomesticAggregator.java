@@ -159,7 +159,10 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator
 		try
 		{
 			int offset = (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) * 48;
-			this.mainContext.logger.trace("-> " + (RepastEssentials.GetTickCount() - offset));
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("-> " + (RepastEssentials.GetTickCount() - offset));
+			}
 			if ((RepastEssentials.GetTickCount() - offset) == 0)
 			{
 				writer = new FileWriter("IndustriesAndCommercialOutput.csv", false);
@@ -234,7 +237,10 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator
 			int start = this.mainContext.getTickCount() - offset;
 			int end = start + this.lengthOfProfile;
 			int i = 0;
-			this.mainContext.logger.trace("[updateSingleNonDomesticPower()] From: " + start + " to: " + end);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("[updateSingleNonDomesticPower()] From: " + start + " to: " + end);
+			}
 			for (int j = start; j < end; j++)
 			{
 				this.SubsetOfNormaliseINDOPower[i] = this.NormaliseINDOPower[j % this.lengthOfProfile];
@@ -265,7 +271,10 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator
 		{
 			// System.out.print(totalSpaceHeatDemand[i] + ",");
 		}
-		this.mainContext.logger.debug("\n");
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("\n");
+		}
 
 		// update single non domestic demand
 		// double [] singleNonDomesticDemand = new double[this.ticksPerDay];
@@ -323,7 +332,10 @@ public class SingleNonDomesticAggregator extends BMPxTraderAggregator
 		int start = this.ticksPerDay * dayOfWeek;
 		int end = start + this.ticksPerDay;
 		int i = 0;
-		this.mainContext.logger.trace("[updateSingleNonDomesticDemand()] From: " + start + " to: " + end);
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("[updateSingleNonDomesticDemand()] From: " + start + " to: " + end);
+		}
 		for (int j = start; j < end; j++)
 		{
 			// convert from GW to kWh on half hourly timeslot

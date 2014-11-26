@@ -61,15 +61,24 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		this.readParamsAndInitializeArrays();
 		this.initializeProbabilityDistributions();
-		this.myContext.logger.debug("Got into the context builder");
-		this.myContext.logger.debug("Random seed is " + RepastEssentials.GetParameter("randomSeed").toString());
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Got into the context builder");
+		}
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Random seed is " + RepastEssentials.GetParameter("randomSeed").toString());
+		}
 
 		if (!context.isEmpty())
 		{
 			this.myContext.logger.warn("Context contains some stuff before the build!!");
 		}
 
-		this.myContext.logger.debug("Created Poisson distribution, ID " + this.myContext.nextThoughtGenerator.toString());
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Created Poisson distribution, ID " + this.myContext.nextThoughtGenerator.toString());
+		}
 		// myContext.setId("SmartGridTechnologyAdoption");
 		// myContext.setTypeID("SmartGridTechnologyAdoption");
 		/*
@@ -122,7 +131,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		Empirical myDist = RandomHelper.createEmpirical(ArrayUtils.convertStringArrayToDoubleArray(defraCategories
 				.getColumn("Population_fraction")), Empirical.NO_INTERPOLATION);
 
-		this.myContext.logger.trace("Empirical distribution set up to assign DEFRA categories by population fraction");
+		if (this.myContext.logger.isTraceEnabled())
+		{
+			this.myContext.logger.trace("Empirical distribution set up to assign DEFRA categories by population fraction");
+		}
 
 		ArrayList<Household> households;
 
@@ -183,7 +195,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 				j++;
 			}
 
-			this.myContext.logger.trace(thisHousehold.getAgentName() + "DEFRA Customer segment is" + custSegment);
+			if (this.myContext.logger.isTraceEnabled())
+			{
+				this.myContext.logger.trace(thisHousehold.getAgentName() + "DEFRA Customer segment is" + custSegment);
+			}
 
 			thisHousehold.defraCategory = Integer.parseInt(defraCategories.getColumn("DEFRA_category")[custSegment - 1]);
 			thisHousehold.economicAbility = Double.parseDouble(defraCategories.getColumn("Economic_ability")[custSegment - 1]);
@@ -201,18 +216,25 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 			thisHousehold.setAdoptionThreshold(0.2);
 			// thisHousehold.observedRadius = (RandomHelper.nextDouble() * 15);
 			thisHousehold.observedRadius = ObservationDist.nextDouble();
-			this.myContext.logger.debug(thisHousehold.getAgentName() + " observes " + thisHousehold.observedRadius);
+			if (this.myContext.logger.isDebugEnabled())
+			{
+				this.myContext.logger.debug(thisHousehold.getAgentName() + " observes " + thisHousehold.observedRadius);
+			}
 			this.myContext.logger.debug(thisHousehold.getAgentName() + " has " + thisHousehold.microgenPropensity
 					+ " and pre-assigned PV = " + thisHousehold.getHasPV());
 			tmp += thisHousehold.hasPV ? 1 : 0;
 		}
 
-		this.myContext.logger.debug(tmp + " households out of " + households.size() + " have PV");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug(tmp + " households out of " + households.size() + " have PV");
+		}
 		this.myContext.logger.info(households.size() + " Households initialized and added to context and geography");
 
 		/*
-		 * if (writeInitialShapefile) {
-		 * myContext.logger.trace("Writing shapefile of initial conditions");
+		 * if (writeInitialShapefile) { if ( *
+		 * myContext.logger.isTraceEnabled()) {
+		 * myContext.logger.trace("Writing shapefile of initial conditions"); }
 		 * 
 		 * ShapefileWriter testWriter = new ShapefileWriter(leicesterGeography);
 		 * File outFile = new File(
@@ -236,9 +258,15 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		{
 			loader = new ShapefileLoader<Household>(Household.class, file.toURL(), geog, this.myContext);
 			FileDataStoreFinder.getDataStore(file).dispose();
-			this.myContext.logger.debug("have shapefile initialised with " + file.toURL().toString() + ": starting load");
+			if (this.myContext.logger.isDebugEnabled())
+			{
+				this.myContext.logger.debug("have shapefile initialised with " + file.toURL().toString() + ": starting load");
+			}
 			loader.load();
-			this.myContext.logger.debug("Agents loaded");
+			if (this.myContext.logger.isDebugEnabled())
+			{
+				this.myContext.logger.debug("Agents loaded");
+			}
 		}
 		catch (IOException e)
 		{
@@ -509,7 +537,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		{
 			int occupancy = thisAgent.getNumOccupants();
 			double randomVar = RandomHelper.nextDouble();
-			this.myContext.logger.trace("randomVar: " + randomVar);
+			if (this.myContext.logger.isTraceEnabled())
+			{
+				this.myContext.logger.trace("randomVar: " + randomVar);
+			}
 			if ((occupancy >= 2 && randomVar < 0.85) || (occupancy == 1 && randomVar < 0.62))
 			{
 				thisAgent.hasWashingMachine = true;
@@ -543,7 +574,9 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		}
 
 		/*
-		 * if(myContext.verbose) { this.myContext.logger.debug("Percentages:");
+		 * if ( * if(myContext.verbose) {
+		 * this.myContext.logger.isDebugEnabled()) { if(myContext.verbose) {
+		 * this.myContext.logger.debug("Percentages:"); }
 		 * this.myContext.logger.debug("households with occupancy 1 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",1)).query()) / householdProsumers.size());
@@ -588,9 +621,15 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	 */
 	private void initializeProbabilityDistributions()
 	{
-		this.myContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Random seed is" + RandomHelper.getSeed());
+		}
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
-		this.myContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		if (this.myContext.logger.isTraceEnabled())
+		{
+			this.myContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
+		}
 		this.myContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
 		// if (Consts.DEBUG)
 		this.myContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
@@ -769,7 +808,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		FitVal.put(5000, 100);
 		this.myContext.PVFITs.putValue(this.myContext.parseUKDate("01/12/2012"), FitVal);
 
-		this.myContext.logger.debug("Tariffs set to" + this.myContext.PVFITs);
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("Tariffs set to" + this.myContext.PVFITs);
+		}
 
 	}
 
@@ -788,7 +830,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		// Create the household social network before other agent types are
 		// added to the context.
-		this.myContext.logger.debug("find network factory");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("find network factory");
+		}
 
 		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);
 
@@ -797,7 +842,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		// Economic network should be hierarchical aggregator to prosumer
 		// TODO: Decide what economic network between aggregators looks like?
 		// TODO: i.e. what is market design for aggregators?
-		this.myContext.logger.debug("create economic net");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("create economic net");
+		}
 
 		Network economicNet = networkFactory.createNetwork("economicNetwork", this.myContext, directed);
 
@@ -809,10 +857,16 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		// TODO: replace this with something better. Next iteration of code
 		// should probably take network design from a file
-		this.myContext.logger.debug("getting prosumer list");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("getting prosumer list");
+		}
 		Iterable<ProsumerAgent> agList = (this.myContext.getObjects(ProsumerAgent.class));
 
-		this.myContext.logger.debug("adding edges from list to supplier");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("adding edges from list to supplier");
+		}
 
 		for (ProsumerAgent prAgent : agList)
 		{
@@ -820,9 +874,15 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 															// computationally
 															// heavy. Why??
 			// infoNet.addEdge(firstAggregator, prAgent);
-			this.myContext.logger.trace("Added edge for " + prAgent.getAgentName());
+			if (this.myContext.logger.isTraceEnabled())
+			{
+				this.myContext.logger.trace("Added edge for " + prAgent.getAgentName());
+			}
 		}
-		this.myContext.logger.debug("setting economic net in context and returning");
+		if (this.myContext.logger.isDebugEnabled())
+		{
+			this.myContext.logger.debug("setting economic net in context and returning");
+		}
 
 		this.myContext.setEconomicNetwork(economicNet);
 
@@ -1045,7 +1105,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		// add time jitter
 		double jitterFactor = RandomHelper.nextDouble() - 0.5d;
 
-		this.myContext.logger.trace("ProsumerFactory: Applying jitter" + jitterFactor);
+		if (this.myContext.logger.isTraceEnabled())
+		{
+			this.myContext.logger.trace("ProsumerFactory: Applying jitter" + jitterFactor);
+		}
 
 		newProfile[0] = (jitterFactor * newProfile[0]) + ((1 - jitterFactor) * newProfile[newProfile.length - 1]);
 		for (int i = 1; i < (newProfile.length - 1); i++)

@@ -62,7 +62,10 @@ public class Initializer implements ModelInitializer
 			 */
 
 			CascadeContext cascadeContext = (CascadeContext) context;
-			cascadeContext.logger.trace("Initializer:: runInitialize method test: " + cascadeContext.getNbOfTickPerDay());
+			if (cascadeContext.logger.isTraceEnabled())
+			{
+				cascadeContext.logger.trace("Initializer:: runInitialize method test: " + cascadeContext.getNbOfTickPerDay());
+			}
 			GUIRegistry guiRegis = runState.getGUIRegistry();
 
 			RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
@@ -78,7 +81,10 @@ public class Initializer implements ModelInitializer
 			{
 				Pair<GUIRegistryType, Collection<JComponent>> typeAndCompPair = typeAndCompIter.next();
 				GUIRegistryType guiRegisType = typeAndCompPair.getFirst();
-				cascadeContext.logger.trace("guiRegisType: " + guiRegisType);
+				if (cascadeContext.logger.isTraceEnabled())
+				{
+					cascadeContext.logger.trace("guiRegisType: " + guiRegisType);
+				}
 				if (guiRegisType == GUIRegistryType.CHART)
 				{
 					Collection<JComponent> chartCollection = typeAndCompPair.getSecond();
@@ -90,17 +96,26 @@ public class Initializer implements ModelInitializer
 
 				}
 				Collection<JComponent> compCol = typeAndCompPair.getSecond();
-				cascadeContext.logger.trace("compCol: " + compCol);
+				if (cascadeContext.logger.isTraceEnabled())
+				{
+					cascadeContext.logger.trace("compCol: " + compCol);
+				}
 				Iterator<JComponent> compIter = compCol.iterator();
 				while (compIter.hasNext())
 				{
 					JComponent comp = compIter.next();
 					if (guiRegisType == GUIRegistryType.CHART)
 					{
-						cascadeContext.logger.trace("chartTitle: " + ((ChartPanel) comp).getChart().getTitle().getText());
+						if (cascadeContext.logger.isTraceEnabled())
+						{
+							cascadeContext.logger.trace("chartTitle: " + ((ChartPanel) comp).getChart().getTitle().getText());
+						}
 					}
 
-					cascadeContext.logger.trace(" Comp class: " + comp.getClass());
+					if (cascadeContext.logger.isTraceEnabled())
+					{
+						cascadeContext.logger.trace(" Comp class: " + comp.getClass());
+					}
 				}
 
 			}
@@ -134,7 +149,10 @@ public class Initializer implements ModelInitializer
 
 			// runParams.
 			// if (Consts.DEBUG)
-			cascadeContext.logger.trace("Initializer:: ChartSnapshotInterval: " + runParams.getValue("chartSnapshotInterval"));
+			if (cascadeContext.logger.isTraceEnabled())
+			{
+				cascadeContext.logger.trace("Initializer:: ChartSnapshotInterval: " + runParams.getValue("chartSnapshotInterval"));
+			}
 			// +++++++++++++++++++++++++++++++++++++
 
 		}

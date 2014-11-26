@@ -64,7 +64,10 @@ public class PowerExchange
 
 	private LinkedHashMap<IPxTrader, ArrayList<BSOD>> fetchBSOfromIPxTraders(List<IPxTrader> listOfIPxTraders)
 	{
-		this.mainContext.logger.trace("------ PX: fetchBSOD");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("------ PX: fetchBSOD");
+		}
 		// Received BSOD are in the form of list
 		LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSOD = new LinkedHashMap<IPxTrader, ArrayList<BSOD>>();
 
@@ -92,7 +95,10 @@ public class PowerExchange
 			LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTraders2ListOfBSODs)
 	{
 
-		this.mainContext.logger.trace("Px:: generateAcceptance()");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("Px:: generateAcceptance()");
+		}
 		ArrayList<ArrayList<BSOD>> buyersListOfBSODList = new ArrayList<ArrayList<BSOD>>();
 		ArrayList<ArrayList<BSOD>> sellersListOfBSODList = new ArrayList<ArrayList<BSOD>>();
 
@@ -169,29 +175,47 @@ public class PowerExchange
 			}
 		}
 
-		this.mainContext.logger.trace("BEfor sort: buyersBSODListPosVol:");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("BEfor sort: buyersBSODListPosVol:");
+		}
 		// TestHelper.printListOfBSOD(buyersBSODListPosVol);
 
-		this.mainContext.logger.trace("before sort: buyersBSODListNegVol:");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("before sort: buyersBSODListNegVol:");
+		}
 		// TestHelper.printListOfBSOD(buyersBSODListNegVol);
 
 		Collections.sort(buyersBSODListPosVol, SortComparatorUtils.PX_PRICE_ASCENDING_ORDER);
 		Collections.sort(buyersBSODListNegVol, SortComparatorUtils.PX_PRICE_ASCENDING_ORDER);
 
-		this.mainContext.logger.trace("AFter sort (buyers):");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("AFter sort (buyers):");
+		}
 		// TestHelper.printListOfBSOD(buyersBSODListPosVol);
 		// TestHelper.printListOfBSOD(buyersBSODListNegVol);
 
-		this.mainContext.logger.trace("BEfor sort: sellersBSODListPosVol:");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("BEfor sort: sellersBSODListPosVol:");
+		}
 		// TestHelper.printListOfBSOD(sellersBSODListPosVol);
 
-		this.mainContext.logger.trace("before sort: sellersBSODListNegVol:");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("before sort: sellersBSODListNegVol:");
+		}
 		// TestHelper.printListOfBSOD(sellersBSODListNegVol);
 
 		Collections.sort(sellersBSODListPosVol, SortComparatorUtils.PX_PRICE_DESCENDING_ORDER);
 		Collections.sort(sellersBSODListNegVol, SortComparatorUtils.PX_PRICE_DESCENDING_ORDER);
 
-		this.mainContext.logger.trace("AFter sort (sellers):");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("AFter sort (sellers):");
+		}
 		// TestHelper.printListOfBSOD(sellersBSODListPosVol);
 		// TestHelper.printListOfBSOD(sellersBSODListNegVol);
 
@@ -242,7 +266,10 @@ public class PowerExchange
 			}
 		}
 
-		this.mainContext.logger.trace(" Accepted BSODs: ");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(" Accepted BSODs: ");
+		}
 		// TestHelper.printMapListOfBSODs(mapOfBMUs2ListOfBSODs);
 
 		return mapOfIPxTraders2ListOfBSODs;
@@ -251,9 +278,18 @@ public class PowerExchange
 
 	private void sendAcceptanceToEachIPxTrader(LinkedHashMap<IPxTrader, ArrayList<BSOD>> mapOfIPxTrader2ListOfBSODs)
 	{
-		this.mainContext.logger.trace("PX: sendAcceptanceToEachBMU() called");
-		this.mainContext.logger.trace("size of listOfBMUs: " + this.list_IPxTrader.size());
-		this.mainContext.logger.trace("size of sendAcceptanceToEachBMU: " + this.map_dmu2ListOfBSOD.size());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("PX: sendAcceptanceToEachBMU() called");
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("size of listOfBMUs: " + this.list_IPxTrader.size());
+		}
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("size of sendAcceptanceToEachBMU: " + this.map_dmu2ListOfBSOD.size());
+		}
 
 		Set<IPxTrader> bmuSet = mapOfIPxTrader2ListOfBSODs.keySet();
 
@@ -331,7 +367,10 @@ public class PowerExchange
 				arr_MIP[i] = sumOfProducts[i] / sumOfVolumes[i];
 			}
 		}
-		this.mainContext.logger.trace("arr_MIP: " + Arrays.toString(arr_MIP));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("arr_MIP: " + Arrays.toString(arr_MIP));
+		}
 
 		return arr_MIP;
 	}
@@ -345,7 +384,10 @@ public class PowerExchange
 	public void step()
 	{
 
-		this.mainContext.logger.trace("--Px: " + TestHelper.getEnvInfoInString(this.mainContext));
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("--Px: " + TestHelper.getEnvInfoInString(this.mainContext));
+		}
 
 		int settlementPeriod = this.mainContext.getSettlementPeriod();
 
@@ -402,7 +444,10 @@ public class PowerExchange
 			 */
 			PowerExchange.arr_reversePrice = this.calculateMIP(this.arr_sumOfProductsTraded, this.arr_sumOfVolumesTraded);
 			this.messageBoard.setMIP(PowerExchange.arr_reversePrice);
-			this.mainContext.logger.trace(PowerExchange.arr_reversePrice[settlementPeriod]);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(PowerExchange.arr_reversePrice[settlementPeriod]);
+			}
 
 			Arrays.fill(this.arr_sumOfProductsTraded, 0);
 			Arrays.fill(this.arr_sumOfVolumesTraded, 0);

@@ -113,7 +113,10 @@ public class ConstantPlusElasticityProsumer extends ConstantLoadProsumer
 		this.mainContext.logger.debug("Setting demand from price " + this.getCurrentPrediction() + ", percentage price change "
 				+ percentChangeP + " and prior demand " + d0);
 		double newD = d0 * (percentChangeD + 2) / (2 - percentChangeD);
-		this.mainContext.logger.debug("Resulting in percentage demand change " + percentChangeD + " and new demand " + newD);
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("Resulting in percentage demand change " + percentChangeD + " and new demand " + newD);
+		}
 		this.setNetDemand(newD);
 		// p0 = this.getCurrentPrediction();
 	}
