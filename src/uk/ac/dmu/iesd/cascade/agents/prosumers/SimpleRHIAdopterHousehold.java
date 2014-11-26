@@ -9,6 +9,8 @@ import java.util.Date;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.parameter.IllegalParameterException;
 import repast.simphony.query.space.gis.GeographyWithin;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.Geography;
@@ -25,6 +27,10 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 	private int RHICapital = 5000000; // Budget in tenths of pence
 	private int smartContCapital = 750000;
 
+	// Weightings of the various influences
+	double wHassle = 0.3;
+	double wPay = 0.4;
+	double wSocial = 0.3;
 	private HEATING_TYPE RHIEligibleHeatingTechnology;
 
 	/**
@@ -146,14 +152,16 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 			}
 		}
 
+		Date rightNow = this.mainContext.getDateTime();
+		
 		if (RandomHelper.nextDouble() < this.mainContext.dailyChanceOfFailure)
 		{
 			this.heatingBroken = true;
 			this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime() - 1);
 		}
 
-		if (this.mainContext.getDateTime().getTime() > this.nextCogniscentDate.getTime()
-				&& this.mainContext.getDateTime().getTime() <= (this.nextCogniscentDate.getTime() + Consts.MSECS_PER_DAY))
+		if (rightNow.getTime() > this.nextCogniscentDate.getTime()
+				&& rightNow.getTime() <= (this.nextCogniscentDate.getTime() + Consts.MSECS_PER_DAY))
 		{
 			this.mainContext.logger.debug(this.getAgentName() + " Thinking with RHI ownership = " + this.getHasRHI() + "..."
 					+ this.RHIlikelihood);
@@ -175,15 +183,23 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 			{
 				if (this.heatingBroken)
 				{
-					this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime() + Consts.MSECS_PER_DAY - 1);
+					this.nextCogniscentDate.setTime(rightNow.getTime() + Consts.MSECS_PER_DAY - 1);
 					this.daysBroken++;
 				}
 				else
 				{
-					this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime()
-							+ ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
+					this.nextCogniscentDate.setTime(rightNow.getTime() + ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
 				}
 			}
+		}
+		
+		// Only allow heating failure to last max 7 days between September and April
+		// This is equivalent to saying that they fix or re-install their incumbent
+		// technology
+		if ((rightNow.getMonth() > 8 || rightNow.getMonth() < 5) && this.daysBroken > 7)
+		{
+			this.heatingBroken = false;
+			this.daysBroken = 0;
 		}
 	}
 
@@ -242,10 +258,6 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 				double paybackInfluence = 1 - paybackYears / 7;
 				double hassleInfluence = 1 - this.mainContext.getHassleFactor(this.RHIEligibleHeatingTechnology);
 				
-				// Weightings of the various influences
-				double wHassle = 0.6;
-				double wPay = 0.3;
-				double wSocial = 0.1;
 				
 				double totalInfluence = wPay * paybackInfluence + wHassle * hassleInfluence + wSocial * neighbourInfluence;
 				
@@ -423,9 +435,45 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		{
 			this.currentHeating = HEATING_TYPE.CALOR_GAS;
 		}
+		
+		getWeightsFromParamsIfAvailable();
 
 		this.yearHistoryHeatingEnergy = new double[Consts.DAYS_PER_YEAR];
 		Arrays.fill(this.yearHistoryHeatingEnergy, 50);
+	}
+	
+	private void getWeightsFromParamsIfAvailable()
+	{
+		try
+		{
+			this.wPay = (Double) RepastEssentials.GetParameter("wEconomic");
+		}
+		catch (IllegalParameterException e)
+		{
+			System.err.println(e.getMessage());
+			//Print error, but ignore - wPay will retain its default value.
+		}
+
+		try
+		{
+			this.wHassle = (Double) RepastEssentials.GetParameter("wHassle");
+		}
+		catch (IllegalParameterException e)
+		{
+			System.err.println(e.getMessage());
+			//Print error, but ignore - wHassle will retain its default value.
+		}
+		
+		try
+		{
+			this.wSocial = (Double) RepastEssentials.GetParameter("wSocial");
+		}
+		catch (IllegalParameterException e)
+		{
+			System.err.println(e.getMessage());
+			//Print error, but ignore - wSocial will retain its default value.
+		}
+		
 	}
 
 	public void setStartDateAndFirstThought()
