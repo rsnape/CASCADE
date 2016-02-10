@@ -28,8 +28,16 @@ public class RaspPiHousehold extends HouseholdProsumer {
 	String piURL = null;
 
 	private boolean fridgeOn = true;
+	
+	WeakHashMap<String, Boolean> deviceMap = new WeakHashMap<String, Boolean>();
 
 	private boolean heaterOn;
+
+	private boolean spaceHeaterOn;
+
+	private boolean upHeaterOn;
+
+	private boolean downHeaterOn;
 
 	@ScheduledMethod(start = 100, interval = 1)
 	public void controlThePi() {
@@ -40,17 +48,95 @@ public class RaspPiHousehold extends HouseholdProsumer {
 
 		setOptions();
 
+		if (timeOfDay >= 38 && timeOfDay < 43)
+		{
+			//switch on kids bedroom light
+			switchOnDevice("Bed2Light");
+			switchOnDevice("Bed3Light");
+		}
+		else
+		{
+			switchOffDevice("Bed2Light");
+			switchOffDevice("Bed3Light");
+		}
+
+		if (timeOfDay >= 43)
+		{
+			switchOnDevice("Bed1Light");
+		}
+		else
+		{
+			switchOffDevice("Bed1Light");
+		}
+
+		if (timeOfDay == 36 || timeOfDay == 37 || timeOfDay ==38 || timeOfDay == 43)
+		{
+			switchOnDevice("BathroomLight");
+		}
+		else
+		{
+			switchOffDevice("BathroomLight");
+		}
+
+		if (timeOfDay >= 34)
+		{
+			switchOnDevice("LivingLight");
+		}
+		else
+		{
+			switchOffDevice("LivingLight");
+		}
+
+		if ((timeOfDay >= 34 && timeOfDay < 37) || (timeOfDay >= 14 && timeOfDay < 17))
+		{
+			switchOnDevice("KitchenLight");
+			switchOnDevice("DiningLight");
+		}
+		else
+		{
+			switchOffDevice("KitchenLight");
+			switchOffDevice("DiningLight");
+		}
+
+
 		if (this.getWaterHeatProfile()[timeOfDay] > 0.1) {
 			if (!heaterOn) {
-				switchOnHeat();
+				switchOnWaterHeat();
 			}
 		}
-		 else {
-			 if (heaterOn)
-			 {
-				switchOffHeat();
-			 }
+		else {
+			if (heaterOn)
+			{
+				switchOffWaterHeat();
 			}
+		}
+
+
+		if (this.getHistoricalSpaceHeatDemand()[timeOfDay] > 0.1){
+			if (timeOfDay > 32) {
+				if (!upHeaterOn) {
+					switchOnUpHeat();
+				}
+			}
+			else {
+				if (upHeaterOn)
+				{
+					switchOffUpHeat();
+				}
+			}
+
+			if (timeOfDay <46) {
+				if (!downHeaterOn) {
+					switchOnDownHeat();
+				}
+			}
+			else {
+				if (downHeaterOn)
+				{
+					switchOffDownHeat();
+				}
+			}	
+		}
 
 		if (this.isHasColdAppliances() && coldApplianceProfile != null) {
 			double fridgeLoad = 0;
@@ -58,12 +144,12 @@ public class RaspPiHousehold extends HouseholdProsumer {
 			if (this.isHasFridgeFreezer()) {
 				fridgeLoad = ((double[]) coldApplianceProfiles
 						.get(Consts.COLD_APP_FRIDGEFREEZER))[time
-						% coldApplianceProfile.length];
+						                                     % coldApplianceProfile.length];
 
 			} else {
 				fridgeLoad = ((double[]) coldApplianceProfiles
 						.get(Consts.COLD_APP_FRIDGE))[time
-						% coldApplianceProfile.length];
+						                              % coldApplianceProfile.length];
 			}
 
 			//System.err.print(fridgeLoad + ",");
@@ -84,27 +170,70 @@ public class RaspPiHousehold extends HouseholdProsumer {
 	@ScheduledMethod(start = 0, interval = 0, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 	public void probeSpecificAgent()
 	{
-//	if (this.getAgentID() == 1001)
-	{
-		ArrayList probed = new ArrayList();
-		probed.add(this);
-		List<IDisplay> listOfDisplays = RunState.getInstance().getGUIRegistry().getDisplays();
-		for (IDisplay display : listOfDisplays) {
+		//	if (this.getAgentID() == 1001)
+		{
+			ArrayList probed = new ArrayList();
+			probed.add(this);
+			List<IDisplay> listOfDisplays = RunState.getInstance().getGUIRegistry().getDisplays();
+			for (IDisplay display : listOfDisplays) {
 
-			if (display instanceof DisplayOGL2D)
-			{
-				((DisplayOGL2D) display).getProbeSupport().fireProbeEvent(this, probed);
+				if (display instanceof DisplayOGL2D)
+				{
+					((DisplayOGL2D) display).getProbeSupport().fireProbeEvent(this, probed);
+				}
 			}
 		}
 	}
-	}
-	
+
 	/**
 	 * 
 	 */
-	private void switchOffHeat() {
+	private void switchOffDevice(String deviceName) {
+		boolean currState = true;
+		if (deviceMap.containsKey(deviceName))
+		{
+			currState = deviceMap.get(deviceName);
+		}
+		
+		if (currState)
+		{
 		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
-		requestVars.put("device", "1");
+		requestVars.put("device", deviceName);
+		requestVars.put("value", "0");
+		sendPiRequest(requestVars);
+		}
+		
+		deviceMap.put(deviceName, false);
+
+	}
+
+	/**
+	 * 
+	 */
+	private void switchOnDevice(String deviceName) {
+		boolean currState = false;
+		if (deviceMap.containsKey(deviceName))
+		{
+			currState = deviceMap.get(deviceName);
+		}
+		
+		if (!currState)
+		{
+		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
+		requestVars.put("device", deviceName);
+		requestVars.put("value", "1");
+		sendPiRequest(requestVars);
+		}
+		
+		deviceMap.put(deviceName, true);
+	}
+
+	/**
+	 * 
+	 */
+	private void switchOffWaterHeat() {
+		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
+		requestVars.put("device", "HotWater");
 		requestVars.put("value", "0");
 		sendPiRequest(requestVars);
 		heaterOn = false;
@@ -114,12 +243,60 @@ public class RaspPiHousehold extends HouseholdProsumer {
 	/**
 	 * 
 	 */
-	private void switchOnHeat() {
+	private void switchOnWaterHeat() {
 		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
-		requestVars.put("device", "1");
+		requestVars.put("device", "HotWater");
 		requestVars.put("value", "1");
 		sendPiRequest(requestVars);
 		heaterOn = true;
+
+	}
+	
+	/**
+	 * 
+	 */
+	private void switchOffUpHeat() {
+		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
+		requestVars.put("device", "UpHeat");
+		requestVars.put("value", "0");
+		sendPiRequest(requestVars);
+		upHeaterOn = false;
+
+	}
+
+	/**
+	 * 
+	 */
+	private void switchOnUpHeat() {
+		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
+		requestVars.put("device", "UpHeat");
+		requestVars.put("value", "1");
+		sendPiRequest(requestVars);
+		upHeaterOn = true;
+
+	}
+	
+	/**
+	 * 
+	 */
+	private void switchOffDownHeat() {
+		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
+		requestVars.put("device", "DownHeat");
+		requestVars.put("value", "0");
+		sendPiRequest(requestVars);
+		downHeaterOn = false;
+
+	}
+
+	/**
+	 * 
+	 */
+	private void switchOnDownHeat() {
+		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
+		requestVars.put("device", "DownHeat");
+		requestVars.put("value", "1");
+		sendPiRequest(requestVars);
+		downHeaterOn = true;
 
 	}
 
@@ -156,9 +333,9 @@ public class RaspPiHousehold extends HouseholdProsumer {
 		// non-object oriented. Could do with a proper design methodology here.
 		if (this.hasSmartControl)
 			this.setWattboxController();
-		
+
 		this.setNumOccupants(2);
-		
+
 
 	}
 
@@ -219,7 +396,7 @@ public class RaspPiHousehold extends HouseholdProsumer {
 	public RaspPiHousehold(CascadeContext context, double[] otherDemandProfile) {
 		super(context, otherDemandProfile);
 
-		piURL = "http://10.14.140.211/action";
+		piURL = "http://192.168.1.100/action";
 	}
 
 

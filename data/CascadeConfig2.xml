@@ -23,13 +23,20 @@
 	<!-- Generate 3 aggregators with households instead of the SMALL_DEM generic aggregators -->
 	<aggregator
 		class="uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag"
-		number="2">
+		number="1">
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="500">
 			<lossRateMean>275</lossRateMean>
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
+		</prosumer>
+						<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.RaspPiHousehold"
+			number="1">
+			<lossRateMean>350</lossRateMean>
+			<lossRateSD>20</lossRateSD>
+			<thermalMassMean>10</thermalMassMean>
+			<thermalMassSD>1</thermalMassSD>
 		</prosumer>
 	</aggregator>
 </context>

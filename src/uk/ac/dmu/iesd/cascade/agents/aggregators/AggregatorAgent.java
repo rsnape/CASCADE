@@ -312,7 +312,6 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	public double getCurrentPriceSignal()
 	{
 		double time = RepastEssentials.GetTickCount();
-		this.mainContext.logger.trace(time+" getCurrentPriceSignal: "+priceSignal[(int) time % priceSignal.length]);
 		if (priceSignal == null || time < 0)
 		{
 			return 0;

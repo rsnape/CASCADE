@@ -47,6 +47,7 @@ import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveFlatDemand;
+import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveOvernightWind;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.TRAINING_S_SHAPE;
@@ -497,7 +498,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/*BMPxTraderAggregat
 
 		NelderMead apacheNelderMead = new NelderMead();
 
-		MinimisationFunctionObjectiveFlatDemand minFunct = new MinimisationFunctionObjectiveFlatDemand();
+		//MinimisationFunctionObjectiveFlatDemand minFunct = new MinimisationFunctionObjectiveFlatDemand();
+		MinimisationFunctionObjectiveOvernightWind minFunct = new MinimisationFunctionObjectiveOvernightWind();
 		
 		minFunct.set_pointer_to_B(arr_B);
 		minFunct.set_pointer_to_Kneg(Kneg);

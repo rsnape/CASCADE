@@ -28,7 +28,7 @@
 						defaultValue="48" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-									values="1 24 48 96 288 1440 "
+									values="24 48 "
 						
 		/>
 				<parameter name="RootDir" displayName="RootDir" type="java.lang.String" 
@@ -45,12 +45,6 @@
 		/>
 				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
 						defaultValue="oneFlatDayWeather.csv" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-									
-		/>
-				<parameter name="configFileName" displayName="configFileName" type="java.lang.String" 
-						defaultValue="CascadeConfig.xml" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -88,12 +82,18 @@
 						
 		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
-						defaultValue="dataFiles" 
+						defaultValue="data" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
 				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
+						defaultValue="false" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
+									
+		/>
+						<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
 						defaultValue="false" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
@@ -107,16 +107,21 @@
 						
 		/>
 				<parameter name="hhWithGasPercentage" displayName="householdsWithGas%" type="int" 
-						defaultValue="0" 
+						defaultValue="0"
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
-				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
-						defaultValue="false" 
+				<parameter name="loggingLevel" displayName="Logging level" type="java.lang.String" 
+						defaultValue="DEBUG" 
 						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
-									
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									values="TRACE DEBUG INFO WARN ERROR OFF "									
+		/>
+						<parameter name="configFileName" displayName="Config File name" type="java.lang.String" 
+						defaultValue="CascadeConfig1.xml" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 		/>
 		</parameters>
 

@@ -127,7 +127,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		ArrayList<Household> households;
 
-		boolean fromShapefile = false;
+		boolean fromShapefile = true;
 		
 		if (!fromShapefile)
 		{
