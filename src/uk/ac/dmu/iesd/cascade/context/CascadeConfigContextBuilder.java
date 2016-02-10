@@ -126,8 +126,10 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 			// TODO: should we handle multiple markets?
 			if (this.cascadeMainContext.logger.isDebugEnabled())
 			{
+if (				this.cascadeMainContext.logger.isDebugEnabled()) {
 				this.cascadeMainContext.logger.debug("Market element value : "
 						+ marketElements.item(0).getChildNodes().item(0).getNodeValue());
+}
 			}
 			if (!marketElements.item(0).getChildNodes().item(0).getNodeValue().equals("false"))
 			{
@@ -202,8 +204,10 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 			this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
 		}
 		this.cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
+if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
 				+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+}
 
 		this.cascadeMainContext.occupancyGenerator = RandomHelper
 				.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
@@ -614,42 +618,66 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 			{
 				this.cascadeMainContext.logger.debug("Percentages:");
 			}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 1 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 1)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 2 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 2)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 3 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 3)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 4 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 4)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 5 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 5)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 6 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 6)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 7 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 7)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 8 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 8)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("Washing Mach : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasWashingMachine", true)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("Washer Dryer : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasWasherDryer", true)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("Tumble Dryer: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasTumbleDryer", true)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("Dish Washer : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasDishWasher", true)).query())
 					/ householdProsumers.size());
+}
 		}
 	}
 
@@ -691,8 +719,10 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 	 * ArrayList prosumersWithElecWaterHeatList =
 	 * IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
 	 * 
+if (	 * this.cascadeMainContext.logger.isTraceEnabled()) {
 	 * this.cascadeMainContext.logger.trace("ArrayList.size: WaterHeat "+
 	 * prosumersWithElecWaterHeatList.size());
+}
 	 * AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true,
 	 * prosumersWithElecWaterHeatList.iterator());
 	 * 
@@ -785,27 +815,43 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 
 		if (CascadeContext.verbose)
 		{
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with Fridge: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasRefrigerator", true)).query()));
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with FridgeFreezer: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasFridgeFreezer", true)).query()));
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with UprightFreezer: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasUprightFreezer", true)).query()));
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with ChestFreezer: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasChestFreezer", true)).query()));
+}
 
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with Fridge %: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasRefrigerator", true)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with FridgeFreezer %: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasFridgeFreezer", true)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with UprightFreezer %: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasUprightFreezer", true)).query())
 					/ householdProsumers.size());
+}
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with ChestFreezer %: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasChestFreezer", true)).query())
 					/ householdProsumers.size());
+}
 		}
 	}
 

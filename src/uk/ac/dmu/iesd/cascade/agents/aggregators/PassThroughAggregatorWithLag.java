@@ -115,8 +115,10 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		if (mip != null)
 		{
 			this.laggedPrice[this.laggedPrice.length - 1] = mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay];
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug("Added MIP to lagged array = "
 					+ mip[this.mainContext.getTickCount() % this.mainContext.ticksPerDay]);
+}
 			if (this.mainContext.logger.isDebugEnabled())
 			{
 				this.mainContext.logger.debug("BMP = " + this.messageBoard.getBMP());

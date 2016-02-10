@@ -127,19 +127,25 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		if (this.mainContext.getDateTime().getTime() > this.nextCogniscentDate.getTime()
 				&& this.mainContext.getDateTime().getTime() <= (this.nextCogniscentDate.getTime() + Consts.MSECS_PER_DAY))
 		{
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug(this.getAgentName() + " Thinking with RHI ownership = " + this.getHasRHI() + "..."
 					+ this.RHIlikelihood);
+}
 			this.considerOptions(); // Could make the consideration further
 									// probabilistic...
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug("Resulting in RHI ownership = " + this.getHasRHI() + ", likelihood:" + this.RHIlikelihood
 					+ ", neightbours:" + this.numCachedNeighbours);
+}
 
 			// this.myGeography.move(this, this.myGeography.getGeometry(this));
 			this.numThoughts++;
 			this.decisionUrgency = Math.exp(-((this.mainContext.dateToTick(this.mainContext.getRHIAvailableUntil()) - this.mainContext
 					.getTickCount()) / (this.mainContext.ticksPerDay * 28)));
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug("New decision urgency = " + this.decisionUrgency + " from tariff available until tick: "
 					+ this.mainContext.dateToTick(this.mainContext.getRHIAvailableUntil()));
+}
 			this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime()
 					+ ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
 		}
@@ -150,8 +156,10 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 		this.RHIlikelihood = this.microgenPropensity;
 		if (this.mainContext.logger.isTraceEnabled())
 		{
+if (			this.mainContext.logger.isTraceEnabled()) {
 			this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.RHIlikelihood
 					+ "...");
+}
 		}
 		this.checkTariffs();
 		this.calculateSCT();
@@ -226,8 +234,10 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 
 	private void makeDecision()
 	{
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(this.getAgentName() + " has microgen propensity " + this.microgenPropensity
 				+ " and RHI adoption likelihood " + this.RHIlikelihood);
+}
 
 		this.RHIDecisionModel.setAbsoluteBehaviourThreshold(this.getAdoptionThreshold());
 		this.RHIDecisionModel.calculateBehaviour();
@@ -322,8 +332,10 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 			}
 		}
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace("Returninglikelihood to agent " + this.getAgentName() + " based on " + observedAdoption + " of "
 				+ this.numCachedNeighbours + " neighbours observed to have RHI (" + observed + " observed this round)");
+}
 
 		// Likelihood of adopting now - based on observation alone
 		// Note that the 0.5 is an arbitrary and tunable parameter.
@@ -350,8 +362,10 @@ public class RHIAdopterHousehold extends HouseholdProsumer
 			}
 		}
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(this.getAgentName() + " has " + this.numCachedNeighbours + " neighbours : "
 				+ this.myNeighboursCache.toString());
+}
 
 		return this.myNeighboursCache;
 	}

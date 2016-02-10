@@ -271,8 +271,10 @@ public class BasicTestContextBuilder implements ContextBuilder<Object>
 			this.cascadeMainContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
 		}
 		this.cascadeMainContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
+if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 		this.cascadeMainContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
 				+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+}
 
 		this.cascadeMainContext.occupancyGenerator = RandomHelper
 				.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
@@ -325,9 +327,11 @@ public class BasicTestContextBuilder implements ContextBuilder<Object>
 			ConstantPlusElasticityProsumer p = new ConstantPlusElasticityProsumer(this.cascadeMainContext, RandomHelper.nextDouble());
 		}
 
+if (		this.cascadeMainContext.logger.isDebugEnabled()) {
 		this.cascadeMainContext.logger.debug("context now has "
 				+ this.cascadeMainContext.getObjects(ConstantPlusElasticityProsumer.class).size() + " prosumers and "
 				+ this.cascadeMainContext.getObjects(EquationBasedPriceAggregator.class).size() + " aggregators");
+}
 
 		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null);
 
@@ -481,8 +485,10 @@ public class BasicTestContextBuilder implements ContextBuilder<Object>
 
 		if (CascadeContext.verbose)
 		{
+if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("CascadeContextBuilder: Cascade Main Context created: "
 					+ this.cascadeMainContext.toString());
+}
 		}
 
 		return this.cascadeMainContext;

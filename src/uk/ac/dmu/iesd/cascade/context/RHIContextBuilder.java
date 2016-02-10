@@ -240,15 +240,16 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 			}
 			// thisHousehold.hasPV=false; //pre-initialise No PV
 
-			thisHousehold.setAdoptionThreshold(0.25); // 0.5 too fast, 0.75 too
-														// slow.
+			thisHousehold.setAdoptionThreshold(0.5); 
 			thisHousehold.observedRadius = ObservationDist.nextDouble();
 			if (this.myContext.logger.isDebugEnabled())
 			{
 				this.myContext.logger.debug(thisHousehold.getAgentName() + " observes " + thisHousehold.observedRadius);
 			}
+if (			this.myContext.logger.isDebugEnabled()) {
 			this.myContext.logger.debug(thisHousehold.getAgentName() + " has " + thisHousehold.microgenPropensity
 					+ " and pre-assigned RHI tech = " + thisHousehold.getHasRHI());
+}
 			tmp += thisHousehold.getHasRHI() ? 1 : 0;
 		}
 
@@ -569,39 +570,61 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		 * if ( * if(myContext.verbose) {
 		 * this.myContext.logger.isDebugEnabled()) { if(myContext.verbose) {
 		 * this.myContext.logger.debug("Percentages:"); }
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 1 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",1)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 2 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",2)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 3 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",3)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 4 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",4)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 5 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",5)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 6 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",6)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 7 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",7)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 8 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",8)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("Washing Mach : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasWashingMachine",true)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("Washer Dryer : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasWasherDryer",true)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("Tumble Dryer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasTumbleDryer",true)).query()) / householdProsumers.size());
+}
 		 * this.myContext.logger.debug("Dish Washer : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasDishWasher",true)).query()) / householdProsumers.size()); }
@@ -624,8 +647,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 		}
 		this.myContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
 		// if (Consts.DEBUG)
+if (		this.myContext.logger.isTraceEnabled()) {
 		this.myContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
 				+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+}
 
 		this.myContext.occupancyGenerator = RandomHelper
 				.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
@@ -662,8 +687,10 @@ public class RHIContextBuilder implements ContextBuilder<SimpleRHIAdopterHouseho
 	 * ArrayList prosumersWithElecWaterHeatList =
 	 * IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
 	 * 
+if (	 * this.myContext.logger.isTraceEnabled()) {
 	 * this.myContext.logger.trace("ArrayList.size: WaterHeat "+
 	 * prosumersWithElecWaterHeatList.size());
+}
 	 * AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true,
 	 * prosumersWithElecWaterHeatList.iterator());
 	 * 

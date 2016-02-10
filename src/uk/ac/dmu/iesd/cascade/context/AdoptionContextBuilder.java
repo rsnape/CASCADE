@@ -3,6 +3,7 @@ package uk.ac.dmu.iesd.cascade.context;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
@@ -24,6 +25,7 @@ import repast.simphony.query.Query;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.gis.DefaultGeography;
 import repast.simphony.space.gis.ShapefileLoader;
+import repast.simphony.space.gis.ShapefileWriter;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.util.collections.IndexedIterable;
@@ -47,7 +49,7 @@ import com.vividsolutions.jts.geom.Point;
 public class AdoptionContextBuilder implements ContextBuilder<Household>
 {
 
-	boolean writeInitialShapefile = false;
+	boolean writeInitialShapefile = true;
 	private Parameters params; // parameters for the model run environment
 	private AdoptionContext myContext;
 	WeakHashMap<Integer, double[]> map_nbOfOccToOtherDemand;
@@ -98,8 +100,9 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		 */
 		CSVReader defraCategories = null;
 		CSVReader defraProfiles = null;
-		String dataDirectory = "data"; // TODO: commonise this with other
-										// CASCADE builders - read from params
+		this.params = RunEnvironment.getInstance().getParameters();
+		String dataFileFolderPath = (String) this.params.getValue("dataFileFolder");
+		String dataDirectory = dataFileFolderPath; 
 		String categoryFile = dataDirectory + "/DEFRA_pro_env_categories.csv";
 		String profileFile = dataDirectory + "/200profiles.csv";
 		try
@@ -138,7 +141,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		ArrayList<Household> households;
 
-		boolean fromShapefile = false;
+		boolean fromShapefile = true;
 
 		if (!fromShapefile)
 		{
@@ -160,10 +163,19 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 			if (fromShapefile)
 			{
 				// Shapefile loader can't assign the context or call constructor
-				// that
-				// does so (or indeed sets up the basic profiles).
+				// that  does so (or indeed sets up the basic profiles), so that code
+				// is replicated here - workaround!!
 				thisHousehold.setContext(this.myContext);
 				thisHousehold.setStartDateAndFirstThought();
+				thisHousehold.initialiseSCT();
+				if (RandomHelper.nextDouble() < 0.6) //60% of houses can have some form of PV (see EST references)
+				{
+					thisHousehold.potentialPVCapacity = RandomHelper.nextDoubleFromTo(2, 4);
+				}
+				else
+				{
+					thisHousehold.potentialPVCapacity = 0;
+				}
 
 				int numOfOccupant = this.myContext.occupancyGenerator.nextInt() + 1;
 				if (numOfOccupant > this.map_nbOfOccToOtherDemand.size())
@@ -213,15 +225,17 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 			}
 			// thisHousehold.hasPV=false; //pre-initialise No PV
 
-			thisHousehold.setAdoptionThreshold(0.2);
+			thisHousehold.setAdoptionThreshold(0.3);
 			// thisHousehold.observedRadius = (RandomHelper.nextDouble() * 15);
 			thisHousehold.observedRadius = ObservationDist.nextDouble();
 			if (this.myContext.logger.isDebugEnabled())
 			{
 				this.myContext.logger.debug(thisHousehold.getAgentName() + " observes " + thisHousehold.observedRadius);
 			}
+if (			this.myContext.logger.isDebugEnabled()) {
 			this.myContext.logger.debug(thisHousehold.getAgentName() + " has " + thisHousehold.microgenPropensity
 					+ " and pre-assigned PV = " + thisHousehold.getHasPV());
+}
 			tmp += thisHousehold.hasPV ? 1 : 0;
 		}
 
@@ -231,19 +245,23 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		}
 		this.myContext.logger.info(households.size() + " Households initialized and added to context and geography");
 
-		/*
-		 * if (writeInitialShapefile) { if ( *
-		 * myContext.logger.isTraceEnabled()) {
-		 * myContext.logger.trace("Writing shapefile of initial conditions"); }
-		 * 
-		 * ShapefileWriter testWriter = new ShapefileWriter(leicesterGeography);
-		 * File outFile = new File(
-		 * "C:/RepastSimphony-2.0-beta/workspace/SmartGridTechnologyAdoption/output/shapeFileInitialisedSeed"
-		 * + RepastEssentials.GetParameter("randomSeed") .toString() + ".shp");
-		 * try { testWriter.write(leicesterGeography.getLayer(Household.class)
-		 * .getName(), outFile.toURL()); } catch (MalformedURLException e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } }
-		 */
+		
+		  if (writeInitialShapefile) { if (
+		  myContext.logger.isTraceEnabled()) {
+		  myContext.logger.trace("Writing shapefile of initial conditions"); }
+		 
+		  ShapefileWriter testWriter = new ShapefileWriter(leicesterGeography);
+		  File outFile = new File(
+		  "./shapeFileInitialisedSeed"
+		  + RepastEssentials.GetParameter("randomSeed") .toString() + ".shp");
+		  try { 
+			  testWriter.write(leicesterGeography.getLayer(Household.class)
+		  .getName(), outFile.toURL()); } 
+		  catch (MalformedURLException e) { //
+		 // TODO Auto-generated catch block e.printStackTrace(); 
+			  } 
+			  }
+		 
 
 		this.populateContext();
 		return this.myContext;
@@ -301,6 +319,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 			Point geom = fac.createPoint(coord);
 			geog.move(thisHousehold, geom);
 			thisHousehold.setGeography(geog);
+			
 		}
 	}
 
@@ -431,7 +450,7 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	}
 
 	/**
-	 * TODO: Put a time series proper here, instead of a flat £1 per Wp
+	 * TODO: Put a time series proper here, instead of a flat ï¿½1 per Wp
 	 */
 	private void initCosts()
 	{
@@ -488,28 +507,42 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		/*
 		 * if(myContext.verbose) {
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("HHs with Fridge: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasRefrigerator",true)).query()));
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("HHs with FridgeFreezer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasFridgeFreezer",true)).query()));
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("HHs with UprightFreezer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasUprightFreezer",true)).query()));
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("HHs with ChestFreezer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasChestFreezer",true)).query()));
+}
 		 * 
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("HHs with Fridge %: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasRefrigerator",true)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("HHs with FridgeFreezer %: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasFridgeFreezer",true)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("HHs with UprightFreezer %: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasUprightFreezer",true)).query()) / householdProsumers.size());
+}
 		 * this.myContext.logger.debug("HHs with ChestFreezer %: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasChestFreezer",true)).query()) / householdProsumers.size()); }
@@ -577,39 +610,61 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 		 * if ( * if(myContext.verbose) {
 		 * this.myContext.logger.isDebugEnabled()) { if(myContext.verbose) {
 		 * this.myContext.logger.debug("Percentages:"); }
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 1 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",1)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 2 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",2)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 3 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",3)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 4 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",4)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 5 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",5)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 6 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",6)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 7 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",7)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("households with occupancy 8 : " +
 		 * (double) IterableUtils.count((new PropertyEquals(myContext,
 		 * "numOccupants",8)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("Washing Mach : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasWashingMachine",true)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("Washer Dryer : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasWasherDryer",true)).query()) / householdProsumers.size());
+}
+if (		 * this.myContext.logger.isDebugEnabled()) {
 		 * this.myContext.logger.debug("Tumble Dryer: " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasTumbleDryer",true)).query()) / householdProsumers.size());
+}
 		 * this.myContext.logger.debug("Dish Washer : " + (double)
 		 * IterableUtils.count((new PropertyEquals(myContext,
 		 * "hasDishWasher",true)).query()) / householdProsumers.size()); }
@@ -626,14 +681,17 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 			this.myContext.logger.debug("Random seed is" + RandomHelper.getSeed());
 		}
 		double[] drawOffDist = ArrayUtils.multiply(Consts.EST_DRAWOFF, ArrayUtils.sum(Consts.EST_DRAWOFF));
+
 		if (this.myContext.logger.isTraceEnabled())
 		{
 			this.myContext.logger.trace("  ArrayUtils.sum(drawOffDist)" + ArrayUtils.sum(drawOffDist));
 		}
 		this.myContext.drawOffGenerator = RandomHelper.createEmpiricalWalker(drawOffDist, Empirical.NO_INTERPOLATION);
 		// if (Consts.DEBUG)
+if (		this.myContext.logger.isTraceEnabled()) {
 		this.myContext.logger.trace("  ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY)"
 				+ ArrayUtils.sum(Consts.OCCUPANCY_PROBABILITY_ARRAY));
+}
 
 		this.myContext.occupancyGenerator = RandomHelper
 				.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY, Empirical.NO_INTERPOLATION);
@@ -670,8 +728,10 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 	 * ArrayList prosumersWithElecWaterHeatList =
 	 * IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
 	 * 
+if (	 * this.myContext.logger.isTraceEnabled()) {
 	 * this.myContext.logger.trace("ArrayList.size: WaterHeat "+
 	 * prosumersWithElecWaterHeatList.size());
+}
 	 * AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true,
 	 * prosumersWithElecWaterHeatList.iterator());
 	 * 
@@ -1061,12 +1121,12 @@ public class AdoptionContextBuilder implements ContextBuilder<Household>
 
 		// TODO: We just set smart meter true here - need more sophisticated way
 		// to set for different scenarios
-		hhProsAgent.hasSmartMeter = true;
+		hhProsAgent.hasSmartMeter = false;
 
 		// pAgent.hasSmartControl = (RandomHelper.nextDouble() > (1 -
 		// Consts.HOUSEHOLDS_WITH_SMART_CONTROL));
 		// Alter initial smartControl here
-		hhProsAgent.hasSmartControl = true;
+		hhProsAgent.hasSmartControl = false;
 
 		// TODO: we need to set up wattbox after appliances added. This is all a
 		// bit

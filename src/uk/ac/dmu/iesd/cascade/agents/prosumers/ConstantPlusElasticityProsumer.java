@@ -82,8 +82,10 @@ public class ConstantPlusElasticityProsumer extends ConstantLoadProsumer
 			elasticity = 0 - elasticity;
 		}
 		this.e_factor = elasticity;
+if (		this.mainContext.logger.isDebugEnabled()) {
 		this.mainContext.logger.debug("Created prosumer with base load " + this.netDemand + "kWh / timestep and elasticity = "
 				+ this.e_factor);
+}
 		this.p0 = 125;
 		this.hasSmartMeter = true;
 	}
@@ -110,8 +112,10 @@ public class ConstantPlusElasticityProsumer extends ConstantLoadProsumer
 
 		double percentChangeP = (this.getCurrentPrediction() - this.p0) / ((this.getCurrentPrediction() + this.p0) / 2);
 		double percentChangeD = (this.e_factor * (0.5 + RandomHelper.nextDouble())) * percentChangeP;
+if (		this.mainContext.logger.isDebugEnabled()) {
 		this.mainContext.logger.debug("Setting demand from price " + this.getCurrentPrediction() + ", percentage price change "
 				+ percentChangeP + " and prior demand " + d0);
+}
 		double newD = d0 * (percentChangeD + 2) / (2 - percentChangeD);
 		if (this.mainContext.logger.isDebugEnabled())
 		{

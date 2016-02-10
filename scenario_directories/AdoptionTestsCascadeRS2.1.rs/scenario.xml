@@ -6,5 +6,4 @@
 <repast.simphony.action.display context="CascadeContextMain" file="repast.simphony.action.display_3.xml" />
 <repast.simphony.action.display context="CascadeContextMain" file="repast.simphony.action.display_4.xml" />
 <repast.simphony.action.time_series_chart context="CascadeContextMain" file="repast.simphony.action.time_series_chart_5.xml" />
-<!--  <model.initializer class="uk.ac.dmu.iesd.cascade.base.Initializer" /> -->
 </Scenario>

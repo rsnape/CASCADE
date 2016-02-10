@@ -423,8 +423,10 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 
 	public double getCurrentPriceElasticityFactor_e()
 	{
+if (		this.mainContext.logger.isDebugEnabled()) {
 		this.mainContext.logger.debug(RepastEssentials.GetTickCount() + " getCurrentPriceElasticityFactor_e: "
 				+ this.arr_i_e[(int) RepastEssentials.GetTickCount() % this.ticksPerDay]);
+}
 		return this.arr_i_e[(int) RepastEssentials.GetTickCount() % this.ticksPerDay];
 	}
 

@@ -137,8 +137,10 @@ public class WattboxController implements ISmartController
 				this.mainContext.logger
 						.trace("Sum(Wattbox estimated heatPumpDemandProfile): " + ArrayUtils.sum(this.heatPumpDemandProfile));
 			}
+if (			this.mainContext.logger.isTraceEnabled()) {
 			this.mainContext.logger.trace("Sum(Wattbox estimated heatPumpDemandProfile): "
 					+ ArrayUtils.sum(this.calculateEstimatedSpaceHeatPumpDemand(this.optimisedSetPointProfile)));
+}
 		}
 		else
 		{
@@ -458,8 +460,10 @@ public class WattboxController implements ISmartController
 		if ((maxValForWasher > 0) && (maxIndexForWasher < washer_loads_day.length - 1))
 		{
 
+if (			this.mainContext.logger.isTraceEnabled()) {
 			this.mainContext.logger.trace("max index for Wahser: " + maxIndexForWasher + " val: " + maxValForWasher + " current cost: "
 					+ currentCostForWasher);
+}
 			int newIndexForWasher = this.mainContext.coldAndWetApplTimeslotDelayRandDist
 					.nextIntFromTo(maxIndexForWasher + 1, washer_loads_day.length - 1);
 
@@ -471,8 +475,10 @@ public class WattboxController implements ISmartController
 			}
 			if (this.dayPredictedCostSignal[maxIndexForWasher] != this.dayPredictedCostSignal[newIndexForWasher])
 			{
+if (				this.mainContext.logger.isTraceEnabled()) {
 				this.mainContext.logger.trace("Signal: " + this.dayPredictedCostSignal[maxIndexForWasher] + " != (new) "
 						+ this.dayPredictedCostSignal[newIndexForWasher]);
+}
 			}
 
 			if (newCostForWasher < currentCostForWasher)
@@ -499,12 +505,16 @@ public class WattboxController implements ISmartController
 				while ((iWasher < washer_loads_day.length) && (!lowerCostFound))
 				{
 					newCostForWasher = maxValForWasher * this.dayPredictedCostSignal[iWasher];
+if (					this.mainContext.logger.isTraceEnabled()) {
 					this.mainContext.logger.trace(iWasher + " newCostForWahser to considered: " + newCostForWasher + "  "
 							+ (newCostForWasher < currentCostForWasher));
+}
 					if (this.dayPredictedCostSignal[maxIndexForWasher] != this.dayPredictedCostSignal[iWasher])
 					{
+if (						this.mainContext.logger.isTraceEnabled()) {
 						this.mainContext.logger.trace("Signal: " + this.dayPredictedCostSignal[maxIndexForWasher] + " != (new) "
 								+ this.dayPredictedCostSignal[iWasher]);
+}
 					}
 
 					if (newCostForWasher < currentCostForWasher)
@@ -524,8 +534,10 @@ public class WattboxController implements ISmartController
 
 					ArrayUtils.replaceRange(wetApplianceProfiles.get(Consts.WET_APP_WASHER), washer_loads_day, timeStep
 							% washer_loads.length);
+if (					this.mainContext.logger.isTraceEnabled()) {
 					this.mainContext.logger.trace("lowerCostFound: newIndexForWasher (2nd found): " + iWasher + " new cost (2): "
 							+ newCostForWasher);
+}
 				}
 			}
 		}
@@ -574,12 +586,16 @@ public class WattboxController implements ISmartController
 				while ((iDryer < dryer_loads_day.length) && (!lowerCostFoundForDryer))
 				{
 					newCostForDryer = maxValForDryer * this.dayPredictedCostSignal[iDryer];
+if (					this.mainContext.logger.isTraceEnabled()) {
 					this.mainContext.logger.trace(iDryer + " newCostForDryer to considered: " + newCostForDryer + "  "
 							+ (newCostForDryer < currentCostForDryer));
+}
 					if (this.dayPredictedCostSignal[maxIndexForDryer] != this.dayPredictedCostSignal[iDryer])
 					{
+if (						this.mainContext.logger.isTraceEnabled()) {
 						this.mainContext.logger.trace("Signal: " + this.dayPredictedCostSignal[maxIndexForDryer] + " != (new) "
 								+ this.dayPredictedCostSignal[iDryer]);
+}
 					}
 
 					if (newCostForDryer < currentCostForDryer)
@@ -598,8 +614,10 @@ public class WattboxController implements ISmartController
 					dryer_loads_day[iDryer] = dryer_loads_day[iDryer] + maxValForDryer;
 
 					ArrayUtils.replaceRange(wetApplianceProfiles.get(Consts.WET_APP_DRYER), dryer_loads_day, timeStep % dryer_loads.length);
+if (					this.mainContext.logger.isTraceEnabled()) {
 					this.mainContext.logger.trace("lowerCostFoundForDryer: newIndexForDryer (2nd found): " + iDryer + " new cost (2): "
 							+ newCostForDryer);
+}
 				}
 			}
 		}
@@ -649,12 +667,16 @@ public class WattboxController implements ISmartController
 				while ((iDish < dishwasher_loads_day.length) && (!lowerCostFoundForDishwasher))
 				{
 					newCostForDishwasher = maxValForDishwasher * this.dayPredictedCostSignal[iDish];
+if (					this.mainContext.logger.isTraceEnabled()) {
 					this.mainContext.logger.trace(iDish + " newCostForDishwahser to considered: " + newCostForDishwasher + "  "
 							+ (newCostForDishwasher < currentCostForDishwasher));
+}
 					if (this.dayPredictedCostSignal[maxIndexForWasher] != this.dayPredictedCostSignal[iDish])
 					{
+if (						this.mainContext.logger.isTraceEnabled()) {
 						this.mainContext.logger.trace("Signal: " + this.dayPredictedCostSignal[maxIndexForDishwasher] + " != (new) "
 								+ this.dayPredictedCostSignal[iDish]);
+}
 					}
 					if (newCostForDishwasher < currentCostForDishwasher)
 					{
@@ -673,8 +695,10 @@ public class WattboxController implements ISmartController
 
 					ArrayUtils.replaceRange(wetApplianceProfiles.get(Consts.WET_APP_DISHWASHER), dishwasher_loads_day, timeStep
 							% dishwasher_loads.length);
+if (					this.mainContext.logger.isTraceEnabled()) {
 					this.mainContext.logger.trace("lowerCostFound: newIndexForDishwasher (2nd found): " + iDish + " new cost (2): "
 							+ newCostForDishwasher);
+}
 				}
 			}
 		}
@@ -974,13 +998,17 @@ public class WattboxController implements ISmartController
 						for (int m = l; m < this.ticksPerDay; m++)
 						{
 							localSetPointArray[m] += tempToRecover;
+if (							this.mainContext.logger.isTraceEnabled()) {
 							this.mainContext.logger.trace("Adding " + tempToRecover + " at index " + m + " to counter temp loss at tick "
 									+ (i + j + 1));
+}
 						}
 						if ((i + j) == 0)
 						{
+if (							this.mainContext.logger.isTraceEnabled()) {
 							this.mainContext.logger.trace("Evaluating switchoff for tick zero, set point array = "
 									+ Arrays.toString(localSetPointArray));
+}
 						}
 						if (this.mainContext.logger.isTraceEnabled())
 						{
@@ -1007,8 +1035,10 @@ public class WattboxController implements ISmartController
 						localDemandProfile = this.calculateEstimatedSpaceHeatPumpDemand(localSetPointArray);
 						if ((i + j) == 0)
 						{
+if (							this.mainContext.logger.isTraceEnabled()) {
 							this.mainContext.logger.trace("Calculated demand for set point array turning off at tick " + i + " for "
 									+ (j + 1) + " ticks " + Arrays.toString(localSetPointArray));
+}
 							if (this.mainContext.logger.isTraceEnabled())
 							{
 								this.mainContext.logger.trace("Demand = " + Arrays.toString(localDemandProfile));

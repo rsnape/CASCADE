@@ -331,8 +331,10 @@ public class SystemOperator
 	 * this.mainContext.logger.debug("SO: sendBOAtoEachBMU() called"); } if ( *
 	 * this.mainContext.logger.isDebugEnabled()) {
 	 * this.mainContext.logger.debug("size of listOfBMUs: "+listOfBMUs.size());
+if (	 * } this.mainContext.logger.isDebugEnabled()) {
 	 * } this.mainContext.logger.debug("size of mapBMU_ID2ListOfBODs: "+
 	 * mapBMU_ID2ListOfBODs.size());
+}
 	 * 
 	 * for (BMU bmu : listOfBMUs){ this.mainContext.logger.debug(bmu.getID()); }
 	 * 

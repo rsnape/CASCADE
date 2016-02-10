@@ -28,9 +28,9 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 	private int smartContCapital = 750000;
 
 	// Weightings of the various influences
-	double wHassle = 0.3;
-	double wPay = 0.4;
-	double wSocial = 0.3;
+	double wHassle;
+	double wPay;
+	double wSocial;
 	private HEATING_TYPE RHIEligibleHeatingTechnology;
 
 	/**
@@ -163,19 +163,28 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		if (rightNow.getTime() > this.nextCogniscentDate.getTime()
 				&& rightNow.getTime() <= (this.nextCogniscentDate.getTime() + Consts.MSECS_PER_DAY))
 		{
-			this.mainContext.logger.debug(this.getAgentName() + " Thinking with RHI ownership = " + this.getHasRHI() + "..."
-					+ this.RHIlikelihood);
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug(this.getAgentName() + " Thinking with RHI ownership = " + this.getHasRHI() + "..."
+						+ this.RHIlikelihood);
+			}
 			this.considerOptions(); // Could make the consideration further
 			// probabilistic...
-			this.mainContext.logger.debug("Resulting in RHI ownership = " + this.getHasRHI() + ", likelihood:" + this.RHIlikelihood
-					+ ", neightbours:" + this.numCachedNeighbours);
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("Resulting in RHI ownership = " + this.getHasRHI() + ", likelihood:" + this.RHIlikelihood
+						+ ", neightbours:" + this.numCachedNeighbours);
+			}
 
 			// this.myGeography.move(this, this.myGeography.getGeometry(this));
 			this.numThoughts++;
 			this.decisionUrgency = Math.exp(-((this.mainContext.dateToTick(this.mainContext.getRHIAvailableUntil()) - this.mainContext
 					.getTickCount()) / (this.mainContext.ticksPerDay * 28)));
-			this.mainContext.logger.debug("New decision urgency = " + this.decisionUrgency + " from tariff available until tick: "
-					+ this.mainContext.dateToTick(this.mainContext.getRHIAvailableUntil()));
+			if (this.mainContext.logger.isDebugEnabled())
+			{
+				this.mainContext.logger.debug("New decision urgency = " + this.decisionUrgency + " from tariff available until tick: "
+						+ this.mainContext.dateToTick(this.mainContext.getRHIAvailableUntil()));
+			}
 
 			// If haven't adopted RHI set a new thinking date. Otherwise no
 			// point thinking again for the purposes of this simulation.
@@ -211,8 +220,11 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 		this.RHIlikelihood = this.microgenPropensity;
 		if (this.mainContext.logger.isTraceEnabled())
 		{
-			this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.RHIlikelihood
-					+ "...");
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.RHIlikelihood
+						+ "...");
+			}
 		}
 
 		double benefitInPence = this.checkEconomics();
@@ -248,8 +260,11 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 
 		if (benefit > 0)
 		{
-			this.mainContext.logger.trace(this.getAgentName() + " has microgen propensity " + this.microgenPropensity
-					+ " and RHI adoption likelihood " + this.RHIlikelihood);
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace(this.getAgentName() + " has microgen propensity " + this.microgenPropensity
+						+ " and RHI adoption likelihood " + this.RHIlikelihood);
+			}
 
 			// Neighbour influence varies from +1 to -1
 			double neighbourInfluence = this.observeNeighbours();
@@ -274,9 +289,9 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 				// PUt in all the influencing factors (+ve is good)
 
 				double paybackInfluence = 1 - paybackYears / 7;
-				double hassleInfluence = 1 - this.mainContext.getHassleFactor(this.RHIEligibleHeatingTechnology);
+				double hassleInfluence = this.mainContext.getHassleFactor(this.RHIEligibleHeatingTechnology);
 
-				double totalInfluence = wPay * paybackInfluence + wHassle * hassleInfluence + wSocial * neighbourInfluence;
+				double totalInfluence = wPay * paybackInfluence - wHassle * hassleInfluence + wSocial * neighbourInfluence;
 
 				this.mainContext.logger.info("Testing " + totalInfluence + " against adoption threshold " + this.adoptionThreshold);
 				if (totalInfluence > this.adoptionThreshold)
@@ -376,8 +391,11 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 			}
 		}
 
-		this.mainContext.logger.trace("Returning likelihood to agent " + this.getAgentName() + " based on " + observedAdoption + " of "
-				+ this.numCachedNeighbours + " neighbours observed to have RHI (" + observed + " observed this round)");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace("Returning likelihood to agent " + this.getAgentName() + " based on " + observedAdoption + " of "
+					+ this.numCachedNeighbours + " neighbours observed to have RHI (" + observed + " observed this round)");
+		}
 
 		// Likelihood of adopting now - based on observation alone
 		// Note that the 0.5 is an arbitrary and tunable parameter.
@@ -405,8 +423,11 @@ public class SimpleRHIAdopterHousehold extends HouseholdProsumer
 
 		}
 
-		this.mainContext.logger.trace(this.getAgentName() + " has " + this.numCachedNeighbours + " neighbours : "
-				+ this.myNeighboursCache.toString());
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.getAgentName() + " has " + this.numCachedNeighbours + " neighbours : "
+					+ this.myNeighboursCache.toString());
+		}
 
 		return this.myNeighboursCache;
 	}

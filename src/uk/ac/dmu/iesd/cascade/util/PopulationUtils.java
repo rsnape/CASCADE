@@ -54,16 +54,20 @@ public class PopulationUtils
 		for (String coldAppliance : coldAppliances)
 		{
 			Query<HouseholdProsumer> occ1Query = new PropertyEquals(thisContext, coldAppliance, true);
+if (			thisContext.logger.isTraceEnabled()) {
 			thisContext.logger.trace(((IterableUtils.count(occ1Query.query()) * 100) / totalPopulation) + "% of agents with appliance "
 					+ coldAppliance);
+}
 		}
 
 		for (String wetAppliance : wetAppliances)
 		{
 
 			Query<HouseholdProsumer> occ1Query = new PropertyEquals(thisContext, wetAppliance, true);
+if (			thisContext.logger.isTraceEnabled()) {
 			thisContext.logger.trace(((IterableUtils.count(occ1Query.query()) * 100) / totalPopulation) + "% of agents with appliance "
 					+ wetAppliance);
+}
 		}
 
 	}

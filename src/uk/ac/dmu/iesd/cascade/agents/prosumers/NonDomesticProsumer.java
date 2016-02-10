@@ -336,8 +336,10 @@ public class NonDomesticProsumer extends ProsumerAgent
 				// Infinitely elastic version (i.e. takes no account of
 				// percenteageMoveableDemand
 
+if (				this.mainContext.logger.isDebugEnabled()) {
 				this.mainContext.logger.debug("NonDomesticProsumer: " + this.agentID + "Changing demand at time " + time
 						+ " with price signal " + (predictedCostNow - this.costThreshold) + " above threshold");
+}
 				myDemand = myDemand
 						* (1 - this.percentageMoveableDemand
 								* (1 - Math.exp(-((predictedCostNow - this.costThreshold) / this.costThreshold))));
@@ -409,8 +411,10 @@ public class NonDomesticProsumer extends ProsumerAgent
 			// TODO: This always gets triggerd - I wonder if the "day" i'm
 			// taking
 			// here and in the inelasticdemand method are "off-by-one"
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug("NonDomesticProsumer: optimised signal has varied the demand !!! In error !"
 					+ (ArrayUtils.sum(daysOptimisedDemand) - this.inelasticTotalDayDemand));
+}
 		}
 
 		if (this.mainContext.logger.isDebugEnabled())
@@ -451,8 +455,10 @@ public class NonDomesticProsumer extends ProsumerAgent
 			movedLoad = movedLoad + movedThisTime;
 			daysOptimisedDemand[maxIndex] = swapAmount;
 			daysOptimisedDemand[minIndex] = swapAmount;
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug("NonDomesticProsumer: " + this.agentID + " moving " + movedLoad + "MaxIndex = " + maxIndex
 					+ " minIndex = " + minIndex + Arrays.toString(tempArray));
+}
 
 			tempArray = ArrayUtils.mtimes(daysOptimisedDemand, daysCostSignal);
 		}
@@ -463,8 +469,10 @@ public class NonDomesticProsumer extends ProsumerAgent
 			// TODO: This always gets triggerd - I wonder if the "day" i'm
 			// taking
 			// here and in the inelasticdemand method are "off-by-one"
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug("NonDomesticProsumer: optimised signal has varied the demand !!! In error !"
 					+ (ArrayUtils.sum(daysOptimisedDemand) - this.inelasticTotalDayDemand));
+}
 		}
 
 		if (this.mainContext.logger.isDebugEnabled())

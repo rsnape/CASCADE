@@ -408,8 +408,10 @@ public class OriginalProportionalWattboxController implements ISmartController
 			this.owner.mainContext.logger.trace("waterHeatDemandProfile: " + Arrays.toString(this.waterHeatDemandProfile));
 		}
 
+//if (		 this.owner.mainContext.logger.isTraceEnabled()) {
 		// this.owner.mainContext.logger.trace("spreadWaterDemand(baseArray) : "+
 		// Arrays.toString(spreadWaterDemand(baseArray)));
+//}
 
 		// double[] totalHeatDemand = ArrayUtils.add(this.heatPumpDemandProfile,
 		// spreadWaterDemand(baseArray));

@@ -36,7 +36,7 @@ public class Household extends HouseholdProsumer
 	// public boolean hasSmartControl;
 
 	// public boolean hasElectricVehicle;
-	private double potentialPVCapacity = RandomHelper.nextDoubleFromTo(2, 4);
+	public double potentialPVCapacity;
 	public double observedRadius;
 
 	private double perceivedSmartControlBenefit;
@@ -92,19 +92,25 @@ public class Household extends HouseholdProsumer
 		if (this.mainContext.getDateTime().getTime() > this.nextCogniscentDate.getTime()
 				&& this.mainContext.getDateTime().getTime() <= (this.nextCogniscentDate.getTime() + Consts.MSECS_PER_DAY))
 		{
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug(this.getAgentName() + " Thinking with PV ownership = " + this.getHasPV() + "..."
 					+ this.PVlikelihood);
+}
 			this.considerOptions(); // Could make the consideration further
 									// probabilistic...
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug("Resulting in PV ownership = " + this.getHasPV() + ", likelihood:" + this.PVlikelihood
 					+ ", neightbours:" + this.numCachedNeighbours);
+}
 
 			// this.myGeography.move(this, this.myGeography.getGeometry(this));
 			this.numThoughts++;
 			this.decisionUrgency = Math.exp(-((this.mainContext.dateToTick(this.mainContext.getTarriffAvailableUntil()) - this.mainContext
-					.getTickCount()) / (this.mainContext.ticksPerDay * 28)));
+					.getTickCount()) * 1.0 / (this.mainContext.ticksPerDay * 28)));
+if (			this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug("New decision urgency = " + this.decisionUrgency + " from tariff available until tick: "
 					+ this.mainContext.dateToTick(this.mainContext.getTarriffAvailableUntil()));
+}
 			this.nextCogniscentDate.setTime(this.mainContext.getDateTime().getTime()
 					+ ((long) (this.mainContext.nextThoughtGenerator.nextDouble() * Consts.MSECS_PER_DAY)));
 		}
@@ -115,8 +121,10 @@ public class Household extends HouseholdProsumer
 		this.PVlikelihood = this.microgenPropensity;
 		if (this.mainContext.logger.isTraceEnabled())
 		{
+if (			this.mainContext.logger.isTraceEnabled()) {
 			this.mainContext.logger.trace(this.agentName + " gathering information from baseline likelihood of " + this.PVlikelihood
 					+ "...");
+}
 		}
 		this.checkTariffs();
 		this.calculateSCT();
@@ -148,7 +156,7 @@ public class Household extends HouseholdProsumer
 		/*
 		 * Set perception of others' behaviour based on observed percentage
 		 */
-		this.PVDecisionModel.setPerceptionOfOthers(this.observeNeighbours());
+		this.PVDecisionModel.setPerceptionOfOthers(100*this.observeNeighbours());
 		this.PVDecisionModel.setSelfEfficacy(this.economicAbility); // Could do
 																	// this one
 																	// off at
@@ -189,8 +197,10 @@ public class Household extends HouseholdProsumer
 
 	private void makeDecision()
 	{
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(this.getAgentName() + " has microgen propensity " + this.microgenPropensity
 				+ " and PV adoption likelihood " + this.PVlikelihood);
+}
 
 		this.PVDecisionModel.setAbsoluteBehaviourThreshold(this.getAdoptionThreshold());
 		this.PVDecisionModel.calculateBehaviour();
@@ -224,8 +234,11 @@ public class Household extends HouseholdProsumer
 	 */
 	public void setPV()
 	{
-		this.hasPV = true;
-		this.ratedPowerPV = this.potentialPVCapacity;
+		if (this.potentialPVCapacity > 0)
+		{
+			this.hasPV = true;
+			this.ratedPowerPV = this.potentialPVCapacity;
+		}
 
 	}
 
@@ -282,8 +295,10 @@ public class Household extends HouseholdProsumer
 			}
 		}
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace("Returninglikelihood to agent " + this.getAgentName() + " based on " + observedAdoption + " of "
 				+ this.numCachedNeighbours + " neighbours observed to have PV (" + observed + " observed this round)");
+}
 
 		// Likelihood of adopting now - based on observation alone
 		// Note that the 0.5 is an arbitrary and tunable parameter.
@@ -309,8 +324,10 @@ public class Household extends HouseholdProsumer
 			}
 		}
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(this.getAgentName() + " has " + this.numCachedNeighbours + " neighbours : "
 				+ this.myNeighboursCache.toString());
+}
 
 		return this.myNeighboursCache;
 	}
@@ -359,6 +376,14 @@ public class Household extends HouseholdProsumer
 		this.mainContext = context;
 		this.setStartDateAndFirstThought();
 		this.initialiseSCT();
+		if (RandomHelper.nextDouble() < 0.6) //60% of houses can have some form of PV (see EST references)
+		{
+			potentialPVCapacity = RandomHelper.nextDoubleFromTo(2, 4);
+		}
+		else
+		{
+			potentialPVCapacity = 0;
+		}
 		if (context.logger.isDebugEnabled())
 		{
 			context.logger.debug(this.agentName + " initialised, first thought at " + this.nextCogniscentDate.toGMTString());
@@ -508,22 +533,22 @@ public class Household extends HouseholdProsumer
 
 	}
 
-	private void initialiseSCT()
+	public void initialiseSCT()
 	{
-		this.PVDecisionModel.setWeightGoalToBehaviour(5);
-		this.PVDecisionModel.setWeightSocioStructuralToOutcomeExp(4);
-		this.PVDecisionModel.setWeightSocioStructuralToPerceptionOfOthers(2);
-		this.PVDecisionModel.setWeightSelfEfficacyToOutcomeExp(5);
-		this.PVDecisionModel.setWeightOutcomeExpToGoal(5);
-		this.PVDecisionModel.setWeightPerceptionOfOthersToGoal(3);
-		this.PVDecisionModel.setWeightSelfEfficacyToGoal(4);
-		this.PVDecisionModel.setWeightSocioStructuralToGoal(5);
-		this.PVDecisionModel.setWeightOutcomeExpToBehaviour(5);
-		this.PVDecisionModel.setWeightPerceptionOfOthersToBehaviour(1);
-		this.PVDecisionModel.setWeightSelfEfficacyToBehaviour(5);
-		this.PVDecisionModel.setWeightSocioStructuralToBehaviour(5);
-		this.PVDecisionModel.setWeightOutcomeToSelfEfficacy(4);
-		this.PVDecisionModel.setWeightOutcomeToSocioStructural(1);
-		this.PVDecisionModel.setWeightOutcomeToOutcomeExp(5);
+		this.PVDecisionModel.setWeightGoalToBehaviour(1);
+		this.PVDecisionModel.setWeightSocioStructuralToOutcomeExp(0);
+		this.PVDecisionModel.setWeightSocioStructuralToPerceptionOfOthers(0);
+		this.PVDecisionModel.setWeightSelfEfficacyToOutcomeExp(0);
+		this.PVDecisionModel.setWeightOutcomeExpToGoal(1);
+		this.PVDecisionModel.setWeightPerceptionOfOthersToGoal(0.2);
+		this.PVDecisionModel.setWeightSelfEfficacyToGoal(1);
+		this.PVDecisionModel.setWeightSocioStructuralToGoal(0);
+		this.PVDecisionModel.setWeightOutcomeExpToBehaviour(0);
+		this.PVDecisionModel.setWeightPerceptionOfOthersToBehaviour(0);
+		this.PVDecisionModel.setWeightSelfEfficacyToBehaviour(0);
+		this.PVDecisionModel.setWeightSocioStructuralToBehaviour(0);
+		this.PVDecisionModel.setWeightOutcomeToSelfEfficacy(0);
+		this.PVDecisionModel.setWeightOutcomeToSocioStructural(0);
+		this.PVDecisionModel.setWeightOutcomeToOutcomeExp(0);
 	}
 }

@@ -453,8 +453,10 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator
 		if (dayCount < hist_arr_B.length)
 		{
 			hist_arr_B[dayCount][timeOfDay] = sumDemand;
+if (			this.mainContext.logger.isTraceEnabled()) {
 			this.mainContext.logger.trace("RECO:: update Total demand for day " + dayCount + " timeslot: " + timeOfDay + " to = "
 					+ sumDemand);
+}
 
 		}
 		else
@@ -770,8 +772,10 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator
 		 * this.mainContext.logger.isDebugEnabled()) {
 		 * this.mainContext.logger.debug(" (s*b): "+ (s*b)); }
 		 * 
+if (		 * this.mainContext.logger.isDebugEnabled()) {
 		 * this.mainContext.logger.debug(" deltaB_i - (s*e*b) : "+ (deltaB_i -
 		 * (s*e*b)));
+}
 		 * this.mainContext.logger.debug(" deltaB_i - (s*e*b)/(s*b) : "+
 		 * (deltaB_i - (s*e*b))/(s*b)); if ( *
 		 * this.mainContext.logger.isDebugEnabled()) {
@@ -800,10 +804,14 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator
 
 				/*
 				 * this.mainContext.logger.debug(" arr_k[j][i] ("+j+","+i+")= "+
+if (				 * arr_k[j][i]); this.mainContext.logger.isDebugEnabled()) {
 				 * arr_k[j][i]); this.mainContext.logger.debug(" where b_j="+b_j
 				 * +", arr_D[j]= "+arr_D[j]+", deltaB_j="+deltaB_j);
+}
+if (				 * this.mainContext.logger.isDebugEnabled()) {
 				 * this.mainContext.logger.debug(", and s="+s
 				 * +", b= "+b+", s*b= "+(s*b));
+}
 				 */
 			}
 		}
@@ -1618,8 +1626,10 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator
 	private void costSavingCalculation(double[] arr_i_C, double[] arr_hist_1D, double[] arr_i_B, double[] arr_i_S, double[] arr_i_e)
 	{
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" --^costSavingCalculation-- Daycount: " + this.mainContext.getDayCount() + ",Timeslot: "
 				+ this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 		double predCost = 0;
 		double actualCost = 0;
 
@@ -1687,8 +1697,10 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator
 	public void bizPreStep()
 	{
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" ============ SupplierCO pre_step ========= DayCount: " + this.mainContext.getDayCount()
 				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 		this.timeTick = this.mainContext.getTickCount();
 		this.timeslotOfDay = this.mainContext.getTimeslotOfDay();
 
@@ -1791,8 +1803,10 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator
 			} // end of begining of normal operation
 
 		} // end of else (history profile building)
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" ========== RECO: pre_step END =========== DayCount: " + this.mainContext.getDayCount()
 				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 	}
 
 	/**
@@ -1803,8 +1817,10 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator
 	public void bizStep()
 	{
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" ++++++++++++++ SupplierCO step +++++++++++++ DayCount: " + this.mainContext.getDayCount()
 				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 		if (!this.isAggregateDemandProfileBuildingPeriodCompleted())
 		{
 			this.updateAggregateDemandHistoryArray(this.customers, this.timeslotOfDay, this.arr_hist_ij_D);
@@ -1847,8 +1863,10 @@ public class SupplierCoNeuralMap extends BMPxTraderAggregator
 		// isTrainingPeriodCompleted() && mainContext.isEndOfDay(timeslotOfDay))
 		// printOutNetDemand4DemandFlatteningTest();
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" ++++++++++ SupplierCO: END ++++++++++++ DayCount: " + this.mainContext.getDayCount()
 				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 	}
 
 	/**

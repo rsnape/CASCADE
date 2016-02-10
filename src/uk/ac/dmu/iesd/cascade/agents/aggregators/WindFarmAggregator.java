@@ -182,8 +182,10 @@ public class WindFarmAggregator extends BMPxTraderAggregator
 	public void bizPreStep()
 	{
 		// TODO Auto-generated method stub
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" ============ WindFarmAggregator pre_step ========= DayCount: " + this.mainContext.getDayCount()
 				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 		this.timeTick = this.mainContext.getTickCount();
 		this.timeslotOfDay = this.mainContext.getTimeslotOfDay();
 		this.customers = this.getCustomersList();

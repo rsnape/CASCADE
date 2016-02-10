@@ -27,13 +27,14 @@ import uk.ac.dmu.iesd.cascade.agents.prosumers.Household;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.util.DatedTimeSeries;
 import uk.ac.dmu.iesd.cascade.util.IterableUtils;
+import cern.jet.random.AbstractDistribution;
 import cern.jet.random.Poisson;
 
 public class AdoptionContext extends CascadeContext
 {
 
 	public static final double FIT_EXPORT_TARIFF = 45;
-	public Poisson nextThoughtGenerator = RandomHelper.createPoisson(100.0); // Mean
+	public AbstractDistribution nextThoughtGenerator = RandomHelper.createUniform(7, 250);//RandomHelper.createPoisson(100.0); // Mean
 																				// length
 																				// of
 																				// time
@@ -317,8 +318,10 @@ public class AdoptionContext extends CascadeContext
 	public int dateToTick(Date d)
 	{
 		long msecDiff = d.getTime() - this.simStartDate.getTime();
+if (		this.logger.isDebugEnabled()) {
 		this.logger.debug("simStartDate = " + this.ukDateParser.format(this.simStartDate) + " : date to test = "
 				+ this.ukDateParser.format(d) + " : msecsPerTick = " + this.msecsPerTick + " difference being " + msecDiff);
+}
 		return (int) (msecDiff / this.msecsPerTick);
 	}
 
@@ -417,7 +420,7 @@ public class AdoptionContext extends CascadeContext
 	{
 		double quote = this.getPricePerkWp() * potentialPVCapacity;
 		double profit = RandomHelper.nextDoubleFromTo(Consts.INSTALLER_MIN_PROFIT, Consts.INSTALLER_MIN_PROFIT);
-		double installationPrice = 500000; // £500 in tenths of pence (estimated
+		double installationPrice = 500000; // ï¿½500 in tenths of pence (estimated
 											// for 2 people, 1 day)
 		quote = quote + installationPrice * (1 + profit);
 

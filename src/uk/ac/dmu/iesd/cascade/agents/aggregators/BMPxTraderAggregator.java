@@ -424,8 +424,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 
 	/*
 	 * public void recieveBSOD( ArrayList<BSOD> listOfBSOD){
+if (	 * this.mainContext.logger.isTraceEnabled()) {
 	 * this.mainContext.logger.trace("BMU ("+
 	 * this.getName()+"): recieveBSOD() called");
+}
 	 * 
 	 * list_BSOD = new ArrayList<BSOD>(); for (BSOD bsod : listOfBSOD){
 	 * list_BSOD.add(bsod); } }
@@ -517,8 +519,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 			}
 		}
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace("getMarginPC:: " + this.id + this.getCategoryAsString() + this.type + ", pairID=" + pairID
 				+ ", marginPC=" + marginPC);
+}
 
 		return marginPC;
 	}
@@ -812,8 +816,10 @@ public abstract class BMPxTraderAggregator extends AggregatorAgent implements IB
 				// Empirical.NO_INTERPOLATION, (RandomEngine)
 				// RandomHelper.getGenerator(DefaultRandomRegistry.DEFAULT_GENERATOR).clone());
 
+if (				this.mainContext.logger.isTraceEnabled()) {
 				this.mainContext.logger.trace("Regis. Gen: "
 						+ RandomHelper.getDefaultRegistry().getGenerator(RandomRegistry.DEFAULT_GENERATOR).toString());
+}
 				if (this.mainContext.logger.isTraceEnabled())
 				{
 					this.mainContext.logger.trace("RH. Gen: " + RandomHelper.getGenerator(RandomRegistry.DEFAULT_GENERATOR).clone());

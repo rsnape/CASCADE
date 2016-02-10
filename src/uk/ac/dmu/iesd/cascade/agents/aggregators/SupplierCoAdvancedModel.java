@@ -309,8 +309,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
 		Network economicNet = this.mainContext.getEconomicNetwork();
 		Iterable<RepastEdge> iter = economicNet.getEdges(this);
+if (		this.mainContext.logger.isDebugEnabled()) {
 		this.mainContext.logger.debug(this.getAgentName() + " " + this.toString() + " has " + economicNet.size()
 				+ " links in economic network");
+}
 
 		for (RepastEdge edge : iter)
 		{
@@ -409,8 +411,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		if (dayCount < hist_arr_B.length)
 		{
 			hist_arr_B[dayCount][timeOfDay] = sumDemand;
+if (			this.mainContext.logger.isTraceEnabled()) {
 			this.mainContext.logger.trace("RECO:: update Total demand for day " + dayCount + " timeslot: " + timeOfDay + " to = "
 					+ sumDemand);
+}
 
 		}
 		else
@@ -649,8 +653,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 			}
 		}
 
+if (		this.mainContext.logger.isDebugEnabled()) {
 		this.mainContext.logger.debug("Optimisation converged on value " + minValue.getValue() + " at point " + minValue.getPoint()
 				+ " with ref " + minValue.getPointRef());
+}
 
 		double[] newOpt_S = minValue.getPoint();
 		minFunct.setPrintD(true);
@@ -855,8 +861,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	private void costSavingCalculation(double[] arr_i_C, double[] arr_hist_1D, double[] arr_i_B, double[] arr_i_S, double[] arr_i_e)
 	{
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" --^costSavingCalculation-- Daycount: " + this.mainContext.getDayCount() + ",Timeslot: "
 				+ this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 		double predCost = 0;
 		double actualCost = 0;
 
@@ -895,8 +903,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 
 	/*
 	 * public void marketPreStep() {
+if (	 * this.mainContext.logger.isTraceEnabled()) {
 	 * this.mainContext.logger.trace(" initializeMarketStep (SupplierCo) "
 	 * +this.id); settlementPeriod = mainContext.getSettlementPeriod();
+}
 	 * 
 	 * switch (settlementPeriod) {
 	 * 
@@ -914,8 +924,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	@Override
 	public void bizPreStep()
 	{
+if (		this.mainContext.logger.isDebugEnabled()) {
 		this.mainContext.logger.debug(" ============ SupplierCO pre_step ========= DayCount: " + this.mainContext.getDayCount()
 				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 		this.timeTick = this.mainContext.getTickCount();
 		this.timeslotOfDay = this.mainContext.getTimeslotOfDay();
 
@@ -1101,8 +1113,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 			} // end of begining of normal operation
 
 		} // end of else (history profile building)
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" ========== RECO: pre_step END =========== DayCount: " + this.mainContext.getDayCount()
 				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 	}
 
 	/**
@@ -1114,8 +1128,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	public void bizStep()
 	{
 
+if (		this.mainContext.logger.isTraceEnabled()) {
 		this.mainContext.logger.trace(" ++++++++++++++ SupplierCO step +++++++++++++ DayCount: " + this.mainContext.getDayCount()
 				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
+}
 		if (!this.isAggregateDemandProfileBuildingPeriodCompleted())
 		{
 			this.updateAggregateDemandHistoryArray(this.customers, this.timeslotOfDay, this.arr_hist_ij_D);

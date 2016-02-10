@@ -731,8 +731,10 @@ public class ArrayUtils
 			 * if (Double.isNaN(val)) { val =0; this.mainContext.logger.debug(
 			 * "ArrayUtils:: pow(), calculated val was NaN and set to 0"); }
 			 * 
+if (			 * if (Double.isInfinite(val)) { this.mainContext.logger.isDebugEnabled()) {
 			 * if (Double.isInfinite(val)) { this.mainContext.logger.debug(
 			 * "ArrayUtils:: pow(), calculated val was Infinity and set to 0");
+}
 			 * val =0; }
 			 */
 			powArray[i] = val;

@@ -6,12 +6,12 @@
 <!-- <agents path="../../bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo"/> -->
 <!-- <agents path="../../bin" filter="uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator"/> -->
 
-<agents path="../bin" filter="uk.ac.dmu.iesd.cascade.test.HHProsumer"/>
+<!--   <agents path="../bin" filter="uk.ac.dmu.iesd.cascade.test.HHProsumer"/>
 <agents path="../bin" filter="uk.ac.dmu.iesd.cascade.test.PAgent"/>
 <agents path="../bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.PowerExchange"/>
 <agents path="../bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.SettlementCompany"/>
 <agents path="../bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.SystemOperator"/>
-<agents path="../bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard"/>
+<agents path="../bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard"/> -->
 
 <entry path="../ExternalLib/commons-math-2.2.jar"/>
 </classpath>
