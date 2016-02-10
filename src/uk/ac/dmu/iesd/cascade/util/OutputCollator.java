@@ -7,14 +7,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class OutputCollator
 {
@@ -24,20 +23,20 @@ public class OutputCollator
 	 */
 	public static void main(String[] args)
 	{
-		String baseDir ="";
-		String fileToCollat="";
+		String baseDir = "";
+		String fileToCollat = "";
 		try
 		{
-		baseDir = args[0];
-		fileToCollat = args[1];
+			baseDir = args[0];
+			fileToCollat = args[1];
 		}
-		catch(ArrayIndexOutOfBoundsException e)
+		catch (ArrayIndexOutOfBoundsException e)
 		{
-			usage(e);
+			OutputCollator.usage(e);
 			System.exit(1);
 		}
 		int option;
-		
+
 		if (args.length == 3)
 		{
 			option = Integer.valueOf(args[2]);
@@ -46,18 +45,17 @@ public class OutputCollator
 		{
 			option = 0;
 		}
-		
+
 		switch (option)
 		{
-			case 0:
-				collateBandD(baseDir,fileToCollat);
-				break;
-			case 1:
-				collateAggregateDemand(baseDir,fileToCollat);
-			default:
-				break;
+		case 0:
+			OutputCollator.collateBandD(baseDir, fileToCollat);
+			break;
+		case 1:
+			OutputCollator.collateAggregateDemand(baseDir, fileToCollat);
+		default:
+			break;
 		}
-			
 
 	}
 
@@ -65,53 +63,50 @@ public class OutputCollator
 	 * @param baseDir
 	 * @param fileToCollat
 	 */
-	private static void collateAggregateDemand(String baseDir,
-			String fileToCollat)
+	private static void collateAggregateDemand(String baseDir, String fileToCollat)
 	{
 		File d = new File(baseDir);
 		if (!d.exists() || !d.isDirectory())
 		{
-			usage(new FileNotFoundException("The directory you specified is not available"));
+			OutputCollator.usage(new FileNotFoundException("The directory you specified is not available"));
 		}
-		
+
 		FilenameFilter filter = new NameStartsFilter(fileToCollat);
 		File[] subFiles = d.listFiles(filter);
 		CSVWriter out = new CSVWriter(baseDir.concat(File.separator).concat("CollatedOutput.csv"), false);
 		String[][] writeDS = null;
-		int fileNum=0;
+		int fileNum = 0;
 		for (File sd : subFiles)
 		{
-			CSVReader in =  null;
+			CSVReader in = null;
 			try
 			{
-				in  = new CSVReader(sd.getAbsolutePath());
-			} catch (FileNotFoundException e)
+				in = new CSVReader(sd.getAbsolutePath());
+			}
+			catch (FileNotFoundException e)
 			{
-				usage(e);
+				OutputCollator.usage(e);
 			}
 			in.parseByColumn();
 			String[] D = in.getColumn("NetDemand");
 			String[] S = in.getColumn("CurrentPriceSignal");
-			
 
-			if (fileNum==0)
+			if (fileNum == 0)
 			{
-				writeDS = new String[subFiles.length*2+1][S.length+1];
-				String [] tick = in.getColumn("Tick");
+				writeDS = new String[subFiles.length * 2 + 1][S.length + 1];
+				String[] tick = in.getColumn("Tick");
 				writeDS[0] = tick;
 			}
-			
-			System.arraycopy(D,0,writeDS[fileNum*2+1],1,D.length);
-			System.arraycopy(S,0,writeDS[fileNum*2+2],1,S.length);
 
-			
-			writeDS[fileNum*2+1][0] = "D : ".concat(sd.getName());
-			writeDS[fileNum*2+2][0] = "S : ".concat(sd.getName());
+			System.arraycopy(D, 0, writeDS[fileNum * 2 + 1], 1, D.length);
+			System.arraycopy(S, 0, writeDS[fileNum * 2 + 2], 1, S.length);
+
+			writeDS[fileNum * 2 + 1][0] = "D : ".concat(sd.getName());
+			writeDS[fileNum * 2 + 2][0] = "S : ".concat(sd.getName());
 			fileNum++;
 		}
 		out.appendCols(writeDS);
-		
-		
+
 	}
 
 	/**
@@ -123,9 +118,9 @@ public class OutputCollator
 		File d = new File(baseDir);
 		if (!d.exists() || !d.isDirectory())
 		{
-			usage(new FileNotFoundException("The directory you specified is not available"));
+			OutputCollator.usage(new FileNotFoundException("The directory you specified is not available"));
 		}
-		
+
 		File[] subFiles = d.listFiles();
 		ArrayList<File> subDirs = new ArrayList<File>();
 		for (File f : subFiles)
@@ -135,39 +130,40 @@ public class OutputCollator
 				subDirs.add(f);
 			}
 		}
-		
+
 		if (subDirs.size() == 0)
 		{
-			usage(new FileNotFoundException("The directory you specified does not contain sub-directories"));
+			OutputCollator.usage(new FileNotFoundException("The directory you specified does not contain sub-directories"));
 		}
-		
+
 		CSVWriter out = new CSVWriter(baseDir.concat(File.separator).concat("CollatedOutput.csv"), false);
-		
+
 		for (File sd : subDirs)
 		{
-			CSVReader in =  null;
+			CSVReader in = null;
 			try
 			{
-				in  = new CSVReader(sd.getAbsolutePath().concat(File.separator).concat(fileToCollat));
-			} catch (FileNotFoundException e)
+				in = new CSVReader(sd.getAbsolutePath().concat(File.separator).concat(fileToCollat));
+			}
+			catch (FileNotFoundException e)
 			{
-				usage(e);
+				OutputCollator.usage(e);
 			}
 			in.parseRaw();
 			String[] B = in.getRow(7);
 			String[] D = in.getRow(9);
-			
-			String[] writeB = new String[B.length+1];
-			String[] writeD = new String[D.length+1];
+
+			String[] writeB = new String[B.length + 1];
+			String[] writeD = new String[D.length + 1];
 			System.arraycopy(B, 0, writeB, 1, B.length);
 			System.arraycopy(D, 0, writeD, 1, D.length);
-			
+
 			writeB[0] = "B : ".concat(sd.getName());
 			writeD[0] = "D : ".concat(sd.getName());
-			
+
 			out.appendRow(writeB);
 			out.appendRow(writeD);
-			
+
 		}
 	}
 
@@ -180,13 +176,10 @@ public class OutputCollator
 		System.err.println("Usage : java OutputCollator.class <dirName> <fileName> [option]");
 		System.err.println("dirName : directory containing a number of subdirectories which hold the files to be collated");
 		System.err.println("fileName : the name of the file in each directory which should be collated together");
-		System.err.println("option : the numbered option for collation - currently only one which is the default.  Note this argument is optional");
-		System.err.println("Program halted with exception"+e.toString());
+		System.err
+				.println("option : the numbered option for collation - currently only one which is the default.  Note this argument is optional");
+		System.err.println("Program halted with exception" + e.toString());
 		System.exit(1);
 	}
-
-
-	
-	
 
 }

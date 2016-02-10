@@ -9,11 +9,11 @@ import javax.swing.JTextArea;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class GUIUtils
 {
-	
+
 	public static JTextArea makeWrappableLabel(String labelText)
 	{
 		JTextArea wrappedLabel = new JTextArea(labelText);

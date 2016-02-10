@@ -15,23 +15,28 @@ import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.TRAINING_S_SHAPE;
 
 /**
- * Very basic bespoke test class for {@link uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory TrainingSignalFactory}
+ * Very basic bespoke test class for
+ * {@link uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory
+ * TrainingSignalFactory}
  * 
  * @author jsnape
- *
- * TODO: Should really integrate JUnit tests into all our classes to ensure they don't regress
+ * 
+ *         TODO: Should really integrate JUnit tests into all our classes to
+ *         ensure they don't regress
  */
-public class TrainingSigFactoryTest {
+public class TrainingSigFactoryTest
+{
 
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args)
+	{
 		int testLength = 63;
-		
+
 		TrainingSignalFactory defaultFactory = new TrainingSignalFactory();
 		TrainingSignalFactory lengthFactory = new TrainingSignalFactory(testLength);
-		
+
 		if (defaultFactory.getSignalLength() != 48)
 		{
 			System.err.println("Factory not initialised to default correctly");
@@ -40,29 +45,27 @@ public class TrainingSigFactoryTest {
 		{
 			System.err.println("Factory not initialised to 336 length correctly");
 		}
-		
+
 		ArrayList<double[]> sigs = new ArrayList<double[]>();
 		DefaultCategoryDataset tempDataset = new DefaultCategoryDataset();
 		for (TRAINING_S_SHAPE t : TRAINING_S_SHAPE.values())
 		{
-			double [] s = defaultFactory.generateSignal(t);
+			double[] s = defaultFactory.generateSignal(t);
 			sigs.add(s);
 			Logger.getLogger(Consts.CASCADE_LOGGER_NAME).debug(Arrays.toString(s));
-			for (int i = 0; i < s.length ; i++)
+			for (int i = 0; i < s.length; i++)
 			{
-				tempDataset.addValue((Number)s[i], t.name(), i);
+				tempDataset.addValue((Number) s[i], t.name(), i);
 			}
 		}
-		
-			// based on the dataset we create the chart
-			JFreeChart tempChart = ChartFactory.createLineChart("Training signals", "tick", "value",tempDataset, PlotOrientation.VERTICAL, 
-					true,                   // include legend
-					true,
-					false
-			);
-			//And display it
-			ChartUtils.showChart(tempChart);
-			
+
+		// based on the dataset we create the chart
+		JFreeChart tempChart = ChartFactory
+				.createLineChart("Training signals", "tick", "value", tempDataset, PlotOrientation.VERTICAL, true, // include
+																													// legend
+						true, false);
+		// And display it
+		ChartUtils.showChart(tempChart);
 
 	}
 

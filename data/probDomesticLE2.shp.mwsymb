@@ -1,0 +1,10 @@
+<MapWinGIS OcxVersion="4.8" FileType="LayerFile" FileVersion="0" Description="">
+  <Layer LayerType="Shapefile" LayerName="probDomesticLE2" LayerVisible="1" LayerKey="" Filename="">
+    <ShapefileClass>
+      <DefaultDrawingOptions FillColor="12753530" FillVisible="0" LineColor="9868950" />
+      <ShapefileCategoriesClass />
+      <LabelsClass Generated="0" AvoidCollisions="0" Positioning="1" TextRenderingHint="5" />
+      <ChartsClass ValuesFontName="" />
+    </ShapefileClass>
+  </Layer>
+</MapWinGIS>

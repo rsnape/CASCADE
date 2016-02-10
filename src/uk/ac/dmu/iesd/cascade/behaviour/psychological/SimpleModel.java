@@ -7,13 +7,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Vector;
 
-
 /**
  * @author jsnape
- *
+ * 
  */
-public class SimpleModel {
-	
+public class SimpleModel
+{
+
 	private Vector<Construct> constructs = new Vector<Construct>();
 	private Vector<Relationship> relationships = new Vector<Relationship>();
 	private String modelName;
@@ -27,7 +27,7 @@ public class SimpleModel {
 	{
 		this.relationships.add(r);
 	}
-	
+
 	public void addConstructs(Collection<Construct> c)
 	{
 		this.constructs.addAll(c);
@@ -37,42 +37,42 @@ public class SimpleModel {
 	{
 		this.relationships.addAll(r);
 	}
-	
+
 	public void addConstructs(Construct[] c)
 	{
 		this.constructs.addAll(Arrays.asList(c));
 	}
-	
+
 	public void addRelationships(Relationship[] r)
 	{
 		this.relationships.addAll(Arrays.asList(r));
 	}
-	
+
 	public void drawModel()
 	{
 		// TODO Add code here to plot out the model - either into a file
 		// or to stdout
 	}
-	
+
 	public SimpleModel()
 	{
 		super();
 	}
-	
 
 	public SimpleModel(Construct[] constructs)
 	{
 		super();
 		this.constructs.addAll(Arrays.asList(constructs));
 	}
-	
+
 	public SimpleModel(Construct[] constructs, Relationship[] relationships)
 	{
 		super();
 		this.constructs.addAll(Arrays.asList(constructs));
 		this.relationships.addAll(Arrays.asList(relationships));
 	}
-	
+
+	@Override
 	public String toString()
 	{
 		StringBuilder message = new StringBuilder();
@@ -80,14 +80,14 @@ public class SimpleModel {
 		message.append("\n");
 		message.append("This is a psychological model named " + this.modelName);
 		message.append("\n");
-		message.append("It contains " + constructs.size() + "constructs, connected by " + relationships.size() + "relationships.");
+		message.append("It contains " + this.constructs.size() + "constructs, connected by " + this.relationships.size() + "relationships.");
 		message.append("\n");
 		message.append("Constructs: ");
-		message.append(Arrays.toString(constructs.toArray()));
+		message.append(Arrays.toString(this.constructs.toArray()));
 		message.append("\n");
 		message.append("Relationships: ");
-		message.append(Arrays.toString(relationships.toArray()));
-		
+		message.append(Arrays.toString(this.relationships.toArray()));
+
 		return message.toString();
 	}
 

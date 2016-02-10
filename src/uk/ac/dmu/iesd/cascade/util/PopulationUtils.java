@@ -14,41 +14,60 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
  * Provides utilities to perform operations across a population in a simulation
  * 
  * @author jsnape
- *
+ * 
  */
-public class PopulationUtils {
-
+public class PopulationUtils
+{
 
 	/**
 	 * 
 	 */
-	public static void testAndPrintHouseholdApplianceProportions(CascadeContext thisContext) {
+	public static void testAndPrintHouseholdApplianceProportions(CascadeContext thisContext)
+	{
 		// TODO Auto-generated method stub
 		IndexedIterable<HouseholdProsumer> householdProsumers = thisContext.getObjects(HouseholdProsumer.class);
 		int totalPopulation = IterableUtils.count(householdProsumers);
 
-		thisContext.logger.trace("Population proportions");
-		thisContext.logger.trace("======================");
-		thisContext.logger.trace("There are " + totalPopulation + "agents");
-		for ( int i = 1; i <= Consts.OCCUPANCY_PROBABILITY_ARRAY.length; i++)
+		if (thisContext.logger.isTraceEnabled())
+		{
+			thisContext.logger.trace("Population proportions");
+		}
+		if (thisContext.logger.isTraceEnabled())
+		{
+			thisContext.logger.trace("======================");
+		}
+		if (thisContext.logger.isTraceEnabled())
+		{
+			thisContext.logger.trace("There are " + totalPopulation + "agents");
+		}
+		for (int i = 1; i <= Consts.OCCUPANCY_PROBABILITY_ARRAY.length; i++)
 		{
 			Query<HouseholdProsumer> occ1Query = new PropertyEquals(thisContext, "numOccupants", i);
-			thisContext.logger.trace(((IterableUtils.count(occ1Query.query()) * 100) / totalPopulation) + "% of agents with occupancy " + i);
+			thisContext.logger
+					.trace(((IterableUtils.count(occ1Query.query()) * 100) / totalPopulation) + "% of agents with occupancy " + i);
 		}
-		String[] coldAppliances = {"hasFridgeFreezer", "hasRefrigerator", "hasUprightFreezer", "hasChestFreezer"};
-		String[] wetAppliances = {"hasWashingMachine", "hasWasherDryer", "hasTumbleDryer", "hasDishWasher"};
+		String[] coldAppliances =
+		{ "hasFridgeFreezer", "hasRefrigerator", "hasUprightFreezer", "hasChestFreezer" };
+		String[] wetAppliances =
+		{ "hasWashingMachine", "hasWasherDryer", "hasTumbleDryer", "hasDishWasher" };
 
-		for (int i = 0; i < coldAppliances.length; i++)
+		for (String coldAppliance : coldAppliances)
 		{
-			Query<HouseholdProsumer> occ1Query = new PropertyEquals(thisContext, coldAppliances[i], true);
-			thisContext.logger.trace(((IterableUtils.count(occ1Query.query()) * 100) / totalPopulation) + "% of agents with appliance " + coldAppliances[i]);
+			Query<HouseholdProsumer> occ1Query = new PropertyEquals(thisContext, coldAppliance, true);
+if (			thisContext.logger.isTraceEnabled()) {
+			thisContext.logger.trace(((IterableUtils.count(occ1Query.query()) * 100) / totalPopulation) + "% of agents with appliance "
+					+ coldAppliance);
+}
 		}
 
-		for (int i = 0; i < wetAppliances.length; i++)
+		for (String wetAppliance : wetAppliances)
 		{
 
-			Query<HouseholdProsumer> occ1Query = new PropertyEquals(thisContext, wetAppliances[i], true);
-			thisContext.logger.trace(((IterableUtils.count(occ1Query.query()) * 100) / totalPopulation) + "% of agents with appliance " + wetAppliances[i]);						
+			Query<HouseholdProsumer> occ1Query = new PropertyEquals(thisContext, wetAppliance, true);
+if (			thisContext.logger.isTraceEnabled()) {
+			thisContext.logger.trace(((IterableUtils.count(occ1Query.query()) * 100) / totalPopulation) + "% of agents with appliance "
+					+ wetAppliance);
+}
 		}
 
 	}

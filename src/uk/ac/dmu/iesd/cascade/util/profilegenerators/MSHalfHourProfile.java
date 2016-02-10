@@ -5,13 +5,14 @@ package uk.ac.dmu.iesd.cascade.util.profilegenerators;
 
 /**
  * @author jsnape
- *
+ * 
  */
-public class MSHalfHourProfile{
-	
+public class MSHalfHourProfile
+{
+
 	boolean convertedToKWH = false;
 
-	//Group arrays (before scaling etc.)
+	// Group arrays (before scaling etc.)
 	double[] d_lights;
 	double[] d_water_E7;
 	double[] d_water_UR;
@@ -19,16 +20,16 @@ public class MSHalfHourProfile{
 	double[] d_fridge;
 	double[] d_freezer;
 	double[] d_fridge_freezer;
-	double[] d_washer_E7; 
+	double[] d_washer_E7;
 	double[] d_washer_UR;
-	double[] d_dryer_E7; 
+	double[] d_dryer_E7;
 	double[] d_dryer_UR;
 	double[] d_dish_E7;
 	double[] d_dish_UR;
 	double[] d_cook;
 	double[] d_misc;
-	
-	//Final grouped arrays (after peak scaling etc)
+
+	// Final grouped arrays (after peak scaling etc)
 	double[] D_lights;
 	double[] D_water_E7;
 	double[] D_water_UR;
@@ -36,9 +37,9 @@ public class MSHalfHourProfile{
 	double[] D_fridge;
 	double[] D_freezer;
 	double[] D_fridge_freezer;
-	double[] D_washer_E7; 
+	double[] D_washer_E7;
 	double[] D_washer_UR;
-	double[] D_dryer_E7; 
+	double[] D_dryer_E7;
 	double[] D_dryer_UR;
 	double[] D_dish_E7;
 	double[] D_dish_UR;
@@ -47,7 +48,7 @@ public class MSHalfHourProfile{
 	double[] D_kettle;
 	double[] D_microwave;
 	double[] D_misc;
-	
+
 	// Final arrays after the "specific" module
 	double[] D_HHspecific_hob;
 	double[] D_HHspecific_heat;
@@ -69,5 +70,5 @@ public class MSHalfHourProfile{
 	double[] D_HHspecific_misc;
 	double[] D_HHspecific_total;
 	double[] D_HHreactive_total;
-	double[] PF_HH;	
+	double[] PF_HH;
 }

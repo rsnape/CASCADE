@@ -51,16 +51,7 @@
 			<thermalMassMean>10</thermalMassMean>
 			<thermalMassSD>1</thermalMassSD>
 		</prosumer>
-		
-				<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.RaspPiHousehold"
-			number="1">
-			<lossRateMean>350</lossRateMean>
-			<lossRateSD>20</lossRateSD>
-			<thermalMassMean>10</thermalMassMean>
-			<thermalMassSD>1</thermalMassSD>
-		</prosumer>
 	</aggregator>
-	
 	
 	
 </context>

@@ -7,59 +7,61 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class BatteryProsumer extends ProsumerAgent
 {
-	private double capacity; //Holds capacity in kWh
+	private double capacity; // Holds capacity in kWh
 
 	private double currentCharge; // percentage of capacity
 
-	private double historicalMinCharge=1;
-	private double historicalMaxCharge=0;
-	
+	private double historicalMinCharge = 1;
+	private double historicalMaxCharge = 0;
+
 	private double regulatedMinCharge;
-	
+
 	private double[] chargeProfile; // holds charge / discharge info
 	private double chargeRate;
-	
+
 	/**
 	 * @return the capacity
 	 */
 	public double getCapacity()
 	{
-		return capacity;
+		return this.capacity;
 	}
 
 	/**
-	 * @param capacity the capacity to set
+	 * @param capacity
+	 *            the capacity to set
 	 */
 	public void setCapacity(double capacity)
 	{
 		this.capacity = capacity;
 	}
-	
+
 	/**
 	 * @return the currentCharge
 	 */
 	public double getCurrentCharge()
 	{
-		return currentCharge;
+		return this.currentCharge;
 	}
 
 	/**
-	 * @param currentCharge the currentCharge to set
+	 * @param currentCharge
+	 *            the currentCharge to set
 	 */
 	public void setCurrentCharge(double currentCharge)
 	{
 		this.currentCharge = currentCharge;
-		if (currentCharge < historicalMinCharge)
+		if (currentCharge < this.historicalMinCharge)
 		{
-			historicalMinCharge=currentCharge;
+			this.historicalMinCharge = currentCharge;
 		}
-		if (currentCharge > historicalMaxCharge)
+		if (currentCharge > this.historicalMaxCharge)
 		{
-			historicalMaxCharge = currentCharge;
+			this.historicalMaxCharge = currentCharge;
 		}
 	}
 
@@ -69,21 +71,24 @@ public class BatteryProsumer extends ProsumerAgent
 	public BatteryProsumer(CascadeContext context, double capacity)
 	{
 		super(context);
-		setCapacity(capacity);
-		setCurrentCharge(0.8);
+		this.setCapacity(capacity);
+		this.setCurrentCharge(0.8);
 	}
-	
+
 	/**
 	 * @param context
 	 */
 	public BatteryProsumer(CascadeContext context)
 	{
 		super(context);
-		setCurrentCharge(0.8);
+		this.setCurrentCharge(0.8);
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#paramStringReport()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#paramStringReport()
 	 */
 	@Override
 	protected String paramStringReport()
@@ -92,12 +97,14 @@ public class BatteryProsumer extends ProsumerAgent
 		s.append("Battery prosumer - name " + this.getAgentName());
 		s.append("\n");
 		s.append("Capacity : " + this.getCapacity() + "\n");
-		s.append("Historically has reached min charge of " + historicalMinCharge + " and max of " + historicalMaxCharge);
+		s.append("Historically has reached min charge of " + this.historicalMinCharge + " and max of " + this.historicalMaxCharge);
 		s.append("Current charge : " + this.getCurrentCharge() + "\n");
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#step()
 	 */
 	@Override

@@ -17,108 +17,135 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 
 /**
- * Very simple aggregator which passes a one value price signal to its prosumers (i.e. "real time")
- * This value is simply calculated from the demand of the timestep before in this very simple model
+ * Very simple aggregator which passes a one value price signal to its prosumers
+ * (i.e. "real time") This value is simply calculated from the demand of the
+ * timestep before in this very simple model
  * 
  * @author jsnape
- *
+ * 
  */
-public class EquationBasedPriceAggregatorWithLag extends AggregatorAgent {
+public class EquationBasedPriceAggregatorWithLag extends AggregatorAgent
+{
 
 	/**
 	 * Parameters characterising this aggregator's behaviour
 	 */
 	double[] laggedPrice;
 	boolean addNoise;
-	double A = 0.0006; 
+	double A = 0.0006;
 	double B = 12.0;
-	double C = 40.0; 
+	double C = 40.0;
 	double noiseRatio = 0.25;
-	
+
 	/**
 	 * @param context
 	 */
-	public EquationBasedPriceAggregatorWithLag(CascadeContext context) {
-		this(context,0);
+	public EquationBasedPriceAggregatorWithLag(CascadeContext context)
+	{
+		this(context, 0);
 	}
-	
-	public EquationBasedPriceAggregatorWithLag(CascadeContext context, int lag) {
-		this(context,lag,false);
+
+	public EquationBasedPriceAggregatorWithLag(CascadeContext context, int lag)
+	{
+		this(context, lag, false);
 	}
-	
+
 	/**
 	 * @param context
 	 */
-	public EquationBasedPriceAggregatorWithLag(CascadeContext context, int lag, boolean noise) {
+	public EquationBasedPriceAggregatorWithLag(CascadeContext context, int lag, boolean noise)
+	{
 		super(context);
-		this.laggedPrice = new double [lag+1];
+		this.laggedPrice = new double[lag + 1];
 		Arrays.fill(this.laggedPrice, 125);
 		this.addNoise = noise;
 		this.category = Consts.BMU_CATEGORY.DEM_S;
 		this.type = Consts.BMU_TYPE.DEM_SMALL;
 		context.add(this);
 	}
-	
+
 	public double getCurrPrice()
 	{
 		return this.laggedPrice[0];
 	}
-	
+
 	public String priceTitle()
 	{
-		return this.getAgentName()+" current price";
-	}
-	
-	public String demandTitle()
-	{
-		return this.getAgentName()+" current demand";
+		return this.getAgentName() + " current price";
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#paramStringReport()
+	public String demandTitle()
+	{
+		return this.getAgentName() + " current demand";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#paramStringReport
+	 * ()
 	 */
 	@Override
-	protected String paramStringReport() {
+	protected String paramStringReport()
+	{
 		return this.getAgentName();
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#bizPreStep()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#bizPreStep()
 	 */
 	@Override
-	public void bizPreStep() {
-		this.mainContext.logger.debug("At tick "+RepastEssentials.GetTickCount()+" demand = "+this.getNetDemand());
-		ArrayList<ProsumerAgent> customers = getCustomersList();
-		broadcastSignalToCustomers(this.getCurrPrice(), customers);
+	public void bizPreStep()
+	{
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("At tick " + RepastEssentials.GetTickCount() + " demand = " + this.getNetDemand());
+		}
+		ArrayList<ProsumerAgent> customers = this.getCustomersList();
+		this.broadcastSignalToCustomers(this.getCurrPrice(), customers);
 		for (int i = 0; i < this.laggedPrice.length - 1; i++)
 		{
-			this.laggedPrice[i] = this.laggedPrice[i+1];
-			
+			this.laggedPrice[i] = this.laggedPrice[i + 1];
+
 		}
-		this.laggedPrice[this.laggedPrice.length - 1] = calculatePrice(this.getNetDemand());
+		this.laggedPrice[this.laggedPrice.length - 1] = this.calculatePrice(this.getNetDemand());
 	}
 
-	private boolean broadcastSignalToCustomers(double val, List<ProsumerAgent> customerList) {
-		double[] tmp = new double[]{val};
-		return broadcastSignalToCustomers(tmp,customerList);
+	private boolean broadcastSignalToCustomers(double val, List<ProsumerAgent> customerList)
+	{
+		double[] tmp = new double[]
+		{ val };
+		return this.broadcastSignalToCustomers(tmp, customerList);
 	}
+
 	/**
-	 * This method broadcasts a passed signal array (of double values) to a list of passed customers (e.g. Prosumers)
-	 * @param signalArr signal (array of real/double numbers) to be broadcasted
-	 * @param customerList the list of customers (of ProsumerAgent type)
-	 * @return true if signal has been sent and received successfully by the receiver, false otherwise 
+	 * This method broadcasts a passed signal array (of double values) to a list
+	 * of passed customers (e.g. Prosumers)
+	 * 
+	 * @param signalArr
+	 *            signal (array of real/double numbers) to be broadcasted
+	 * @param customerList
+	 *            the list of customers (of ProsumerAgent type)
+	 * @return true if signal has been sent and received successfully by the
+	 *         receiver, false otherwise
 	 */
-	private boolean broadcastSignalToCustomers(double[] signalArr, List<ProsumerAgent> customerList) {
+	private boolean broadcastSignalToCustomers(double[] signalArr, List<ProsumerAgent> customerList)
+	{
 
 		boolean isSignalSentSuccessfully = false;
 		boolean allSignalsSentSuccesfully = true;
-		//Next line only needed for GUI output at this stage
+		// Next line only needed for GUI output at this stage
 		this.priceSignal = new double[signalArr.length];
 		System.arraycopy(signalArr, 0, this.priceSignal, 0, signalArr.length);
-		//List  aList = broadcasteesList;
-		//List <ProsumerAgent> paList = aList;	
+		// List aList = broadcasteesList;
+		// List <ProsumerAgent> paList = aList;
 
-		for (ProsumerAgent agent : customerList){			
+		for (ProsumerAgent agent : customerList)
+		{
 			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr, signalArr.length);
 			if (!isSignalSentSuccessfully)
 			{
@@ -132,62 +159,78 @@ public class EquationBasedPriceAggregatorWithLag extends AggregatorAgent {
 	 * @param netDemand
 	 * @return
 	 */
-	private double calculatePrice(double netDemand) {
+	private double calculatePrice(double netDemand)
+	{
 		// From Roscoe and Ault
 		// Co-efficients estimated from Figure 4 in Roscoe and Ault
-		// Note this was used in Cascade version checked in on 
+		// Note this was used in Cascade version checked in on
 		// commit commit aef4743a1c085b17ce14559f21066cf7ce6de643
 
-		double supplyCap = this.mainContext.getObjects(ProsumerAgent.class).size()*0.75;
+		double supplyCap = this.mainContext.getObjects(ProsumerAgent.class).size() * 0.75;
 		double biggestGen = supplyCap / 100;
-		double x = (netDemand/(supplyCap - biggestGen));
-		double calcPrice = (A * Math.exp(B * x) + C);
-		
-		if (addNoise)
+		double x = (netDemand / (supplyCap - biggestGen));
+		double calcPrice = (this.A * Math.exp(this.B * x) + this.C);
+
+		if (this.addNoise)
 		{
-			calcPrice = calcPrice*((RandomHelper.nextDouble() - 0.5)*noiseRatio + 1);
+			calcPrice = calcPrice * ((RandomHelper.nextDouble() - 0.5) * this.noiseRatio + 1);
 		}
-		
+
 		if (calcPrice > 1000)
 		{
 			calcPrice = 1000;
 		}
-		return calcPrice+20;
+		return calcPrice + 20;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#bizStep()
 	 */
 	@Override
-	public void bizStep() {
-		ArrayList<? extends ProsumerAgent> customers = getCustomersList();
+	public void bizStep()
+	{
+		ArrayList<? extends ProsumerAgent> customers = this.getCustomersList();
 		float totalDemand = 0;
 		for (ProsumerAgent c : customers)
 		{
 			totalDemand += c.getNetDemand();
 		}
-		this.mainContext.logger.debug(this.getAgentName() + " has total demand "+totalDemand);
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug(this.getAgentName() + " has total demand " + totalDemand);
+		}
 		this.setNetDemand(totalDemand);
 	}
 
 	/**
 	 * @return ArrayList of ProsumerAgents that are this aggregators' customers
 	 */
-	private ArrayList<ProsumerAgent> getCustomersList() {
+	private ArrayList<ProsumerAgent> getCustomersList()
+	{
 		ArrayList<ProsumerAgent> c = new ArrayList<ProsumerAgent>();
 		Network economicNet = this.mainContext.getEconomicNetwork();
-		
+
 		Iterable<RepastEdge> iter = economicNet.getEdges();
-		this.mainContext.logger.trace(this.getAgentName()+ " has "+ economicNet.size() + " links in economic network");
+		if (this.mainContext.logger.isTraceEnabled())
+		{
+			this.mainContext.logger.trace(this.getAgentName() + " has " + economicNet.size() + " links in economic network");
+		}
 
-
-		for (RepastEdge edge : iter) {
+		for (RepastEdge edge : iter)
+		{
 			Object linkSource = edge.getTarget();
-			this.mainContext.logger.trace("RECO linkSource " + linkSource);
-			if (linkSource instanceof ProsumerAgent){
-				c.add((ProsumerAgent) linkSource);    		
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("RECO linkSource " + linkSource);
 			}
-			else	{
+			if (linkSource instanceof ProsumerAgent)
+			{
+				c.add((ProsumerAgent) linkSource);
+			}
+			else
+			{
 				throw (new WrongCustomerTypeException(linkSource));
 			}
 		}

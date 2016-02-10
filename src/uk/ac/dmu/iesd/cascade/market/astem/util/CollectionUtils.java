@@ -10,28 +10,35 @@ import java.util.Collection;
  * 
  */
 
+public class CollectionUtils
+{
 
-public class CollectionUtils {
-	
-	public static int numOfRowsWithNegValInCollection (Collection<double[]> collection) {
+	public static int numOfRowsWithNegValInCollection(Collection<double[]> collection)
+	{
 
-		int numOfrowsWithNegVal=0;
-		for (double[] doubleArray : collection) {
-			if (ArraysUtils.isContainNegative(doubleArray)) 
-				numOfrowsWithNegVal++;	
-		}	
+		int numOfrowsWithNegVal = 0;
+		for (double[] doubleArray : collection)
+		{
+			if (ArraysUtils.isContainNegative(doubleArray))
+			{
+				numOfrowsWithNegVal++;
+			}
+		}
 		return numOfrowsWithNegVal;
 	}
-	
-	public static int numOfRowsWithPosValInCollection (Collection<double[]> collection) {
 
-		int numOfrowsWithPosVal=0;
-		for (double[] doubleArray : collection) {
-			if (!ArraysUtils.isContainNegative(doubleArray)) 
-				numOfrowsWithPosVal++;	
-		}	
+	public static int numOfRowsWithPosValInCollection(Collection<double[]> collection)
+	{
+
+		int numOfrowsWithPosVal = 0;
+		for (double[] doubleArray : collection)
+		{
+			if (!ArraysUtils.isContainNegative(doubleArray))
+			{
+				numOfrowsWithPosVal++;
+			}
+		}
 		return numOfrowsWithPosVal;
 	}
-
 
 }

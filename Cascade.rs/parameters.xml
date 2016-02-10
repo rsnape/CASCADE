@@ -28,11 +28,11 @@
 						defaultValue="48" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-									values="24 48 "
+									values="1 24 48 96 288 1440 "
 						
 		/>
-				<parameter name="RootDir" displayName="RootDir" type="java.lang.String" 
-						defaultValue="C:\RepastSimphony-2.0-beta\workspace\Cascade" 
+				<parameter name="rootDir" displayName="rootDir" type="java.lang.String" 
+						defaultValue=".." 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -44,10 +44,15 @@
 									
 		/>
 				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
-						defaultValue="oneFlatDayWeather.csv" 
+						defaultValue="weatherProfiles_1Ywind81.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
+		/>
+				<parameter name="configFileName" displayName="configFileName" type="java.lang.String" 
+						defaultValue="CascadeConfig.xml" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 		/>
 				<parameter name="householdOtherDemandFile" displayName="householdOtherDemandFile" type="java.lang.String" 
 						defaultValue="hhOtherDemandProfiles_1D_half.csv" 
@@ -87,18 +92,12 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
-				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
+<!--				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
 						defaultValue="false" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
-		/>
-						<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
-						defaultValue="false" 
-						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
-									
-		/>
+		/>  -->
 				<parameter name="signalMode" displayName="signal mode" type="int" 
 						defaultValue="2" 
 						isReadOnly="false" 
@@ -113,16 +112,33 @@
 									
 		/>
 				<parameter name="loggingLevel" displayName="Logging level" type="java.lang.String" 
-						defaultValue="DEBUG" 
+						defaultValue="OFF" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									values="TRACE DEBUG INFO WARN ERROR OFF "									
 		/>
-						<parameter name="configFileName" displayName="Config File name" type="java.lang.String" 
-						defaultValue="CascadeConfig1.xml" 
+						<parameter name="wEconomic" displayName="wEconomic" type="double" 
+						defaultValue="0.3" 
 						isReadOnly="false" 
-						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+						<parameter name="wHassle" displayName="wHassle" type="double" 
+						defaultValue="0.4" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+						<parameter name="lastTick" displayName="lastTick" type="double" 
+						defaultValue="52560" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
+		/>
+						<parameter name="wSocial" displayName="wSocial" type="double" 
+						defaultValue="0.4" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
+									
 		/>
 		</parameters>
-
-

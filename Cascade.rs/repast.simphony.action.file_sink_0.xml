@@ -1,0 +1,16 @@
+<repast.simphony.data2.engine.FileSinkDescriptor>
+  <name>AdoptionOutput</name>
+  <dataSet>AdopterCounts</dataSet>
+  <delimiter>,</delimiter>
+  <format>TABULAR</format>
+  <sourceIds class="linked-hash-set">
+    <string>tick</string>
+    <string>run</string>
+    <string>random_seed</string>
+    <string>TotalRHI</string>
+    <string>ASHP</string>
+    <string>GSHP</string>
+  </sourceIds>
+  <fileName>RHIAdopterOutput.txt</fileName>
+  <addTimeStamp>true</addTimeStamp>
+</repast.simphony.data2.engine.FileSinkDescriptor>

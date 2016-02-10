@@ -5,9 +5,7 @@ package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -24,7 +22,8 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
  * @author richard
  * 
  */
-public class RaspPiHousehold extends HouseholdProsumer {
+public class RaspPiHousehold extends HouseholdProsumer
+{
 	String piURL = null;
 
 	private boolean fridgeOn = true;
@@ -40,13 +39,14 @@ public class RaspPiHousehold extends HouseholdProsumer {
 	private boolean downHeaterOn;
 
 	@ScheduledMethod(start = 100, interval = 1)
-	public void controlThePi() {
+	public void controlThePi()
+	{
 		/*
 		 * if (this.getContext().getTimeslotOfDay() == 0) { if (fridgeOn) {
 		 * switchFridgeOff(); } else { switchFridgeOn(); } }
 		 */
 
-		setOptions();
+		this.setOptions();
 
 		if (timeOfDay >= 38 && timeOfDay < 43)
 		{
@@ -138,7 +138,8 @@ public class RaspPiHousehold extends HouseholdProsumer {
 			}	
 		}
 
-		if (this.isHasColdAppliances() && coldApplianceProfile != null) {
+		if (this.isHasColdAppliances() && this.coldApplianceProfile != null)
+		{
 			double fridgeLoad = 0;
 
 			if (this.isHasFridgeFreezer()) {
@@ -150,32 +151,52 @@ public class RaspPiHousehold extends HouseholdProsumer {
 				fridgeLoad = ((double[]) coldApplianceProfiles
 						.get(Consts.COLD_APP_FRIDGE))[time
 						                              % coldApplianceProfile.length];
+
 			}
 
-			//System.err.print(fridgeLoad + ",");
+			// System.err.print(fridgeLoad + ",");
 
-			if (fridgeOn) {
-				if (fridgeLoad == 0) {
-					switchFridgeOff();
+			if (this.fridgeOn)
+			{
+				if (fridgeLoad == 0)
+				{
+					this.switchFridgeOff();
 				}
-			} else {
-				if (fridgeLoad > 0) {
-					switchFridgeOn();
+			}
+			else
+			{
+				if (fridgeLoad > 0)
+				{
+					this.switchFridgeOn();
 				}
 			}
 
 		}
 	}
 
+	/**
+	 * 
+	 */
+	private void switchOnWaterHeat() {
+		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
+		requestVars.put("device", "HotWater");
+		requestVars.put("value", "1");
+		this.sendPiRequest(requestVars);
+		this.heaterOn = true;		
+	}
+
+	@Override
 	@ScheduledMethod(start = 0, interval = 0, priority = Consts.PROSUMER_PRIORITY_FIFTH)
 	public void probeSpecificAgent()
 	{
 		//	if (this.getAgentID() == 1001)
+
 		{
 			ArrayList probed = new ArrayList();
 			probed.add(this);
 			List<IDisplay> listOfDisplays = RunState.getInstance().getGUIRegistry().getDisplays();
-			for (IDisplay display : listOfDisplays) {
+			for (IDisplay display : listOfDisplays)
+			{
 
 				if (display instanceof DisplayOGL2D)
 				{
@@ -219,6 +240,7 @@ public class RaspPiHousehold extends HouseholdProsumer {
 		
 		if (!currState)
 		{
+
 		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
 		requestVars.put("device", deviceName);
 		requestVars.put("value", "1");
@@ -235,20 +257,22 @@ public class RaspPiHousehold extends HouseholdProsumer {
 		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
 		requestVars.put("device", "HotWater");
 		requestVars.put("value", "0");
-		sendPiRequest(requestVars);
-		heaterOn = false;
+		this.sendPiRequest(requestVars);
+		this.heaterOn = false;
 
 	}
 
 	/**
 	 * 
 	 */
-	private void switchOnWaterHeat() {
+
+	private void switchOnHeat()
+	{
 		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
 		requestVars.put("device", "HotWater");
 		requestVars.put("value", "1");
-		sendPiRequest(requestVars);
-		heaterOn = true;
+		this.sendPiRequest(requestVars);
+		this.heaterOn = true;
 
 	}
 	
@@ -303,18 +327,17 @@ public class RaspPiHousehold extends HouseholdProsumer {
 	/**
 	 * 
 	 */
-	public void setOptions() {
+	public void setOptions()
+	{
 		this.costThreshold = Consts.HOUSEHOLD_COST_THRESHOLD;
 		this.setPredictedCostSignal(Consts.ZERO_COST_SIGNAL);
 
-		this.transmitPropensitySmartControl = (double) RandomHelper
-				.nextDouble();
+		this.transmitPropensitySmartControl = RandomHelper.nextDouble();
 
 		this.initializeRandomlyDailyElasticityArray(0, 0.1);
 
 		// this.initializeSimilarlyDailyElasticityArray(0.1d);
-		this.setRandomlyPercentageMoveableDemand(0,
-				Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
+		this.setRandomlyPercentageMoveableDemand(0, Consts.MAX_DOMESTIC_MOVEABLE_LOAD_FRACTION);
 
 		this.exercisesBehaviourChange = true;
 		// pAgent.exercisesBehaviourChange = (RandomHelper.nextDouble() > (1 -
@@ -332,57 +355,64 @@ public class RaspPiHousehold extends HouseholdProsumer {
 		// bit
 		// non-object oriented. Could do with a proper design methodology here.
 		if (this.hasSmartControl)
+		{
 			this.setWattboxController();
+
+
+		}
 
 		this.setNumOccupants(2);
 
-
 	}
 
 	/**
 	 * 
 	 */
-	private void switchFridgeOff() {
+	private void switchFridgeOff()
+	{
 		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
 		requestVars.put("device", "0");
 		requestVars.put("value", "1");
-		sendPiRequest(requestVars);
-		fridgeOn = false;
+		this.sendPiRequest(requestVars);
+		this.fridgeOn = false;
 
 	}
 
 	/**
 	 * 
 	 */
-	private void switchFridgeOn() {
+	private void switchFridgeOn()
+	{
 		WeakHashMap<String, Object> requestVars = new WeakHashMap<String, Object>();
 		requestVars.put("device", "0");
 		requestVars.put("value", "0");
-		sendPiRequest(requestVars);
-		fridgeOn = true;
+		this.sendPiRequest(requestVars);
+		this.fridgeOn = true;
 
 	}
 
-	private void sendPiRequest(WeakHashMap<String, Object> map) {
-		try {
+	private void sendPiRequest(WeakHashMap<String, Object> map)
+	{
+		try
+		{
 			StringBuffer getURL = new StringBuffer(this.piURL);
 			getURL.append("?");
 
-			for (String k : map.keySet()) {
+			for (String k : map.keySet())
+			{
 				getURL.append(k);
 				getURL.append("=");
 				getURL.append(map.get(k).toString());
 				getURL.append("&");
 			}
 			System.err.println(this.getContext().getTickCount() + " : Trying to send URL " + getURL.toString());
-			HttpURLConnection thisConn = (HttpURLConnection) (new URL(
-					getURL.toString())).openConnection();
-			System.err.println("Request sent, response code : "
-					+ thisConn.getResponseCode() + " - "
-					+ thisConn.getResponseMessage());
+			HttpURLConnection thisConn = (HttpURLConnection) (new URL(getURL.toString())).openConnection();
+			System.err.println("Request sent, response code : " + thisConn.getResponseCode() + " - " + thisConn.getResponseMessage());
 			// thisConn.setRequestMethod("GET");
 
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			System.err.println("Couldn't connect to Pi when attempted");
 			e.printStackTrace();
 		}
@@ -393,11 +423,12 @@ public class RaspPiHousehold extends HouseholdProsumer {
 	 * @param context
 	 * @param otherDemandProfile
 	 */
-	public RaspPiHousehold(CascadeContext context, double[] otherDemandProfile) {
+	public RaspPiHousehold(CascadeContext context, double[] otherDemandProfile)
+	{
 		super(context, otherDemandProfile);
 
 		piURL = "http://192.168.1.100/action";
-	}
 
+	}
 
 }

@@ -5,6 +5,7 @@ package uk.ac.dmu.iesd.cascade.agents;
  * @version 1.0 $ $Date: 2012/05/23 $
  */
 
-public class StrategyComponent {
+public class StrategyComponent
+{
 
 }

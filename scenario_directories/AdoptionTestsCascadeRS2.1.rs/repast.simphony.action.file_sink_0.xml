@@ -9,6 +9,6 @@
     <string>run</string>
     <string>random_seed</string>
   </sourceIds>
-  <fileName>ModelOutput.txt</fileName>
+  <fileName>AdoptionOutput.txt</fileName>
   <addTimeStamp>true</addTimeStamp>
 </repast.simphony.data2.engine.FileSinkDescriptor>

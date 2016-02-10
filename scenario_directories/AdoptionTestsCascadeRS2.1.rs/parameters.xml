@@ -87,12 +87,12 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
 		/>
-				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
+<!-- 			<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
 						defaultValue="false" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
-		/>
+		/> -->	
 				<parameter name="signalMode" displayName="signal mode" type="int" 
 						defaultValue="2" 
 						isReadOnly="false" 

@@ -7,11 +7,11 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
  * @author jsnape
- *
+ * 
  */
 public class BhutanHydro extends ProsumerAgent
 {
-	
+
 	private double capacity = 30; // capacity in kW
 	private double nominalVoltage = 230;
 	private double actualVoltage;
@@ -19,21 +19,24 @@ public class BhutanHydro extends ProsumerAgent
 
 	public double getResistanceAtFullLoad()
 	{
-		return apparentLoadResistanceAtCapacity;
+		return this.apparentLoadResistanceAtCapacity;
 	}
-	
+
 	public void setVoltage(double v)
 	{
 		this.actualVoltage = v;
 	}
-	
+
 	public double getCapacity()
 	{
 		return this.capacity;
 	}
-	
-	/* (non-Javadoc)
-	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#paramStringReport()
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#paramStringReport()
 	 */
 	@Override
 	protected String paramStringReport()
@@ -42,7 +45,9 @@ public class BhutanHydro extends ProsumerAgent
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#step()
 	 */
 	@Override
@@ -51,11 +56,11 @@ public class BhutanHydro extends ProsumerAgent
 		this.setNetDemand(this.capacity);
 
 	}
-	
-	public BhutanHydro (CascadeContext context)
+
+	public BhutanHydro(CascadeContext context)
 	{
 		this.mainContext = context;
-		this.apparentLoadResistanceAtCapacity = (nominalVoltage * nominalVoltage) / (capacity * 1000);
+		this.apparentLoadResistanceAtCapacity = (this.nominalVoltage * this.nominalVoltage) / (this.capacity * 1000);
 		context.add(this);
 	}
 
