@@ -88,7 +88,7 @@
 						
 		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
-						defaultValue="dataFiles" 
+						defaultValue="data" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
@@ -117,6 +117,12 @@
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
+		/>
+						<parameter name="loggingLevel" displayName="Logging level" type="java.lang.String" 
+						defaultValue="DEBUG" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+									values="TRACE DEBUG INFO WARN ERROR OFF "									
 		/>
 		</parameters>
 

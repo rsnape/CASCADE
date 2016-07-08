@@ -25,6 +25,7 @@ import repast.simphony.context.DefaultContext;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.parameter.IllegalParameterException;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.Projection;
 import repast.simphony.ui.widget.SnapshotTaker;
@@ -845,7 +846,17 @@ public class CascadeContext extends DefaultContext
 
 	void initDedicatedLogger(String name)
 	{
-		Level logLevel = Level.toLevel((String) RepastEssentials.GetParameter("loggingLevel"));
+		String s_logLevel = "";
+		try
+		{
+			s_logLevel = (String) RepastEssentials.GetParameter("loggingLevel");
+		}
+		catch (IllegalParameterException e)
+		{
+			s_logLevel = "INFO";
+		}
+		
+		Level logLevel = Level.toLevel(s_logLevel);
 		// set up a this.logger for the adoption context
 		this.logger = Logger.getLogger(name);
 		this.logger.removeAllAppenders();

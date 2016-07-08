@@ -332,4 +332,13 @@ public class CSVReader
 		return numCols;
 	}
 
+	/**
+	 * @return
+	 */
+	public int getNumRows()
+	{
+		// TODO Auto-generated method stub
+		return this.numRows;
+	}
+
 }
