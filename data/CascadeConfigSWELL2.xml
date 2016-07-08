@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context>
+	<!-- Comment out the background aggregators   
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="1" type = "GEN_COAL">
+	</aggregator>
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="2" type = "GEN_CCGT">
+	</aggregator>
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="64" type = "GEN_WIND">
+	</aggregator>
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
+		number="5" type = "DEM_LARGE">
+	</aggregator> -->
+	<!--  First aggregator with households - no Gas and a range of thermal properties -->
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel"
+		number="1">
+		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="50">
+			<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<percentageGas>84</percentageGas>
+		</prosumer>
+		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+			{  "power_generation_kw" : { "N" : "0.35" }}
+		</prosumer>
+			
+			{  "power_generation_kw" : { "N" : "0.29" }}
+			{  "power_generation_kw" : { "N" : "0.28" }}
+			{  "power_generation_kw" : { "N" : "0.93" }}
+			{  "power_generation_kw" : { "N" : "0.33" }}
+			
+		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			{  "power_generation_kw" : { "N" : "0.11" }}
+		</prosumer>	
+			
+			{  "power_generation_kw" : { "N" : "0.27" }}
+			{  "power_generation_kw" : { "N" : "0.3" }}
+			{  "power_generation_kw" : { "N" : "0.32" }}
+			{  "power_generation_kw" : { "N" : "0.4" }}
+			{  "power_generation_kw" : { "N" : "0.26" }}
+			{  "power_generation_kw" : { "N" : "0.23" }}
+			{  "power_generation_kw" : { "N" : "0.15" }}
+			{  "power_generation_kw" : { "N" : "0.4" }}
+			{  "power_generation_kw" : { "N" : "0.15" }}
+		
+	</aggregator>
+
+	<market>
+		false
+	</market>
+	<!--  Second aggregator with households - no Gas and a single (average) thermal property -->
+		<!--  Comment out the extraneous households
+		<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel"
+		number="1">
+		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="15000">
+			<lossRateMean>275</lossRateMean>
+			<lossRateSD>0</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>0</thermalMassSD>
+		</prosumer>
+	</aggregator>
+	-->
+	<!--  Third aggregator with households - 60% gas and rather extreme poor thermal properties -->
+		<!--  Comment out the extraneous households
+		<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel"
+		number="1">
+		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="15000">
+			<lossRateMean>350</lossRateMean>
+			<lossRateSD>20</lossRateSD>
+			<thermalMassMean>10</thermalMassMean>
+			<thermalMassSD>1</thermalMassSD>
+		</prosumer>
+	</aggregator>
+	
+	-->
+	
+</context>
