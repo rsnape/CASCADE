@@ -535,11 +535,11 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 
 	public void initialiseSCT()
 	{
-		this.PVDecisionModel.setWeightGoalToBehaviour(1);
+		this.PVDecisionModel.setWeightGoalToBehaviour(3);
 		this.PVDecisionModel.setWeightSocioStructuralToOutcomeExp(0);
 		this.PVDecisionModel.setWeightSocioStructuralToPerceptionOfOthers(0);
 		this.PVDecisionModel.setWeightSelfEfficacyToOutcomeExp(0);
-		this.PVDecisionModel.setWeightOutcomeExpToGoal(1);
+		this.PVDecisionModel.setWeightOutcomeExpToGoal(3);
 		this.PVDecisionModel.setWeightPerceptionOfOthersToGoal(0.2);
 		this.PVDecisionModel.setWeightSelfEfficacyToGoal(1);
 		this.PVDecisionModel.setWeightSocioStructuralToGoal(0);

@@ -247,7 +247,7 @@ public class ProsumerProbeListener implements ProbeListener
 						TickUnits kwhTicks = new TickUnits();
 						kwhTicks.add(new NumberTickUnit(200));
 						barChart4AllHHProsConsumption.getXYPlot().getDomainAxis().setStandardTickUnits(fourTicks);
-						barChart4AllHHProsConsumption.getXYPlot().getRangeAxis().setRange(0, 1700);
+						//barChart4AllHHProsConsumption.getXYPlot().getRangeAxis().setRange(0, 1700);
 						barChart4AllHHProsConsumption.getXYPlot().getRangeAxis().setStandardTickUnits(kwhTicks);
 
 						JButton saveAsButton = new JButton("Click to Save as PNG");

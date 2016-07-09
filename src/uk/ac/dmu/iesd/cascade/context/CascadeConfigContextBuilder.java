@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -99,6 +100,7 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 																// CascadeContext
 																// by passing
 																// the context
+		
 		this.readParamsAndInitializeArrays();
 		// XMLReader myR = readConfigFile(configFile);
 		// decodeConfigFile();
@@ -133,7 +135,7 @@ if (				this.cascadeMainContext.logger.isDebugEnabled()) {
 			}
 			if (!marketElements.item(0).getChildNodes().item(0).getNodeValue().equals("false"))
 			{
-				this.buildMarket();
+				//this.buildMarket();
 			}
 		}
 
