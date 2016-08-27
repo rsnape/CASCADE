@@ -17,6 +17,7 @@ import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
@@ -25,6 +26,7 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
+import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveArbitraryArray;
 import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveFlatDemand;
 import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveOvernightWind;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
@@ -112,7 +114,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 */
 	private double alpha;
 
-	List<ProsumerAgent> customers;
+
 	int timeTick;
 	int timeslotOfDay;
 	int dayOfWeek;
@@ -215,6 +217,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		return Di;
 	}
 
+
 	/**
 	 * This method calculates and returns "price elasticity factor" (e) at a
 	 * given time-slot. (It implements the formula proposed by P. Boait, Formula
@@ -299,36 +302,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 
 	}
 
-	/**
-	 * This method returns the list of customers (prosusmers) in the economic
-	 * network of this aggregator
-	 * 
-	 * @return List of customers of type <tt> ProsumerAgent</tt>
-	 */
-	private List<ProsumerAgent> getCustomersList()
-	{
-		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
-		Network economicNet = this.mainContext.getEconomicNetwork();
-		Iterable<RepastEdge> iter = economicNet.getEdges(this);
-if (		this.mainContext.logger.isDebugEnabled()) {
-		this.mainContext.logger.debug(this.getAgentName() + " " + this.toString() + " has " + economicNet.size()
-				+ " links in economic network");
-}
 
-		for (RepastEdge edge : iter)
-		{
-			Object linkSource = edge.getTarget();
-			if (linkSource instanceof ProsumerAgent)
-			{
-				customers.add((ProsumerAgent) linkSource);
-			}
-			else
-			{
-				throw (new WrongCustomerTypeException(linkSource));
-			}
-		}
-		return customers;
-	}
 
 	/**
 	 * This method is used to check whether the 'profile building' period has
@@ -577,15 +551,17 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 
 		NelderMead apacheNelderMead = new NelderMead();
 
-		MinimisationFunctionObjectiveFlatDemand minFunct = new MinimisationFunctionObjectiveFlatDemand();
+		//MinimisationFunctionObjectiveFlatDemand minFunct = new MinimisationFunctionObjectiveFlatDemand();
 		//MinimisationFunctionObjectiveOvernightWind minFunct = new MinimisationFunctionObjectiveOvernightWind();
-		
+		MinimisationFunctionObjectiveArbitraryArray minFunct = new MinimisationFunctionObjectiveArbitraryArray(this.getPredictedGeneration());
+
 
 		minFunct.set_pointer_to_B(arr_B);
 		minFunct.set_pointer_to_Kneg(this.Kneg);
 		minFunct.set_pointer_to_Kpos(this.Kpos);
 		minFunct.set_pointer_to_Cavge(this.Cavge);
 
+		
 		minFunct.addSimpleSumEqualsConstraintForApache(0, 0.01);
 
 		// initial estimates
@@ -662,11 +638,22 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 }
 
 		double[] newOpt_S = minValue.getPoint();
-		minFunct.setPrintD(true);
-		minFunct.function(newOpt_S);
-		minFunct.setPrintD(false);
+		
+		//The following is to print the predicted demand for the optimal signal -
+		//useful for the flat demand case
+		
+		//minFunct.setPrintD(true);
+		//minFunct.function(newOpt_S);
+		//minFunct.setPrintD(false);
 
 		return newOpt_S;
+	}
+
+	/**
+	 * @return
+	 */
+	private double[] getPredictedGeneration() {
+		return this.predictedGeneration;
 	}
 
 	private void updateCumulativeSaving(double savingAmount)
@@ -690,6 +677,8 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	private double[][] Kposm = new double[this.ticksPerDay][this.ticksPerDay];
 	private double[] Kneg = new double[this.ticksPerDay];
 	private double[][] Knegm = new double[this.ticksPerDay][this.ticksPerDay];
+
+	private double[] predictedGeneration;
 
 	/**
 	 * Returns a string representing the state of this agent. This method is
@@ -934,11 +923,6 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 		this.timeTick = this.mainContext.getTickCount();
 		this.timeslotOfDay = this.mainContext.getTimeslotOfDay();
 
-		if (this.timeTick == 0)
-		{
-			this.customers = this.getCustomersList();
-		}
-
 		if (this.isAggregateDemandProfileBuildingPeriodCompleted())
 		{ // End of history profile building period
 			// Set the Baseline demand on the first time through after building
@@ -1142,7 +1126,8 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 		else if (!this.isTrainingPeriodCompleted())
 		{
 			this.updateAggregateDemandHistoryArray(this.customers, this.timeslotOfDay, this.arr_hist_ij_D);
-
+			this.updatePredictedGeneration();
+			
 			if (this.mainContext.isEndOfDay(this.timeslotOfDay))
 			{
 				double[] DeltaB;
@@ -1151,7 +1136,7 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 
 				/**
 				 * Method to generate k values for positive and negative signal
-				 * values. Based on the original Matlab code preoposed by Peter
+				 * values. Based on the original Matlab code proposed by Peter
 				 * Boait in prototype.
 				 */
 				int deltaRow = this.mainContext.getDayCount() - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE;
@@ -1178,6 +1163,13 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 			this.costSavingCalculation(this.arr_i_C, this.getDayNetDemands(), this.arr_i_B, this.arr_i_S, this.arr_i_e);
 		}
 
+	}
+
+	/**
+	 * 
+	 */
+	private void updatePredictedGeneration() {
+			this.predictedGeneration[this.mainContext.getTimeslotOfDay()] = this.getGeneration();
 	}
 
 	/**
@@ -1235,7 +1227,8 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 		this.arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand), 100); // all
 																							// costs
 																							// (equivalent
-																							// to
+		this.predictedGeneration = new double[this.ticksPerDay];																					// (equivalent
+																				// to
 																							// size
 																							// of
 																							// baseDemand,
@@ -1303,7 +1296,7 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 
 		this.arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand), 100); // all
 																							// costs
-																							// (equivalent
+		this.predictedGeneration = new double[this.ticksPerDay];																					// (equivalent
 																							// to
 																							// size
 																							// of

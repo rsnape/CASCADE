@@ -57,6 +57,11 @@ public class HouseholdProsumer extends ProsumerAgent
 	// what do we think?
 	boolean hasThermalGeneration = false;
 	public boolean hasPV = false;
+	//TODO: refactor so that we have more object orientation - e.g. Generator interface,
+	// inherited to MicroGenerator, RenewableGenerator, ThermalGenerator...
+	// implemented as e.g. PVSystem, WindTurbine, NuclearUnit etc.
+	// Have prosumers own these.
+	int pv_orientation = 0; //Orientation of building in degrees from North.  Pertinent for PV
 	boolean hasSolarWaterHeat = false;
 	private boolean hasElectricalWaterHeat = false;
 	boolean hasElectricalSpaceHeat = false;
@@ -234,8 +239,12 @@ public class HouseholdProsumer extends ProsumerAgent
 	protected double[] dayHistoryHeatingEnergy;
 
 	private double maxHeatPerTimestep = 12; // 12 kWh based on a gas boiler of
+
+	private int ratedStorageHeaterCapacity;
 											// ~30kW at 90% efficiency. This can
 											// be made more realistic later
+
+	private int ratedStorageHeaterPower;
 
 	/**
 	 * Accessor functions (NetBeans style) TODO: May make some of these private
@@ -561,7 +570,7 @@ public class HouseholdProsumer extends ProsumerAgent
 	 *         Prosumer
 	 * 
 	 */
-	private double currentGeneration()
+	public double currentGeneration()
 	{
 		double returnAmount = 0;
 
@@ -591,7 +600,6 @@ public class HouseholdProsumer extends ProsumerAgent
 			// insolation
 			// at which the PV cell produces its rated power
 			double p = (this.getInsolation() / Consts.MAX_INSOLATION) * this.ratedPowerPV;
-
 			return (p * Consts.HOURS_PER_DAY) / this.mainContext.ticksPerDay; // convert
 																				// power
 																				// to
@@ -1489,9 +1497,26 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 
 	public void initializeElecSpaceHeatPar()
 	{
-
+		initializeElecSpaceHeatPar(Consts.HEAT_TYPE_HP);
+	}
+	
+	public void initializeElecSpaceHeatPar(String type)
+	{
 		this.minSetPoint = Consts.HOUSEHOLD_MIN_SETPOINT;
 		this.maxSetPoint = Consts.HOUSEHOLD_MAX_SETPOINT;
+		
+		if (type.equalsIgnoreCase(Consts.HEAT_TYPE_STORAGE))
+		{
+			this.ratedStorageHeaterCapacity = 50; //kWh storage capacity - starter for 10 value
+			this.ratedStorageHeaterPower = 7; //kW for charging power
+			// Initialise the base case where heat pump is on all day
+			this.spaceHeatPumpOn = new double[this.mainContext.ticksPerDay];
+			Arrays.fill(this.spaceHeatPumpOn, 0, 14, 1); //Fill as charging in Econ 7 only
+
+		}
+		else
+		{
+			//Default to heat pump
 
 		this.ratedPowerHeatPump = Consts.TYPICAL_HEAT_PUMP_ELEC_RATING;
 
@@ -1508,7 +1533,9 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 		// Initialise the base case where heat pump is on all day
 		this.spaceHeatPumpOn = new double[this.mainContext.ticksPerDay];
 		Arrays.fill(this.spaceHeatPumpOn, 1);
+		}
 		this.setHasElectricalSpaceHeat(true);
+
 
 	}
 

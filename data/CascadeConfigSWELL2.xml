@@ -17,43 +17,169 @@
 		class="uk.ac.dmu.iesd.cascade.agents.aggregators.GenericBMPxTraderAggregator"
 		number="5" type = "DEM_LARGE">
 	</aggregator> -->
+	
 	<!--  First aggregator with households - no Gas and a range of thermal properties -->
 	<aggregator
 		class="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel"
 		number="1">
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
-			number="50">
+			number="35">
 			<lossRateMean>275</lossRateMean>
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<percentageGas>84</percentageGas>
+			<percentageGas>80</percentageGas>
 		</prosumer>
+        
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="1">
 			<percentageGas>100</percentageGas>
-			{  "power_generation_kw" : { "N" : "0.35" }}
+			<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv orientation="270">3.5</pv>
 		</prosumer>
+        
+			<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>	
+			<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>	
+			<pv orientation="135">2.9</pv>
+			</prosumer>
 			
-			{  "power_generation_kw" : { "N" : "0.29" }}
-			{  "power_generation_kw" : { "N" : "0.28" }}
-			{  "power_generation_kw" : { "N" : "0.93" }}
-			{  "power_generation_kw" : { "N" : "0.33" }}
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv orientation="180">2.8</pv>
+			</prosumer>
+			
+			<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+                <percentageGas>100</percentageGas>
+				<lossRateMean>275</lossRateMean>
+                <lossRateSD>75</lossRateSD>
+                <thermalMassMean>12.5</thermalMassMean>
+                <thermalMassSD>2.5</thermalMassSD>
+                <pv >9.3</pv>
+			</prosumer>
+			
+			<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+                <percentageGas>100</percentageGas>
+				<lossRateMean>275</lossRateMean>
+                <lossRateSD>75</lossRateSD>
+                <thermalMassMean>12.5</thermalMassMean>
+                <thermalMassSD>2.5</thermalMassSD>
+                <pv>3.3</pv>
+			</prosumer>
 			
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="1">
-			{  "power_generation_kw" : { "N" : "0.11" }}
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>1.1</pv>
 		</prosumer>	
 			
-			{  "power_generation_kw" : { "N" : "0.27" }}
-			{  "power_generation_kw" : { "N" : "0.3" }}
-			{  "power_generation_kw" : { "N" : "0.32" }}
-			{  "power_generation_kw" : { "N" : "0.4" }}
-			{  "power_generation_kw" : { "N" : "0.26" }}
-			{  "power_generation_kw" : { "N" : "0.23" }}
-			{  "power_generation_kw" : { "N" : "0.15" }}
-			{  "power_generation_kw" : { "N" : "0.4" }}
-			{  "power_generation_kw" : { "N" : "0.15" }}
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<percentageGas>100</percentageGas>
+			<pv>2.7</pv>
+					</prosumer>
+			
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>3</pv>
+					</prosumer>
+			
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>3.2</pv>
+					</prosumer>
+			
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>4</pv>
+					</prosumer>
+			
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>2.6</pv>
+					</prosumer>
+			
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>2.3</pv>
+					</prosumer>
+			
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>1.5</pv>
+					</prosumer>
+			
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>4</pv>
+					</prosumer>
+			
+			
+					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="1">
+			<percentageGas>100</percentageGas>
+						<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<pv>1.5</pv>
+		</prosumer>
 		
 	</aggregator>
 

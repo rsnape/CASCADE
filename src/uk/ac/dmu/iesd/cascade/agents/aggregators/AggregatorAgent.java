@@ -3,14 +3,18 @@ package uk.ac.dmu.iesd.cascade.agents.aggregators;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.space.graph.Network;
+import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.ui.probe.ProbeID;
 import repast.simphony.util.ContextUtils;
 import uk.ac.dmu.iesd.cascade.agents.ICognitiveAgent;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
@@ -20,6 +24,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.IObservable;
 import uk.ac.dmu.iesd.cascade.util.IObserver;
 import uk.ac.dmu.iesd.cascade.util.ObservableComponent;
+import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 
 /**
  * An <em>AggregatorAgent</em> is an object that represents a
@@ -124,6 +129,7 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	protected ObservableComponent observableProxy;
 
 	boolean autoControl;
+	List<ProsumerAgent> customers;
 	// String contextName;
 	/*
 	 * This is net demand, may be +ve (consumption), 0, or -ve (generation)
@@ -275,6 +281,37 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 	}
 
 	/**
+	 * This method returns the list of customers (prosusmers) in the economic
+	 * network of this aggregator
+	 * 
+	 * @return List of customers of type <tt> ProsumerAgent</tt>
+	 */
+	private List<ProsumerAgent> getCustomersList()
+	{
+		List<ProsumerAgent> customers = new Vector<ProsumerAgent>();
+		Network economicNet = this.mainContext.getEconomicNetwork();
+		Iterable<RepastEdge> iter = economicNet.getEdges(this);
+if (		this.mainContext.logger.isDebugEnabled()) {
+		this.mainContext.logger.debug(this.getAgentName() + " " + this.toString() + " has " + economicNet.size()
+				+ " links in economic network");
+}
+
+		for (RepastEdge edge : iter)
+		{
+			Object linkSource = edge.getTarget();
+			if (linkSource instanceof ProsumerAgent)
+			{
+				customers.add((ProsumerAgent) linkSource);
+			}
+			else
+			{
+				throw (new WrongCustomerTypeException(linkSource));
+			}
+		}
+		return customers;
+	}
+	
+	/**
 	 * Returns the net demand <code>netDemand</code> for this agent (D)
 	 * 
 	 * @return the <code>netDemand (D)</code>
@@ -327,6 +364,26 @@ public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
 		return this.priceSignal[(int) time % this.priceSignal.length];
 	}
 
+	/**
+	 * Read total PV generation from all connected prosumers
+	 */
+	public double getGeneration()
+	{
+		if (customers == null) {return 0;}
+		
+		double tot = 0;
+		for (ProsumerAgent p : customers)
+		{
+			if (p instanceof HouseholdProsumer)
+			{
+				HouseholdProsumer hh = (HouseholdProsumer) p;
+				tot += hh.currentGeneration();
+			}
+			
+		}
+		return tot;
+	}
+	
 	/*
 	 * public double getCurrentCostOfDemand() { return getCurrentCost_C() *
 	 * this.getNetDemand(); }
@@ -737,9 +794,17 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	@ScheduledMethod(start = 0, interval = 1, shuffle = true, priority = Consts.AGGREGATOR_STEP_PRIORITY_SIXTH)
 	abstract public void bizStep();
 
+	/**
+	 * Action to collect things that may be done as the first action in  step 0, but 
+	 * cannot be done during model
+	 * initialisation
+	 */
 	@ScheduledMethod(start = 0, interval = 0, priority = Consts.PRE_INITIALISE_FIRST_TICK)
-	private void initContext()
+	public void initActions()
 	{
+		//A little hacky - this assumes customers never change.  OK for now - should implement
+		//proper "cache dirty algorithm" at some point TODO
+		this.customers = getCustomersList();
 		if (this.mainContext == null)
 		{
 			this.mainContext = (CascadeContext) ContextUtils.getContext(this);

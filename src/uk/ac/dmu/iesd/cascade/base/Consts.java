@@ -426,6 +426,9 @@ public final class Consts
 															// estimate to be
 															// checked!!!
 
+	public static final String HEAT_TYPE_HP = "HEATPUMP";
+	public static final String HEAT_TYPE_STORAGE = "STORAGE";
+
 	public static enum HEATING_TYPE
 	{
 		GRID_GAS, CALOR_GAS, OIL, ELECTRIC_STORAGE, BIOMASS, GND_SOURCE_HP, AIR_SOURCE_HP, SOLAR_THERMAL

@@ -423,6 +423,7 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 			System.err.println("Adding " + numHH + " households");
 			int occNum = Consts.RANDOM;
 			int gasPercentage = 0;
+			double pv_cap = 0;
 			if (p.hasChildNodes())
 			{
 				// Alter the prosumer generation distributions based on this
@@ -444,6 +445,15 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 				{
 					gasPercentage = Integer.parseInt(gas.item(0).getChildNodes().item(0).getNodeValue());
 				}
+
+				NodeList pv = p.getElementsByTagName("pv");
+				if (pv.getLength() == 1)
+				{
+					pv_cap = Double.parseDouble(pv.item(0).getChildNodes().item(0).getNodeValue());
+				}
+
+				
+				
 				this.cascadeMainContext.buildingLossRateGenerator = RandomHelper.createNormal(bLMean, bLSD);
 				this.cascadeMainContext.thermalMassGenerator = RandomHelper.createNormal(tMMean, tMSD);
 
@@ -465,6 +475,12 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 
 				this.cascadeMainContext.add(hhProsAgent);
 				this.economicNet.addEdge(suppCo, hhProsAgent);
+				
+				if (pv_cap > 0)
+				{
+					hhProsAgent.hasPV = true;
+					hhProsAgent.ratedPowerPV = pv_cap;
+				}
 			}
 
 			if (Consts.HHPRO_HAS_WET_APPL)
@@ -929,6 +945,9 @@ if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			double[] airTemperatureArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airTemp"));
 			double[] airDensityArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airDensity"));
 
+			//TODO: Bit hacky - but I'm not sure why we were limiting this to one day previously.
+			lengthOfProfileArrays = insolationArray_all.length;
+			
 			this.cascadeMainContext.insolationArray = Arrays.copyOf(insolationArray_all, lengthOfProfileArrays);
 			this.cascadeMainContext.windSpeedArray = Arrays.copyOf(windSpeedArray_all, lengthOfProfileArrays);
 			this.cascadeMainContext.airTemperatureArray = Arrays.copyOf(airTemperatureArray_all, lengthOfProfileArrays);
