@@ -3,11 +3,14 @@
  */
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 
+import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.parameter.Parameters;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
@@ -19,7 +22,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
  */
 public class RetailOutlet extends ProsumerAgent
 {
-	WeakHashMap<String, List<double []>> day_profiles = new WeakHashMap<String, List<double []>>();
+	WeakHashMap<String, List<double []>> dayProfiles = new WeakHashMap<String, List<double []>>();
 	
 	/* (non-Javadoc)
 	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#paramStringReport()
@@ -42,7 +45,7 @@ public class RetailOutlet extends ProsumerAgent
 		double min_cost = Double.MAX_VALUE;
 		double[] best_profile = null;
 		
-		List<double[]> profiles = this.day_profiles.get("01-26.inp");
+		List<double[]> profiles = this.dayProfiles.get("01-26.inp");
 
 		for (double[] p: profiles)
 		{
@@ -55,12 +58,22 @@ public class RetailOutlet extends ProsumerAgent
 		}
 
 	}
-	
-	public RetailOutlet(String filename) throws FileNotFoundException
+		
+	public RetailOutlet(String siteName, String co2profile) throws FileNotFoundException
 	{
-		populateProfiles(filename);
-	}
+		//Bit hacky - work on parameterising this properly
+		Parameters params = RunEnvironment.getInstance().getParameters();
+		String dataFileFolderPath = (String) params.getValue("dataFileFolder");
 
+		System.err.println("Path is" + dataFileFolderPath);
+		
+		String filename = dataFileFolderPath + File.separator + co2profile+"_"+siteName+"_"+"summary_with_consumption.csv";
+		
+		populateProfiles(filename);
+		
+		System.out.println(dayProfiles);
+	}
+	
 	/**
 	 * @param filename
 	 * @throws FileNotFoundException 
@@ -69,20 +82,37 @@ public class RetailOutlet extends ProsumerAgent
 	{
 		CSVReader r = new CSVReader(filename);
 		r.parseRaw();
+		int startInd = -1;
+		String[] cols = r.getColumnNames();
+		
+		for (int j=0; j < cols.length; j++)
+		{
+			if (cols[j].equals("E0"))
+			{
+				startInd = j;
+				break;
+			}					
+		}
+		
+		if (startInd < 0)
+		{
+			System.err.println("File " + filename + " does not appear to contain energy profile columns");
+		}
+		
 		for (int i=0; i < r.getNumRows(); i++)
 		{
 			String[] rowData = r.getRow(i);
 			String input_name = rowData[6];
 			String[] tempProfile = new String[19];
-			System.arraycopy(rowData, 7, tempProfile, 0, 19);
+			System.arraycopy(rowData, startInd, tempProfile, 0, 48);
 			double[] numerical_profile = ArrayUtils.convertStringArrayToDoubleArray(tempProfile);	
-			List<double[]> tempList = day_profiles.get(input_name);
+			List<double[]> tempList = dayProfiles.get(input_name);
 			if (tempList == null)
 			{
 				tempList = new ArrayList<double[]>();
 			}
 			tempList.add(numerical_profile);
-			day_profiles.put(input_name, tempList);
+			dayProfiles.put(input_name, tempList);
 		}
 		
 	}
