@@ -61,8 +61,8 @@
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
-				<parameter name="defaultProsumersPerFeeder" displayName="defaultProsumersPerFeeder" type="java.lang.Integer" 
-						defaultValue="1000" 
+				<parameter name="numControlledBuildings" displayName="numControlledBuildings" type="java.lang.Integer" 
+						defaultValue="3" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -82,7 +82,7 @@
 						
 		/>
 				<parameter name="dataFileFolder" displayName="dataFileFolder" type="java.lang.String" 
-						defaultValue="dataFiles" 
+						defaultValue="data" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 									
