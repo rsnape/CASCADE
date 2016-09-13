@@ -66,6 +66,8 @@ public class CSVReader {
 						.println("IO Exception occured whilst reading CSV line");
 				e.printStackTrace();
 			}
+			
+			System.err.println(thisLine);
 
 			hasNextLine = (thisLine != null);
 			if (hasNextLine) {
@@ -102,7 +104,6 @@ public class CSVReader {
 					}
 					rawData.add(thisRow);
 					this.numRows++;
-
 				}
 			}
 

@@ -363,13 +363,17 @@ public class MinderContextBuilder implements ContextBuilder<Object> {
 
 		String[] buildingNames = new String[] { "Lon", "Leu", "Fin" };
 
-		String co2profile = "CO2_1";
+		String co2profile = "co2_1";
 
 		for (int i = 0; i < this.numProsumers; i++) {
 			// Generate a prosumer with basic constant load somewhere between
 			// 0 and 1 kWh per half hour
 			RetailOutlet p = new RetailOutlet(
 					buildingNames[RandomHelper.nextIntFromTo(0,2)], co2profile);
+			if (!this.cascadeMainContext.add(p))
+			{
+				System.err.println("Failed to add RetailOutlet agent to context!!");
+			}
 		}
 
 		if (this.cascadeMainContext.logger.isDebugEnabled()) {

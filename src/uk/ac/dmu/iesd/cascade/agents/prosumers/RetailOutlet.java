@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 
+import cern.colt.Arrays;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.parameter.Parameters;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
@@ -81,7 +82,7 @@ public class RetailOutlet extends ProsumerAgent
 	private void populateProfiles(String filename) throws FileNotFoundException
 	{
 		CSVReader r = new CSVReader(filename);
-		r.parseRaw();
+		r.parseByColumn(); //Weirdly, parseRaw appears to be broken.
 		int startInd = -1;
 		String[] cols = r.getColumnNames();
 		
@@ -97,13 +98,14 @@ public class RetailOutlet extends ProsumerAgent
 		if (startInd < 0)
 		{
 			System.err.println("File " + filename + " does not appear to contain energy profile columns");
+			System.err.println("Columns are " + Arrays.toString(cols));
 		}
 		
 		for (int i=0; i < r.getNumRows(); i++)
 		{
 			String[] rowData = r.getRow(i);
-			String input_name = rowData[6];
-			String[] tempProfile = new String[19];
+			String input_name = rowData[7]; //This gets column `P3` - TODO improve!!
+			String[] tempProfile = new String[48];
 			System.arraycopy(rowData, startInd, tempProfile, 0, 48);
 			double[] numerical_profile = ArrayUtils.convertStringArrayToDoubleArray(tempProfile);	
 			List<double[]> tempList = dayProfiles.get(input_name);
