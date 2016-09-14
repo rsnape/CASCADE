@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 
+import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 
 /**
@@ -21,6 +22,14 @@ public class EstateManager extends AggregatorAgent
 	private WeakHashMap<String, List<double[]>> buildingProfiles; 
 	String dataDir = "D:\\Dropbox\\Minder\\data\\Optimal_outputs";
 	
+	/**
+	 * @param cascadeMainContext
+	 */
+	public EstateManager(CascadeContext cascadeMainContext)
+	{
+		super(cascadeMainContext);
+	}
+
 	/* (non-Javadoc)
 	 * @see uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent#paramStringReport()
 	 */

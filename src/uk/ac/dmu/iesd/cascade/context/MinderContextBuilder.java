@@ -41,12 +41,12 @@ import cern.jet.random.Empirical;
  * @version $Revision: 2.00 $ $Date: 2011/10/05 
  * 
  * Major changes for this submission include: 
- * • All the elements ('variable' declarations, including data structures consisting of values 
+ * ï¿½ All the elements ('variable' declarations, including data structures consisting of values 
  * [constant] or variables) of the type 'float' (32 bits) have been changed to 'double' (64 bits) (Babak Mahdavi)
  * 
  * CASCADE Project Version [ Model Built version] (Version# for the entire project/ as whole)
  *  @version $Revision: 3.00 $ $Date: 2012/05/30
- *  • Restructure of the entire project packages after with the integration with the ASTEM market model (Babak Mahdavi)
+ *  ï¿½ Restructure of the entire project packages after with the integration with the ASTEM market model (Babak Mahdavi)
  *   
  */
 
@@ -262,29 +262,6 @@ public class MinderContextBuilder implements ContextBuilder<Object> {
 				Consts.MONTHLY_MAINS_WATER_TEMP.length);
 	}
 
-	/*
-	 * private void createTestHHProsumersAndAddThemToContext() {
-	 * 
-	 * ProsumerFactory prosumerFactory =
-	 * FactoryFinder.createProsumerFactory(this.cascadeMainContext);
-	 * 
-	 * double[] householdBaseDemandArray = null; for (int i = 0; i <
-	 * numProsumers; i++) {
-	 * 
-	 * String demandName = "demand" + RandomHelper.nextIntFromTo(0,
-	 * numDemandColumns - 1);
-	 * 
-	 * if (cascadeMainContext.verbose) { this.mainContext.logger.debug(
-	 * "CascadeContextBuilder: householdBaseDemandArray is initialised with profile "
-	 * + demandName); } //householdBaseDemandArray =
-	 * ArrayUtils.convertStringArrayToDoubleArray
-	 * (otherDemandReader.getColumn(demandName));
-	 * 
-	 * HHProsumer hhProsAgent =
-	 * prosumerFactory.createHHProsumer(householdBaseDemandArray, false);
-	 * 
-	 * cascadeMainContext.add(hhProsAgent); } }
-	 */
 
 	/**
 	 * This method initialize the probability distributions used in this model.
@@ -328,12 +305,7 @@ public class MinderContextBuilder implements ContextBuilder<Object> {
 				.createEmpiricalWalker(Consts.WET_APPLIANCE_PDF,
 						Empirical.NO_INTERPOLATION);
 
-		// ChartUtils.testProbabilityDistAndShowHistogram(cascadeMainContext.wetApplProbDistGenerator,
-		// 10000, 48); //test to make sure the prob dist generate desired
-		// outcomes
 
-		// cascadeMainContext.hhProsumerElasticityTest =
-		// RandomHelper.createBinomial(1, 0.005);
 
 	}
 
@@ -359,7 +331,8 @@ public class MinderContextBuilder implements ContextBuilder<Object> {
 
 	private void populateContext() throws FileNotFoundException {
 
-		EstateManager a1 = new EstateManager();
+		EstateManager a1 = new EstateManager(this.cascadeMainContext);
+		this.cascadeMainContext.add(a1);
 
 		String[] buildingNames = new String[] { "Lon", "Leu", "Fin" };
 
@@ -374,6 +347,9 @@ public class MinderContextBuilder implements ContextBuilder<Object> {
 			{
 				System.err.println("Failed to add RetailOutlet agent to context!!");
 			}
+			double[] predictedCostSignal = new double[48];
+			Arrays.fill(predictedCostSignal, 1);
+			p.setPredictedCostSignal(predictedCostSignal);
 		}
 
 		if (this.cascadeMainContext.logger.isDebugEnabled()) {

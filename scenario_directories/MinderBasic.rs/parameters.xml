@@ -112,6 +112,12 @@
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
 									
 		/>
+		
+		<parameter name="loggingLevel" displayName="loggingLevel" type="java.lang.String"
+		               						defaultValue="DEBUG" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+						/>
 		</parameters>
 
 
