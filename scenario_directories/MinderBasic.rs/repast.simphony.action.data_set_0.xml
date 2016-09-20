@@ -1,0 +1,39 @@
+<repast.simphony.data2.engine.DataSetDescriptor>
+  <name>A Data Set</name>
+  <type>NON_AGGREGATE</type>
+  <sourceType>uk.ac.dmu.iesd.cascade.agents.prosumers.RetailOutlet</sourceType>
+  <inclTick>true</inclTick>
+  <inclBatchRun>false</inclBatchRun>
+  <inclRandomSeed>false</inclRandomSeed>
+  <scheduleParams>
+    <start>1.0</start>
+    <interval>1.0</interval>
+    <priority>-Infinity</priority>
+    <pType>LAST</pType>
+    <duration>-1.0</duration>
+    <frequency>REPEAT</frequency>
+    <hashCode>-2092595068</hashCode>
+  </scheduleParams>
+  <atEnd>false</atEnd>
+  <methodDataSources class="linked-hash-map">
+    <entry>
+      <string>AgentID</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>AgentID</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.RetailOutlet</className>
+        <methodName>getAgentID</methodName>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>NetDemand</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>NetDemand</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.RetailOutlet</className>
+        <methodName>getNetDemand</methodName>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+  </methodDataSources>
+  <countSources class="linked-hash-map"/>
+  <customNADataSources class="linked-hash-map"/>
+  <customAggDataSources class="linked-hash-map"/>
+</repast.simphony.data2.engine.DataSetDescriptor>
