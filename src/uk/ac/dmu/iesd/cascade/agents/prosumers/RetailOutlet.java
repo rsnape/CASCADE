@@ -23,6 +23,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
  */
 public class RetailOutlet extends ProsumerAgent
 {
+	double[] best_profile = null;
 	WeakHashMap<String, List<double []>> dayProfiles = new WeakHashMap<String, List<double []>>();
 	
 	/* (non-Javadoc)
@@ -41,10 +42,12 @@ public class RetailOutlet extends ProsumerAgent
 	@Override
 	public void step()
 	{
-		// TODO Auto-generated method stub
+		
+		if (this.mainContext.getTimeslotOfDay() == 0)
+		{
 		
 		double min_cost = Double.MAX_VALUE;
-		double[] best_profile = null;
+		best_profile = null;
 		
 		List<double[]> profiles = this.dayProfiles.get("01-26.inp");
 
@@ -57,6 +60,9 @@ public class RetailOutlet extends ProsumerAgent
 				min_cost = profile_cost;
 			}
 		}
+		}
+		
+		this.setNetDemand(best_profile[this.mainContext.getTimeslotOfDay()]);
 
 	}
 		

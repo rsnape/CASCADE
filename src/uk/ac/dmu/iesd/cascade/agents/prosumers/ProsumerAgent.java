@@ -564,7 +564,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 	}
 
 	@ScheduledMethod(start = 0, interval = 0, priority = Consts.PRE_INITIALISE_FIRST_TICK)
-	private void initContext()
+	public void initContext()
 	{
 		if (this.mainContext == null)
 		{
