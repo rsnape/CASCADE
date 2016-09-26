@@ -172,7 +172,7 @@ public class CSVReader {
 			while (myTokenizer.hasMoreTokens()) {
 				try {
 					String thisHeader = myTokenizer.nextToken();
-					thisHeader = thisHeader.replaceAll("^\"|\"$", "");
+					thisHeader = thisHeader.replaceAll("^\"|\"$", ""); // Deal with quoted contents (naive)
 					tempArray.add(thisHeader);
 				} catch (NoSuchElementException e) {
 					System.err

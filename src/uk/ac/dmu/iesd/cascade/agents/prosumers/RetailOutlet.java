@@ -91,20 +91,20 @@ public class RetailOutlet extends ProsumerAgent
 		r.parseByColumn(); //Weirdly, parseRaw appears to be broken.
 		int startInd = -1;
 		String[] cols = r.getColumnNames();
-		
 		for (int j=0; j < cols.length; j++)
 		{
 			if (cols[j].equals("E0"))
 			{
 				startInd = j;
+				this.mainContext.logger.debug("for file " + filename + " col for E0 has been set to " + startInd);
 				break;
 			}					
 		}
 		
 		if (startInd < 0)
 		{
-			System.err.println("File " + filename + " does not appear to contain energy profile columns");
-			System.err.println("Columns are " + Arrays.toString(cols));
+			this.mainContext.logger.error("File " + filename + " does not appear to contain energy profile columns");
+			this.mainContext.logger.error("Columns are " + Arrays.toString(cols));
 		}
 		
 		for (int i=0; i < r.getNumRows(); i++)
