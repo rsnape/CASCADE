@@ -149,7 +149,7 @@ public class OutputCollator
 			{
 				OutputCollator.usage(e);
 			}
-			in.parseRaw();
+			in.parseByColumn();
 			String[] B = in.getRow(7);
 			String[] D = in.getRow(9);
 

@@ -341,7 +341,7 @@ public class MinderContextBuilder implements ContextBuilder<Object> {
 		for (int i = 0; i < this.numProsumers; i++) {
 			// Generate a prosumer with basic constant load somewhere between
 			// 0 and 1 kWh per half hour
-			RetailOutlet p = new RetailOutlet(
+			RetailOutlet p = new RetailOutlet( this.cascadeMainContext,
 					buildingNames[RandomHelper.nextIntFromTo(0,2)], co2profile);
 			if (!this.cascadeMainContext.add(p))
 			{

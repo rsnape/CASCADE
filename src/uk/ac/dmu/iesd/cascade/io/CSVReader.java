@@ -11,10 +11,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 
+import org.supercsv.io.CsvMapReader;
+import org.supercsv.prefs.CsvPreference;
 import org.apache.log4j.Logger;
 
 import uk.ac.dmu.iesd.cascade.base.Consts;
@@ -48,100 +52,16 @@ public class CSVReader {
 	int numRows;
 	boolean hasColHeaders;
 	String[] colHeaders;
-	ArrayList<String>[] dataArray;
-	WeakHashMap<String, String[]> contentsByColumn;
+	ArrayList<ArrayList<String>> rawData;
+	WeakHashMap<String, List<String>> contentsByColumn;
 	String CSVFileName = null;
 	int maxCols = 0;
 
-	public void parseRaw() {
-		boolean hasNextLine = true;
-		String thisLine = null;
-		ArrayList<ArrayList<String>> rawData = new ArrayList<ArrayList<String>>();
-
-		while (hasNextLine) {
-			try {
-				thisLine = this.myReader.readLine();
-			} catch (IOException e) {
-				System.err
-						.println("IO Exception occured whilst reading CSV line");
-				e.printStackTrace();
-			}
-			
-			System.err.println(thisLine);
-
-			hasNextLine = (thisLine != null);
-			if (hasNextLine) {
-				if (this.numRows == 0 && this.hasColHeaders) {
-					ArrayList<String> tempArray = new ArrayList<String>();
-					StringTokenizer myTokenizer = new StringTokenizer(thisLine,
-							this.mySeperator);
-					this.numCols = myTokenizer.countTokens();
-
-					this.colHeaders = new String[this.numCols];
-					while (myTokenizer.hasMoreTokens()) {
-						try {
-							String thisHeader = myTokenizer.nextToken();
-							thisHeader = thisHeader.replaceAll("^\"|\"$", "");
-							tempArray.add(thisHeader);
-						} catch (NoSuchElementException e) {
-							System.err
-									.println("No such element - is one of the column headers blank / null?");
-							e.printStackTrace();
-						}
-					}
-
-					tempArray.toArray(this.colHeaders);
-				} else {
-					ArrayList<String> thisRow = new ArrayList<String>();
-
-					StringTokenizer s = new StringTokenizer(thisLine,
-							this.mySeperator);
-					if (s.countTokens() > this.maxCols) {
-						this.maxCols = s.countTokens();
-					}
-					while (s.hasMoreTokens()) {
-						thisRow.add(s.nextToken());
-					}
-					rawData.add(thisRow);
-					this.numRows++;
-				}
-			}
-
-			this.numCols = this.maxCols;
-			this.colHeaders = new String[this.numCols];
-			this.dataArray = new ArrayList[this.numCols];
-
-			for (int i = 0; i < this.numCols; i++) {
-				if (!this.hasColHeaders) {
-					this.colHeaders[i] = "Column" + i;
-				}
-
-				ArrayList<String> col = new ArrayList<String>();
-				for (int r = 0; r < this.numRows; r++) {
-					ArrayList<String> rr = rawData.get(r);
-					if (rr.size() > i) {
-						col.add(rr.get(i));
-					} else {
-						col.add("");
-					}
-				}
-				this.dataArray[i] = col;
-			}
-
-			this.contentsByColumn = new WeakHashMap<String, String[]>();
-			for (int k = 0; k < this.numCols; k++) {
-				this.contentsByColumn.put(this.colHeaders[k],
-						this.dataArray[k].toArray(new String[this.numRows]));
-			}
-		}
-
-		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).info(
-				"Parsed file " + this.CSVFileName + ": " + this.numCols
-						+ " columns and " + this.numRows + " rows.");
-	}
-
+	
 	/*
-	 * methods
+	 * Convenience method to parse the file and populate the columns map as well as reading in rows.
+	 * 
+	 * Throws: IOException if there is a problem with reading the input file.
 	 */
 	public void parseByColumn() {
 
@@ -150,76 +70,66 @@ public class CSVReader {
 		// TODO: Find out why and optimise
 
 		boolean hasNextLine = true;
-		String thisLine = null;
-		try {
-			thisLine = this.myReader.readLine();
-		} catch (IOException e) {
-			System.err
-					.println("IO Exception occured whilst reading first CSV line");
-			e.printStackTrace();
-		}
-
-		if (thisLine == null) {
-			System.err.println("Supplied CSV is empty!!");
-			hasNextLine = false;
-		} else {
-			ArrayList<String> tempArray = new ArrayList<String>();
-			StringTokenizer myTokenizer = new StringTokenizer(thisLine,
-					this.mySeperator);
-			this.numCols = myTokenizer.countTokens();
-
-			this.colHeaders = new String[this.numCols];
-			while (myTokenizer.hasMoreTokens()) {
-				try {
-					String thisHeader = myTokenizer.nextToken();
-					thisHeader = thisHeader.replaceAll("^\"|\"$", ""); // Deal with quoted contents (naive)
-					tempArray.add(thisHeader);
-				} catch (NoSuchElementException e) {
-					System.err
-							.println("No such element - is one of the column headers blank / null?");
-					e.printStackTrace();
-				}
-			}
-
-			tempArray.toArray(this.colHeaders);
-		}
-
-		this.dataArray = new ArrayList[this.numCols];
-		for (int t = 0; t < this.numCols; t++) {
-			this.dataArray[t] = new ArrayList<String>();
-		}
-
-		while (hasNextLine) {
-			try {
-				thisLine = this.myReader.readLine();
-
-			} catch (IOException e) {
-				System.err
-						.println("IO Exception occured whilst reading CSV line");
-				e.printStackTrace();
-			}
-
-			hasNextLine = (thisLine != null);
-			if (hasNextLine) {
-				StringTokenizer myTokenizer = new StringTokenizer(thisLine,
-						this.mySeperator);
-				for (int i = 0; i < this.numCols; i++) {
-					try {
-						this.dataArray[i].add(myTokenizer.nextToken());
-					} catch (NoSuchElementException e) {
-						System.err
-								.println("No such element - is one of the data rows blank / null - e.g. commas only?");
-						e.printStackTrace();
+		Map<String, String> thisLine = null;
+		
+		CsvMapReader in = new CsvMapReader(this.myReader, CsvPreference.STANDARD_PREFERENCE);
+		this.contentsByColumn = new WeakHashMap<String, List<String>>();
+		this.rawData = new ArrayList<ArrayList<String>>();
+		
+		try
+		{
+			if (this.hasColHeaders)
+			{
+				this.colHeaders = in.getHeader(true);
+				int namelessColumns = 0;
+				for (int j = 0; j<this.colHeaders.length;j++)
+				{
+					if (this.colHeaders[j] == null)
+					{
+						this.colHeaders[j] = "Column_" + namelessColumns++;
 					}
 				}
-				this.numRows++;
+				
+				for (String c : this.colHeaders)
+				{
+					//Initialise an empty column per header
+					contentsByColumn.put(c,new ArrayList<String>());
+				}
 			}
-
-			this.contentsByColumn = new WeakHashMap<String, String[]>();
-			for (int k = 0; k < this.numCols; k++) {
-				this.contentsByColumn.put(this.colHeaders[k],
-						this.dataArray[k].toArray(new String[this.numRows]));
+				
+			while ((thisLine = in.read(this.colHeaders)) != null)
+			{
+				this.numCols = thisLine.size();
+				ArrayList<String> orderedRow = new ArrayList<String>();
+				for (String c : this.colHeaders)
+				{
+					String dataField = thisLine.get(c);
+					List<String> tmp = contentsByColumn.get(c);
+					tmp.add(dataField);
+					orderedRow.add(dataField);
+					contentsByColumn.put(c,tmp);
+				}
+				
+				this.rawData.add(orderedRow);
 			}
+			
+			System.err.println(contentsByColumn.get("Column_0"));
+		}
+		catch (IOException e)
+		{
+			Logger.getLogger(Consts.CASCADE_LOGGER_NAME).error("Error occurred when reading input file " + this.CSVFileName + ", data is likely missing!!!");
+		}
+		
+		if (in.getRowNumber() < 1)
+		{
+			Logger.getLogger(Consts.CASCADE_LOGGER_NAME).error("Supplied CSV is empty!!");
+			hasNextLine = false;
+		} 
+		
+		this.numRows = in.getRowNumber();
+		if (this.hasColHeaders)
+		{
+			this.numRows--;
 		}
 
 		Logger.getLogger(Consts.CASCADE_LOGGER_NAME).info(
@@ -229,10 +139,10 @@ public class CSVReader {
 	}
 
 	public String[] getColumn(String colName) {
-		String[] returnArray = null;
+		String[] returnArray = new String[0];
 		if (this.contentsByColumn != null) {
 			if (this.contentsByColumn.containsKey(colName)) {
-				returnArray = this.contentsByColumn.get(colName);
+				returnArray = this.contentsByColumn.get(colName).toArray(returnArray);
 			} else {
 				System.err.println("File does not contain that column! ("
 						+ colName + ") Available columns are :");
@@ -248,28 +158,22 @@ public class CSVReader {
 		return returnArray;
 	}
 
-	public String[] getRow(int rowIndex) {
-		String[] returnArray = new String[this.dataArray.length];
-
-		if (this.dataArray != null) {
-			if (this.dataArray[0].size() > rowIndex) {
-				for (int i = 0; i < this.dataArray.length; i++) {
-					returnArray[i] = this.dataArray[i].get(rowIndex);
-				}
-			} else {
-				System.err
-						.println("File does not have that many rows!  Available rows are :");
-				System.err.println(this.dataArray[0].size());
-			}
-		} else {
-			System.err
-					.println("CSVReader dataArray is null!!  Check Parse output and file contents!");
-			System.err.println("Reader name is " + this.CSVFileName);
-			System.err.println("Number of columns is " + this.numCols
-					+ " with names " + Arrays.toString(this.colHeaders));
+	private List<String> getRowAsList(int rowIndex) {
+		
+		if (rowIndex > this.numRows)
+		{
+			Logger.getLogger(Consts.CASCADE_LOGGER_NAME).error(
+					"File does not have that many rows! There are " + this.numRows + " rows available.");
 		}
+		
+		return rawData.get(rowIndex);
+	}
 
-		return returnArray;
+
+	public String[] getRow(int rowIndex) {
+		String[] returnArray = new String[this.numCols];
+		 this.getRowAsList(rowIndex).toArray(returnArray);
+		 return returnArray;
 	}
 
 	/*
@@ -307,6 +211,10 @@ public class CSVReader {
 		return this.colHeaders;
 	}
 
+	public List<String> getColumnNameList() {
+		return Arrays.asList(this.colHeaders);
+	}
+	
 	/**
 	 * @param string
 	 * @return
@@ -325,7 +233,6 @@ public class CSVReader {
 	 * @return
 	 */
 	public int getNumRows() {
-		// TODO Auto-generated method stub
 		return this.numRows;
 	}
 

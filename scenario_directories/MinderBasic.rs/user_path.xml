@@ -14,5 +14,7 @@
 <agents path="../../../Cascade/bin" filter="uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard"/>
 
 <entry path="../../../Cascade/ExternalLib/commons-math-2.2.jar"/>
+<entry path="../../../Cascade/ExternalLib/super-csv-2.4.0.jar"/>
+
 </classpath>
 </model>

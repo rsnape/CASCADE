@@ -11,7 +11,10 @@ import java.util.WeakHashMap;
 
 import cern.colt.Arrays;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.Parameters;
+import repast.simphony.util.ContextUtils;
+import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVReader;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
@@ -66,8 +69,9 @@ public class RetailOutlet extends ProsumerAgent
 
 	}
 		
-	public RetailOutlet(String siteName, String co2profile) throws FileNotFoundException
+	public RetailOutlet(CascadeContext context, String siteName, String co2profile) throws FileNotFoundException
 	{
+		super(context);
 		//Bit hacky - work on parameterising this properly
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		String dataFileFolderPath = (String) params.getValue("dataFileFolder");
@@ -77,6 +81,7 @@ public class RetailOutlet extends ProsumerAgent
 		String filename = dataFileFolderPath + File.separator + co2profile+"_"+siteName+"_"+"summary_with_consumption.csv";
 		
 		populateProfiles(filename);
+		this.agentName = siteName + this.agentID;
 		
 		System.out.println(dayProfiles);
 	}
@@ -88,12 +93,12 @@ public class RetailOutlet extends ProsumerAgent
 	private void populateProfiles(String filename) throws FileNotFoundException
 	{
 		CSVReader r = new CSVReader(filename);
-		r.parseByColumn(); //Weirdly, parseRaw appears to be broken.
+		r.parseByColumn();
 		int startInd = -1;
 		String[] cols = r.getColumnNames();
 		for (int j=0; j < cols.length; j++)
 		{
-			if (cols[j].equals("E0"))
+			if ("E0".equals(cols[j]))
 			{
 				startInd = j;
 				this.mainContext.logger.debug("for file " + filename + " col for E0 has been set to " + startInd);
@@ -107,10 +112,12 @@ public class RetailOutlet extends ProsumerAgent
 			this.mainContext.logger.error("Columns are " + Arrays.toString(cols));
 		}
 		
+		int dayNameCol = r.getColumnNameList().indexOf("P3");
 		for (int i=0; i < r.getNumRows(); i++)
 		{
 			String[] rowData = r.getRow(i);
-			String input_name = rowData[7]; //This gets column `P3` - TODO improve!!
+			
+			String input_name = rowData[dayNameCol]; //This gets column `P3` - TODO improve!!
 			String[] tempProfile = new String[48];
 			System.arraycopy(rowData, startInd, tempProfile, 0, 48);
 			double[] numerical_profile = ArrayUtils.convertStringArrayToDoubleArray(tempProfile);	
