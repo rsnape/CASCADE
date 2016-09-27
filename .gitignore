@@ -18,6 +18,7 @@ Repast.settings
 
 *.tif
 *.txt
+!*icense*.txt
 *.tab
 *.pdf
 *xls*
