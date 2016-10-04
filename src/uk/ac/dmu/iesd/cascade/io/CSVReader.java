@@ -113,7 +113,6 @@ public class CSVReader {
 				this.rawData.add(orderedRow);
 			}
 			
-			System.err.println(contentsByColumn.get("Column_0"));
 		}
 		catch (IOException e)
 		{

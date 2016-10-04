@@ -600,7 +600,7 @@ public class HouseholdProsumer extends ProsumerAgent
 			// insolation
 			// at which the PV cell produces its rated power
 			double p = (this.getInsolation() / Consts.MAX_INSOLATION) * this.ratedPowerPV;
-			return (p * Consts.HOURS_PER_DAY) / this.mainContext.ticksPerDay; // convert
+			return p * (Consts.HOURS_PER_DAY / this.mainContext.ticksPerDay); // convert
 																				// power
 																				// to
 																				// kWh
