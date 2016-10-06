@@ -1,6 +1,7 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Households</name>
-  <type>AGGREGATE</type>
+  <name>suppAdv</name>
+  <type>NON_AGGREGATE</type>
+  <sourceType>uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel</sourceType>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
   <inclRandomSeed>false</inclRandomSeed>
@@ -11,35 +12,32 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-1562337628</hashCode>
+    <hashCode>-1088473809</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Net_demand</string>
+      <string>AgentName</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Net_demand</id>
-        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer</className>
-        <methodName>getNetDemand</methodName>
-        <aggType>SUM</aggType>
+        <id>AgentName</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel</className>
+        <methodName>getAgentName</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>Total_demand</string>
+      <string>CurrentPriceSignal</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Total_demand</id>
-        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer</className>
-        <methodName>getDemand</methodName>
-        <aggType>SUM</aggType>
+        <id>CurrentPriceSignal</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel</className>
+        <methodName>getCurrentPriceSignal</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>Total_generation</string>
+      <string>Generation</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Total_generation</id>
-        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer</className>
-        <methodName>currentGeneration</methodName>
-        <aggType>SUM</aggType>
+        <id>Generation</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel</className>
+        <methodName>getGeneration</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>
