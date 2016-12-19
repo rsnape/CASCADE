@@ -21,7 +21,7 @@
 	<!--  First aggregator with households - no Gas and a range of thermal properties -->
 	<aggregator
 		class="uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel"
-		number="1">
+		number="5">
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="35">
 			<lossRateMean>275</lossRateMean>
@@ -38,7 +38,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv orientation="270">3.5</pv>
+			<pv orientation="250">3.5</pv>
 		</prosumer>
         
 			<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -68,7 +68,7 @@
                 <lossRateSD>75</lossRateSD>
                 <thermalMassMean>12.5</thermalMassMean>
                 <thermalMassSD>2.5</thermalMassSD>
-                <pv >9.3</pv>
+                <pv orientation="245">9.3</pv>
 			</prosumer>
 			
 			<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -78,7 +78,7 @@
                 <lossRateSD>75</lossRateSD>
                 <thermalMassMean>12.5</thermalMassMean>
                 <thermalMassSD>2.5</thermalMassSD>
-                <pv>3.3</pv>
+                <pv orientation="180">3.3</pv>
 			</prosumer>
 			
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -87,7 +87,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>1.1</pv>
+			<pv orientation="110">1.1</pv>
 		</prosumer>	
 			
 					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -97,7 +97,7 @@
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
 			<percentageGas>100</percentageGas>
-			<pv>2.7</pv>
+			<pv orientation="220">2.7</pv>
 					</prosumer>
 			
 					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -107,7 +107,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>3</pv>
+			<pv orientation="140">3</pv>
 					</prosumer>
 			
 					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -117,7 +117,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>3.2</pv>
+			<pv orientation="245">3.2</pv>
 					</prosumer>
 			
 					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -127,7 +127,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>4</pv>
+			<pv orientation="245">4</pv>
 					</prosumer>
 			
 					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -137,7 +137,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>2.6</pv>
+			<pv orientation="145">2.6</pv>
 					</prosumer>
 			
 					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -147,7 +147,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>2.3</pv>
+			<pv orientation="105">2.3</pv>
 					</prosumer>
 			
 					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -157,7 +157,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>1.5</pv>
+			<pv orientation="200">1.5</pv>
 					</prosumer>
 			
 					<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
@@ -167,7 +167,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>4</pv>
+			<pv orientation="160">4</pv>
 					</prosumer>
 			
 			
@@ -178,7 +178,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<pv>1.5</pv>
+			<pv  orientation="245">1.5</pv>
 		</prosumer>
 		
 	</aggregator>
@@ -186,6 +186,7 @@
 	<market>
 		false
 	</market>
+    
 	<!--  Second aggregator with households - no Gas and a single (average) thermal property -->
 		<!--  Comment out the extraneous households
 		<aggregator

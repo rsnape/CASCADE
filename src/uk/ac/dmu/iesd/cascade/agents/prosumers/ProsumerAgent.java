@@ -289,6 +289,8 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 		this.netDemand = nd;
 	}
 
+
+	
 	/**
 	 * this method should define the step for Prosumer agents. The schedule
 	 * should start at right timeslot among all concrete subclasses. Currently

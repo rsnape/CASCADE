@@ -729,7 +729,7 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	/*
 	 * helper methods
 	 */
-	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength)
+	protected void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength)
 	{
 
 		// To avoid computational load (and realistically model a reasonable
@@ -771,6 +771,38 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 		}
 
 		this.priceSignalChanged = false;
+	}
+	
+	/**
+	 * This method broadcasts a passed signal array (of double values) to a list
+	 * of passed customers (e.g. Prosumers)
+	 * 
+	 * @param signalArr
+	 *            signal (array of real/double numbers) to be broadcasted
+	 * @param customerList
+	 *            the list of customers (of ProsumerAgent type)
+	 * @return true if signal has been sent and received successfully by the
+	 *         receiver, false otherwise
+	 */
+	protected boolean broadcastSignalToCustomers(double[] signalArr,
+			List<ProsumerAgent> customerList) {
+
+		boolean isSignalSentSuccessfully = false;
+		boolean allSignalsSentSuccesfully = true;
+		// Next line only needed for GUI output at this stage
+		this.priceSignal = new double[signalArr.length];
+		System.arraycopy(signalArr, 0, this.priceSignal, 0, signalArr.length);
+
+		for (ProsumerAgent agent : customerList) {
+			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr,
+					signalArr.length);
+			if (!isSignalSentSuccessfully)
+			{
+				allSignalsSentSuccesfully = false;
+			}
+		}
+
+		return allSignalsSentSuccesfully;
 	}
 
 	/**

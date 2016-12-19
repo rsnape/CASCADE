@@ -62,39 +62,6 @@ public class PassThroughAggregatorWithLag extends BMPxTraderAggregator implement
 		return this.broadcastSignalToCustomers(tmp, customerList);
 	}
 
-	/**
-	 * This method broadcasts a passed signal array (of double values) to a list
-	 * of passed customers (e.g. Prosumers)
-	 * 
-	 * @param signalArr
-	 *            signal (array of real/double numbers) to be broadcasted
-	 * @param customerList
-	 *            the list of customers (of ProsumerAgent type)
-	 * @return true if signal has been sent and received successfully by the
-	 *         receiver, false otherwise
-	 */
-	private boolean broadcastSignalToCustomers(double[] signalArr, List<ProsumerAgent> customerList)
-	{
-
-		boolean isSignalSentSuccessfully = false;
-		boolean allSignalsSentSuccesfully = true;
-		// Next line only needed for GUI output at this stage
-		this.priceSignal = new double[signalArr.length];
-		System.arraycopy(signalArr, 0, this.priceSignal, 0, signalArr.length);
-		// List aList = broadcasteesList;
-		// List <ProsumerAgent> paList = aList;
-
-		for (ProsumerAgent agent : customerList)
-		{
-			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr, signalArr.length);
-			if (!isSignalSentSuccessfully)
-			{
-				allSignalsSentSuccesfully = false;
-			}
-		}
-		return allSignalsSentSuccesfully;
-	}
-
 	@Override
 	public void bizPreStep()
 	{

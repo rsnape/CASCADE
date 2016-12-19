@@ -30,5 +30,5 @@
   <dataValueIds>
     <string>CurrentPriceSignal</string>
   </dataValueIds>
-  <plotRangeLength>672</plotRangeLength>
+  <plotRangeLength>336</plotRangeLength>
 </repast.simphony.chart2.engine.TimeSeriesChartDescriptor>

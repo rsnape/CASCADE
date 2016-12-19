@@ -6,6 +6,7 @@ import java.util.WeakHashMap;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.random.RandomHelper;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.StorageHeater;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
@@ -178,10 +179,21 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 		// up water heating if the heat pump is too great
 		if (this.spaceHeatingControlled && this.owner.isHasElectricalSpaceHeat())
 		{
+			if (this.owner.hasStorageHeater)
+			{
+				this.optimiseStorageChargeProfile();
+				if (this.mainContext.logger.isTraceEnabled())
+				{
+					this.mainContext.logger.trace("Optimised storage heater profile = " + Arrays.toString(this.heatPumpOnOffProfile));
+				}
+			}
+			else
+			{
 			this.optimiseSetPointProfile();
 			if (this.mainContext.logger.isTraceEnabled())
 			{
 				this.mainContext.logger.trace("Optimised set point profile = " + Arrays.toString(this.heatPumpOnOffProfile));
+			}
 			}
 		}
 
@@ -198,6 +210,14 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 		// At the end of the step, set the temperature profile for today's
 		// (which will be yesterday's when it is used)
 		this.priorDayExternalTempProfile = this.owner.getContext().getAirTemperature(timeStep, this.ticksPerDay);
+	}
+
+	/**
+	 * 
+	 */
+	private void optimiseStorageChargeProfile() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**
@@ -910,6 +930,12 @@ if (					this.mainContext.logger.isTraceEnabled()) {
 	 */
 	void optimiseSetPointProfile()
 	{
+		if (this.owner.storageHeater != null)
+		{
+			optimiseStorageHeater(this.owner.storageHeater);
+			return;
+		}
+		
 		if (this.mainContext.logger.isTraceEnabled())
 		{
 			this.mainContext.logger.trace("WattboxController:: optimise set point called for agent " + this.owner.getAgentName());
@@ -1087,6 +1113,14 @@ if (							this.mainContext.logger.isTraceEnabled()) {
 		}
 
 		this.expectedNextDaySpaceHeatCost = leastCost;
+	}
+
+	/**
+	 * 
+	 */
+	private void optimiseStorageHeater(StorageHeater s) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**

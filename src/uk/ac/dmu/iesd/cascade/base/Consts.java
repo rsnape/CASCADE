@@ -196,7 +196,7 @@ public final class Consts
 																// and wet
 																// appliances
 
-	public static final double MAX_INSOLATION = 500d; // Used for PV generation
+	public static final double MAX_INSOLATION = 1000d; // Used for PV generation
 
 	// Defines the type of a storage Prosumer, can take values (NOT Currently
 	// used!!!)

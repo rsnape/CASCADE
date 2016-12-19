@@ -677,34 +677,6 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 	}
 
 	/**
-	 * This method broadcasts a passed signal array (of double values) to a list
-	 * of passed customers (e.g. Prosumers)
-	 * 
-	 * @param signalArr
-	 *            signal (array of real/double numbers) to be broadcasted
-	 * @param customerList
-	 *            the list of customers (of ProsumerAgent type)
-	 * @return true if signal has been sent and received successfully by the
-	 *         receiver, false otherwise
-	 */
-	private boolean broadcastSignalToCustomers(double[] signalArr, List<ProsumerAgent> customerList)
-	{
-
-		boolean isSignalSentSuccessfully = false;
-		// Next line only needed for GUI output at this stage
-		this.priceSignal = new double[signalArr.length];
-		System.arraycopy(signalArr, 0, this.priceSignal, 0, signalArr.length);
-		// List aList = broadcasteesList;
-		// List <ProsumerAgent> paList = aList;
-
-		for (ProsumerAgent agent : customerList)
-		{
-			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr, signalArr.length);
-		}
-		return isSignalSentSuccessfully;
-	}
-
-	/**
 	 * This method calculates displacment factors (k) at the end of the day
 	 * after S signal has been sent by accepting an array of D values (at the
 	 * end of the day), an average baseline aggregate demand (B) array built
@@ -1450,7 +1422,7 @@ if (				 * this.mainContext.logger.isDebugEnabled()) {
 		return str;
 	}
 
-	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength)
+	protected void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength)
 	{
 
 		// To avoid computational load (and realistically model a reasonable

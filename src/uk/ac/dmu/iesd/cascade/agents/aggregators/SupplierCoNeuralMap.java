@@ -676,34 +676,6 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 	}
 
 	/**
-	 * This method broadcasts a passed signal array (of double values) to a list
-	 * of passed customers (e.g. Prosumers)
-	 * 
-	 * @param signalArr
-	 *            signal (array of real/double numbers) to be broadcasted
-	 * @param customerList
-	 *            the list of customers (of ProsumerAgent type)
-	 * @return true if signal has been sent and received successfully by the
-	 *         receiver, false otherwise
-	 */
-	private boolean broadcastSignalToCustomers(double[] signalArr, List<ProsumerAgent> customerList)
-	{
-
-		boolean isSignalSentSuccessfully = false;
-		// Next line only needed for GUI output at this stage
-		this.priceSignal = new double[signalArr.length];
-		System.arraycopy(signalArr, 0, this.priceSignal, 0, signalArr.length);
-		// List aList = broadcasteesList;
-		// List <ProsumerAgent> paList = aList;
-
-		for (ProsumerAgent agent : customerList)
-		{
-			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr, signalArr.length);
-		}
-		return isSignalSentSuccessfully;
-	}
-
-	/**
 	 * This method calculates displacment factors (k) at the end of the day
 	 * after S signal has been sent by accepting an array of D values (at the
 	 * end of the day), an average baseline aggregate demand (B) array built
@@ -1449,50 +1421,7 @@ if (				 * this.mainContext.logger.isDebugEnabled()) {
 		return str;
 	}
 
-	private void broadcastDemandSignal(List<ProsumerAgent> broadcastCusts, double time, int broadcastLength)
-	{
-
-		// To avoid computational load (and realistically model a reasonable
-		// broadcast strategy)
-		// only prepare and transmit the price signal if it has changed.
-		if (this.priceSignalChanged)
-		{
-			// populate the broadcast signal with the price signal starting from
-			// now and continuing for
-			// broadcastLength samples - repeating copies of the price signal if
-			// necessary to pad the
-			// broadcast signal out.
-			double[] broadcastSignal = new double[broadcastLength];
-			int numCopies = (int) Math.floor((broadcastLength - 1) / this.priceSignal.length);
-			int startIndex = (int) time % this.priceSignal.length;
-
-			System.arraycopy(this.priceSignal, startIndex, broadcastSignal, 0, this.priceSignal.length - startIndex);
-			for (int i = 1; i <= numCopies; i++)
-			{
-				int addIndex = (this.priceSignal.length - startIndex) * i;
-				System.arraycopy(this.priceSignal, 0, broadcastSignal, addIndex, this.priceSignal.length);
-			}
-
-			if (broadcastLength > (((numCopies + 1) * this.priceSignal.length) - startIndex))
-			{
-				System.arraycopy(this.priceSignal, 0, broadcastSignal, ((numCopies + 1) * this.priceSignal.length) - startIndex, broadcastLength
-						- (((numCopies + 1) * this.priceSignal.length) - startIndex));
-			}
-
-			for (ProsumerAgent a : broadcastCusts)
-			{
-				// Broadcast signal to all customers - note we simply say that
-				// the signal is valid
-				// from now currently, in future implementations we may want to
-				// be able to insert
-				// signals valid at an offset from now.
-
-				a.receiveValueSignal(broadcastSignal, broadcastLength);
-			}
-		}
-
-		this.priceSignalChanged = false;
-	}
+	
 
 	/**
 	 * This methods writes the parameters passed by arguments into CSV file

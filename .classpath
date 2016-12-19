@@ -6,8 +6,6 @@
 	<classpathentry kind="lib" path="ExternalLib/flanagan.jar"/>
 	<classpathentry kind="lib" path="ExternalLib/commons-mathforsimplex-2.2.jar"/>
 	<classpathentry kind="lib" path="ExternalLib/super-csv-2.4.0.jar"/>
-	<classpathentry kind="lib" path="ExternalLib/super-csv-joda-2.4.0.jar"/>
-	<classpathentry kind="lib" path="ExternalLib/joda-time-2.9.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/J3D"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JAI"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JOGL"/>
