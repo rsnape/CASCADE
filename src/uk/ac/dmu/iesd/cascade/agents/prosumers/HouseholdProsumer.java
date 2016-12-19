@@ -238,11 +238,12 @@ public class HouseholdProsumer extends ProsumerAgent
 
 	protected double[] dayHistoryHeatingEnergy;
 
-	private double maxHeatPerTimestep = 12; // 12 kWh based on a gas boiler of
-
-	private int ratedStorageHeaterCapacity;
+	private double maxHeatPerTimestep = 12; // 12 kWh per half hour based on a gas boiler of
 											// ~30kW at 90% efficiency. This can
 											// be made more realistic later
+
+	private int ratedStorageHeaterCapacity;
+
 
 	private int ratedStorageHeaterPower;
 
