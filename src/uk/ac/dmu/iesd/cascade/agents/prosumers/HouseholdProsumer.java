@@ -594,10 +594,8 @@ public class HouseholdProsumer extends ProsumerAgent
 	{
 		if (this.hasPV)
 		{
-			// TODO: get a realistic model of solar production - this just
-			// assumes
-			// linear relation between insolation and some arbitrary maximum
-			// insolation
+			// TODO: get a realistic model of solar production - this just assumes
+			// linear relation between insolation and some arbitrary maximum insolation
 			// at which the PV cell produces its rated power
 			double p = (this.getInsolation() / Consts.MAX_INSOLATION) * this.ratedPowerPV;
 			return p * (Consts.HOURS_PER_DAY / this.mainContext.ticksPerDay); // convert
