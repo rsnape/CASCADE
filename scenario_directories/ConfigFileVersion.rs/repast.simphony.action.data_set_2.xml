@@ -1,0 +1,49 @@
+<repast.simphony.data2.engine.DataSetDescriptor>
+  <name>Households</name>
+  <type>AGGREGATE</type>
+  <inclTick>true</inclTick>
+  <inclBatchRun>false</inclBatchRun>
+  <inclRandomSeed>false</inclRandomSeed>
+  <scheduleParams>
+    <start>1.0</start>
+    <interval>1.0</interval>
+    <priority>-Infinity</priority>
+    <pType>LAST</pType>
+    <duration>-1.0</duration>
+    <frequency>REPEAT</frequency>
+    <hashCode>-1562337628</hashCode>
+  </scheduleParams>
+  <atEnd>false</atEnd>
+  <methodDataSources class="linked-hash-map">
+    <entry>
+      <string>Net_demand</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Net_demand</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer</className>
+        <methodName>getNetDemand</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>Total_demand</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Total_demand</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer</className>
+        <methodName>getDemand</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>Total_generation</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Total_generation</id>
+        <className>uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer</className>
+        <methodName>currentGeneration</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+  </methodDataSources>
+  <countSources class="linked-hash-map"/>
+  <customNADataSources class="linked-hash-map"/>
+  <customAggDataSources class="linked-hash-map"/>
+</repast.simphony.data2.engine.DataSetDescriptor>

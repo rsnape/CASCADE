@@ -1,0 +1,13 @@
+<repast.simphony.data2.engine.FileSinkDescriptor>
+  <name>Record_signal_vs_demand</name>
+  <dataSet>Totals</dataSet>
+  <delimiter>,</delimiter>
+  <format>TABULAR</format>
+  <sourceIds class="linked-hash-set">
+    <string>Total_demand</string>
+    <string>Price_signal</string>
+    <string>tick</string>
+  </sourceIds>
+  <fileName>MinderOutput.txt</fileName>
+  <addTimeStamp>true</addTimeStamp>
+</repast.simphony.data2.engine.FileSinkDescriptor>
