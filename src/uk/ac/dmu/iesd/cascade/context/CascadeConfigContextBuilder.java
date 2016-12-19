@@ -308,7 +308,7 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 											.get(type));
 							this.cascadeMainContext.add(bmu);
 						}
-						else if (shortName.equals("SupplierCoAdvancedModel"))
+						else if (thisAgg.getClass().isInstance(SupplierCoAdvancedModel.class)) //Unsure why getClass is needed, but it is
 						{
 							SupplierCoAdvancedModel suppCo = this.bmuFactory
 									.createSupplierCoAdvanced(this.cascadeMainContext.systemPriceSignalDataArray);
