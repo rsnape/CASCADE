@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Time Series Chart</name>
-  <dataSet>A Data Set</dataSet>
+  <name>Total Generation</name>
+  <dataSet>suppAdv</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>Cooling electrical demand</yAxisLabel>
-  <chartTitle>Smart energy profile</chartTitle>
+  <yAxisLabel>kWh per half hour</yAxisLabel>
+  <chartTitle>Total Generation</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,14 +21,14 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>AgentID</string>
+      <string>AgentName</string>
       <SeriesData>
         <label></label>
       </SeriesData>
     </entry>
   </seriesIds>
   <dataValueIds>
-    <string>NetDemand</string>
+    <string>Generation</string>
   </dataValueIds>
-  <plotRangeLength>-1</plotRangeLength>
+  <plotRangeLength>336</plotRangeLength>
 </repast.simphony.chart2.engine.TimeSeriesChartDescriptor>

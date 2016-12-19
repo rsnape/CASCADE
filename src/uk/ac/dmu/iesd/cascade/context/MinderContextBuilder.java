@@ -334,21 +334,28 @@ public class MinderContextBuilder implements ContextBuilder<Object> {
 		EstateManager a1 = new EstateManager(this.cascadeMainContext);
 		this.cascadeMainContext.add(a1);
 
-		String[] buildingNames = new String[] { "Lon", "Leu", "Fin" };
+		String[] buildingNames = new String[] {"Lon", "Leu", "Fin"};
 
-		String co2profile = "co2_1";
+		//String[] co2profiles = new String[]{"co2_1"};
+		String[] co2profiles = new String[]{"co2_1","co2_2","co2_flat"};
 
 		for (int i = 0; i < this.numProsumers; i++) {
 			// Generate a prosumer with basic constant load somewhere between
 			// 0 and 1 kWh per half hour
 			RetailOutlet p = new RetailOutlet( this.cascadeMainContext,
-					buildingNames[RandomHelper.nextIntFromTo(0,2)], co2profile);
+					// buildingNames[RandomHelper.nextIntFromTo(0,2)], co2profile);
+					buildingNames[i%3], co2profiles);
 			if (!this.cascadeMainContext.add(p))
 			{
 				System.err.println("Failed to add RetailOutlet agent to context!!");
 			}
 			double[] predictedCostSignal = new double[48];
 			Arrays.fill(predictedCostSignal, 1);
+			for (int j =0; j < 48; j++)
+			{
+				predictedCostSignal[j] = (48.0-j)/48;
+			}
+			
 			p.setPredictedCostSignal(predictedCostSignal);
 		}
 

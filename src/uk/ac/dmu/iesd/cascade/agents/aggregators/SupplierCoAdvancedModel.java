@@ -114,7 +114,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 */
 	private double alpha;
 
-
 	int timeTick;
 	int timeslotOfDay;
 	int dayOfWeek;
@@ -123,8 +122,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 
 	private double totalCO2saving;
 
-	public double getTotalCO2saving()
-	{
+	public double getTotalCO2saving() {
 		return this.totalCO2saving;
 	}
 
@@ -132,9 +130,9 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 * Basic helper method to calculate CO2 emissions and avoided by this
 	 * aggregator
 	 */
-	private void updateTotalCO2Avoided()
-	{
-		this.totalCO2saving += (this.arr_i_B[this.timeslotOfDay] - this.getNetDemand())
+	private void updateTotalCO2Avoided() {
+		this.totalCO2saving += (this.arr_i_B[this.timeslotOfDay] - this
+				.getNetDemand())
 				* Consts.AVERAGE_GRID_CO2_INTENSITY[this.timeslotOfDay];
 	}
 
@@ -151,8 +149,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 *            time slot of the day (often/usually 1 day = 48 timeslot)
 	 * @return Price(Pi) per KWh at given timeslot (i)
 	 */
-	protected double calculate_Price_P(int timeslot)
-	{
+	protected double calculate_Price_P(int timeslot) {
 		double a = 2d; // the value of a must be set to a fixed price, e.g.
 						// ~baseline price
 		double b = 0.2d; // this value of b amplifies the S value signal, to
@@ -175,20 +172,20 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 * @return Baseline aggregate deviation (DelatBi) at given timeslot (i)
 	 */
 
-	private double calculate_deltaB(int timeslot_i)
-	{
+	private double calculate_deltaB(int timeslot_i) {
 		double sumOf_SjKijBi = 0d;
-		for (int j = 0; j < this.ticksPerDay; j++)
-		{
-			if (j != timeslot_i)
-			{ // i!=j
-				sumOf_SjKijBi += this.arr_i_S[j] * this.arr_ij_k[timeslot_i][j] * this.arr_i_B[timeslot_i];
+		for (int j = 0; j < this.ticksPerDay; j++) {
+			if (j != timeslot_i) { // i!=j
+				sumOf_SjKijBi += this.arr_i_S[j] * this.arr_ij_k[timeslot_i][j]
+						* this.arr_i_B[timeslot_i];
 				// sumOf_SjKijBi +=
 				// arr_i_S[j]*arr_ij_k[j][timeslot_i]*arr_i_B[timeslot_i];
 
 			}
 		}
-		double leftSideEq = this.arr_i_S[timeslot_i] * this.arr_ij_k[timeslot_i][timeslot_i] * this.arr_i_B[timeslot_i];
+		double leftSideEq = this.arr_i_S[timeslot_i]
+				* this.arr_ij_k[timeslot_i][timeslot_i]
+				* this.arr_i_B[timeslot_i];
 
 		double deltaBi = leftSideEq + sumOf_SjKijBi;
 		return deltaBi;
@@ -204,8 +201,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 *            time slot of the day (often/usually 1 day = 48 timeslot)
 	 * @return Demand (Di) predicted by the aggregator at given timeslot (i)
 	 */
-	protected double calculate_PredictedDemand_D(int timeslot)
-	{
+	protected double calculate_PredictedDemand_D(int timeslot) {
 		double Bi = this.arr_i_B[timeslot];
 		double Si = this.arr_i_S[timeslot];
 		double ei = this.arr_i_e[timeslot];
@@ -216,7 +212,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 
 		return Di;
 	}
-
 
 	/**
 	 * This method calculates and returns "price elasticity factor" (e) at a
@@ -235,14 +230,13 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 *            average baseline aggregate demand (B) value at timeslot i
 	 * @return elasticity price factor (e) [at timeslot i]
 	 */
-	protected double calculate_e(double[] arr_D, double[] arr_B, double s, double B)
-	{
+	protected double calculate_e(double[] arr_D, double[] arr_B, double s,
+			double B) {
 
 		double e = 0;
 		double sum_D = ArrayUtils.sum(arr_D);
 		double sum_B = ArrayUtils.sum(arr_B);
-		if ((s != 0) && (B != 0))
-		{
+		if ((s != 0) && (B != 0)) {
 			e = (sum_D - sum_B) / (s * B);
 		}
 		return e;
@@ -259,22 +253,20 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 *            time slot of the day (often/usually 1 day = 48 timeslot)
 	 * @return displacement factor (Kij) at given timeslots (i and j)
 	 */
-	protected double calculate_k(int t_i, int t_j)
-	{
+	protected double calculate_k(int t_i, int t_j) {
 
 		double k_ij = 0;
 		double divisor = 1;
 
-		if (t_i == t_j)
-		{ // calculate Kii
+		if (t_i == t_j) { // calculate Kii
 			double delta_Bi = this.calculate_deltaB(t_i);
-			double divident = delta_Bi - (this.arr_i_S[t_i] * this.arr_i_e[t_i] * this.arr_i_B[t_i]);
+			double divident = delta_Bi
+					- (this.arr_i_S[t_i] * this.arr_i_e[t_i] * this.arr_i_B[t_i]);
 			divisor = this.arr_i_S[t_i] * this.arr_i_B[t_i];
 			k_ij = divident / divisor;
 		}
 
-		else
-		{ // calculate Kij
+		else { // calculate Kij
 			double delta_Bj = this.calculate_deltaB(t_j);
 			divisor = this.arr_i_S[t_i] * this.arr_i_B[t_j];
 			k_ij = delta_Bj / divisor;
@@ -290,19 +282,15 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 *            timeslot of the day (often/usually 1 day = 48 timeslot)
 	 * @return displacement factor (Kij) at given timeslots (i and j)
 	 */
-	protected void predictDemand(List<ProsumerAgent> customersList, int t)
-	{
+	protected void predictDemand(List<ProsumerAgent> customersList, int t) {
 
 		double sumDemand = 0;
-		for (ProsumerAgent a : customersList)
-		{
+		for (ProsumerAgent a : customersList) {
 			sumDemand = sumDemand + a.getNetDemand();
 		}
 		this.arr_i_B[t] = sumDemand;
 
 	}
-
-
 
 	/**
 	 * This method is used to check whether the 'profile building' period has
@@ -313,12 +301,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 * @see Consts#AGGREGATOR_PROFILE_BUILDING_PERIODE
 	 * @return true if the profile building period is completed, false otherwise
 	 */
-	private boolean isAggregateDemandProfileBuildingPeriodCompleted()
-	{
+	private boolean isAggregateDemandProfileBuildingPeriodCompleted() {
 		boolean isEndOfProfileBuilding = true;
 		int daysSoFar = this.mainContext.getDayCount();
-		if (daysSoFar < Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
-		{
+		if (daysSoFar < Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) {
 			isEndOfProfileBuilding = false;
 		}
 		return isEndOfProfileBuilding;
@@ -336,12 +322,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 * @see #isAggregateDemandProfileBuildingPeriodCompleted()
 	 * @return true if the training period is completed, false otherwise
 	 */
-	private boolean isTrainingPeriodCompleted()
-	{
+	private boolean isTrainingPeriodCompleted() {
 		boolean isEndOfTraining = true;
 		int daysSoFar = this.mainContext.getDayCount();
-		if (daysSoFar < (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
-		{
+		if (daysSoFar < (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
 			isEndOfTraining = false;
 		}
 		return isEndOfTraining;
@@ -363,39 +347,40 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 *            a 2D array for keeping baseline aggregate demand values for
 	 *            each timeslot of the day(column) and for different days (row)
 	 */
-	private void updateAggregateDemandHistoryArray(List<ProsumerAgent> customersList, int timeOfDay, double[][] hist_arr_B)
-	{
+	private void updateAggregateDemandHistoryArray(
+			List<ProsumerAgent> customersList, int timeOfDay,
+			double[][] hist_arr_B) {
 		double sumDemand = 0d;
 
-		if (this.mainContext.logger.isDebugEnabled())
-		{
+		if (this.mainContext.logger.isDebugEnabled()) {
 			this.mainContext.logger.debug(" ====updateHistoryArray==== ");
 		}
-		if (this.mainContext.logger.isDebugEnabled())
-		{
-			this.mainContext.logger.debug("Entering loop through all customers to add their net Demands to history ");
+		if (this.mainContext.logger.isDebugEnabled()) {
+			this.mainContext.logger
+					.debug("Entering loop through all customers to add their net Demands to history ");
 		}
-		for (ProsumerAgent a : customersList)
-		{
+		for (ProsumerAgent a : customersList) {
 			sumDemand = sumDemand + a.getNetDemand();
 
 		}
 
 		int dayCount = this.mainContext.getDayCount();
 
-		if (dayCount < hist_arr_B.length)
-		{
+		if (dayCount < hist_arr_B.length) {
 			hist_arr_B[dayCount][timeOfDay] = sumDemand;
-if (			this.mainContext.logger.isTraceEnabled()) {
-			this.mainContext.logger.trace("RECO:: update Total demand for day " + dayCount + " timeslot: " + timeOfDay + " to = "
-					+ sumDemand);
-}
+			if (this.mainContext.logger.isTraceEnabled()) {
+				this.mainContext.logger
+						.trace("RECO:: update Total demand for day " + dayCount
+								+ " timeslot: " + timeOfDay + " to = "
+								+ sumDemand);
+			}
 
-		}
-		else
-		{
-			System.err.println("SupplierCoAdvancedModel:: Trying to add demand for day " + dayCount + " but training array is only "
-					+ hist_arr_B.length + " days long.");
+		} else {
+			System.err
+					.println("SupplierCoAdvancedModel:: Trying to add demand for day "
+							+ dayCount
+							+ " but training array is only "
+							+ hist_arr_B.length + " days long.");
 		}
 	}
 
@@ -414,32 +399,32 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 	 *            days (row)
 	 * @return double array of average baseline aggregate demands
 	 */
-	private double[] calculateBADfromHistoryArray(double[][] hist_arr_2D)
-	{
-		if (this.mainContext.logger.isDebugEnabled())
-		{
-			this.mainContext.logger.debug("RECO: calcualteBADfromHistoy: hist_arrr_2D " + ArrayUtils.toString(hist_arr_2D));
+	private double[] calculateBADfromHistoryArray(double[][] hist_arr_2D) {
+		if (this.mainContext.logger.isDebugEnabled()) {
+			this.mainContext.logger
+					.debug("RECO: calcualteBADfromHistoy: hist_arrr_2D "
+							+ ArrayUtils.toString(hist_arr_2D));
 		}
 		return ArrayUtils.avgCols2DDoubleArray(hist_arr_2D);
 	}
 
-	private double calculateAndSetNetDemand(List customersList)
-	{
+	private double calculateAndSetNetDemand(List customersList) {
 
 		List<ProsumerAgent> customers = customersList;
 		double sumDemand = 0;
-		if (this.mainContext.logger.isDebugEnabled())
-		{
-			this.mainContext.logger.debug(" customers list size: " + customers.size() + " - entering loop to add all net demands");
+		if (this.mainContext.logger.isDebugEnabled()) {
+			this.mainContext.logger.debug(" customers list size: "
+					+ customers.size()
+					+ " - entering loop to add all net demands");
 		}
-		for (ProsumerAgent a : customers)
-		{
+		for (ProsumerAgent a : customers) {
 			sumDemand = sumDemand + a.getNetDemand();
 		}
 		this.setNetDemand(sumDemand);
-		if (this.mainContext.logger.isDebugEnabled())
-		{
-			this.mainContext.logger.debug("RECO:: calculateAndSetNetDemand: NetDemand set to: " + sumDemand);
+		if (this.mainContext.logger.isDebugEnabled()) {
+			this.mainContext.logger
+					.debug("RECO:: calculateAndSetNetDemand: NetDemand set to: "
+							+ sumDemand);
 		}
 
 		return sumDemand;
@@ -455,13 +440,11 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 	 *            the time of day (usually a day is divided to 48 slots)
 	 * @return built signal as array of real numbers (double)
 	 */
-	private double[] buildSignal(Consts.SIGNAL_TYPE signalType, int timeslot)
-	{
+	private double[] buildSignal(Consts.SIGNAL_TYPE signalType, int timeslot) {
 
 		double[] sArr = new double[this.ticksPerDay];
 
-		switch (signalType)
-		{
+		switch (signalType) {
 		case S:
 			break;
 
@@ -473,9 +456,11 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 			 * while the rest of timeslots will be s= -1/47
 			 */
 			int daysSoFar = this.mainContext.getDayCount();
-			int indexFor1 = (daysSoFar - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) % this.ticksPerDay;
+			int indexFor1 = (daysSoFar - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
+					% this.ticksPerDay;
 
-			double[] t = this.trainingSigFactory.generateSignal(TRAINING_S_SHAPE.PBORIGINAL, this.ticksPerDay);
+			double[] t = this.trainingSigFactory.generateSignal(
+					TRAINING_S_SHAPE.PBORIGINAL, this.ticksPerDay);
 
 			System.arraycopy(t, 0, sArr, indexFor1, t.length - indexFor1);
 			System.arraycopy(t, t.length - indexFor1, sArr, 0, indexFor1);
@@ -501,37 +486,10 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 	 * @see #sendSignal(uk.ac.dmu.iesd.cascade.base.Consts.SIGNAL_TYPE,
 	 *      double[], List, int)
 	 */
-	private double[] buildSignal(Consts.SIGNAL_TYPE signalType)
-	{
+	private double[] buildSignal(Consts.SIGNAL_TYPE signalType) {
 		return this.buildSignal(signalType, -1);
 	}
 
-	/**
-	 * This method broadcasts a passed signal array (of double values) to a list
-	 * of passed customers (e.g. Prosumers)
-	 * 
-	 * @param signalArr
-	 *            signal (array of real/double numbers) to be broadcasted
-	 * @param customerList
-	 *            the list of customers (of ProsumerAgent type)
-	 * @return true if signal has been sent and received successfully by the
-	 *         receiver, false otherwise
-	 */
-	private boolean broadcastSignalToCustomers(double[] signalArr, List<ProsumerAgent> customerList)
-	{
-
-		boolean isSignalSentSuccessfully = false;
-
-		this.priceSignal = new double[signalArr.length];
-		System.arraycopy(signalArr, 0, this.priceSignal, 0, signalArr.length);
-
-		for (ProsumerAgent agent : customerList)
-		{
-			isSignalSentSuccessfully = agent.receiveValueSignal(signalArr, signalArr.length);
-		}
-
-		return isSignalSentSuccessfully;
-	}
 
 	/**
 	 * Minimises the Cost times demand function with respect to the signal S
@@ -546,22 +504,23 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 	 * @param arr_S
 	 * @return
 	 */
-	private double[] minimise_CD_Apache_Nelder_Mead(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S)
-	{
+	private double[] minimise_CD_Apache_Nelder_Mead(double[] arr_C,
+			double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S) {
 
 		NelderMead apacheNelderMead = new NelderMead();
 
-		//MinimisationFunctionObjectiveFlatDemand minFunct = new MinimisationFunctionObjectiveFlatDemand();
-		//MinimisationFunctionObjectiveOvernightWind minFunct = new MinimisationFunctionObjectiveOvernightWind();
-		MinimisationFunctionObjectiveArbitraryArray minFunct = new MinimisationFunctionObjectiveArbitraryArray(this.getPredictedGeneration());
-
+		// MinimisationFunctionObjectiveFlatDemand minFunct = new
+		// MinimisationFunctionObjectiveFlatDemand();
+		// MinimisationFunctionObjectiveOvernightWind minFunct = new
+		// MinimisationFunctionObjectiveOvernightWind();
+		MinimisationFunctionObjectiveArbitraryArray minFunct = new MinimisationFunctionObjectiveArbitraryArray(
+				this.getPredictedGeneration());
 
 		minFunct.set_pointer_to_B(arr_B);
 		minFunct.set_pointer_to_Kneg(this.Kneg);
 		minFunct.set_pointer_to_Kpos(this.Kpos);
 		minFunct.set_pointer_to_Cavge(this.Cavge);
 
-		
 		minFunct.addSimpleSumEqualsConstraintForApache(0, 0.01);
 
 		// initial estimates
@@ -571,10 +530,8 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 		// arbitrary
 		// point in search space. Otherwise, start from the last price signal
 		double[] start = new double[this.ticksPerDay];
-		if (this.firstTimeMinimisation)
-		{
-			for (int k = 0; k < start.length; k++)
-			{
+		if (this.firstTimeMinimisation) {
+			for (int k = 0; k < start.length; k++) {
 				start[k] = -Math.cos(2 * Math.PI * k / start.length) / 16;
 			}
 			// the line below can feed in the baseline demand, appropriately
@@ -583,14 +540,13 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 			// start = ArrayUtils.normalizeValues(ArrayUtils.offset(arr_i_B,
 			// -ArrayUtils.avg(arr_i_B)));
 			this.firstTimeMinimisation = false;
-		}
-		else
-		{
+		} else {
 			start = this.arr_i_S;
 		}
 
 		// apacheNelderMead.setMaxIterations(10000);
-		apacheNelderMead.setConvergenceChecker(new SimpleScalarValueChecker(1.0e-10, 1.0e-30));
+		apacheNelderMead.setConvergenceChecker(new SimpleScalarValueChecker(
+				1.0e-10, 1.0e-30));
 		// apacheNelderMead.setConvergenceChecker(new
 		// SimpleScalarValueChecker(1.0e-2, -1.0));
 		// apacheNelderMead.setMaxEvaluations(10000); //how many time function
@@ -598,53 +554,53 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 
 		RealPointValuePair minValue = null;
 
-		try
-		{
+		try {
 
-			minValue = apacheNelderMead.optimize(minFunct, GoalType.MINIMIZE, start);
+			minValue = apacheNelderMead.optimize(minFunct, GoalType.MINIMIZE,
+					start);
 
-		}
-		catch (@SuppressWarnings("deprecation") OptimizationException e)
-		{
+		} catch (@SuppressWarnings("deprecation") OptimizationException e) {
 			System.err.println("Optimization Exception");
-			if (this.mainContext.logger.isDebugEnabled())
-			{
-				this.mainContext.logger.debug("RECO: Apache Optim Exc (Optim exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled()) {
+				this.mainContext.logger
+						.debug("RECO: Apache Optim Exc (Optim exc): "
+								+ e.getCause());
 			}
-		}
-		catch (FunctionEvaluationException e)
-		{
+		} catch (FunctionEvaluationException e) {
 			System.err.println("Functino eval Exception");
 
-			if (this.mainContext.logger.isDebugEnabled())
-			{
-				this.mainContext.logger.debug("RECO: Apache Optim Exc (Funct eval exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled()) {
+				this.mainContext.logger
+						.debug("RECO: Apache Optim Exc (Funct eval exc): "
+								+ e.getCause());
 			}
 		}
 
-		catch (IllegalArgumentException e)
-		{
+		catch (IllegalArgumentException e) {
 			System.err.println("Illegal arg exception");
 
-			if (this.mainContext.logger.isDebugEnabled())
-			{
-				this.mainContext.logger.debug("RECO: Apache Optim Exc (Illegal arg exc): " + e.getCause());
+			if (this.mainContext.logger.isDebugEnabled()) {
+				this.mainContext.logger
+						.debug("RECO: Apache Optim Exc (Illegal arg exc): "
+								+ e.getCause());
 			}
 		}
 
-if (		this.mainContext.logger.isDebugEnabled()) {
-		this.mainContext.logger.debug("Optimisation converged on value " + minValue.getValue() + " at point " + minValue.getPoint()
-				+ " with ref " + minValue.getPointRef());
-}
+		if (this.mainContext.logger.isDebugEnabled()) {
+			this.mainContext.logger.debug("Optimisation converged on value "
+					+ minValue.getValue() + " at point " + minValue.getPoint()
+					+ " with ref " + minValue.getPointRef());
+		}
 
 		double[] newOpt_S = minValue.getPoint();
-		
-		//The following is to print the predicted demand for the optimal signal -
-		//useful for the flat demand case
-		
-		//minFunct.setPrintD(true);
-		//minFunct.function(newOpt_S);
-		//minFunct.setPrintD(false);
+
+		// The following is to print the predicted demand for the optimal signal
+		// -
+		// useful for the flat demand case
+
+		// minFunct.setPrintD(true);
+		// minFunct.function(newOpt_S);
+		// minFunct.setPrintD(false);
 
 		return newOpt_S;
 	}
@@ -656,15 +612,12 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 		return this.predictedGeneration;
 	}
 
-	private void updateCumulativeSaving(double savingAmount)
-	{
+	private void updateCumulativeSaving(double savingAmount) {
 		int daysSoFar = this.mainContext.getDayCount();
-		if (this.mainContext.logger.isTraceEnabled())
-		{
+		if (this.mainContext.logger.isTraceEnabled()) {
 			this.mainContext.logger.trace("days so far: " + daysSoFar);
 		}
-		if (daysSoFar > (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE))
-		{
+		if (daysSoFar > (Consts.AGGREGATOR_TRAINING_PERIODE + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)) {
 			this.cumulativeCostSaving += savingAmount;
 		}
 
@@ -680,6 +633,9 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 
 	private double[] predictedGeneration;
 
+	// This is the SWELL CEGADS default signal, the 1 should prohibit demand being moved to those slots
+	private double[] defaultSignal = new double[]{-0.251, -0.251, -0.251, -0.251, -0.251, -0.251, -0.275, -0.275, -0.275, -0.275, -0.275, -0.275, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.157, -0.157, -0.157, -0.167, -0.167, -0.167, -0.167, -0.157, -0.157, -0.157, -0.157, -0.157, -0.157, -0.157, 1, 1, 1, 1, 1, 1, 1, 1, -0.24, -0.24, -0.24, -0.24, -0.275, -0.275};
+
 	/**
 	 * Returns a string representing the state of this agent. This method is
 	 * intended to be used for debugging purposes, and the content and format of
@@ -690,8 +646,7 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	 * @return a string representation of this agent's state parameters
 	 */
 	@Override
-	protected String paramStringReport()
-	{
+	protected String paramStringReport() {
 		String str = "";
 		return str;
 	}
@@ -709,12 +664,11 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	 * @param e
 	 * @param k
 	 */
-	private void writeOutput(String dirName, String fileName, boolean addInfoHeader, double[] C, double[] NC, double[] B, double[] D,
-			double[] S, double[] e, double[][] k)
-	{
+	private void writeOutput(String dirName, String fileName,
+			boolean addInfoHeader, double[] C, double[] NC, double[] B,
+			double[] D, double[] S, double[] e, double[][] k) {
 		File dir = new File(dirName);
-		if (!dir.exists())
-		{
+		if (!dir.exists()) {
 			dir.mkdirs();
 		}
 		String fullPath = dirName.concat(File.separator).concat(fileName);
@@ -734,56 +688,62 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	 * @param e
 	 * @param k
 	 */
-	private void writeOutput(String fileName, boolean addInfoHeader, double[] C, double[] NC, double[] B, double[] D, double[] S,
-			double[] e, double[][] k)
-	{
+	private void writeOutput(String fileName, boolean addInfoHeader,
+			double[] C, double[] NC, double[] B, double[] D, double[] S,
+			double[] e, double[][] k) {
 		int[] ts_arr = new int[this.ticksPerDay];
 
-		for (int i = 0; i < ts_arr.length; i++)
-		{
+		for (int i = 0; i < ts_arr.length; i++) {
 			ts_arr[i] = i;
 		}
 		String resFileName = fileName + this.mainContext.getDayCount() + ".csv";
 
 		CSVWriter res = new CSVWriter(resFileName, false);
 
-		if (addInfoHeader)
-		{
+		if (addInfoHeader) {
 
-			res.appendText("Random seed= " + this.mainContext.getRandomSeedValue());
-			res.appendText("Number of Prosumers= " + this.mainContext.getTotalNbOfProsumers());
-			res.appendText("ProfileBuildingPeriod= " + Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE);
-			res.appendText("TrainingPeriod= " + Consts.AGGREGATOR_TRAINING_PERIODE);
+			res.appendText("Random seed= "
+					+ this.mainContext.getRandomSeedValue());
+			res.appendText("Number of Prosumers= "
+					+ this.mainContext.getTotalNbOfProsumers());
+			res.appendText("ProfileBuildingPeriod= "
+					+ Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE);
+			res.appendText("TrainingPeriod= "
+					+ Consts.AGGREGATOR_TRAINING_PERIODE);
 			res.appendText("REEA on?= " + Consts.AGG_RECO_REEA_ON);
 			res.appendText("ColdAppliances on?= " + Consts.HHPRO_HAS_COLD_APPL);
 			res.appendText("WetAppliances on?= " + Consts.HHPRO_HAS_WET_APPL);
-			res.appendText("ElectSpaceHeat on?= " + Consts.HHPRO_HAS_ELEC_SPACE_HEAT);
-			res.appendText("ElectWaterHeat on?= " + Consts.HHPRO_HAS_ELEC_WATER_HEAT);
+			res.appendText("ElectSpaceHeat on?= "
+					+ Consts.HHPRO_HAS_ELEC_SPACE_HEAT);
+			res.appendText("ElectWaterHeat on?= "
+					+ Consts.HHPRO_HAS_ELEC_WATER_HEAT);
 			res.appendText("");
 		}
 
 		res.appendText("Timeslots:");
 		res.appendRow(ts_arr);
-		if (C != null)
-		{
+		if (C != null) {
 			res.appendText("C:");
 			res.appendRow(C);
 		}
-		if (C != null)
-		{
+		if (C != null) {
 			res.appendText("C (normalized):");
 			res.appendRow(NC);
 		}
 
 		res.appendText("B:");
 		res.appendRow(B);
-		res.appendText("D (for end of day " + this.mainContext.getDayCount() + "): ");
+		res.appendText("D (for end of day " + this.mainContext.getDayCount()
+				+ "): ");
 		res.appendRow(D);
-		res.appendText("S (for end of day " + this.mainContext.getDayCount() + "): ");
+		res.appendText("S (for end of day " + this.mainContext.getDayCount()
+				+ "): ");
 		res.appendRow(S);
-		res.appendText("e (for end of day " + this.mainContext.getDayCount() + "): ");
+		res.appendText("e (for end of day " + this.mainContext.getDayCount()
+				+ "): ");
 		res.appendRow(e);
-		res.appendText("k (for end of day " + this.mainContext.getDayCount() + "): ");
+		res.appendText("k (for end of day " + this.mainContext.getDayCount()
+				+ "): ");
 		res.appendCols(k);
 		res.close();
 
@@ -799,16 +759,16 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	 * @param arr_i_e
 	 * @param arr_ij_k
 	 */
-	private void errorEstimationAndAdjustment(double[] arr_i_B, double[] arr_hist_1D, double[] arr_i_S, double[] arr_i_e,
-			double[][] arr_ij_k)
-	{
+	private void errorEstimationAndAdjustment(double[] arr_i_B,
+			double[] arr_hist_1D, double[] arr_i_S, double[] arr_i_e,
+			double[][] arr_ij_k) {
 
-		if (this.mainContext.logger.isTraceEnabled())
-		{
+		if (this.mainContext.logger.isTraceEnabled()) {
 			this.mainContext.logger.trace(" --REEA-- ");
 		}
 
-		double[] actualShift = ArrayUtils.add(arr_hist_1D, ArrayUtils.negate(arr_i_B));
+		double[] actualShift = ArrayUtils.add(arr_hist_1D,
+				ArrayUtils.negate(arr_i_B));
 
 		Matrix k = new Matrix(arr_ij_k);
 		double[][] bs = new double[1][arr_i_B.length];
@@ -824,18 +784,23 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 		double[] bsk = new double[this.ticksPerDay];
 		bsk = Matrix.times(bs_mat, k).getRowCopy(0);
 
-		double[] predictedShift = ArrayUtils.add(ArrayUtils.mtimes(arr_i_S, arr_i_e, arr_i_B), (Matrix.times(bs_mat, k).getRowCopy(0)));
+		double[] predictedShift = ArrayUtils.add(
+				ArrayUtils.mtimes(arr_i_S, arr_i_e, arr_i_B),
+				(Matrix.times(bs_mat, k).getRowCopy(0)));
 
 		predictedShift = ArrayUtils.add(predictedShift, arr_i_B);
-		double[] arr_errorEstim_R = ArrayUtils.add(predictedShift, ArrayUtils.negate(arr_hist_1D));
-		arr_errorEstim_R = ArrayUtils.mtimes(arr_errorEstim_R, ArrayUtils.pow(arr_i_B, -1));
+		double[] arr_errorEstim_R = ArrayUtils.add(predictedShift,
+				ArrayUtils.negate(arr_hist_1D));
+		arr_errorEstim_R = ArrayUtils.mtimes(arr_errorEstim_R,
+				ArrayUtils.pow(arr_i_B, -1));
 
-		double[] arr_multiplier = ArrayUtils.offset(ArrayUtils.multiply(arr_errorEstim_R, this.alpha), (1 - this.alpha));
+		double[] arr_multiplier = ArrayUtils.offset(
+				ArrayUtils.multiply(arr_errorEstim_R, this.alpha),
+				(1 - this.alpha));
 
 		arr_i_e = ArrayUtils.mtimes(arr_i_e, arr_multiplier);
 
-		for (int i = 0; i < arr_ij_k.length; i++)
-		{
+		for (int i = 0; i < arr_ij_k.length; i++) {
 			arr_ij_k[i] = ArrayUtils.mtimes(arr_ij_k[i], arr_multiplier);
 		}
 	}
@@ -850,20 +815,22 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	 * @param arr_i_S
 	 * @param arr_i_e
 	 */
-	private void costSavingCalculation(double[] arr_i_C, double[] arr_hist_1D, double[] arr_i_B, double[] arr_i_S, double[] arr_i_e)
-	{
+	private void costSavingCalculation(double[] arr_i_C, double[] arr_hist_1D,
+			double[] arr_i_B, double[] arr_i_S, double[] arr_i_e) {
 
-if (		this.mainContext.logger.isTraceEnabled()) {
-		this.mainContext.logger.trace(" --^costSavingCalculation-- Daycount: " + this.mainContext.getDayCount() + ",Timeslot: "
-				+ this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
-}
+		if (this.mainContext.logger.isTraceEnabled()) {
+			this.mainContext.logger
+					.trace(" --^costSavingCalculation-- Daycount: "
+							+ this.mainContext.getDayCount() + ",Timeslot: "
+							+ this.mainContext.getTimeslotOfDay()
+							+ ",TickCount: " + this.mainContext.getTickCount());
+		}
 		double predCost = 0;
 		double actualCost = 0;
 
 		double[] day_predicted_arr_D = new double[this.ticksPerDay];
 
-		for (int i = 0; i < this.ticksPerDay; i++)
-		{
+		for (int i = 0; i < this.ticksPerDay; i++) {
 			// predCost += arr_i_C[i] * calculate_PredictedDemand_D(i);
 			day_predicted_arr_D[i] = this.calculate_PredictedDemand_D(i); // this
 																			// was
@@ -894,11 +861,10 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 	}
 
 	/*
-	 * public void marketPreStep() {
-if (	 * this.mainContext.logger.isTraceEnabled()) {
+	 * public void marketPreStep() { if ( *
+	 * this.mainContext.logger.isTraceEnabled()) {
 	 * this.mainContext.logger.trace(" initializeMarketStep (SupplierCo) "
-	 * +this.id); settlementPeriod = mainContext.getSettlementPeriod();
-}
+	 * +this.id); settlementPeriod = mainContext.getSettlementPeriod(); }
 	 * 
 	 * switch (settlementPeriod) {
 	 * 
@@ -914,49 +880,73 @@ if (	 * this.mainContext.logger.isTraceEnabled()) {
 	 */
 
 	@Override
-	public void bizPreStep()
-	{
-if (		this.mainContext.logger.isDebugEnabled()) {
-		this.mainContext.logger.debug(" ============ SupplierCO pre_step ========= DayCount: " + this.mainContext.getDayCount()
-				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
-}
+	public void bizPreStep() {
+		if (this.mainContext.logger.isDebugEnabled()) {
+			this.mainContext.logger
+					.debug(" ============ SupplierCO pre_step ========= DayCount: "
+							+ this.mainContext.getDayCount()
+							+ ",Timeslot: "
+							+ this.mainContext.getTimeslotOfDay()
+							+ ",TickCount: " + this.mainContext.getTickCount());
+		}
 		this.timeTick = this.mainContext.getTickCount();
 		this.timeslotOfDay = this.mainContext.getTimeslotOfDay();
 
-		if (this.isAggregateDemandProfileBuildingPeriodCompleted())
-		{ // End of history profile building period
-			// Set the Baseline demand on the first time through after building
-			// period
+		if (this.isAggregateDemandProfileBuildingPeriodCompleted()) { // End of
+																		// history
+																		// profile
+																		// building
+																		// period
+																		// Set
+																		// the
+																		// Baseline
+																		// demand
+																		// on
+																		// the
+																		// first
+																		// time
+																		// through
+																		// after
+																		// building
+																		// period
 
-			if (this.mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE)
-			{
+			if (this.mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE) {
 				this.arr_i_B = this.calculateBADfromHistoryArray(ArrayUtils
-						.subArrayCopy(this.arr_hist_ij_D, 0, Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
+						.subArrayCopy(this.arr_hist_ij_D, 0,
+								Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE));
 			}
 
-			if (!this.isTrainingPeriodCompleted())
-			{ // training period, signals should be send S=1 for 48 days
-				if (this.mainContext.isBeginningOfDay(this.timeslotOfDay))
-				{
-					this.arr_i_S = this.buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
-					this.broadcastSignalToCustomers(this.arr_i_S, this.customers);
-					CSVWriter tempWriter = new CSVWriter("NeuralTrainerIn.csv", true);
+			if (!this.isTrainingPeriodCompleted()) { // training period, signals
+														// should be send S=1
+														// for 48 days
+				if (this.mainContext.isBeginningOfDay(this.timeslotOfDay)) {
+					this.arr_i_S = this
+							.buildSignal(Consts.SIGNAL_TYPE.S_TRAINING);
+					this.broadcastSignalToCustomers(this.arr_i_S,
+							this.customers);
+					CSVWriter tempWriter = new CSVWriter("NeuralTrainerIn.csv",
+							true);
 					double[] in = new double[96];
 					System.arraycopy(this.arr_day_D, 0, in, 0, 48);
-					System.arraycopy(this.mainContext.getAirTemperature(this.mainContext.getTickCount() - 48, 48), 0, in, 48, 48);
+					System.arraycopy(
+							this.mainContext.getAirTemperature(
+									this.mainContext.getTickCount() - 48, 48),
+							0, in, 48, 48);
 					tempWriter.appendRow(in);
 					tempWriter.close();
 					tempWriter = new CSVWriter("NeuralTrainerOut.csv", true);
-					tempWriter.appendRow(Arrays.copyOf(this.arr_i_S, this.arr_i_S.length));
+					tempWriter.appendRow(Arrays.copyOf(this.arr_i_S,
+							this.arr_i_S.length));
 					tempWriter.close();
 				}
 			} // training period completed
-			else
-			{ // Begining of the normal operation- both baseline establishing &
-				// training periods are completed
-				if (this.mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_TRAINING_PERIODE)
-				{
-					CSVWriter tempWriter = new CSVWriter("KandSBmatOut.csv", false);
+			else { // Begining of the normal operation- both baseline
+					// establishing &
+					// training periods are completed
+				if (this.mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE
+						+ Consts.AGGREGATOR_TRAINING_PERIODE) {
+					CSVWriter tempWriter = new CSVWriter("KandSBmatOut.csv",
+							false);
 					tempWriter.appendText("Delta B matrix");
 					tempWriter.appendCols(this.DeltaBm);
 					tempWriter.appendText("SB product matrix");
@@ -969,14 +959,15 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 					tempWriter.appendRow(this.Kneg);
 					tempWriter.appendRow(this.Kpos);
 
-					for (int deltaRow = 0; deltaRow < Consts.AGGREGATOR_TRAINING_PERIODE; deltaRow++)
-					{
+					for (int deltaRow = 0; deltaRow < Consts.AGGREGATOR_TRAINING_PERIODE; deltaRow++) {
 						double cavg = 0;
 						double kneg = 0;
 						double kpos = 0;
 
-						double[] SBprod = ArrayUtils.colCopy(this.SBprodm, deltaRow);
-						double[] DeltaB = ArrayUtils.colCopy(this.DeltaBm, deltaRow);
+						double[] SBprod = ArrayUtils.colCopy(this.SBprodm,
+								deltaRow);
+						double[] DeltaB = ArrayUtils.colCopy(this.DeltaBm,
+								deltaRow);
 						tempWriter.appendText("Extract column" + deltaRow);
 						tempWriter.appendRow(SBprod);
 						tempWriter.appendRow(DeltaB);
@@ -984,10 +975,8 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 						int div = 0;
 						int kPosDiv = 0;
 						int kNegDiv = 0;
-						for (int i = 0; i < SBprod.length; i++)
-						{
-							if (SBprod[i] == 0)
-							{
+						for (int i = 0; i < SBprod.length; i++) {
+							if (SBprod[i] == 0) {
 								cavg += DeltaB[i];
 								div += 1;
 								tempWriter.appendText("Adding " + DeltaB[i]);
@@ -1005,25 +994,25 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 						// Do regression properly
 
 						double n = SBprod.length;
-						double sumXY = ArrayUtils.sum(ArrayUtils.mtimes(SBprod, DeltaB));
+						double sumXY = ArrayUtils.sum(ArrayUtils.mtimes(SBprod,
+								DeltaB));
 						double sumX = ArrayUtils.sum(SBprod);
 						double sumY = ArrayUtils.sum(DeltaB);
-						double sumXsq = ArrayUtils.sum(ArrayUtils.mtimes(SBprod, SBprod));
+						double sumXsq = ArrayUtils.sum(ArrayUtils.mtimes(
+								SBprod, SBprod));
 
-						double m = (n * sumXY - sumX * sumY) / (n * sumXsq - sumX * sumX);
+						double m = (n * sumXY - sumX * sumY)
+								/ (n * sumXsq - sumX * sumX);
 						cavg = sumY / n - m * (sumX / n);
 
 						// Regression done, find average slope for pos and neg S
 
-						for (int i = 0; i < SBprod.length; i++)
-						{
-							if (SBprod[i] < 0)
-							{
+						for (int i = 0; i < SBprod.length; i++) {
+							if (SBprod[i] < 0) {
 								kpos += (DeltaB[i] - cavg) / SBprod[i];
 								kPosDiv++;
 							}
-							if (SBprod[i] > 0)
-							{
+							if (SBprod[i] > 0) {
 								kneg += (DeltaB[i] - cavg) / SBprod[i];
 								kNegDiv++;
 							}
@@ -1044,26 +1033,26 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 					tempWriter.close();
 
 				}
-				if (this.mainContext.isBeginningOfDay(this.timeslotOfDay))
-				{
+				if (this.mainContext.isBeginningOfDay(this.timeslotOfDay)) {
 
-					if (Consts.AGG_RECO_REEA_ON)
-					{
-						this.errorEstimationAndAdjustment(this.arr_i_B, this.getDayNetDemands(), this.arr_i_S, this.arr_i_e, this.arr_ij_k);
+					if (Consts.AGG_RECO_REEA_ON) {
+						this.errorEstimationAndAdjustment(this.arr_i_B,
+								this.getDayNetDemands(), this.arr_i_S,
+								this.arr_i_e, this.arr_ij_k);
 						// errorEstimationAndAdjustment(arr_i_B, arr_hist_day_D,
 						// arr_i_S, arr_i_e, arr_ij_k);
 					}
 
-					this.arr_i_norm_C = ArrayUtils.normalizeValues(ArrayUtils.offset(this.arr_i_C, -ArrayUtils.sum(this.arr_i_C)
-							/ this.arr_i_C.length));
+					this.arr_i_norm_C = ArrayUtils.normalizeValues(ArrayUtils
+							.offset(this.arr_i_C, -ArrayUtils.sum(this.arr_i_C)
+									/ this.arr_i_C.length));
 
-					Parameters params = RunEnvironment.getInstance().getParameters();
-					switch ((Integer) params.getValue("signalMode"))
-					{
+					Parameters params = RunEnvironment.getInstance()
+							.getParameters();
+					switch ((Integer) params.getValue("signalMode")) {
 					case 0: /* Play a zero signal to customers */
 						double fixedPrice[] = new double[48];
-						for (int i = 0; i < 48; i++)
-						{
+						for (int i = 0; i < 48; i++) {
 							fixedPrice[i] = 0;
 						}
 						this.arr_i_S = fixedPrice;
@@ -1075,35 +1064,55 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 						this.arr_i_S = this.arr_i_norm_C;
 						break;
 					case 2: /* Smart signal version (Nelder-Mead optimisation) */
-						this.arr_i_S = this
-								.minimise_CD_Apache_Nelder_Mead(this.arr_i_norm_C, this.arr_i_B, this.arr_i_e, this.arr_ij_k, this.arr_i_S);
+						this.arr_i_S = this.minimise_CD_Apache_Nelder_Mead(
+								this.arr_i_norm_C, this.arr_i_B, this.arr_i_e,
+								this.arr_ij_k, this.arr_i_S);
 						break;
 					case 3: /* Play back scaled version of base demand */
-						this.arr_i_S = ArrayUtils.normalizeValues(ArrayUtils.offset(this.arr_i_B, -ArrayUtils.avg(this.arr_i_B)));
+						this.arr_i_S = ArrayUtils.normalizeValues(ArrayUtils
+								.offset(this.arr_i_B,
+										-ArrayUtils.avg(this.arr_i_B)));
 						break;
 					case 4:
-						double[] sysDem = this.mainContext.getSystemPriceSignalData();
-						this.arr_i_S = ArrayUtils.normalizeValues(ArrayUtils.offset(sysDem, -ArrayUtils.avg(sysDem)));
+						double[] sysDem = this.mainContext
+								.getSystemPriceSignalData();
+						this.arr_i_S = ArrayUtils.normalizeValues(ArrayUtils
+								.offset(sysDem, -ArrayUtils.avg(sysDem)));
 						break;
+					case 5:
+						this.arr_i_S = defaultSignal ;
 					}
 
 					// This is where the actual broadcast of the signal to all
 					// customers occurs.
-					this.broadcastSignalToCustomers(this.arr_i_S, this.customers);
+					this.broadcastSignalToCustomers(this.arr_i_S,
+							this.customers);
 
-					this.writeOutput("output".concat(File.separator).concat("Seed"
-							.concat(Integer.toString(this.mainContext.getRandomSeedValue())).concat("GasFrac")
-							.concat(Double.toString(this.mainContext.getGasPercentage()))), "output2_NormalBiz_day_", false, this.arr_i_C, this.arr_i_norm_C, this.arr_i_B, this
-							.getDayNetDemands(), this.arr_i_S, this.Cavge, ArrayUtils.zip(this.Kneg, this.Kpos));
+					this.writeOutput(
+							"output".concat(File.separator)
+									.concat("Seed"
+											.concat(Integer.toString(this.mainContext
+													.getRandomSeedValue()))
+											.concat("GasFrac")
+											.concat(Double.toString(this.mainContext
+													.getGasPercentage()))),
+							"output2_NormalBiz_day_", false, this.arr_i_C,
+							this.arr_i_norm_C, this.arr_i_B, this
+									.getDayNetDemands(), this.arr_i_S,
+							this.Cavge, ArrayUtils.zip(this.Kneg, this.Kpos));
 				}
 
 			} // end of begining of normal operation
 
 		} // end of else (history profile building)
-if (		this.mainContext.logger.isTraceEnabled()) {
-		this.mainContext.logger.trace(" ========== RECO: pre_step END =========== DayCount: " + this.mainContext.getDayCount()
-				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
-}
+		if (this.mainContext.logger.isTraceEnabled()) {
+			this.mainContext.logger
+					.trace(" ========== RECO: pre_step END =========== DayCount: "
+							+ this.mainContext.getDayCount()
+							+ ",Timeslot: "
+							+ this.mainContext.getTimeslotOfDay()
+							+ ",TickCount: " + this.mainContext.getTickCount());
+		}
 	}
 
 	/**
@@ -1112,55 +1121,60 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 	 * 
 	 */
 	@Override
-	public void bizStep()
-	{
+	public void bizStep() {
 
-if (		this.mainContext.logger.isTraceEnabled()) {
-		this.mainContext.logger.trace(" ++++++++++++++ SupplierCO step +++++++++++++ DayCount: " + this.mainContext.getDayCount()
-				+ ",Timeslot: " + this.mainContext.getTimeslotOfDay() + ",TickCount: " + this.mainContext.getTickCount());
-}
-		if (!this.isAggregateDemandProfileBuildingPeriodCompleted())
-		{
-			this.updateAggregateDemandHistoryArray(this.customers, this.timeslotOfDay, this.arr_hist_ij_D);
+		if (this.mainContext.logger.isTraceEnabled()) {
+			this.mainContext.logger
+					.trace(" ++++++++++++++ SupplierCO step +++++++++++++ DayCount: "
+							+ this.mainContext.getDayCount()
+							+ ",Timeslot: "
+							+ this.mainContext.getTimeslotOfDay()
+							+ ",TickCount: " + this.mainContext.getTickCount());
 		}
-		else if (!this.isTrainingPeriodCompleted())
-		{
-			this.updateAggregateDemandHistoryArray(this.customers, this.timeslotOfDay, this.arr_hist_ij_D);
+		if (!this.isAggregateDemandProfileBuildingPeriodCompleted()) {
+			this.updateAggregateDemandHistoryArray(this.customers,
+					this.timeslotOfDay, this.arr_hist_ij_D);
+		} else if (!this.isTrainingPeriodCompleted()) {
+			this.updateAggregateDemandHistoryArray(this.customers,
+					this.timeslotOfDay, this.arr_hist_ij_D);
 			this.updatePredictedGeneration();
-			
-			if (this.mainContext.isEndOfDay(this.timeslotOfDay))
-			{
+
+			if (this.mainContext.isEndOfDay(this.timeslotOfDay)) {
 				double[] DeltaB;
 				double[] SBprod;
-				double[] arr_last_training_D = ArrayUtils.rowCopy(this.arr_hist_ij_D, this.mainContext.getDayCount());
+				double[] arr_last_training_D = ArrayUtils.rowCopy(
+						this.arr_hist_ij_D, this.mainContext.getDayCount());
 
 				/**
 				 * Method to generate k values for positive and negative signal
 				 * values. Based on the original Matlab code proposed by Peter
 				 * Boait in prototype.
 				 */
-				int deltaRow = this.mainContext.getDayCount() - Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE;
+				int deltaRow = this.mainContext.getDayCount()
+						- Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE;
 
-				DeltaB = ArrayUtils.add(arr_last_training_D, ArrayUtils.negate(this.arr_i_B));
+				DeltaB = ArrayUtils.add(arr_last_training_D,
+						ArrayUtils.negate(this.arr_i_B));
 				SBprod = ArrayUtils.mtimes(this.arr_i_S, this.arr_i_B);
 				this.DeltaBm[deltaRow] = DeltaB.clone();
 				this.SBprodm[deltaRow] = SBprod.clone();
 
-				if (this.mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_TRAINING_PERIODE)) - 2)
-				{
-					this.writeOutput("output1_TrainingPhase_day_", true, this.arr_i_C, this.arr_i_norm_C, this.arr_i_B, arr_last_training_D, this.arr_i_S, this.arr_i_e, this.arr_ij_k);
+				if (this.mainContext.getDayCount() > ((Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_TRAINING_PERIODE)) - 2) {
+					this.writeOutput("output1_TrainingPhase_day_", true,
+							this.arr_i_C, this.arr_i_norm_C, this.arr_i_B,
+							arr_last_training_D, this.arr_i_S, this.arr_i_e,
+							this.arr_ij_k);
 				}
 			}
 		}
 
 		this.calculateAndSetNetDemand(this.customers);
-		if (this.isTrainingPeriodCompleted())
-		{
+		if (this.isTrainingPeriodCompleted()) {
 			this.updateTotalCO2Avoided();
 		}
-		if (this.mainContext.isEndOfDay(this.timeslotOfDay))
-		{
-			this.costSavingCalculation(this.arr_i_C, this.getDayNetDemands(), this.arr_i_B, this.arr_i_S, this.arr_i_e);
+		if (this.mainContext.isEndOfDay(this.timeslotOfDay)) {
+			this.costSavingCalculation(this.arr_i_C, this.getDayNetDemands(),
+					this.arr_i_B, this.arr_i_S, this.arr_i_e);
 		}
 
 	}
@@ -1169,7 +1183,8 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 	 * 
 	 */
 	private void updatePredictedGeneration() {
-			this.predictedGeneration[this.mainContext.getTimeslotOfDay()] = this.getGeneration();
+		this.predictedGeneration[this.mainContext.getTimeslotOfDay()] = this
+				.getGeneration();
 	}
 
 	/**
@@ -1181,25 +1196,27 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 	 * @param baseDemand
 	 *            an array containing the base demand
 	 */
-	public SupplierCoAdvancedModel(CascadeContext context, MarketMessageBoard mb, BMU_CATEGORY cat, BMU_TYPE type, double maxDem,
-			double minDem, double[] baseDemand)
-	{
+	public SupplierCoAdvancedModel(CascadeContext context,
+			MarketMessageBoard mb, BMU_CATEGORY cat, BMU_TYPE type,
+			double maxDem, double minDem, double[] baseDemand) {
 
 		// super(context, mb, cat, type, maxDem, minDem, baseDemand);
 		super(context);
 
 		this.ticksPerDay = context.getNbOfTickPerDay();
 
-		if (baseDemand.length % this.ticksPerDay != 0)
-		{
-			System.err.print("SupplierCoAdvancedModel: Error/Warning message from " + this.toString()
-					+ ": BaseDemand array imported to aggregator not a whole number of days");
+		if (baseDemand.length % this.ticksPerDay != 0) {
+			System.err
+					.print("SupplierCoAdvancedModel: Error/Warning message from "
+							+ this.toString()
+							+ ": BaseDemand array imported to aggregator not a whole number of days");
 			System.err
 					.println("SupplierCoAdvancedModel:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 		}
 		this.priceSignal = new double[baseDemand.length];
 		this.overallSystemDemand = new double[baseDemand.length];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, this.overallSystemDemand.length);
+		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0,
+				this.overallSystemDemand.length);
 
 		// Start initially with a flat price signal of 12.5p per kWh
 		// Arrays.fill(priceSignal,125f);
@@ -1222,19 +1239,21 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 		this.arr_i_C = new double[this.ticksPerDay];
 		this.arr_i_norm_C = new double[this.ticksPerDay];
 		this.arr_ij_k = new double[this.ticksPerDay][this.ticksPerDay];
-		this.arr_hist_ij_D = new double[Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_TRAINING_PERIODE][this.ticksPerDay];
+		this.arr_hist_ij_D = new double[Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE
+				+ Consts.AGGREGATOR_TRAINING_PERIODE][this.ticksPerDay];
 
-		this.arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand), 100); // all
-																							// costs
-																							// (equivalent
-		this.predictedGeneration = new double[this.ticksPerDay];																					// (equivalent
-																				// to
-																							// size
-																							// of
-																							// baseDemand,
-																							// usually
-																							// 1
-																							// week)
+		this.arr_i_C_all = ArrayUtils.normalizeValues(
+				ArrayUtils.pow2(baseDemand), 100); // all
+													// costs
+													// (equivalent
+		this.predictedGeneration = new double[this.ticksPerDay]; // (equivalent
+		// to
+		// size
+		// of
+		// baseDemand,
+		// usually
+		// 1
+		// week)
 
 		// Set up basic learning factor
 		this.alpha = 0.1d;
@@ -1246,8 +1265,7 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 		// +++++++++++++++++++++++++++++++++++++++++++
 	}
 
-	public SupplierCoAdvancedModel(CascadeContext context)
-	{
+	public SupplierCoAdvancedModel(CascadeContext context) {
 
 		// super(context,null,null,null,0);
 		super(context);
@@ -1260,16 +1278,18 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 
 		this.ticksPerDay = context.getNbOfTickPerDay();
 		double[] baseDemand = new double[this.ticksPerDay];
-		if (baseDemand.length % this.ticksPerDay != 0)
-		{
-			System.err.print("SupplierCoAdvancedModel: Error/Warning message from " + this.toString()
-					+ ": BaseDemand array imported to aggregator not a whole number of days");
+		if (baseDemand.length % this.ticksPerDay != 0) {
+			System.err
+					.print("SupplierCoAdvancedModel: Error/Warning message from "
+							+ this.toString()
+							+ ": BaseDemand array imported to aggregator not a whole number of days");
 			System.err
 					.println("SupplierCoAdvancedModel:  May cause unexpected behaviour - unless you intend to repeat the signal within a day");
 		}
 		this.priceSignal = new double[baseDemand.length];
 		this.overallSystemDemand = new double[baseDemand.length];
-		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0, this.overallSystemDemand.length);
+		System.arraycopy(baseDemand, 0, this.overallSystemDemand, 0,
+				this.overallSystemDemand.length);
 
 		// Start initially with a flat price signal of 12.5p per kWh
 		// Arrays.fill(priceSignal,125f);
@@ -1292,18 +1312,20 @@ if (		this.mainContext.logger.isTraceEnabled()) {
 		this.arr_i_C = new double[this.ticksPerDay];
 		this.arr_i_norm_C = new double[this.ticksPerDay];
 		this.arr_ij_k = new double[this.ticksPerDay][this.ticksPerDay];
-		this.arr_hist_ij_D = new double[Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE + Consts.AGGREGATOR_TRAINING_PERIODE][this.ticksPerDay];
+		this.arr_hist_ij_D = new double[Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE
+				+ Consts.AGGREGATOR_TRAINING_PERIODE][this.ticksPerDay];
 
-		this.arr_i_C_all = ArrayUtils.normalizeValues(ArrayUtils.pow2(baseDemand), 100); // all
-																							// costs
-		this.predictedGeneration = new double[this.ticksPerDay];																					// (equivalent
-																							// to
-																							// size
-																							// of
-																							// baseDemand,
-																							// usually
-																							// 1
-																							// week)
+		this.arr_i_C_all = ArrayUtils.normalizeValues(
+				ArrayUtils.pow2(baseDemand), 100); // all
+													// costs
+		this.predictedGeneration = new double[this.ticksPerDay]; // (equivalent
+		// to
+		// size
+		// of
+		// baseDemand,
+		// usually
+		// 1
+		// week)
 
 		// Set up basic learning factor
 		this.alpha = 0.1d;

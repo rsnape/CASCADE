@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.WeakHashMap;
+import java.util.HashMap;
 
 import cern.colt.Arrays;
 import repast.simphony.engine.environment.RunEnvironment;
@@ -27,7 +27,7 @@ import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 public class RetailOutlet extends ProsumerAgent
 {
 	double[] best_profile = null;
-	WeakHashMap<String, List<double []>> dayProfiles = new WeakHashMap<String, List<double []>>();
+	HashMap<String, List<double []>> dayProfiles = new HashMap<String, List<double []>>();
 	
 	/* (non-Javadoc)
 	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#paramStringReport()
@@ -52,7 +52,7 @@ public class RetailOutlet extends ProsumerAgent
 		double min_cost = Double.MAX_VALUE;
 		best_profile = null;
 		
-		List<double[]> profiles = this.dayProfiles.get("01-26.inp");
+		List<double[]> profiles = this.dayProfiles.get("09-16.inp");
 
 		for (double[] p: profiles)
 		{
@@ -69,20 +69,21 @@ public class RetailOutlet extends ProsumerAgent
 
 	}
 		
-	public RetailOutlet(CascadeContext context, String siteName, String co2profile) throws FileNotFoundException
+	public RetailOutlet(CascadeContext context, String siteName, String[] co2profiles) throws FileNotFoundException
 	{
 		super(context);
 		//Bit hacky - work on parameterising this properly
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		String dataFileFolderPath = (String) params.getValue("dataFileFolder");
-
-		System.err.println("Path is" + dataFileFolderPath);
 		
-		String filename = dataFileFolderPath + File.separator + co2profile+"_"+siteName+"_"+"summary_with_consumption.csv";
-		
-		populateProfiles(filename);
 		this.agentName = siteName + this.agentID;
-		
+
+		for (String co2profile : co2profiles)
+		{
+			String filename = dataFileFolderPath + File.separator + co2profile+"_"+siteName+"_"+"summary_with_consumption.csv";		
+			populateProfiles(filename);
+		}
+		this.hasSmartMeter = true; // Necessary for the buildings to receive the signal
 		System.out.println(dayProfiles);
 	}
 	

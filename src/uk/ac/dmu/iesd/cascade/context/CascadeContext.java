@@ -355,7 +355,8 @@ public class CascadeContext extends DefaultContext
 	 */
 	public double getInsolation(int time)
 	{
-		return this.insolationArray[time % this.weatherDataLength];
+		double retVal = this.insolationArray[time % this.weatherDataLength];
+		return retVal;
 	}
 
 	/**

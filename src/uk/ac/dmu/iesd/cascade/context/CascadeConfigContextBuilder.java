@@ -424,6 +424,7 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 			int occNum = Consts.RANDOM;
 			int gasPercentage = 0;
 			double pv_cap = 0;
+			int orientation = 0;
 			if (p.hasChildNodes())
 			{
 				// Alter the prosumer generation distributions based on this
@@ -449,7 +450,14 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 				NodeList pv = p.getElementsByTagName("pv");
 				if (pv.getLength() == 1)
 				{
-					pv_cap = Double.parseDouble(pv.item(0).getChildNodes().item(0).getNodeValue());
+					Element pvElmnt = (Element) pv.item(0);
+					String orient= pvElmnt.getAttribute("orientation");
+					if (orient.equals(""))
+					{
+						orient = "180"; //Default to South facing
+					}
+					orientation = Integer.valueOf(orient);
+					pv_cap = Double.parseDouble(pvElmnt.getChildNodes().item(0).getNodeValue());
 				}
 
 				
@@ -480,6 +488,7 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 				{
 					hhProsAgent.hasPV = true;
 					hhProsAgent.ratedPowerPV = pv_cap;
+					hhProsAgent.azimuth = orientation;
 				}
 			}
 
