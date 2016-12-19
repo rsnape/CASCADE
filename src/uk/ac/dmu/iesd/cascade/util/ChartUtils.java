@@ -89,24 +89,30 @@ public class ChartUtils
 		}
 	}
 
-	public static void showChart(JFreeChart chart)
+	public static ChartAppFrame showChart(JFreeChart chart)
 	{
-
-		final ChartAppFrame chartAppFrame = new ChartAppFrame("ChartUtils", chart);
-		chartAppFrame.pack();
-		RefineryUtilities.centerFrameOnScreen(chartAppFrame);
-		chartAppFrame.setVisible(true);
+        return showChart(chart, null);
 
 	}
 
-	public static void showChart(JFreeChart chart, JButton button)
+	public static ChartAppFrame showChart(JFreeChart chart, JButton button)
+	{
+		return showChart(chart, button, "ChartUtils");
+
+	}
+	
+	public static ChartAppFrame showChart(JFreeChart chart, JButton button, String title)
 	{
 
-		final ChartAppFrame chartAppFrame = new ChartAppFrame("ChartUtils", chart);
-		chartAppFrame.getContentPane().add(button);
+		final ChartAppFrame chartAppFrame = new ChartAppFrame(title, chart);
+		if (button != null)
+		{
+		    chartAppFrame.getContentPane().add(button);
+		}
 		chartAppFrame.pack();
 		RefineryUtilities.centerFrameOnScreen(chartAppFrame);
 		chartAppFrame.setVisible(true);
+		return chartAppFrame;
 
 	}
 

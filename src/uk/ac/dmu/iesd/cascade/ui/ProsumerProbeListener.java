@@ -29,6 +29,7 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.StackedXYBarRenderer;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.xy.CategoryTableXYDataset;
@@ -65,6 +66,15 @@ public class ProsumerProbeListener implements ProbeListener
 	 * Ordered ArrayList of charts spawned by this listener
 	 */
 	ArrayList<JFreeChart> charts = new ArrayList<JFreeChart>();
+	
+	/**
+	 * Persistent references to aggregate charts if spawned
+	 */
+	JFreeChart aggregateBar = null;
+	JFreeChart aggregatePie = null;
+	JFrame aggregateBarFrame = null;
+	JFrame aggregatePieFrame = null;
+	
 	/**
 	 * Ordered ArrayList of agents that have been probed and called this
 	 * listener
@@ -192,7 +202,7 @@ public class ProsumerProbeListener implements ProbeListener
 				agentProbeFrame.getContentPane().add(pieChartPanel);
 				this.charts.add(pieChart);
 
-				JButton loadsProfilesLineChartButton = new JButton("Click here to see demands Line Chart of this HHPros");
+/*				JButton loadsProfilesLineChartButton = new JButton("Click here to see demands Line Chart of this HHPros");
 				loadsProfilesLineChartButton.addMouseListener(new MouseAdapter()
 				{
 					@Override
@@ -202,7 +212,7 @@ public class ProsumerProbeListener implements ProbeListener
 					}
 				});
 
-				agentProbeFrame.getContentPane().add(loadsProfilesLineChartButton);
+				agentProbeFrame.getContentPane().add(loadsProfilesLineChartButton);*/
 
 				JButton allPieChartButton = new JButton("Click here to see demands Pie Chart of  ALL HHPros");
 				allPieChartButton.addMouseListener(new MouseAdapter()
@@ -210,15 +220,24 @@ public class ProsumerProbeListener implements ProbeListener
 					@Override
 					public void mouseClicked(MouseEvent e)
 					{
-						IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = ProsumerProbeListener.this.mainContext
-								.getObjects(HouseholdProsumer.class);
-						ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
-						DefaultPieDataset pieDatasetOfAvgDemandOfAllHHProsConsumption = ProsumerProbeListener.this
-								.createPieDataset4AvgDemandOfAllHHPros(list_hhProsumers);
-						JFreeChart pieChart4AllHHProsConsumption = ProsumerProbeListener.this
-								.createPieChart(pieDatasetOfAvgDemandOfAllHHProsConsumption, "AVG Demands Proportion of All HHPros (@t="
-										+ ProsumerProbeListener.this.mainContext.getTickCount() + ")");
-						ChartUtils.showChart(pieChart4AllHHProsConsumption);
+						if (aggregatePieFrame == null)
+						{
+							IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = ProsumerProbeListener.this.mainContext
+									.getObjects(HouseholdProsumer.class);
+							ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
+							DefaultPieDataset pieDatasetOfAvgDemandOfAllHHProsConsumption = ProsumerProbeListener.this
+									.createPieDataset4AvgDemandOfAllHHPros(list_hhProsumers);
+							JFreeChart pieChart4AllHHProsConsumption = ProsumerProbeListener.this
+									.createPieChart(pieDatasetOfAvgDemandOfAllHHProsConsumption, "AVG Demands Proportion of All HHPros (@t="
+											+ ProsumerProbeListener.this.mainContext.getTickCount() + ")");
+							aggregatePie = pieChart4AllHHProsConsumption;
+							aggregatePieFrame = ChartUtils.showChart(pieChart4AllHHProsConsumption);
+						}
+						else
+						{
+							aggregatePieFrame.toFront();
+							aggregatePieFrame.repaint();
+						}
 
 					}
 				});
@@ -231,6 +250,8 @@ public class ProsumerProbeListener implements ProbeListener
 					@Override
 					public void mouseClicked(MouseEvent e)
 					{
+						if (aggregateBarFrame == null)
+						{
 						IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = ProsumerProbeListener.this.mainContext
 								.getObjects(HouseholdProsumer.class);
 						ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
@@ -261,7 +282,15 @@ public class ProsumerProbeListener implements ProbeListener
 								ChartUtils.saveChartAsPNG(barChart4AllHHProsConsumption, name);
 							}
 						});
-						ChartUtils.showChart(barChart4AllHHProsConsumption, saveAsButton);
+						
+						aggregateBar = barChart4AllHHProsConsumption;
+						aggregateBarFrame = ChartUtils.showChart(barChart4AllHHProsConsumption, saveAsButton);
+					}
+						else
+						{
+							aggregateBarFrame.toFront();
+							aggregateBarFrame.repaint();
+						}
 
 					}
 				});
@@ -320,6 +349,17 @@ public class ProsumerProbeListener implements ProbeListener
 			result.addValue((Number) arr2[i], "Optimised Set Point", i);
 			result.addValue((Number) arr3[i], "External Temp", i);
 			result.addValue((Number) arr4[i], "Internal Temp", i);
+		}
+		
+		if (thisAgent.storageHeater != null)
+		{
+			double[] arr5 = thisAgent.storageHeater.getHistoricalChargeState();
+			for (int i = 0; i < 48; i++)
+			{
+				result.addValue((Number) arr5[i], "Storage SoC", i);
+
+			}
+			
 		}
 
 		return result;
@@ -641,6 +681,25 @@ public class ProsumerProbeListener implements ProbeListener
 
 				i += 2;
 			}
+		}
+		
+		if (aggregatePie != null)
+		{
+			/* Update data in the aggregate pie chart */
+			IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = ProsumerProbeListener.this.mainContext
+					.getObjects(HouseholdProsumer.class);
+			ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
+			((PiePlot)this.aggregatePie.getPlot()).setDataset(this.createPieDataset4AvgDemandOfAllHHPros(list_hhProsumers));
+		}
+		
+		if (aggregateBar != null)
+		{
+			/* Update data in the aggregate bar chart */
+			IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = ProsumerProbeListener.this.mainContext
+					.getObjects(HouseholdProsumer.class);
+			ArrayList<HouseholdProsumer> list_hhProsumers = IterableUtils.Iterable2ArrayList(iIterOfHouseholdProsumers);
+			this.aggregateBar.getXYPlot().setDataset(createStackedBarDataset4DemandOfAllHHPros(list_hhProsumers));
+
 		}
 	}
 
