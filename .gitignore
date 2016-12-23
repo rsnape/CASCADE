@@ -1,4 +1,5 @@
 # Ignored files
+logs/*
 *.log*
 bin/
 *ModelOutput*
