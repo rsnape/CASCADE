@@ -351,7 +351,7 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	{
 		double time = RepastEssentials.GetTickCount();
 
-		if (this.mainContext.logger.isTraceEnabled())
+		if (this.mainContext.logger.isTraceEnabled() && time >= 0)
 		{
 			this.mainContext.logger.trace(time + " getCurrentPriceSignal: " + this.priceSignal[(int) time % this.priceSignal.length]);
 		}

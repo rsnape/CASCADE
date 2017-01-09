@@ -63,6 +63,18 @@ public class AggregatorFactory implements IAggregatorFactory
 
 		return asCO;
 	}
+	
+	public EnergyLocalClub createEnergyLocalClub(double[] baseProfile)
+	{
+		// SupplierCo asCO = new SupplierCo(cascadeMainContext, baseProfile);
+
+		double maxDem = ASTEMConsts.BMU_SMALLDEM_MAXDEM;
+		double minDem = ASTEMConsts.BMU_SMALLDEM_MINDEM;
+		EnergyLocalClub asCO = new EnergyLocalClub(this.cascadeMainContext, this.messageBoard, BMU_CATEGORY.DEM_S,
+				BMU_TYPE.DEM_SMALL, maxDem, minDem, baseProfile);
+
+		return asCO;
+	}
 
 	public WindFarmAggregator createWindFarmAggregator()
 	{

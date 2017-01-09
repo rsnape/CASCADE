@@ -37,6 +37,7 @@ import repast.simphony.util.collections.IndexedIterable;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorAgent;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.AggregatorFactory;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.BMPxTraderAggregator;
+import uk.ac.dmu.iesd.cascade.agents.aggregators.EnergyLocalClub;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.PassThroughAggregatorWithLag;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCo;
 import uk.ac.dmu.iesd.cascade.agents.aggregators.SupplierCoAdvancedModel;
@@ -308,10 +309,16 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 											.get(type));
 							this.cascadeMainContext.add(bmu);
 						}
-						else if (thisAgg.getClass().isInstance(SupplierCoAdvancedModel.class)) //Unsure why getClass is needed, but it is
-						{
+						else if (shortName.equals("SupplierCoAdvancedModel"))						{
 							SupplierCoAdvancedModel suppCo = this.bmuFactory
 									.createSupplierCoAdvanced(this.cascadeMainContext.systemPriceSignalDataArray);
+							this.cascadeMainContext.add(suppCo);
+							this.addHouseholdsToAggregator(a, suppCo);
+
+						}
+						else if (shortName.equals("EnergyLocalClub"))						{
+							EnergyLocalClub suppCo = this.bmuFactory
+									.createEnergyLocalClub(this.cascadeMainContext.systemPriceSignalDataArray);
 							this.cascadeMainContext.add(suppCo);
 							this.addHouseholdsToAggregator(a, suppCo);
 
