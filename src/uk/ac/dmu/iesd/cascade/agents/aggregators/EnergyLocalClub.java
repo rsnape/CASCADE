@@ -5,11 +5,9 @@ package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
-import org.apache.commons.collections.ListUtils;
-
+import repast.simphony.engine.schedule.ScheduledMethod;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
@@ -146,7 +144,15 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		//Return the amount of locally generated power used up by the community, 
 		//Which will simply be the original net demands minus the net demands
 		//now
-		return (ArrayList<Double>) ListUtils.subtract(originalNetDemands, netDemands);
+		
+		
+		ArrayList<Double> retDemands = new ArrayList<Double>();
+		int s = this.netDemands.size();
+		for (int i=0; i<s; i++)
+		{
+			retDemands.add(this.netDemands.get(i) - originalNetDemands.get(i));
+		}
+		return retDemands;
 	}
 	
 	
@@ -154,9 +160,7 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 	public void calculateDailyCosts(ArrayList<Double> localShares)
 	{
 		int ts = this.mainContext.getTimeslotOfDay();
-		
-		assert localShares.size() == this.netDemands.size();
-		
+				
 		if ( ts == 0)
 		{
 			String appendToFile = writeCosts();
@@ -166,16 +170,9 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		}
 		
 		for (int j = 0; j < localShares.size(); j++)
-		{try
 		{
 			this.dayCost[j] += (this.localGenPrice*localShares.get(j) + this.tariff[ts]*this.netDemands.get(j));
 			this.noSchemeCost[j] += this.originalPrice*(localShares.get(j) + this.netDemands.get(j));
-		}
-		catch (Exception e)
-		{
-			System.err.println(Arrays.toString(dayCost) + "\n" + Arrays.toString(this.tariff));
-			System.exit(-1);
-		}
 		}
 	
 	}
@@ -189,19 +186,16 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("dayCosts");
+		sb.append(this.mainContext.getTickCount());
 		for (double d : this.dayCost)
 		{
 			sb.append(","+d);
 		}
-		sb.append("\n");
 		
-		sb.append("noSchemeCosts");
-		for (double d : this.netDemands)
+		for (double d : this.noSchemeCost)
 		{
-			sb.append(","+(d*this.originalPrice));
+			sb.append(","+d);
 		}
-		sb.append("\n");
 		
 		return sb.toString();
 	}
@@ -301,10 +295,26 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
          */
 		String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
 
-        this.res = new CSVWriter("EnergyLocalOutput"+parsedDate+".csv" , true);
-
-
-	
+        this.res = new CSVWriter("EnergyLocalOutput"+this.agentName+"_"+parsedDate+".csv" , true);
 	}
 
+	@ScheduledMethod(start=0, priority=Consts.AGGREGATOR_PRE_STEP_PRIORITY_FIRST)
+	public void writeHeaders()
+	{
+        ArrayList<String> headers = new ArrayList<String>();
+        headers.add("Tick");
+        int custCount = this.customers.size();
+        for (int i = 0; i < custCount; i++)
+        {
+        	int size = headers.size();
+        	int midAdd = size/2;
+        	headers.add(midAdd,"Customer "+i+" with Scheme");
+        	headers.add("Customer "+i+" no Scheme");
+        }
+
+        String[] headArray = new String[headers.size()];
+        headers.toArray(headArray);
+        this.res.writeColHeaders(headArray); 
+	}
+	
 }
