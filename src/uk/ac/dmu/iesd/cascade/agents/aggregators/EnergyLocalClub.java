@@ -15,6 +15,7 @@ import uk.ac.dmu.iesd.cascade.base.Consts.BMU_TYPE;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
+import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 
 /**
  * @author Richard
@@ -23,8 +24,9 @@ import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 public class EnergyLocalClub extends SupplierCoAdvancedModel
 {
 	
-	double[] usePerDay;
-	double[] genPerDay;
+	double[] totalDemandPerDay;
+	double[] sharePerDay;
+	double[] totalGenPerDay;
 	double[] importPerDay;
 	double[] exportPerDay;
 	CSVWriter res;
@@ -35,6 +37,7 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 	double[] noSchemeCost;
 	
 	ArrayList<Double> netDemands;
+	ArrayList<Double> localShares;
 
 	
 	/*
@@ -72,7 +75,7 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 			}
 		}
 		
-		boolean all_gen_used = this.getNetDemand() <= 0;
+		//boolean all_gen_used = this.getNetDemand() <= 0;
 		int share_rounds =1;
 			
 		ArrayList<Double> originalNetDemands = new ArrayList<Double>(netDemands); //Create a new copy
@@ -108,10 +111,11 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 					/*
 					 * Either this is a net exporter, or the share completely covers the demand
 					 */
-					postShareNetDemands.add(0.0);
 
 					if (nd > 0)
 					{
+						postShareNetDemands.add(0.0);
+
 						/*
 						 * This is the case where share covers more than the demand.
 						 * 
@@ -122,6 +126,11 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 						 */
 						total_to_share -= nd;
 						sharer_count -= 1;
+					}
+					else
+					{
+						//Net exporter
+						postShareNetDemands.add(nd);
 					}
 				}
 				
@@ -150,14 +159,21 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		int s = this.netDemands.size();
 		for (int i=0; i<s; i++)
 		{
-			retDemands.add(this.netDemands.get(i) - originalNetDemands.get(i));
+			//if (originalNetDemands.get(i) > 0)
+			{
+				retDemands.add(originalNetDemands.get(i) - this.netDemands.get(i));
+			}
+			//else
+			//{
+			//	retDemands.add(0.0);
+			//}
 		}
 		return retDemands;
 	}
 	
 	
 	
-	public void calculateDailyCosts(ArrayList<Double> localShares)
+	public void calculateDailyCosts()
 	{
 		int ts = this.mainContext.getTimeslotOfDay();
 				
@@ -167,12 +183,34 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 			res.appendText(appendToFile); 
 			this.dayCost = new double[localShares.size()];
 			this.noSchemeCost = new double[localShares.size()];
+			this.totalDemandPerDay = new double[localShares.size()];
+			this.sharePerDay = new double[localShares.size()];
+			this.totalGenPerDay = new double[localShares.size()];
+			this.importPerDay = new double[localShares.size()];
+			this.exportPerDay = new double[localShares.size()];
+
 		}
 		
 		for (int j = 0; j < localShares.size(); j++)
 		{
 			this.dayCost[j] += (this.localGenPrice*localShares.get(j) + this.tariff[ts]*this.netDemands.get(j));
 			this.noSchemeCost[j] += this.originalPrice*(localShares.get(j) + this.netDemands.get(j));
+			this.totalDemandPerDay[j] += localShares.get(j) + this.netDemands.get(j);
+			this.sharePerDay[j] += localShares.get(j);
+			//this.totalGenPerDay[j] +=
+			double totDem = 0;
+			for (double d : this.netDemands)
+			{
+				totDem += d;
+			}
+			if (totDem < 0)
+			{
+				this.exportPerDay[j] += totDem;
+			}
+			else
+			{
+				this.importPerDay[j] += totDem;
+			}
 		}
 	
 	}
@@ -193,6 +231,16 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		}
 		
 		for (double d : this.noSchemeCost)
+		{
+			sb.append(","+d);
+		}
+		
+		for (double d : this.netDemands)
+		{
+			sb.append(","+d);
+		}
+		
+		for (double d : this.sharePerDay)
 		{
 			sb.append(","+d);
 		}
@@ -231,13 +279,14 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 			this.mainContext.logger.debug("Entering EnergyLocalClub bizStep");
 		}
 		super.bizStep();
-		ArrayList<Double> locallyShared = this.calculateShare();
+		this.localShares = this.calculateShare();
+		
 		if(this.mainContext.logger.isDebugEnabled())
 		{
-			this.mainContext.logger.debug("Locally shared generation per household "+locallyShared);
+			this.mainContext.logger.debug("Locally shared generation per household "+localShares);
 		}
 		
-		this.calculateDailyCosts(locallyShared);
+		this.calculateDailyCosts();
 		
 	}
 	
@@ -306,11 +355,21 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
         int custCount = this.customers.size();
         for (int i = 0; i < custCount; i++)
         {
-        	int size = headers.size();
-        	int midAdd = size/2;
-        	headers.add(midAdd,"Customer "+i+" with Scheme");
-        	headers.add("Customer "+i+" no Scheme");
+        	headers.add("Customer "+i+" with Scheme");
         }
+        for (int i = 0; i < custCount; i++)
+        {
+        	headers.add("Customer "+i+" no scheme");
+        }
+        for (int i = 0; i < custCount; i++)
+        {
+        	headers.add("Customer "+i+" net demand");
+        }
+        for (int i = 0; i < custCount; i++)
+        {
+        	headers.add("Customer "+i+" PV share");
+        }
+
 
         String[] headArray = new String[headers.size()];
         headers.toArray(headArray);
