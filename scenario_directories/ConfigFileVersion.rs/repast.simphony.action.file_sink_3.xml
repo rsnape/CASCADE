@@ -1,0 +1,14 @@
+<repast.simphony.data2.engine.FileSinkDescriptor>
+  <name>Net_demands</name>
+  <dataSet>Households</dataSet>
+  <delimiter>,</delimiter>
+  <format>TABULAR</format>
+  <sourceIds class="linked-hash-set">
+    <string>Net_demand</string>
+    <string>tick</string>
+    <string>Total_demand</string>
+    <string>Total_generation</string>
+  </sourceIds>
+  <fileName>NetDemands.csv</fileName>
+  <addTimeStamp>true</addTimeStamp>
+</repast.simphony.data2.engine.FileSinkDescriptor>
