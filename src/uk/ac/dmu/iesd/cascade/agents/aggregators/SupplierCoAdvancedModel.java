@@ -514,7 +514,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		// MinimisationFunctionObjectiveOvernightWind minFunct = new
 		// MinimisationFunctionObjectiveOvernightWind();
 		MinimisationFunctionObjectiveArbitraryArray minFunct = new MinimisationFunctionObjectiveArbitraryArray(
-				this.getPredictedGeneration());
+				ArrayUtils.add(this.getPredictedGeneration(),ArrayUtils.negate(this.getDayNetDemands())));
 
 		minFunct.set_pointer_to_B(arr_B);
 		minFunct.set_pointer_to_Kneg(this.Kneg);
@@ -633,9 +633,9 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 
 	private double[] predictedGeneration;
 
-	// This is the SWELL CEGADS default signal, the 1 should prohibit demand being moved to those slots
-	private double[] defaultSignal = new double[]{-0.251, -0.251, -0.251, -0.251, -0.251, -0.251, -0.275, -0.275, -0.275, -0.275, -0.275, -0.275, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.157, -0.157, -0.157, -0.167, -0.167, -0.167, -0.167, -0.157, -0.157, -0.157, -0.157, -0.157, -0.157, -0.157, 1, 1, 1, 1, 1, 1, 1, 1, -0.24, -0.24, -0.24, -0.24, -0.275, -0.275};
-
+	//To be used with signal mode 5 for the case where signal is preset
+	//It will default to zeros (i.e. like signal mode 0)
+	protected double[] defaultSignal = new double[48];
 	/**
 	 * Returns a string representing the state of this agent. This method is
 	 * intended to be used for debugging purposes, and the content and format of
@@ -1137,7 +1137,6 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		} else if (!this.isTrainingPeriodCompleted()) {
 			this.updateAggregateDemandHistoryArray(this.customers,
 					this.timeslotOfDay, this.arr_hist_ij_D);
-			this.updatePredictedGeneration();
 
 			if (this.mainContext.isEndOfDay(this.timeslotOfDay)) {
 				double[] DeltaB;
@@ -1169,6 +1168,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		}
 
 		this.calculateAndSetNetDemand(this.customers);
+		this.updatePredictedGeneration();
+
 		if (this.isTrainingPeriodCompleted()) {
 			this.updateTotalCO2Avoided();
 		}

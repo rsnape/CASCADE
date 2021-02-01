@@ -2000,6 +2000,12 @@ public class HouseholdProsumer extends ProsumerAgent {
 		Arrays.fill(this.setPointProfile, 20); // This puts in a flat set point
 												// through the day set by the
 												// consumer
+		Arrays.fill(this.setPointProfile,0,20,18.5);
+		this.setPointProfile[20]=18.75;
+		this.setPointProfile[21]=19.0;
+		this.setPointProfile[22]=19.25;
+		this.setPointProfile[23]=19.5;
+		this.setPointProfile[24]=19.75;
 		// this.setPointProfile =
 		// Arrays.copyOf(Consts.BASIC_AVERAGE_SET_POINT_PROFILE,
 		// Consts.BASIC_AVERAGE_SET_POINT_PROFILE.length);

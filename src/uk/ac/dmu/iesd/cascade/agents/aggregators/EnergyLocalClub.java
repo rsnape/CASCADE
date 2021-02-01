@@ -30,7 +30,9 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 	double[] importPerDay;
 	double[] exportPerDay;
 	CSVWriter res;
+	CSVWriter hh_net;
 	double[] tariff;
+	double[] dsp;
 	private double localGenPrice;
 	private double originalPrice;
 	double[] dayCost;
@@ -211,7 +213,10 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 			{
 				this.importPerDay[j] += totDem;
 			}
+			//hh_net.appendText(Double.toString(totDem)); 
 		}
+		
+
 	
 	}
 	
@@ -330,7 +335,20 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
         		 12,12,12,12,12,12,12,12,12,12,
         		 10,10,10,10,10,10,10,10,10,10,
         		 14,14,14,14,14,14,14,14,
-        		 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25};		
+        		 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25};
+        
+        //DSP is used if signal set non-adaptive
+        this.dsp = new double[]{
+        		-0.251,	-0.251,	-0.251,	-0.251,	-0.251,	-0.251,	-0.275, -0.275,	-0.275,	-0.275,	-0.275,	-0.275,        		
+        		-0.137,-0.137,	-0.137,	-0.137,	-0.137,	-0.137,	-0.137,	-0.137,
+        		-0.157,	-0.157,	-0.157,
+        		-0.167,	-0.167,	-0.167,	-0.167,
+        		-0.157,	-0.157,	-0.157,	-0.157,-0.157,	-0.157,	-0.157,
+        		1,1,1,1,1,1,1,1,
+        		-0.24,-0.24,-0.24,-0.24,
+        		-0.275,	-0.275};
+        this.defaultSignal = this.dsp;
+        
         this.localGenPrice = 7.0;
         
         if (this.mainContext.logger.isDebugEnabled())
@@ -345,6 +363,7 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
 
         this.res = new CSVWriter("EnergyLocalOutput"+this.agentName+"_"+parsedDate+".csv" , true);
+        this.hh_net = new CSVWriter("EnergyLocalOutputHHNetDemand_"+parsedDate+".csv" , true);
 	}
 
 	@ScheduledMethod(start=0, priority=Consts.AGGREGATOR_PRE_STEP_PRIORITY_FIRST)
