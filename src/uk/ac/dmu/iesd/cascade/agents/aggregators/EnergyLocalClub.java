@@ -3,11 +3,14 @@
  */
 package uk.ac.dmu.iesd.cascade.agents.aggregators;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.parameter.IllegalParameterException;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
@@ -38,6 +41,7 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 	
 	ArrayList<Double> netDemands;
 	ArrayList<Double> localShares;
+	private String configString;
 
 	
 	/*
@@ -333,6 +337,9 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
         		 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25};		
         this.localGenPrice = 7.0;
         
+        //Make the default signal for Energy Local the price signal
+        this.defaultSignal = ArrayUtils.normalizeValues(this.tariff);
+        
         if (this.mainContext.logger.isDebugEnabled())
 		{
 			this.mainContext.logger.debug("Initialising club prices");
@@ -343,8 +350,20 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
          * 
          */
 		String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
-
-        this.res = new CSVWriter("EnergyLocalOutput"+this.agentName+"_"+parsedDate+".csv" , true);
+		String outputDir = (String) RepastEssentials.GetParameter("outputDir");
+        this.res = new CSVWriter(outputDir +"/EnergyLocalOutput"+this.getAgentName()+"_"+parsedDate+".csv" , true);
+		try
+		{
+			this.configString = (String) RepastEssentials.GetParameter("configFileName");
+		}
+		catch (IllegalParameterException e)
+		{
+			this.configString = "FromParamWindowNotFile";
+		}
+        this.aggOutputSubDir = outputDir.concat(File.separator)
+				.concat("Seed")
+						.concat(Integer.toString(this.mainContext
+								.getRandomSeedValue())).concat(this.configString).concat("_").concat(parsedDate);
 	}
 
 	@ScheduledMethod(start=0, priority=Consts.AGGREGATOR_PRE_STEP_PRIORITY_FIRST)
@@ -355,15 +374,15 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
         int custCount = this.customers.size();
         for (int i = 0; i < custCount; i++)
         {
-        	headers.add("Customer "+i+" with Scheme");
+        	headers.add("Customer "+i+" cost with Scheme (p)");
         }
         for (int i = 0; i < custCount; i++)
         {
-        	headers.add("Customer "+i+" no scheme");
+        	headers.add("Customer "+i+" cost no scheme (p)");
         }
         for (int i = 0; i < custCount; i++)
         {
-        	headers.add("Customer "+i+" net demand");
+        	headers.add("Customer "+i+" net demand (kWh)");
         }
         for (int i = 0; i < custCount; i++)
         {
