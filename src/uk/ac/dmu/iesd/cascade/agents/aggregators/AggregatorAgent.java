@@ -13,6 +13,7 @@ import repast.simphony.space.graph.Network;
 import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.ui.probe.ProbeID;
 import repast.simphony.util.ContextUtils;
+import uk.ac.dmu.iesd.cascade.agents.ICascadeAgent;
 import uk.ac.dmu.iesd.cascade.agents.ICognitiveAgent;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
@@ -50,7 +51,7 @@ import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
  *          base class for ASTEM market integration, notably by adding category
  *          and type (Babak)
  */
-public abstract class AggregatorAgent implements ICognitiveAgent, IObservable
+public abstract class AggregatorAgent implements ICascadeAgent, ICognitiveAgent, IObservable
 {
 
 	/*
@@ -365,7 +366,7 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 	}
 
 	/**
-	 * Read total PV generation from all connected prosumers
+	 * Read total generation from all connected prosumers
 	 */
 	public double getGeneration()
 	{
@@ -374,11 +375,13 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 		double tot = 0;
 		for (ProsumerAgent p : customers)
 		{
-			if (p instanceof HouseholdProsumer)
-			{
-				HouseholdProsumer hh = (HouseholdProsumer) p;
-				tot += hh.currentGeneration();
-			}
+//			if (p instanceof HouseholdProsumer)
+//			{
+//				HouseholdProsumer hh = (HouseholdProsumer) p;
+//				tot += hh.currentGeneration();
+//			}
+			
+			tot += p.currentGeneration();
 			
 		}
 		return tot;
