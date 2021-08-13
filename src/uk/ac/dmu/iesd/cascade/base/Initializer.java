@@ -30,51 +30,50 @@ import uk.ac.dmu.iesd.cascade.ui.ProsumerProbeListener;
 import uk.ac.dmu.iesd.cascade.ui.TicksToDaysFormatter;
 
 /**
+ * This initializer class is implemented in order to perform some preparatory setup after
+ * the model context is initialised, but prior to the run.  It is triggered when the Initialise
+ * button is pressed on the GUI, or when the run starts.
+ * 
+ * In particular, this is used to customise the GUI prior to the model run.
+ * 
  * @author Babak Mahdavi
  * @version $Revision: 1.0 $ $Date: 2011/07/18 12:00:00 $
  * 
  */
 public class Initializer implements ModelInitializer
 {
-
-	// private TickListener tickListener = null;
-
+	/*
+	 * Class to customize the GUI by adding an action with functionality in the `runInitialize()`
+	 * method to change features as soon as initialize button is clicked.
+	 */
 	class CascadeGuiCustomiserAction extends NullAbstractControllerAction
 	{
+		/*
+		 * This method is run prior to setting up model context.  In the CASCADE framework, it 
+		 * customises the GUI to 
+		 *     1a: Change the format of Ticks displayed into years/weeks/days
+		 *     1b: Add a Probe to 2D displays as a hook to open other visualisations if required
+		 *     1c: Add a User Panel - can be customised in the addUserPanel() method
+		 * 
+		 * (non-Javadoc)
+		 * @see repast.simphony.engine.controller.NullAbstractControllerAction#runInitialize(repast.simphony.engine.environment.RunState, repast.simphony.context.Context, repast.simphony.parameter.Parameters)
+		 */
 		@Override
 		public void runInitialize(RunState runState, Context context, Parameters runParams)
 		{
 			System.out.println("Begining of model Intializer runInitialize");
-
-			// will be executed at initialization.
-
-			/*
-			 * ISchedule schedule =
-			 * RunEnvironment.getInstance().getCurrentSchedule();
-			 * schedule.schedule(ScheduleParameters.createOneTime(-0.1), new
-			 * IAction() { //0.001 Nick public void execute() { Parameters
-			 * params = RunEnvironment.getInstance().getParameters(); Number
-			 * seed = (Number)params.getValue(ParameterConstants.
-			 * DEFAULT_RANDOM_SEED_USAGE_NAME);
-			 * RandomHelper.setSeed(seed.intValue());
-			 * 
-			 * } });
-			 */
-
+			
+			// Assumes the main model context is an instance of CascadeContext, so cast it.
 			CascadeContext cascadeContext = (CascadeContext) context;
 			if (cascadeContext.logger.isTraceEnabled())
 			{
-				cascadeContext.logger.trace("Initializer:: runInitialize method test: " + cascadeContext.getNbOfTickPerDay());
+				cascadeContext.logger.trace("Initializer:: runInitialize method entered, ticks per day = " + cascadeContext.getNbOfTickPerDay());
 			}
 			GUIRegistry guiRegis = runState.getGUIRegistry();
 
 			RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
 			RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
-			// Collection <Pair<GUIRegistryType,Collection<JComponent>>>
-			// typeAndComp = guiRegis.getTypesAndComponents();
 			Collection typeAndComp = guiRegis.getTypesAndComponents();
-			// Iterator <Pair<GUIRegistryType,Collection<JComponent>>>
-			// typeAndCompIter = typeAndComp.iterator();
 			Iterator<Pair> typeAndCompIter = typeAndComp.iterator();
 
 			while (typeAndCompIter.hasNext())
@@ -85,16 +84,19 @@ public class Initializer implements ModelInitializer
 				{
 					cascadeContext.logger.trace("guiRegisType: " + guiRegisType);
 				}
+				
+				//Add GUI components for Charts to a collection within the context, so that
+				//the context is aware of the charts.
 				if (guiRegisType == GUIRegistryType.CHART)
 				{
 					Collection<JComponent> chartCollection = typeAndCompPair.getSecond();
 					cascadeContext.setChartCompCollection(chartCollection);
-
 				}
 				if (guiRegisType == GUIRegistryType.DISPLAY)
 				{
-
+					//Do nothing at this stage is component is a DISPLAY
 				}
+				
 				Collection<JComponent> compCol = typeAndCompPair.getSecond();
 				if (cascadeContext.logger.isTraceEnabled())
 				{
@@ -117,9 +119,9 @@ public class Initializer implements ModelInitializer
 						cascadeContext.logger.trace(" Comp class: " + comp.getClass());
 					}
 				}
-
 			}
 
+			//Find 2D display and add a ProbeListener to it for when Prosumers are double clicked
 			List<IDisplay> listOfDisplays = guiRegis.getDisplays();
 			for (IDisplay display : listOfDisplays)
 			{
@@ -129,32 +131,14 @@ public class Initializer implements ModelInitializer
 				}
 			}
 
-			// ++++++++++++++Add stuff to user panel
-			JPanel customPanel = new JPanel();
-			customPanel.add(new JLabel("TestLabel"));
-			customPanel.add(new JButton("Test Button"));
-			JLabel dayCountLabel = new JLabel();
-			dayCountLabel.setText("");
-
-			/*
-			 * if (tickListener != null) {
-			 * tickListener.tickCountUpdated(mainContext.getTickCount()); }
-			 */
-
+			// Add a custom user panel if needed
+			JPanel customPanel = addUserPanel();
 			RSApplication.getRSApplicationInstance().addCustomUserPanel(customPanel);
 
-			// RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new
-			// TicksToDaysFormatter(cascadeContext));
-			RSApplication.getRSApplicationInstance().getGui().updateTickCountLabel(0);
-
-			// runParams.
-			// if (Consts.DEBUG)
 			if (cascadeContext.logger.isTraceEnabled())
 			{
 				cascadeContext.logger.trace("Initializer:: ChartSnapshotInterval: " + runParams.getValue("chartSnapshotInterval"));
 			}
-			// +++++++++++++++++++++++++++++++++++++
-
 		}
 
 		@Override
@@ -168,13 +152,21 @@ public class Initializer implements ModelInitializer
 		{
 			// Place holder - possibly test this later
 		}
+		
+		private JPanel addUserPanel()
+		{
+			JPanel customPanel = new JPanel();
+			customPanel.add(new JLabel("TestLabel"));
+			customPanel.add(new JButton("Test Button"));
+			JLabel dayCountLabel = new JLabel();
+			dayCountLabel.setText("");
+			return customPanel;
+		}
 	}
 
 	@Override
 	public void initialize(Scenario scen, RunEnvironmentBuilder builder)
 	{
 		scen.addMasterControllerAction(new CascadeGuiCustomiserAction());
-
 	}
-
 }
