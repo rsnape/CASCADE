@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context>	
+	<!--  First aggregator with households - no Gas and a range of thermal properties -->
+	<aggregator
+		class="uk.ac.dmu.iesd.cascade.agents.aggregators.EnergyLocalClub"
+		number="1">
+		<!-- Non heat pump consumers -->
+		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="100">
+			<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<percentageGas>100</percentageGas>
+			<!-- <pv orientation="250">3.5</pv> -->  <!-- Optionally add PV -->
+			<smartControlProbability>100</smartControlProbability>
+		</prosumer>
+	
+		
+        <!-- Heat pump prosumer -->
+		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
+			number="0">
+			<percentageGas>0</percentageGas>
+			<lossRateMean>275</lossRateMean>
+			<lossRateSD>75</lossRateSD>
+			<thermalMassMean>12.5</thermalMassMean>
+			<thermalMassSD>2.5</thermalMassSD>
+			<!-- <pv orientation="250">3.5</pv> -->  <!-- Optionally add PV -->
+			<smartControlProbability>100</smartControlProbability>
+		</prosumer>
+        
+
+			<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.DataFileProsumer"
+			number="1"
+			demandFileName = ""
+			genFileName = "bethesdaHydro.csv">
+			
+		</prosumer>
+		
+	</aggregator>
+
+	<market>
+		false
+	</market>
+    
+	
+</context>
