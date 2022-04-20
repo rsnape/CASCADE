@@ -9,7 +9,7 @@ package uk.ac.dmu.iesd.cascade.agents;
  * 
  */
 
-public interface ICognitiveAgent
+public interface ICascadeAgent
 {
 
 }
