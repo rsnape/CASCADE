@@ -492,7 +492,7 @@ public class WindGeneratorProsumer extends GeneratorProsumer
 	 * @return
 	 */
 	@Override
-	protected double currentGeneration()
+	public double currentGeneration()
 	{
 		double returnAmount = 0;
 		// There is potential in this structure to provide an individual power

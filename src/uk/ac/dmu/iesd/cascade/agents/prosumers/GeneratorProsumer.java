@@ -24,22 +24,6 @@ public abstract class GeneratorProsumer extends ProsumerAgent
 {
 
 	/*
-	 * Configuration options
-	 * 
-	 * All are set false initially - they can be set true on instantiation to
-	 * allow fine-grained control of agent properties
-	 */
-
-	boolean hasCHP = false;
-	boolean hasWind = false;
-	boolean hasHydro = false;
-	// Thermal Generation included so that Household can represent
-	// Biomass, nuclear or fossil fuel generation in the future
-	// what do we think?
-	boolean hasThermalGeneration = false;
-	boolean hasPV = false;
-
-	/*
 	 * the rated power of the various technologies / appliances we are
 	 * interested in
 	 * 
@@ -51,7 +35,6 @@ public abstract class GeneratorProsumer extends ProsumerAgent
 	double ratedPowerWind;
 	double ratedPowerHydro;
 	double ratedPowerThermalGeneration;
-	double ratedPowerPV;
 
 	/*
 	 * TODO - need some operating characteristic parameters here - e.g. time to
@@ -82,14 +65,21 @@ public abstract class GeneratorProsumer extends ProsumerAgent
 	 * @return a floating point number of the real time generation of this
 	 *         prosumer
 	 */
-	protected abstract double currentGeneration();
+	public double currentGeneration()
+	{
+		return PVGeneration() + thermalGeneration()+hydroGeneration()+CHPGeneration();
+		
+	}
 
 	/**
 	 * @return
 	 */
-	private double PVGeneration()
+	protected double PVGeneration()
 	{
-		// TODO Auto-generated method stub
+		if (this.hasPV)
+		{
+			return this.ratedPowerPV * this.mainContext.getInsolation(this.mainContext.getTickCount());
+		}
 		return 0;
 	}
 

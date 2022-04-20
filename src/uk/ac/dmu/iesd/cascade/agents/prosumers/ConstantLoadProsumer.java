@@ -87,4 +87,13 @@ public class ConstantLoadProsumer extends ProsumerAgent
 		// Do nothing on step for this prosumer - nothing changes
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#currentGeneration()
+	 */
+	@Override
+	public double currentGeneration() {
+		// Pure consumer, return zero generation
+		return 0;
+	}
+
 }

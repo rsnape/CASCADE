@@ -6,6 +6,7 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.ui.probe.ProbeID;
 import repast.simphony.util.ContextUtils;
+import uk.ac.dmu.iesd.cascade.agents.ICascadeAgent;
 import uk.ac.dmu.iesd.cascade.agents.ICognitiveAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
@@ -35,7 +36,7 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
  * 
  *          ----Extra comment added to test git ignore----
  */
-public abstract class ProsumerAgent implements ICognitiveAgent
+public abstract class ProsumerAgent implements ICognitiveAgent, ICascadeAgent
 {
 
 	/**
@@ -134,9 +135,26 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 								// tick
 	protected double airTemperature; // outside air temperature
 	protected double airDensity; // air density
-
-	// protected int ticksPerDay; //TODO: JRS This needs to be removed - get it
-	// from the context if needed
+	
+	protected int timeOfDay;
+	
+	boolean hasCHP = false;
+	boolean hasAirSourceHeatPump = false;
+	boolean hasGroundSourceHeatPump = false;
+	boolean hasWind = false;
+	boolean hasHydro = false;
+	// Thermal Generation included so that Household can represent
+	// Biomass, nuclear or fossil fuel generation in the future
+	// what do we think?
+	boolean hasThermalGeneration = false;
+	public boolean hasPV = false;
+	
+	public double ratedPowerPV;
+	
+	/*
+	 * Holds the azimuth (orientation w.r.t North) of the solar panel
+	 */
+	public double azimuth;
 
 	/*
 	 * Electrical properties
@@ -272,6 +290,15 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 	{
 		return this.netDemand;
 	}
+	
+	/**
+	 * Returns the raw demand, before netting off generation
+	 * 
+	 * @return the <code>netDemand + currentGeneration</code>
+	 */
+	public double getDemand() {
+		return this.getNetDemand() + this.currentGeneration();
+	}
 
 	/**
 	 * Sets the <code>netDemand</code> of this agent
@@ -343,7 +370,7 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 		return this.predictedCostSignal.length;
 	}
 
-	public double getCurrentPrediction()
+	public double getCurrentPredictedCost()
 	{
 		int timeSinceSigValid = (int) RepastEssentials.GetTickCount() - this.getPredictionValidTime();
 		if (this.predictedCostSignal.length > 0 && timeSinceSigValid >= 0)
@@ -577,6 +604,149 @@ public abstract class ProsumerAgent implements ICognitiveAgent
 	public ProsumerAgent()
 	{
 		this.agentID = ProsumerAgent.agentIDCounter++;
+	}
+
+	/**
+	 * Returns the energy generated (not net of demand) in kWh in this timestep
+	 * 
+	 * @return double, kWh generation in this timestep
+	 */
+	public abstract double currentGeneration();
+	
+	/**
+	 * @return
+	 */
+	protected double PVGeneration() {
+		
+		double kWhInTick = 0;
+		if (this.hasPV) {
+			if (this.mainContext.logger.isTraceEnabled())
+			{
+				this.mainContext.logger.trace("Entering PV calculation with inolsation = " + this.getInsolation() + " and rated power = " + this.ratedPowerPV);
+			}
+			double adjusted_insolation = adjustInsolationForTimeAndAzimuth(this
+					.getInsolation());
+
+			double p = (adjusted_insolation / Consts.MAX_INSOLATION)
+					* this.ratedPowerPV;
+			
+			kWhInTick = p * ((1.0 * Consts.HOURS_PER_DAY) / this.mainContext.ticksPerDay);
+			
+		} 
+		if (this.mainContext.logger.isDebugEnabled())
+		{
+			this.mainContext.logger.debug("Calculated PV for agent " + this.agentName + "="+kWhInTick+"; has PV :"+this.hasPV);
+		}
+		return kWhInTick; 
+	}
+
+	/**
+	 * @param timeOfDay2
+	 * @param insolation
+	 * @return
+	 */
+	private double adjustInsolationForTimeAndAzimuth(double insolation) {
+		double dayOfYear = this.mainContext.getDayCount() % 365;
+		// Calculate B
+		double B = 360 * (dayOfYear - 81) / 364; // Approximated Day of year (no
+													// leap years)
+		// Calculate equation of time
+		double equationOfTime = (9.87 * Math.sin(2 * B * Math.PI / 180))
+				- (7.53 * Math.cos(B * Math.PI / 180))
+				- (1.5 * Math.sin(B * Math.PI / 180));
+		// Calculate time correction factor
+		double longitude = 0;
+		double timeCorrectionFactor = (4 * (longitude - 0)) + equationOfTime; // TODO:
+																				// Standard
+																				// longitude
+																				// of
+																				// -1
+																				// which
+																				// is
+																				// a
+																				// bit
+																				// off
+		int hour = (timeOfDay * Consts.HOURS_PER_DAY)
+				/ this.mainContext.ticksPerDay;
+		boolean britishSummerTime = true; // TODO: Replace with proper test
+		if (britishSummerTime) {
+			hour -= 1;
+		}
+		int minute = (((timeOfDay * Consts.HOURS_PER_DAY) % this.mainContext.ticksPerDay) * 60)
+				/ this.mainContext.ticksPerDay;
+		double hoursBeforeSolarNoon = 12 - (hour + (minute * 1.0 / 60) + (timeCorrectionFactor / 60));
+
+		// Calculate optical depth
+		double opticalDepth = 0.174 + (0.035 * Math.sin(2 * Math.PI
+				* (dayOfYear - 100) / 365));
+		// Calculate hour angle
+		double hourAngle = 15 * hoursBeforeSolarNoon;
+		// Calculate declination
+		double declination = 23.45 * Math.sin(2 * Math.PI * (284 + dayOfYear)
+				/ 365.25);
+		// Calculate solar altitude angle
+		double latitude = 52;
+		double solarAltitudeAngle = 180
+				/ Math.PI
+				* Math.asin((Math.cos(latitude * Math.PI / 180)
+						* Math.cos(declination * Math.PI / 180) * Math
+							.cos(hourAngle * Math.PI / 180))
+						+ (Math.sin(latitude * Math.PI / 180) * Math
+								.sin(declination * Math.PI / 180)));
+		// Calculate azimuth of sun
+		double azimuthOfSun = 180
+				/ Math.PI
+				* Math.asin(Math.cos(declination * Math.PI / 180)
+						* Math.sin(hourAngle * Math.PI / 180)
+						/ Math.cos(solarAltitudeAngle * Math.PI / 180));
+		// Calculate azimuth angle test
+		boolean azimuthAngleTest = Math.cos(hourAngle * Math.PI / 180) >= (Math
+				.tan(declination * Math.PI / 180) / Math.tan(declination
+				* Math.PI / 180));
+
+		double adjustedAzimuthOfSun = azimuthOfSun;
+		// Calculate adjusted azimuth of sun
+		if (!azimuthAngleTest) {
+			if (azimuthOfSun > 90) {
+				adjustedAzimuthOfSun = azimuthOfSun - 90;
+			} else if (azimuthOfSun < -90) {
+				adjustedAzimuthOfSun = azimuthOfSun + 90;
+			} else {
+				adjustedAzimuthOfSun = azimuthOfSun;
+			}
+		} else if (azimuthOfSun > 0 && azimuthOfSun < 90) {
+			adjustedAzimuthOfSun = 180 - azimuthOfSun;
+		} else if (azimuthOfSun > -90 && azimuthOfSun < 0) {
+			adjustedAzimuthOfSun = -180 - azimuthOfSun;
+		}
+
+		// Calculate solar incident angle on panel
+		double slope = 40; // Put panel slope at 40 degrees
+		double solarIncidentAngle = Math.cos((Math.cos(solarAltitudeAngle
+				* Math.PI / 180)
+				* Math.cos(adjustedAzimuthOfSun * Math.PI / 180 - azimuth
+						* Math.PI / 180) * Math.sin(slope * Math.PI / 180))
+				+ (Math.sin(solarAltitudeAngle * Math.PI / 180) * Math
+						.cos(slope * Math.PI / 180)));
+		// Get clearsky beam radiation at surface (plane tracking the sun)
+		if (Math.abs(solarIncidentAngle) > 90) {
+			return 0;
+		} else {
+			return insolation * Math.cos(solarIncidentAngle * Math.PI / 180);
+		}
+
+		// return insolation; //Old basic version - just return insolation
+	}
+
+	/**
+	 * Method to return predicted generation in one day's time.  Return -1
+	 * if this is not implemented.
+	 * 
+	 * @return double - predicted generation this time tomorrow
+	 */
+	public double predictedGeneration() {
+		return -1;
+		
 	}
 
 }

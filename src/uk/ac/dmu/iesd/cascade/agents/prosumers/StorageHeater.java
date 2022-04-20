@@ -20,7 +20,7 @@ public class StorageHeater
 	double chargePower; // Maximum power drawn when charging
 	double heatStored;
 	double[] releaseProfile;
-	int[] chargeProfile;
+	int[] chargeProfile; // Int rather than a boolean to make multiplication easier.  Should only take values of 0 or 1
 	private HouseholdProsumer owner;
 	double[] stateOfCharge;
 	

@@ -212,7 +212,7 @@ public class NonDomesticProsumer extends ProsumerAgent
 	/**
 	 * @return
 	 */
-	private double currentGeneration()
+	public double currentGeneration()
 	{
 		double returnAmount = 0;
 
@@ -233,7 +233,7 @@ public class NonDomesticProsumer extends ProsumerAgent
 	/**
 	 * @return
 	 */
-	private double PVGeneration()
+	protected double PVGeneration()
 	{
 		// TODO Auto-generated method stub
 		return 0;

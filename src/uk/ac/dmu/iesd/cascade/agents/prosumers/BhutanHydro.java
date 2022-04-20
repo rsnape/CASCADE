@@ -3,6 +3,7 @@
  */
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
@@ -53,7 +54,7 @@ public class BhutanHydro extends ProsumerAgent
 	@Override
 	public void step()
 	{
-		this.setNetDemand(this.capacity);
+		this.setNetDemand(-this.capacity);
 
 	}
 
@@ -62,6 +63,16 @@ public class BhutanHydro extends ProsumerAgent
 		this.mainContext = context;
 		this.apparentLoadResistanceAtCapacity = (this.nominalVoltage * this.nominalVoltage) / (this.capacity * 1000);
 		context.add(this);
+	}
+
+	/* (non-Javadoc)
+	 * 
+	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#currentGeneration()
+	 */
+	@Override
+	public double currentGeneration() {
+		// TODO Auto-generated method stub
+		return this.capacity * Consts.HOURS_PER_DAY/this.mainContext.ticksPerDay;
 	}
 
 }
