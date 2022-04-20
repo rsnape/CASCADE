@@ -1,9 +1,9 @@
-<repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Total Generation</name>
-  <dataSet>suppAdv</dataSet>
+<repast.simphony.chart2.engine.TimeSeriesChartDescriptor simphonyVersion="2.8.0">
+  <name>Gen vs Dem</name>
+  <dataSet>Households</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>kWh per half hour</yAxisLabel>
-  <chartTitle>Total Generation</chartTitle>
+  <yAxisLabel>kWh per timestep</yAxisLabel>
+  <chartTitle>Generation against demand</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,14 +21,42 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>AgentName</string>
+      <string>Net_demand</string>
       <SeriesData>
-        <label></label>
+        <label>Net_demand</label>
+        <color>
+          <red>255</red>
+          <green>0</green>
+          <blue>0</blue>
+          <alpha>255</alpha>
+        </color>
+      </SeriesData>
+    </entry>
+    <entry>
+      <string>Total_demand</string>
+      <SeriesData>
+        <label>Total_demand</label>
+        <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>204</blue>
+          <alpha>255</alpha>
+        </color>
+      </SeriesData>
+    </entry>
+    <entry>
+      <string>Total_generation</string>
+      <SeriesData>
+        <label>Total_generation</label>
+        <color>
+          <red>0</red>
+          <green>255</green>
+          <blue>0</blue>
+          <alpha>255</alpha>
+        </color>
       </SeriesData>
     </entry>
   </seriesIds>
-  <dataValueIds>
-    <string>Generation</string>
-  </dataValueIds>
+  <dataValueIds/>
   <plotRangeLength>336</plotRangeLength>
 </repast.simphony.chart2.engine.TimeSeriesChartDescriptor>

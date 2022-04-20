@@ -6,7 +6,7 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 											/>
 				<parameter name="outputDir" displayName="outputDir (note relative to RootDir)" type="java.lang.String" 
-						defaultValue="output/SPEN-new-gap-algo" 
+						defaultValue="output/SPEN-changing-setpoint" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 											/>
@@ -72,7 +72,7 @@
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 											/>
 				<parameter name="signalMode" displayName="signal mode" type="int" 
-						defaultValue="0" 
+						defaultValue="6" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 												values="0 1 2 3 4 5 6 "

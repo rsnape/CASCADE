@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor simphonyVersion="2.8.0">
-  <name>Total Generation</name>
+  <name>Signals</name>
   <dataSet>suppAdv</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>kWh per half hour</yAxisLabel>
-  <chartTitle>Total Generation</chartTitle>
+  <yAxisLabel>signal value</yAxisLabel>
+  <chartTitle>Aggregators&apos; smart signals</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -28,7 +28,7 @@
     </entry>
   </seriesIds>
   <dataValueIds>
-    <string>Generation</string>
+    <string>CurrentPriceSignal</string>
   </dataValueIds>
   <plotRangeLength>336</plotRangeLength>
 </repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
