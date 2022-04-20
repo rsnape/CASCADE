@@ -37,7 +37,9 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 	double[] importPerDay;
 	double[] exportPerDay;
 	CSVWriter res;
+	CSVWriter hh_net;
 	double[] tariff;
+	double[] dsp;
 	private double localGenPrice;
 	private double originalPrice;
 	double[] dayCost;
@@ -220,8 +222,11 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 			{
 				this.importPerDay[j] += totDem;
 			}
+			//hh_net.appendText(Double.toString(totDem));
 		}
-	
+
+
+
 	}
 	
 	private String writeCosts()
@@ -297,13 +302,13 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		
 		this.calculateDailyCosts();
 		this.writeNetDemand();
-		
+
 	}
-	
-	
+
+
 
 	/**
-	 * 
+	 *
 	 */
 	private void writeNetDemand() {
 		int t = this.mainContext.getTickCount();
@@ -311,9 +316,9 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		int ts = this.mainContext.getTimeslotOfDay();
 		if (ts == 0)
 		{
-			
+
 			IndexedIterable<HouseholdProsumer> list_hhProsumers = this.mainContext.getObjects(HouseholdProsumer.class);
-			
+
 			double[] sum_spaceHeat = new double [this.mainContext.ticksPerDay];
 			double[] sum_hotWater = new double [this.mainContext.ticksPerDay];
 			double[] sum_other = new double [this.mainContext.ticksPerDay];
@@ -329,7 +334,7 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 				sum_wet = ArrayUtils.add(sum_wet,hhAgent.getHistoricalWetDemand());
 				sum_EV = ArrayUtils.add(sum_EV,hhAgent.getHistoricalEVDemand());
 			}
-			
+
 			double[] data = new double [8];
 			for (int j=0; j<this.mainContext.ticksPerDay; j++)
 			{
@@ -341,8 +346,8 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 				data[5]= sum_EV[j];
 				data[6]= sum_other[j];
 				data[7]= this.arr_day_D[j];
-	
-				this.demandOutput.appendRow(data);	
+
+				this.demandOutput.appendRow(data);
 			}
 		}
 	}
@@ -389,12 +394,25 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
         		 12,12,12,12,12,12,12,12,12,12,
         		 10,10,10,10,10,10,10,10,10,10,
         		 14,14,14,14,14,14,14,14,
-        		 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25};		
+        		 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25};
+
+        //DSP is used if signal set non-adaptive
+        this.dsp = new double[]{
+        		-0.251,	-0.251,	-0.251,	-0.251,	-0.251,	-0.251,	-0.275, -0.275,	-0.275,	-0.275,	-0.275,	-0.275,
+        		-0.137,-0.137,	-0.137,	-0.137,	-0.137,	-0.137,	-0.137,	-0.137,
+        		-0.157,	-0.157,	-0.157,
+        		-0.167,	-0.167,	-0.167,	-0.167,
+        		-0.157,	-0.157,	-0.157,	-0.157,-0.157,	-0.157,	-0.157,
+        		1,1,1,1,1,1,1,1,
+        		-0.24,-0.24,-0.24,-0.24,
+        		-0.275,	-0.275};
+        this.defaultSignal = this.dsp;
+
         this.localGenPrice = 7.0;
         
         //Make the default signal for Energy Local the price signal
         this.defaultSignal = ArrayUtils.normalizeValues(this.tariff);
-        
+
         if (this.mainContext.logger.isDebugEnabled())
 		{
 			this.mainContext.logger.debug("Initialising club prices");
@@ -408,7 +426,7 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		String outputDir = (String) RepastEssentials.GetParameter("outputDir");
 
         // Get a configuration file for the aggregator if it exists.
-        // If not - default to using values from the parameter window of the 
+        // If not - default to using values from the parameter window of the
         // simulation
         try
 		{
@@ -422,13 +440,13 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 				.concat("Seed")
 						.concat(Integer.toString(this.mainContext
 								.getRandomSeedValue())).concat(this.configString).concat("_").concat(parsedDate);
-        
+
 		String sigMode = RepastEssentials.GetParameter("signalMode").toString();
         this.res = new CSVWriter(outputDir +"/EnergyLocalOutput_Mode"+sigMode+"_"+configString+"_"+parsedDate+".csv" , true);
 		this.demandOutput = new CSVWriter(outputDir+"/ELAggNetDemand_Mode"+sigMode+"_"+configString+"_"+parsedDate+".csv" , true);
 		ScheduleParameters stop = ScheduleParameters.createAtEnd(ScheduleParameters.LAST_PRIORITY);
 		RunEnvironment.getInstance().getCurrentSchedule().schedule(stop,this,"closeFiles");
-		
+
 	}
 
 	public void closeFiles()
@@ -471,5 +489,5 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		String[] headers = {"Tick","Space","Water", "Cold", "Wet", "EV", "Other", "Net"};
 		this.demandOutput.writeColHeaders(headers);
 	}
-	
+
 }

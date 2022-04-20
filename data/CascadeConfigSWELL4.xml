@@ -21,24 +21,15 @@
 	<!--  First aggregator with households - no Gas and a range of thermal properties -->
 	<aggregator
 		class="uk.ac.dmu.iesd.cascade.agents.aggregators.EnergyLocalClub"
-		number="1">
+		number="50">
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
-			number="29">
-			<lossRateMean>275</lossRateMean>
-			<lossRateSD>75</lossRateSD>
-			<thermalMassMean>12.5</thermalMassMean>
-			<thermalMassSD>2.5</thermalMassSD>
-			<percentageGas>100</percentageGas>
-		</prosumer>
-        <!--  Add some electrically heated flats - particularly good candidates in terms of Heat loss and thermal mass... -->
-       	<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
-			number="6">
-			<percentageGas>0</percentageGas>
+			number="35">
 			<lossRateMean>0</lossRateMean>
 			<lossRateSD>0</lossRateSD>
-			<thermalMassMean>17.5</thermalMassMean>
+			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>0</thermalMassSD>
-		</prosumer> 
+			<percentageGas>80</percentageGas>
+		</prosumer>
         
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="1">

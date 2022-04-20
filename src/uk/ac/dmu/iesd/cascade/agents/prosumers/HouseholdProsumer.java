@@ -540,7 +540,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 		return returnAmount;
 	}
 
-	
+
 
 	/**
 	 * @return
@@ -605,7 +605,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 	 * @return
 	 */
 	private double getElectricalHeatingDemand(double potentialElecDemand) {
-		
+
 		//If we have a storage heater, return the electrical demand it has in
 		//the current timeslot.
 		if (this.storageHeater != null) {
@@ -1440,7 +1440,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 		this.mySmartController = new ProportionalWattboxController(this,
 				this.mainContext);
 	}
-	
+
 	public void removeWattboxController() {
 		this.hasSmartControl = false;
 		this.mySmartController = null;
@@ -1850,7 +1850,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 
 	/**
 	 * setEVProfile
-	 * 
+	 *
 	 * @param EVProfile - array containing default EV demand per timeslot for a day (length same as ticksPerDay parameter)
 	 */
 	public void setEVProfile(double[] EVProfile) {
@@ -1860,7 +1860,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 
 	/**
 	 * setOptimisedEVProfile
-	 * 
+	 *
 	 * @param EVProfile - array containing  EV demand per timeslot for a day following optimisation (length same as ticksPerDay parameter)
 	 */
 	public void setOptimisedEVProfile(double[] EVProfile) {
@@ -1869,7 +1869,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 
 	/**
 	 * getEVProfile
-	 * 
+	 *
 	 * @return copy of EV profile (note, not the original array to avoid concurrency issues
 	 */
 	public double[] getEVProfile() {

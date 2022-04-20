@@ -27,7 +27,7 @@
 			<lossRateSD>75</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
 			<thermalMassSD>2.5</thermalMassSD>
-			<percentageGas>84</percentageGas>
+			<percentageGas>100</percentageGas>
 		</prosumer>
 	</aggregator>
 

@@ -26,6 +26,9 @@ public class StorageHeater
 	
 	double getDemand(int timestep)
 	{
+		if (this.owner.mainContext.logger.isTraceEnabled()) {
+			this.owner.mainContext.logger.trace("Calculating storage heater demand. Current charge " + this.heatStored);
+		}
 		double chargePerTimestep = (this.chargePower * Consts.HOURS_PER_DAY)/this.owner.mainContext.ticksPerDay;
 		if (chargeProfile[timestep] < 0)
 		{
@@ -37,8 +40,11 @@ public class StorageHeater
 		// If the thing is already full, we won't be charging, so remove that...
 		if (heatStored > capacity)
 		{
-			demand = (capacity - heatStored) / 0.87;
+			demand += (capacity - heatStored) / 0.87;
 			heatStored = capacity;
+		}
+		if (this.owner.mainContext.logger.isTraceEnabled()) {
+			this.owner.mainContext.logger.trace("Returning demand "+demand+". Current charge " + this.heatStored);
 		}
 		
 		return demand;

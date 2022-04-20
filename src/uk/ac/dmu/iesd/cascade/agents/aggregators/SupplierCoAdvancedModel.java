@@ -514,7 +514,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		// MinimisationFunctionObjectiveOvernightWind minFunct = new
 		// MinimisationFunctionObjectiveOvernightWind();
 		MinimisationFunctionObjectiveArbitraryArray minFunct = new MinimisationFunctionObjectiveArbitraryArray(
-				this.getPredictedGeneration());
+				ArrayUtils.add(this.getPredictedGeneration(),ArrayUtils.negate(this.getDayNetDemands())));
 
 		minFunct.set_pointer_to_B(arr_B);
 		minFunct.set_pointer_to_Kneg(this.Kneg);
@@ -644,7 +644,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 * the returned string should include the states (variables/parameters)
 	 * which are important for debugging purpose. The returned string may be
 	 * empty but may not be <code>null</code>.
-	 * 
+	 *
 	 */
 	@Override
 	protected String paramStringReport() {
@@ -941,10 +941,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 					tempWriter.close();
 				}
 			} // training period completed
-			else { 
+			else {
 				if (this.mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE
 						+ Consts.AGGREGATOR_TRAINING_PERIODE) {
-					
+
 					// This is very beginning of the normal operation- both baseline
 					// establishing &
 					// training periods are completed
@@ -1087,7 +1087,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 						break;
 					case 6:
 						//If there is predicted generation, incentivise in that slot
-						//Proportionally if there is less generation than demand or 
+						//Proportionally if there is less generation than demand or
 						//Fully incentivised if gen exceeds demand.
 						double[] gen = this.getPredictedGeneration();
 						double[] exceedances = ArrayUtils.add(gen, ArrayUtils.negate(this.arr_day_D));
@@ -1191,6 +1191,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		}
 
 		this.calculateAndSetNetDemand(this.customers);
+		this.updatePredictedGeneration();
+
 		if (this.isTrainingPeriodCompleted()) {
 			this.updateTotalCO2Avoided();
 		}
@@ -1203,13 +1205,13 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 
 	/**
 	 * This function updates the predicted generation for the next day for the aggregator
-	 * 
+	 *
 	 * If any connected prosumers predict generation, this will be used.  Otherwise,
 	 * defaults to the predicted generation tomorrow will be
 	 * the same as today at each timestep.
 	 */
 	private void updatePredictedGeneration() {
-		
+
 		//Most basic version - tomorrow will be same as today
 		double  tot = 0;
 		boolean real_predictions = false;
@@ -1220,7 +1222,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 //				HouseholdProsumer hh = (HouseholdProsumer) p;
 //				tot += hh.currentGeneration();
 //			}
-			
+
 			double pred = p.predictedGeneration();
 			if (pred >= 0)
 			{
@@ -1228,15 +1230,15 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 				real_predictions = true;
 				tot += pred;
 			}
-			
+
 		}
-		
+
 		if (!real_predictions)
 		{
 			//Default to tomorrow same as today
 			tot = this.getGeneration();
 		}
-		
+
 		this.predictedGeneration[this.mainContext.getTimeslotOfDay()] = tot;
 	}
 
@@ -1387,7 +1389,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		this.arr_day_D = new double[this.ticksPerDay];
 
 		this.trainingSigFactory = new TrainingSignalFactory(this.ticksPerDay);
-		
+
 		this.aggOutputSubDir = "output".concat(File.separator)
 				.concat("Seed"
 						.concat(Integer.toString(this.mainContext
