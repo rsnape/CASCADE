@@ -6,14 +6,12 @@ package uk.ac.dmu.iesd.cascade.util;
 import java.util.Arrays;
 
 import org.apache.commons.mathforsimplex.analysis.MultivariateRealFunction;
-import org.jgap.Chromosome;
-import org.jgap.FitnessFunction;
 
 import flanagan.math.Fmath;
 import flanagan.math.MinimisationFunction;
 
 /**
- * @author J. Richard Snape 
+ * @author J. Richard Snape
  * 
  * 
  *         New class member to test out Peter B's demand flattening approach
@@ -29,8 +27,7 @@ import flanagan.math.MinimisationFunction;
  *         For full history see git logs.
  * 
  */
-public class MinimisationFunctionObjectiveArbitraryArray extends FitnessFunction implements MinimisationFunction, MultivariateRealFunction
-{
+public class MinimisationFunctionObjectiveArbitraryArray /*extends FitnessFunction */ implements MinimisationFunction, MultivariateRealFunction {
 	double[] targetArray;
 
 	/**
@@ -61,8 +58,7 @@ public class MinimisationFunctionObjectiveArbitraryArray extends FitnessFunction
 	boolean printD = false;
 
 	@Override
-	public double function(double[] arr_S)
-	{
+	public double function(double[] arr_S) {
 		double m = 0d;
 		double[] d = new double[this.arr_B.length];
 		// mean_B = ArrayUtils.avg(arr_B);
@@ -70,14 +66,10 @@ public class MinimisationFunctionObjectiveArbitraryArray extends FitnessFunction
 		// Note - interestingly - this will predict Baseline + Cavge for a zero
 		// signal. This works. But if you make it predict Baseline for a zero
 		// signal, it blows up!! Rather sensitive...
-		for (int i = 0; i < arr_S.length; i++)
-		{
-			if (arr_S[i] < 0)
-			{
+		for (int i = 0; i < arr_S.length; i++) {
+			if (arr_S[i] < 0) {
 				d[i] = this.arr_B[i] + (arr_S[i] * this.Kneg[i] * this.arr_B[i]) + this.Cavge[i];
-			}
-			else
-			{
+			} else {
 				d[i] = this.arr_B[i] + (arr_S[i] * this.Kpos[i] * this.arr_B[i]) + this.Cavge[i];
 			}
 			// m += Math.abs(di - mean_B);
@@ -87,10 +79,14 @@ public class MinimisationFunctionObjectiveArbitraryArray extends FitnessFunction
 
 		// For overnight wind - use this
 		double[] desired = ArrayUtils.normalizeValues(this.targetArray, 1, false);
+		
+		if (ArrayUtils.min(desired) == ArrayUtils.max(desired))
+		{
+			Arrays.fill(desired, 1.0);
+		}
 
-		m = ArrayUtils
-				.sum(ArrayUtils.add(d, ArrayUtils.negate(ArrayUtils.offset(ArrayUtils.multiply(desired, ArrayUtils.avg(d)), ArrayUtils
-						.avg(d)))));
+		m = ArrayUtils.sum(ArrayUtils.add(d, ArrayUtils
+				.negate(ArrayUtils.offset(ArrayUtils.multiply(desired, ArrayUtils.avg(d)), ArrayUtils.avg(d)))));
 
 		// m=(ArrayUtils.max(d)/ArrayUtils.avg(d))*1000;
 		this.numEvaluations++;
@@ -100,30 +96,23 @@ public class MinimisationFunctionObjectiveArbitraryArray extends FitnessFunction
 		return m;
 	}
 
-	private double checkPlusMin1Constraint(double[] arr_S)
-	{
+	private double checkPlusMin1Constraint(double[] arr_S) {
 		double penalty = 0;
 		double posValueSum = 0;
 		double negValueSum = 0;
-		for (double element : arr_S)
-		{
-			if (element > 1 && element > posValueSum)
-			{
+		for (double element : arr_S) {
+			if (element > 1 && element > posValueSum) {
 				posValueSum = element;
-			}
-			else if (element < -1 && element < negValueSum)
-			{
+			} else if (element < -1 && element < negValueSum) {
 				negValueSum = element;
 			}
 		}
 
-		if (posValueSum > 1)
-		{
+		if (posValueSum > 1) {
 			penalty += this.penaltyWeight * Math.pow((posValueSum - 1), 2);
 		}
 
-		if (negValueSum < -1)
-		{
+		if (negValueSum < -1) {
 			penalty += this.penaltyWeight * Math.pow((-1 - negValueSum), 2);
 		}
 
@@ -131,35 +120,30 @@ public class MinimisationFunctionObjectiveArbitraryArray extends FitnessFunction
 	}
 
 	/**
-	 * Enforce the constraint that all positive values of S must sum to
-	 * (maximum) of 1 and -ve values to (minimum) of -1
+	 * Enforce the constraint that all positive values of S must sum to (maximum) of
+	 * 1 and -ve values to (minimum) of -1
 	 * 
 	 * @param arr_S
 	 * @return
 	 */
-	private double checkPosNegConstraint(double[] arr_S)
-	{
+	private double checkPosNegConstraint(double[] arr_S) {
 		double penalty = 0;
 		double posValueSum = 0;
 		double negValueSum = 0;
-		for (double element : arr_S)
-		{
-			if (element > 0)
-			{
+		for (double element : arr_S) {
+			if (element > 0) {
 				posValueSum += element;
-			}
-			else
-			{
+			} else {
 				negValueSum += element;
 			}
 		}
 
 		/*
-		 * if (posValueSum > 1) { penalty += this.penaltyWeight *
-		 * Math.pow((posValueSum - 1), 2); }
+		 * if (posValueSum > 1) { penalty += this.penaltyWeight * Math.pow((posValueSum
+		 * - 1), 2); }
 		 * 
-		 * if (negValueSum < -1) { penalty += this.penaltyWeight * Math.pow((-1
-		 * - negValueSum), 2); }
+		 * if (negValueSum < -1) { penalty += this.penaltyWeight * Math.pow((-1 -
+		 * negValueSum), 2); }
 		 */
 
 		penalty += this.penaltyWeight * Math.pow((posValueSum + negValueSum), 2);
@@ -168,65 +152,56 @@ public class MinimisationFunctionObjectiveArbitraryArray extends FitnessFunction
 	}
 
 	@Override
-	public double value(double[] arr_S)
-	{
+	public double value(double[] arr_S) {
 		double penalties = 0;
 		// Add on constraint penalties here (as the Apache NelderMead doesn't do
 		// constraints itself)
 		double sumOfArray = ArrayUtils.sum(arr_S);
 
-		if (this.hasEqualsConstraint && (Math.sqrt(Math.pow(sumOfArray - this.sumConstraintValue, 2)) > this.sumConstraintTolerance))
-		{
-			penalties = this.penaltyWeight * Fmath.square(this.sumConstraintValue * (1.0 - this.sumConstraintTolerance) - sumOfArray);
+		if (this.hasEqualsConstraint
+				&& (Math.sqrt(Math.pow(sumOfArray - this.sumConstraintValue, 2)) > this.sumConstraintTolerance)) {
+			penalties = this.penaltyWeight
+					* Fmath.square(this.sumConstraintValue * (1.0 - this.sumConstraintTolerance) - sumOfArray);
 		}
 		return this.function(arr_S) + penalties;
 	}
 
-	public void addSimpleSumEqualsConstraintForApache(double limit, double tolerance)
-	{
+	public void addSimpleSumEqualsConstraintForApache(double limit, double tolerance) {
 		this.hasEqualsConstraint = true;
 		this.sumConstraintTolerance = tolerance;
 		this.sumConstraintValue = limit;
 
 	}
 
-	public void set_B(double[] b)
-	{
+	public void set_B(double[] b) {
 		this.arr_B = b;
 	}
 
-	public void set_e(double[] e)
-	{
+	public void set_e(double[] e) {
 		this.arr_e = e;
 	}
 
-	public void set_k(double[][] k)
-	{
+	public void set_k(double[][] k) {
 		this.arr_k = k;
 	}
 
-	public int getNumEvals()
-	{
+	public int getNumEvals() {
 		return this.numEvaluations;
 	}
-	
-	public void set_pointer_to_B(double[] b)
-	{
+
+	public void set_pointer_to_B(double[] b) {
 		this.arr_B = b;
 	}
 
-	public void set_pointer_to_Kneg(double[] e)
-	{
+	public void set_pointer_to_Kneg(double[] e) {
 		this.Kneg = e;
 	}
 
-	public void set_pointer_to_Kpos(double[] k)
-	{
+	public void set_pointer_to_Kpos(double[] k) {
 		this.Kpos = k;
 	}
 
-	public void set_pointer_to_Cavge(double[] c)
-	{
+	public void set_pointer_to_Cavge(double[] c) {
 		this.Cavge = c;
 	}
 
@@ -234,19 +209,13 @@ public class MinimisationFunctionObjectiveArbitraryArray extends FitnessFunction
 	 * (non-Javadoc)
 	 * 
 	 * @see org.jgap.FitnessFunction#evaluate(org.jgap.Chromosome)
+	 * 
+	 * @Override protected double evaluate(IChromosome arg0) {
+	 * 
+	 * double[] testArray = ArrayUtils.genesToDouble(arg0.getGenes()); for (int i =
+	 * 0; i < testArray.length; i++) { testArray[i] -= 0.5; testArray[i] *= 2; }
+	 * 
+	 * return Math.max(1, (100000 - this.value(testArray))); }
 	 */
-	@Override
-	protected int evaluate(Chromosome arg0)
-	{
-
-		double[] testArray = ArrayUtils.genesToDouble(arg0.getGenes());
-		for (int i = 0; i < testArray.length; i++)
-		{
-			testArray[i] -= 0.5;
-			testArray[i] *= 2;
-		}
-
-		return (int) Math.max(1, (100000 - this.value(testArray)));
-	}
 
 }

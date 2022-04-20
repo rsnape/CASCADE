@@ -4,8 +4,6 @@
 package uk.ac.dmu.iesd.cascade.util;
 
 import org.apache.commons.mathforsimplex.analysis.MultivariateRealFunction;
-import org.jgap.Chromosome;
-import org.jgap.FitnessFunction;
 
 import flanagan.math.Fmath;
 import flanagan.math.MinimisationFunction;
@@ -29,7 +27,7 @@ import flanagan.math.MinimisationFunction;
  *         For full history see git logs.
  * 
  */
-public class MinimisationFunctionObjectiveFlatDemand extends FitnessFunction implements MinimisationFunction, MultivariateRealFunction
+public class MinimisationFunctionObjectiveFlatDemand implements MinimisationFunction, MultivariateRealFunction
 {
 
 	private static final long serialVersionUID = 1L;
@@ -195,24 +193,6 @@ public class MinimisationFunctionObjectiveFlatDemand extends FitnessFunction imp
 		return this.numEvaluations;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.jgap.FitnessFunction#evaluate(org.jgap.Chromosome)
-	 */
-	@Override
-	protected int evaluate(Chromosome arg0)
-	{
-
-		double[] testArray = ArrayUtils.genesToDouble(arg0.getGenes());
-		for (int i = 0; i < testArray.length; i++)
-		{
-			testArray[i] -= 0.5;
-			testArray[i] *= 2;
-		}
-
-		return (int) Math.max(1, (100000 - this.value(testArray)));
-	}
 
 	/**
 	 * @param b

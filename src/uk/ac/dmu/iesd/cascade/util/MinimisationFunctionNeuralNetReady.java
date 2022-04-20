@@ -6,6 +6,7 @@ package uk.ac.dmu.iesd.cascade.util;
 import org.apache.commons.mathforsimplex.analysis.MultivariateRealFunction;
 import org.jgap.Chromosome;
 import org.jgap.FitnessFunction;
+import org.jgap.IChromosome;
 
 import flanagan.math.Fmath;
 import flanagan.math.MinimisationFunction;
@@ -141,14 +142,13 @@ public class MinimisationFunctionNeuralNetReady extends FitnessFunction implemen
 		return this.numEvaluations;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.jgap.FitnessFunction#evaluate(org.jgap.Chromosome)
+
+	/* (non-Javadoc)
+	 * @see org.jgap.FitnessFunction#evaluate(org.jgap.IChromosome)
 	 */
 	@Override
-	protected int evaluate(Chromosome arg0)
-	{
+	protected double evaluate(IChromosome arg0) {
+		// TODO Auto-generated method stub
 
 		double[] testArray = ArrayUtils.genesToDouble(arg0.getGenes());
 		for (int i = 0; i < testArray.length; i++)
@@ -157,7 +157,7 @@ public class MinimisationFunctionNeuralNetReady extends FitnessFunction implemen
 			testArray[i] *= 2;
 		}
 
-		return (int) Math.max(1, (100000 - this.value(testArray)));
+		return Math.max(1, (100000 - this.value(testArray)));
 	}
 
 }
