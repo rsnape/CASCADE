@@ -28,7 +28,7 @@ import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
 import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveArbitraryArray;
 import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveFlatDemand;
-import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveOvernightWind;
+//import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveOvernightWind;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory.TRAINING_S_SHAPE;
@@ -514,7 +514,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		// MinimisationFunctionObjectiveOvernightWind minFunct = new
 		// MinimisationFunctionObjectiveOvernightWind();
 		MinimisationFunctionObjectiveArbitraryArray minFunct = new MinimisationFunctionObjectiveArbitraryArray(
-				this.getPredictedGeneration());
+				ArrayUtils.add(this.getPredictedGeneration(),ArrayUtils.negate(this.getDayNetDemands())));
 
 		minFunct.set_pointer_to_B(arr_B);
 		minFunct.set_pointer_to_Kneg(this.Kneg);
@@ -633,8 +633,10 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 
 	private double[] predictedGeneration;
 
-	// This is the SWELL CEGADS default signal, the 1 should prohibit demand being moved to those slots
-	private double[] defaultSignal = new double[]{-0.251, -0.251, -0.251, -0.251, -0.251, -0.251, -0.275, -0.275, -0.275, -0.275, -0.275, -0.275, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.157, -0.157, -0.157, -0.167, -0.167, -0.167, -0.167, -0.157, -0.157, -0.157, -0.157, -0.157, -0.157, -0.157, 1, 1, 1, 1, 1, 1, 1, 1, -0.24, -0.24, -0.24, -0.24, -0.275, -0.275};
+	// This is the Energy Local default signal, the 1 should prohibit demand being moved to those slots
+	protected double[] defaultSignal = new double[]{-0.251, -0.251, -0.251, -0.251, -0.251, -0.251, -0.275, -0.275, -0.275, -0.275, -0.275, -0.275, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.137, -0.157, -0.157, -0.157, -0.167, -0.167, -0.167, -0.167, -0.157, -0.157, -0.157, -0.157, -0.157, -0.157, -0.157, 1, 1, 1, 1, 1, 1, 1, 1, -0.24, -0.24, -0.24, -0.24, -0.275, -0.275};
+
+	protected String aggOutputSubDir;
 
 	/**
 	 * Returns a string representing the state of this agent. This method is
@@ -642,8 +644,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	 * the returned string should include the states (variables/parameters)
 	 * which are important for debugging purpose. The returned string may be
 	 * empty but may not be <code>null</code>.
-	 * 
-	 * @return a string representation of this agent's state parameters
+	 *
 	 */
 	@Override
 	protected String paramStringReport() {
@@ -696,7 +697,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		for (int i = 0; i < ts_arr.length; i++) {
 			ts_arr[i] = i;
 		}
-		String resFileName = fileName + this.mainContext.getDayCount() + ".csv";
+		String resFileName = fileName + String.format("%04d", this.mainContext.getDayCount()) + ".csv";
 
 		CSVWriter res = new CSVWriter(resFileName, false);
 
@@ -940,11 +941,13 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 					tempWriter.close();
 				}
 			} // training period completed
-			else { // Begining of the normal operation- both baseline
-					// establishing &
-					// training periods are completed
+			else {
 				if (this.mainContext.getDayCount() == Consts.AGGREGATOR_PROFILE_BUILDING_PERIODE
 						+ Consts.AGGREGATOR_TRAINING_PERIODE) {
+
+					// This is very beginning of the normal operation- both baseline
+					// establishing &
+					// training periods are completed
 					CSVWriter tempWriter = new CSVWriter("KandSBmatOut.csv",
 							false);
 					tempWriter.appendText("Delta B matrix");
@@ -1080,7 +1083,31 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 								.offset(sysDem, -ArrayUtils.avg(sysDem)));
 						break;
 					case 5:
-						this.arr_i_S = defaultSignal ;
+						this.arr_i_S = Arrays.copyOf(this.defaultSignal,this.defaultSignal.length) ;
+						break;
+					case 6:
+						//If there is predicted generation, incentivise in that slot
+						//Proportionally if there is less generation than demand or
+						//Fully incentivised if gen exceeds demand.
+						double[] gen = this.getPredictedGeneration();
+						double[] exceedances = ArrayUtils.add(gen, ArrayUtils.negate(this.arr_day_D));
+						this.arr_i_S = Arrays.copyOf(this.defaultSignal,this.defaultSignal.length) ;
+						for (int j = 0; j < this.defaultSignal.length; j++)
+						{
+							double thisSlot = gen[j];
+							if (thisSlot > 0)
+							{
+								if (exceedances[j] > 0)
+								{
+									this.arr_i_S[j] = -1.0; // Heavily pull demand to periods of over generation.
+								}
+								else
+								{
+									this.arr_i_S[j] = -thisSlot/this.arr_day_D[j];
+								}
+							}
+						}
+						break;
 					}
 
 					// This is where the actual broadcast of the signal to all
@@ -1089,13 +1116,7 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 							this.customers);
 
 					this.writeOutput(
-							"output".concat(File.separator)
-									.concat("Seed"
-											.concat(Integer.toString(this.mainContext
-													.getRandomSeedValue()))
-											.concat("GasFrac")
-											.concat(Double.toString(this.mainContext
-													.getGasPercentage()))),
+							this.aggOutputSubDir,
 							"output2_NormalBiz_day_", false, this.arr_i_C,
 							this.arr_i_norm_C, this.arr_i_B, this
 									.getDayNetDemands(), this.arr_i_S,
@@ -1131,13 +1152,14 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 							+ this.mainContext.getTimeslotOfDay()
 							+ ",TickCount: " + this.mainContext.getTickCount());
 		}
+		this.updatePredictedGeneration();
+
 		if (!this.isAggregateDemandProfileBuildingPeriodCompleted()) {
 			this.updateAggregateDemandHistoryArray(this.customers,
 					this.timeslotOfDay, this.arr_hist_ij_D);
 		} else if (!this.isTrainingPeriodCompleted()) {
 			this.updateAggregateDemandHistoryArray(this.customers,
 					this.timeslotOfDay, this.arr_hist_ij_D);
-			this.updatePredictedGeneration();
 
 			if (this.mainContext.isEndOfDay(this.timeslotOfDay)) {
 				double[] DeltaB;
@@ -1169,6 +1191,8 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		}
 
 		this.calculateAndSetNetDemand(this.customers);
+		this.updatePredictedGeneration();
+
 		if (this.isTrainingPeriodCompleted()) {
 			this.updateTotalCO2Avoided();
 		}
@@ -1180,11 +1204,42 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 	}
 
 	/**
-	 * 
+	 * This function updates the predicted generation for the next day for the aggregator
+	 *
+	 * If any connected prosumers predict generation, this will be used.  Otherwise,
+	 * defaults to the predicted generation tomorrow will be
+	 * the same as today at each timestep.
 	 */
 	private void updatePredictedGeneration() {
-		this.predictedGeneration[this.mainContext.getTimeslotOfDay()] = this
-				.getGeneration();
+
+		//Most basic version - tomorrow will be same as today
+		double  tot = 0;
+		boolean real_predictions = false;
+		for (ProsumerAgent p : customers)
+		{
+//			if (p instanceof HouseholdProsumer)
+//			{
+//				HouseholdProsumer hh = (HouseholdProsumer) p;
+//				tot += hh.currentGeneration();
+//			}
+
+			double pred = p.predictedGeneration();
+			if (pred >= 0)
+			{
+				//If *any* prosumers give real predictions, use these in preference to guess
+				real_predictions = true;
+				tot += pred;
+			}
+
+		}
+
+		if (!real_predictions)
+		{
+			//Default to tomorrow same as today
+			tot = this.getGeneration();
+		}
+
+		this.predictedGeneration[this.mainContext.getTimeslotOfDay()] = tot;
 	}
 
 	/**
@@ -1334,6 +1389,14 @@ public class SupplierCoAdvancedModel extends AggregatorAgent/* BMPxTraderAggrega
 		this.arr_day_D = new double[this.ticksPerDay];
 
 		this.trainingSigFactory = new TrainingSignalFactory(this.ticksPerDay);
+
+		this.aggOutputSubDir = "output".concat(File.separator)
+				.concat("Seed"
+						.concat(Integer.toString(this.mainContext
+								.getRandomSeedValue()))
+						.concat("GasFrac")
+						.concat(Double.toString(this.mainContext
+								.getGasPercentage())));
 		// +++++++++++++++++++++++++++++++++++++++++++
 	}
 }

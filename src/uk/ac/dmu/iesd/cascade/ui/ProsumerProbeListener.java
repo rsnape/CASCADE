@@ -220,7 +220,7 @@ public class ProsumerProbeListener implements ProbeListener
 					@Override
 					public void mouseClicked(MouseEvent e)
 					{
-						if (aggregatePieFrame == null)
+						if (aggregatePieFrame == null || !aggregatePieFrame.isShowing())
 						{
 							IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = ProsumerProbeListener.this.mainContext
 									.getObjects(HouseholdProsumer.class);
@@ -232,6 +232,7 @@ public class ProsumerProbeListener implements ProbeListener
 											+ ProsumerProbeListener.this.mainContext.getTickCount() + ")");
 							aggregatePie = pieChart4AllHHProsConsumption;
 							aggregatePieFrame = ChartUtils.showChart(pieChart4AllHHProsConsumption);
+							aggregatePieFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
 						}
 						else
 						{
@@ -250,7 +251,7 @@ public class ProsumerProbeListener implements ProbeListener
 					@Override
 					public void mouseClicked(MouseEvent e)
 					{
-						if (aggregateBarFrame == null)
+						if (aggregateBarFrame == null || !aggregateBarFrame.isShowing())
 						{
 						IndexedIterable<HouseholdProsumer> iIterOfHouseholdProsumers = ProsumerProbeListener.this.mainContext
 								.getObjects(HouseholdProsumer.class);

@@ -18,13 +18,14 @@ import org.apache.commons.mathforsimplex.optimization.linear.LinearObjectiveFunc
 import org.apache.commons.mathforsimplex.optimization.linear.Relationship;
 import org.apache.commons.mathforsimplex.optimization.linear.SimplexSolver;
 import org.apache.log4j.Level;
-import org.jgap.Chromosome;
+/*import org.jgap.Chromosome;
 import org.jgap.Configuration;
 import org.jgap.Genotype;
+import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
-
+*/
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.space.graph.Network;
@@ -37,7 +38,7 @@ import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 import uk.ac.dmu.iesd.cascade.io.CSVWriter;
 import uk.ac.dmu.iesd.cascade.market.astem.operators.MarketMessageBoard;
 import uk.ac.dmu.iesd.cascade.util.ArrayUtils;
-import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionNeuralNetReady;
+//import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionNeuralNetReady;
 import uk.ac.dmu.iesd.cascade.util.MinimisationFunctionObjectiveFlatDemand;
 import uk.ac.dmu.iesd.cascade.util.WrongCustomerTypeException;
 import uk.ac.dmu.iesd.cascade.util.profilegenerators.TrainingSignalFactory;
@@ -1207,177 +1208,135 @@ if (				 * this.mainContext.logger.isDebugEnabled()) {
 		return newOpt_S;
 	}
 
-	private double[] minimise_CD(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S)
-	{
+	/*
+	 * private double[] minimise_CD(double[] arr_C, double[] arr_B, double[] arr_e,
+	 * double[][] arr_ij_k, double[] arr_S) {
+	 * 
+	 * Minimisation min = new Minimisation(); MinimisationFunctionNeuralNetReady
+	 * minFunct = new MinimisationFunctionNeuralNetReady();
+	 * 
+	 * minFunct.set_C(arr_C); minFunct.set_B(arr_B); minFunct.set_e(arr_e);
+	 * minFunct.set_k(arr_ij_k);
+	 * 
+	 * // initial estimates // double[] start = arr_i_S;
+	 * 
+	 * // If it's the first time through the optimisation - start from an //
+	 * arbitrary // point in search space. Otherwise, start from the last price
+	 * signal double[] start = new double[this.ticksPerDay]; //
+	 * if(firstTimeMinimisation ) // { for (int k = 0; k < start.length; k++) {
+	 * start[k] = -Math.cos(2 * Math.PI * k / start.length) / 16; }
+	 * this.firstTimeMinimisation = false; // } // else // { // start = arr_i_S; //
+	 * }
+	 * 
+	 * // initial step sizes // double[] step = new double[arr_S.length];
+	 * 
+	 * double ftol = 1e-1; // 1e-15; // convergence tolerance
+	 * 
+	 * int[] pIndices = new int[this.ticksPerDay]; int[] plusOrMinus = new
+	 * int[this.ticksPerDay]; for (int i = 0; i < this.ticksPerDay; i++) {
+	 * pIndices[i] = i; plusOrMinus[i] = 1; // step[i] = 0.05; }
+	 * 
+	 * int direction = 0; double boundary = 0d;
+	 * 
+	 * min.setNmax(100000); min.addConstraint(pIndices, plusOrMinus, direction,
+	 * boundary); min.setConstraintTolerance(1e-3);
+	 * 
+	 * min.nelderMead(minFunct, start, ftol);
+	 * 
+	 * // get the minimum value double minimum = min.getMinimum(); if
+	 * (this.mainContext.logger.isTraceEnabled()) {
+	 * this.mainContext.logger.trace("RECO: Minimum = " + minimum); }
+	 * 
+	 * // get values of y and z at minimum double[] param = min.getParamValues();
+	 * 
+	 * // min.print("MinimCD_output.txt");
+	 * 
+	 * if (this.mainContext.logger.getLevel().equals(Level.TRACE)) { // Print
+	 * results to a text file // min.print("MinimCD_output.txt");
+	 * 
+	 * // Output the results to screen if (this.mainContext.logger.isTraceEnabled())
+	 * { this.mainContext.logger.trace("RECO: Minimum = " + min.getMinimum()); } if
+	 * (this.mainContext.logger.isTraceEnabled()) {
+	 * this.mainContext.logger.trace("RECO: Min (S) sum = " +
+	 * ArrayUtils.sum(param)); }
+	 * 
+	 * for (int i = 0; i < param.length; i++) { if
+	 * (this.mainContext.logger.isTraceEnabled()) {
+	 * this.mainContext.logger.trace("RECO: Flanagan Value of s at the minimum for "
+	 * + i + " ticktime is: " + param[i]); } } if
+	 * (this.mainContext.logger.isTraceEnabled()) { this.mainContext.logger.
+	 * trace("RECO:: Flanagan optimisation evaluated function " +
+	 * minFunct.getNumEvals() + " times"); } }
+	 * 
+	 * double[] newOpt_S = param; if (this.mainContext.logger.isTraceEnabled()) {
+	 * this.mainContext.logger.trace("Minimum achieved is " + min.getMinimum()); }
+	 * return newOpt_S; }
+	 */
 
-		Minimisation min = new Minimisation();
-		MinimisationFunctionNeuralNetReady minFunct = new MinimisationFunctionNeuralNetReady();
-
-		minFunct.set_C(arr_C);
-		minFunct.set_B(arr_B);
-		minFunct.set_e(arr_e);
-		minFunct.set_k(arr_ij_k);
-
-		// initial estimates
-		// double[] start = arr_i_S;
-
-		// If it's the first time through the optimisation - start from an
-		// arbitrary
-		// point in search space. Otherwise, start from the last price signal
-		double[] start = new double[this.ticksPerDay];
-		// if(firstTimeMinimisation )
-		// {
-		for (int k = 0; k < start.length; k++)
-		{
-			start[k] = -Math.cos(2 * Math.PI * k / start.length) / 16;
-		}
-		this.firstTimeMinimisation = false;
-		// }
-		// else
-		// {
-		// start = arr_i_S;
-		// }
-
-		// initial step sizes
-		// double[] step = new double[arr_S.length];
-
-		double ftol = 1e-1; // 1e-15; // convergence tolerance
-
-		int[] pIndices = new int[this.ticksPerDay];
-		int[] plusOrMinus = new int[this.ticksPerDay];
-		for (int i = 0; i < this.ticksPerDay; i++)
-		{
-			pIndices[i] = i;
-			plusOrMinus[i] = 1;
-			// step[i] = 0.05;
-		}
-
-		int direction = 0;
-		double boundary = 0d;
-
-		min.setNmax(100000);
-		min.addConstraint(pIndices, plusOrMinus, direction, boundary);
-		min.setConstraintTolerance(1e-3);
-
-		min.nelderMead(minFunct, start, ftol);
-
-		// get the minimum value
-		double minimum = min.getMinimum();
-		if (this.mainContext.logger.isTraceEnabled())
-		{
-			this.mainContext.logger.trace("RECO: Minimum = " + minimum);
-		}
-
-		// get values of y and z at minimum
-		double[] param = min.getParamValues();
-
-		// min.print("MinimCD_output.txt");
-
-		if (this.mainContext.logger.getLevel().equals(Level.TRACE))
-		{
-			// Print results to a text file
-			// min.print("MinimCD_output.txt");
-
-			// Output the results to screen
-			if (this.mainContext.logger.isTraceEnabled())
-			{
-				this.mainContext.logger.trace("RECO: Minimum = " + min.getMinimum());
-			}
-			if (this.mainContext.logger.isTraceEnabled())
-			{
-				this.mainContext.logger.trace("RECO: Min (S) sum = " + ArrayUtils.sum(param));
-			}
-
-			for (int i = 0; i < param.length; i++)
-			{
-				if (this.mainContext.logger.isTraceEnabled())
-				{
-					this.mainContext.logger.trace("RECO: Flanagan Value of s at the minimum for " + i + " ticktime is: " + param[i]);
-				}
-			}
-			if (this.mainContext.logger.isTraceEnabled())
-			{
-				this.mainContext.logger.trace("RECO:: Flanagan optimisation evaluated function " + minFunct.getNumEvals() + " times");
-			}
-		}
-
-		double[] newOpt_S = param;
-		if (this.mainContext.logger.isTraceEnabled())
-		{
-			this.mainContext.logger.trace("Minimum achieved is " + min.getMinimum());
-		}
-		return newOpt_S;
-	}
-
-	private double[] minimise_CD_Genetic_Algorithm(double[] arr_C, double[] arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S)
-	{
-		double[] returnArray = new double[this.ticksPerDay];
-
-		/*** Richard's Genetic algorithm optimisation ***/
-		Configuration conf = new DefaultConfiguration();
-
-		// Set the fitness function we want to use, which is our
-		// MinimizingMakeChangeFitnessFunction that we created earlier.
-		// We construct it with the target amount of change provided
-		// by the user.
-		// ------------------------------------------------------------
-
-		MinimisationFunctionNeuralNetReady geneticMinFunc = new MinimisationFunctionNeuralNetReady();
-		geneticMinFunc.set_B(arr_B);
-		geneticMinFunc.set_C(arr_C);
-		geneticMinFunc.set_e(arr_e);
-		geneticMinFunc.set_k(arr_ij_k);
-		geneticMinFunc.addSimpleSumEqualsConstraintForApache(0, 0.01);
-
-		try
-		{
-			conf.setFitnessFunction(geneticMinFunc);
-
-			// Now we need to tell the Configuration object how we want our
-			// Chromosomes to be setup. We do that by actually creating a
-			// sample Chromosome and then setting it on the Configuration
-			// object. As mentioned earlier, we want our Chromosomes to
-			// each have four genes, one for each of the coin types. We
-			// want the values of those genes to be integers, which represent
-			// how many coins of that type we have. We therefore use the
-			// IntegerGene class to represent each of the genes. That class
-			// also lets us specify a lower and upper bound, which we set
-			// to sensible values for each coin type.
-			// --------------------------------------------------------------
-			DoubleGene[] sampleGenes = new DoubleGene[48];
-
-			for (int ii = 0; ii < sampleGenes.length; ii++)
-			{
-				sampleGenes[ii] = new DoubleGene(-1, 1);
-			}
-
-			Chromosome sampleChromosome = new Chromosome(sampleGenes);
-
-			conf.setSampleChromosome(sampleChromosome);
-
-			conf.setPopulationSize(1500);
-
-			Genotype population = Genotype.randomInitialGenotype(conf);
-			for (int evolutions = 0; evolutions < 100; evolutions++)
-			{
-				population.evolve();
-			}
-			Chromosome bestSolutionSoFar = population.getFittestChromosome();
-
-			for (int jj = 0; jj < returnArray.length; jj++)
-			{
-				returnArray[jj] = 2 * (((DoubleGene) bestSolutionSoFar.getGene(jj)).doubleValue() - 0.5d);
-			}
-		}
-		catch (InvalidConfigurationException e)
-		{
-			// TODO Auto-generated catch block
-			System.err.println("RECO:: Invalid configuration for genetic algorithm");
-			e.printStackTrace();
-		}
-		return returnArray;
-	}
-
+	/*
+	 * private double[] minimise_CD_Genetic_Algorithm(double[] arr_C, double[]
+	 * arr_B, double[] arr_e, double[][] arr_ij_k, double[] arr_S) { double[]
+	 * returnArray = new double[this.ticksPerDay];
+	 * 
+	 *//*** Richard's Genetic algorithm optimisation ***//*
+															 * Configuration conf = new DefaultConfiguration();
+															 * 
+															 * // Set the fitness function we want to use, which is our
+															 * // MinimizingMakeChangeFitnessFunction that we created
+															 * earlier. // We construct it with the target amount of
+															 * change provided // by the user. //
+															 * ---------------------------------------------------------
+															 * ---
+															 * 
+															 * MinimisationFunctionNeuralNetReady geneticMinFunc = new
+															 * MinimisationFunctionNeuralNetReady();
+															 * geneticMinFunc.set_B(arr_B); geneticMinFunc.set_C(arr_C);
+															 * geneticMinFunc.set_e(arr_e);
+															 * geneticMinFunc.set_k(arr_ij_k);
+															 * geneticMinFunc.addSimpleSumEqualsConstraintForApache(0,
+															 * 0.01);
+															 * 
+															 * try { conf.setFitnessFunction(geneticMinFunc);
+															 * 
+															 * // Now we need to tell the Configuration object how we
+															 * want our // Chromosomes to be setup. We do that by
+															 * actually creating a // sample Chromosome and then setting
+															 * it on the Configuration // object. As mentioned earlier,
+															 * we want our Chromosomes to // each have four genes, one
+															 * for each of the coin types. We // want the values of
+															 * those genes to be integers, which represent // how many
+															 * coins of that type we have. We therefore use the //
+															 * IntegerGene class to represent each of the genes. That
+															 * class // also lets us specify a lower and upper bound,
+															 * which we set // to sensible values for each coin type. //
+															 * ---------------------------------------------------------
+															 * ----- DoubleGene[] sampleGenes = new DoubleGene[48];
+															 * 
+															 * for (int ii = 0; ii < sampleGenes.length; ii++) {
+															 * sampleGenes[ii] = new DoubleGene(conf,-1, 1); }
+															 * 
+															 * 
+															 * Chromosome sampleChromosome = new
+															 * Chromosome(conf,sampleGenes);
+															 * 
+															 * conf.setSampleChromosome(sampleChromosome);
+															 * 
+															 * conf.setPopulationSize(1500);
+															 * 
+															 * Genotype population =
+															 * Genotype.randomInitialGenotype(conf); for (int evolutions
+															 * = 0; evolutions < 100; evolutions++) {
+															 * population.evolve(); } IChromosome bestSolutionSoFar =
+															 * population.getFittestChromosome();
+															 * 
+															 * for (int jj = 0; jj < returnArray.length; jj++) {
+															 * returnArray[jj] = 2 * (((DoubleGene)
+															 * bestSolutionSoFar.getGene(jj)).doubleValue() - 0.5d); } }
+															 * catch (InvalidConfigurationException e) { // TODO
+															 * Auto-generated catch block System.err.
+															 * println("RECO:: Invalid configuration for genetic algorithm"
+															 * ); e.printStackTrace(); } return returnArray; }
+															 */
 	private void updateCumulativeSaving(double savingAmount)
 	{
 		int daysSoFar = this.mainContext.getDayCount();

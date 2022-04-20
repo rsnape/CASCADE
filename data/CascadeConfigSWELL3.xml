@@ -24,10 +24,10 @@
 		number="5">
 		<prosumer class="uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer"
 			number="35">
-			<lossRateMean>275</lossRateMean>
-			<lossRateSD>75</lossRateSD>
+			<lossRateMean>0</lossRateMean>
+			<lossRateSD>0</lossRateSD>
 			<thermalMassMean>12.5</thermalMassMean>
-			<thermalMassSD>2.5</thermalMassSD>
+			<thermalMassSD>0</thermalMassSD>
 			<percentageGas>80</percentageGas>
 		</prosumer>
         

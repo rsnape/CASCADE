@@ -127,4 +127,13 @@ public class StorageProsumer extends ProsumerAgent
 		System.arraycopy(baseDemand, 0, this.smartOptimisedProfile, 0, this.smartOptimisedProfile.length);
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#currentGeneration()
+	 */
+	@Override
+	public double currentGeneration() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

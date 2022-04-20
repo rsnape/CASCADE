@@ -130,7 +130,7 @@ public abstract class AggregatorAgent implements ICascadeAgent, ICognitiveAgent,
 	protected ObservableComponent observableProxy;
 
 	boolean autoControl;
-	List<ProsumerAgent> customers;
+	protected List<ProsumerAgent> customers;
 	// String contextName;
 	/*
 	 * This is net demand, may be +ve (consumption), 0, or -ve (generation)

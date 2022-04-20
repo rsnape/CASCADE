@@ -11,11 +11,13 @@ import javax.swing.JPanel;
 
 import org.jfree.chart.ChartPanel;
 
+import repast.simphony.batch.BatchScenario;
 import repast.simphony.context.Context;
 import repast.simphony.engine.controller.ControllerActionVisitor;
 import repast.simphony.engine.controller.NullAbstractControllerAction;
 import repast.simphony.engine.environment.GUIRegistry;
 import repast.simphony.engine.environment.GUIRegistryType;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunEnvironmentBuilder;
 import repast.simphony.engine.environment.RunState;
 import repast.simphony.parameter.Parameters;
@@ -69,6 +71,8 @@ public class Initializer implements ModelInitializer
 			{
 				cascadeContext.logger.trace("Initializer:: runInitialize method entered, ticks per day = " + cascadeContext.getNbOfTickPerDay());
 			}
+			
+			
 			GUIRegistry guiRegis = runState.getGUIRegistry();
 
 			RSApplication.getRSApplicationInstance().getGui().setTickCountFormatter(new TicksToDaysFormatter(cascadeContext));
@@ -167,6 +171,9 @@ public class Initializer implements ModelInitializer
 	@Override
 	public void initialize(Scenario scen, RunEnvironmentBuilder builder)
 	{
-		scen.addMasterControllerAction(new CascadeGuiCustomiserAction());
+		if (!scen.getClass().isInstance(BatchScenario.class))
+		{
+			scen.addMasterControllerAction(new CascadeGuiCustomiserAction());
+		}
 	}
 }

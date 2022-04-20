@@ -8,6 +8,7 @@ import java.util.Arrays;
 import org.apache.commons.mathforsimplex.analysis.MultivariateRealFunction;
 import org.jgap.Chromosome;
 import org.jgap.FitnessFunction;
+import org.jgap.IChromosome;
 
 import flanagan.math.Fmath;
 import flanagan.math.MinimisationFunction;
@@ -218,7 +219,7 @@ public class MinimisationFunctionObjectiveOvernightWind extends FitnessFunction 
 	 * @see org.jgap.FitnessFunction#evaluate(org.jgap.Chromosome)
 	 */
 	@Override
-	protected int evaluate(Chromosome arg0)
+	protected double evaluate(IChromosome arg0)
 	{
 
 		double[] testArray = ArrayUtils.genesToDouble(arg0.getGenes());
@@ -228,7 +229,7 @@ public class MinimisationFunctionObjectiveOvernightWind extends FitnessFunction 
 			testArray[i] *= 2;
 		}
 
-		return (int) Math.max(1, (100000 - this.value(testArray)));
+		return Math.max(1, (100000 - this.value(testArray)));
 	}
 
 }

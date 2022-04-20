@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
+import repast.simphony.userpanel.ui.UserPanelCreator;
 import uk.ac.dmu.iesd.cascade.configwizard.WizardFrame;
 import uk.ac.dmu.iesd.cascade.context.CascadeConfigContextBuilder;
 
@@ -28,7 +29,7 @@ import uk.ac.dmu.iesd.cascade.context.CascadeConfigContextBuilder;
  * @author jsnape
  * 
  */
-public class CascadeUserPanel extends JPanel implements ActionListener, PropertyChangeListener
+public class CascadeUserPanel extends JPanel implements ActionListener, PropertyChangeListener, UserPanelCreator
 {
 
 	private File builderFile;
@@ -144,6 +145,15 @@ public class CascadeUserPanel extends JPanel implements ActionListener, Property
 
 			this.fileNameBox.setValue(fName);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see repast.simphony.userpanel.ui.UserPanelCreator#createPanel()
+	 */
+	@Override
+	public JPanel createPanel() {
+		// TODO Auto-generated method stub
+		return this;
 	}
 
 }

@@ -110,10 +110,10 @@ if (		this.mainContext.logger.isDebugEnabled()) {
 																					// demand?
 		// d0 = this.getNetDemand();
 
-		double percentChangeP = (this.getCurrentPrediction() - this.p0) / ((this.getCurrentPrediction() + this.p0) / 2);
+		double percentChangeP = (this.getCurrentPredictedCost() - this.p0) / ((this.getCurrentPredictedCost() + this.p0) / 2);
 		double percentChangeD = (this.e_factor * (0.5 + RandomHelper.nextDouble())) * percentChangeP;
 if (		this.mainContext.logger.isDebugEnabled()) {
-		this.mainContext.logger.debug("Setting demand from price " + this.getCurrentPrediction() + ", percentage price change "
+		this.mainContext.logger.debug("Setting demand from price " + this.getCurrentPredictedCost() + ", percentage price change "
 				+ percentChangeP + " and prior demand " + d0);
 }
 		double newD = d0 * (percentChangeD + 2) / (2 - percentChangeD);

@@ -4,12 +4,13 @@
 						defaultValue="macroDemand_1W.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-											/><parameter name="stopTick"
-						displayName="stopTick (note first 55 days run-in. At 48 tick/day, 55days = 2640, 1 year = 17520)"
-						type="java.lang.Integer" defaultValue="20160" isReadOnly="false"
-						converter="repast.simphony.parameter.StringConverterFactory$IntConverter">
-</parameter>
-	<parameter name="smartControlDecisionThreshold" displayName="smartControlDecisionThreshold" type="java.lang.Double" 
+											/>
+				<parameter name="outputDir" displayName="outputDir (note relative to RootDir)" type="java.lang.String" 
+						defaultValue="output/SPEN-new-gap-algo" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
+											/>
+				<parameter name="smartControlDecisionThreshold" displayName="smartControlDecisionThreshold" type="java.lang.Double" 
 						defaultValue="0.9" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
@@ -21,9 +22,14 @@
 												values="48 24 96 "
 											/>
 				<parameter name="chartSnapshot" displayName="chartSnapshot" type="boolean" 
-						defaultValue="false" 
+						defaultValue="true" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$BooleanConverter"
+											/>
+				<parameter name="stopTick" displayName="stopTick (note first 55 days run-in. At 48 tick/day, 55days = 2640, 1 year = 17520)" type="java.lang.Integer" 
+						defaultValue="37680" 
+						isReadOnly="false" 
+						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
 				<parameter name="verboseOutput" displayName="verboseOutput" type="boolean" 
 						defaultValue="false" 
@@ -54,29 +60,25 @@
 						defaultValue=".\" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
-											/><parameter
-					name="outputDir" displayName="outputDir (note relative to RootDir)"
-					type="java.lang.String" defaultValue="output" isReadOnly="false"
-					converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter">
-</parameter>
-	<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
-						defaultValue="CEGADSweather.csv" 
+											/>
+				<parameter name="weatherFile" displayName="weatherFile" type="java.lang.String" 
+						defaultValue="weatherProfiles_1Ywind81.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 											/>
 				<parameter name="configFileName" displayName="configFileName" type="java.lang.String" 
-						defaultValue="ELConfig10percentEV.xml" 
+						defaultValue="SPEN_DSR_Bethesda_Controlled_100_percent.xml" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 											/>
 				<parameter name="signalMode" displayName="signal mode" type="int" 
-						defaultValue="2" 
+						defaultValue="0" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
-												values="0 1 2 3 4 5 "
+												values="0 1 2 3 4 5 6 "
 											/>
 				<parameter name="householdOtherDemandFile" displayName="householdOtherDemandFile" type="java.lang.String" 
-						defaultValue="hhOtherDemandProfiles_1D_half.csv" 
+						defaultValue="hhOtherDemandProfiles_1W.csv" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 											/>
@@ -98,7 +100,7 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 											/>
 				<parameter name="startDate" displayName="startDate" type="java.lang.String" 
-						defaultValue="01/03/2019" 
+						defaultValue="01/05/2018" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$StringStringConverter"
 											/>

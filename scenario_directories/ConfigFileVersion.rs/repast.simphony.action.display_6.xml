@@ -1,6 +1,6 @@
-<repast.simphony.visualization.engine.DefaultDisplayDescriptor>
+<repast.simphony.visualization.engine.CartesianDisplayDescriptor simphonyVersion="2.8.0">
   <name>EcNetworkDisplay</name>
-  <type>TWO_D</type>
+  <type>2D</type>
   <styles>
     <entry>
       <string>uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent</string>
@@ -60,10 +60,9 @@
     <repast.simphony.scenario.data.ProjectionData>
       <id>economicNetwork</id>
       <attributes/>
-      <type>NETWORK</type>
+      <type>network</type>
     </repast.simphony.scenario.data.ProjectionData>
   </projections>
-  <valueLayers/>
   <projectionDescriptors>
     <entry>
       <string>economicNetwork</string>
@@ -80,4 +79,5 @@
     <blue>255</blue>
     <alpha>255</alpha>
   </backgroundColor>
-</repast.simphony.visualization.engine.DefaultDisplayDescriptor>
+  <valueLayers/>
+</repast.simphony.visualization.engine.CartesianDisplayDescriptor>

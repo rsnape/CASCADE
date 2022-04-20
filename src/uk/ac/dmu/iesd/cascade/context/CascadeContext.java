@@ -29,6 +29,7 @@ import repast.simphony.parameter.IllegalParameterException;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.projection.Projection;
 import repast.simphony.ui.widget.SnapshotTaker;
+import uk.ac.dmu.iesd.cascade.agents.ICascadeAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.market.IBMTrader;
 import uk.ac.dmu.iesd.cascade.market.IPxTrader;
@@ -56,11 +57,10 @@ import cern.jet.random.Uniform;
  * 
  *          Version history (for intermediate steps see Git repository history
  * 
- *          1.1 - File Initial scenario creator (??) 1.2 - Class name has been
- *          changed Boolean verbose variable has been added Name of some
- *          variables changed Babak 1.3 - float values changed to double
- * 
- * 
+ *          1.1 - File Initial scenario creator (??) 
+ *          1.2 - Class name has been changed Boolean verbose variable has been added 
+ *                Name of some variables changed Babak 
+ *          1.3 - float values changed to double
  */
 public class CascadeContext extends DefaultContext
 {
@@ -74,7 +74,7 @@ public class CascadeContext extends DefaultContext
 	 * the entire duration of the simulation.
 	 */
 
-	public Logger logger;
+	public Logger logger; // object for all logging through the simulation
 
 	// Note at the moment, no geographical info is needed to read the weather
 	// this is because weather is a flat file and not spatially differentiated
@@ -92,6 +92,18 @@ public class CascadeContext extends DefaultContext
 									// potentially
 	double[] airTemperatureArray; // instantaneous value
 	double[] airDensityArray; // instantaneous value
+	double[] rainFallArray;
+	
+	/*
+	 * Arrays to hold forecasts (rather than actuals above)
+	 */
+	double[] insolationForecast; 
+	double[] windSpeedForecast;
+	double[] windDirectionForecast;
+	double[] airTemperatureForecast; 
+	double[] airDensityForecast; 
+	double[] rainFallForecast;
+
 	double[] systemPriceSignalDataArray;
 	int systemPriceSignalDataLength;
 
@@ -388,6 +400,16 @@ public class CascadeContext extends DefaultContext
 	{
 		return this.airDensityArray[time % this.weatherDataLength];
 	}
+	
+	/**
+	 * @param time
+	 *            - the time in ticks for which to get the air density
+	 * @return the air density at the time (in ticks) passed in
+	 */
+	public double getRainfall(int time)
+	{
+		return this.rainFallArray[time % this.weatherDataLength];
+	}
 
 	/**
 	 * @param time
@@ -433,6 +455,98 @@ public class CascadeContext extends DefaultContext
 	{
 		int start = time % this.weatherDataLength;
 		return Arrays.copyOfRange(this.airDensityArray, start, start + length);
+	}
+	
+	/**
+	 * @param time
+	 *            - the time in ticks for which to get the air density
+	 * @return the air density at the time (in ticks) passed in
+	 */
+	public double[] getRainfall(int time, int length)
+	{
+		int start = time % this.weatherDataLength;
+		return Arrays.copyOfRange(this.rainFallArray, start, start + length);
+	}
+	
+	/**
+	 * Returns the forecast insolation for a length of time following a given tick
+	 * 
+	 * @param time
+	 *            - the start time (in ticks) for which to get the insolation forecast
+	 * @param length
+	 * 				- the length of forecast to return
+	 * 
+	 * @return array of the forecast insolation requested
+	 */
+	public double[] getForecastInsolation(int time, int length)
+	{
+		int start = time % this.weatherDataLength;
+		return Arrays.copyOfRange(this.insolationForecast, start, start + length);
+	}
+
+	/**
+	 * Returns the forecast wind speed for a length of time following a given tick
+	 * 
+	 * @param time
+	 *            - the start time (in ticks) for which to get the wind speed forecast
+	 * @param length
+	 * 				- the length of forecast to return
+	 * 
+	 * @return array of the forecast wind speed requested
+	 */
+	public double[] getForecastWindSpeed(int time, int length)
+	{
+		int start = time % this.weatherDataLength;
+		return Arrays.copyOfRange(this.windSpeedForecast, start, start + length);
+
+	}
+
+	/**
+	 * Returns the forecast temperature for a length of time following a given tick
+	 * 
+	 * @param time
+	 *            - the start time (in ticks) for which to get the temperature forecast
+	 * @param length
+	 * 				- the length of forecast to return
+	 * 
+	 * @return array of the forecast temperature requested
+	 */
+	public double[] getForecastAirTemperature(int time, int length)
+	{
+		int start = time % this.weatherDataLength;
+		return Arrays.copyOfRange(this.airTemperatureForecast, start, start + length);
+	}
+
+	/**
+	 * Returns the forecast air density for a length of time following a given tick
+	 * 
+	 * @param time
+	 *            - the start time (in ticks) for which to get the air density forecast
+	 * @param length
+	 * 				- the length of forecast to return
+	 * 
+	 * @return array of the forecast air density requested
+	 */
+	public double[] getForecastAirDensity(int time, int length)
+	{
+		int start = time % this.weatherDataLength;
+		return Arrays.copyOfRange(this.airDensityForecast, start, start + length);
+	}
+	
+	/**
+	 * Returns the forecast insolation for a length of time following a given tick
+	 * 
+	 * @param time
+	 *            - the start time (in ticks) for which to get the insolation forecast
+	 * @param length
+	 * 				- the length of forecast to return
+	 * 
+	 * @return array of the forecast insolation requested
+	 */
+	public double[] getForecastRainfall(int time, int length)
+	{
+		int start = time % this.weatherDataLength;
+		return Arrays.copyOfRange(this.rainFallForecast, start, start + length);
 	}
 
 	/**
@@ -737,10 +851,6 @@ public class CascadeContext extends DefaultContext
 		return this.simulationCalendar.getTime();
 	}
 
-	// ----------------
-
-	private Network networkOfRegisteredPxTraders;
-	private Network networkOfRegisteredBMTraders;
 	private int gasHeatedPercentage;
 
 	public boolean isFirstDay()

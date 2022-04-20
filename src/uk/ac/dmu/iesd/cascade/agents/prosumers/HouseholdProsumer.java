@@ -46,16 +46,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 
 	private int lengthOfDemandProfile;
 
-	boolean hasCHP = false;
-	boolean hasAirSourceHeatPump = false;
-	boolean hasGroundSourceHeatPump = false;
-	boolean hasWind = false;
-	boolean hasHydro = false;
-	// Thermal Generation included so that Household can represent
-	// Biomass, nuclear or fossil fuel generation in the future
-	// what do we think?
-	boolean hasThermalGeneration = false;
-	public boolean hasPV = false;
+
 	// TODO: refactor so that we have more object orientation - e.g. Generator
 	// interface,
 	// inherited to MicroGenerator, RenewableGenerator, ThermalGenerator...
@@ -88,7 +79,6 @@ public class HouseholdProsumer extends ProsumerAgent {
 	double ratedPowerWind;
 	double ratedPowerHydro;
 	double ratedPowerThermalGeneration;
-	public double ratedPowerPV;
 	double ratedPowerSolarWaterHeat;
 	public double ratedPowerHeatPump;
 	double ratedCapacityElectricVehicle; // Note kWh rather than kW
@@ -248,8 +238,6 @@ public class HouseholdProsumer extends ProsumerAgent {
 
 	public boolean hasStorageHeater = false;
 
-	public double azimuth;
-
 	public StorageHeater storageHeater = null;
 
 	/**
@@ -258,10 +246,6 @@ public class HouseholdProsumer extends ProsumerAgent {
 	 */
 	public double getCurrentInternalTemp() {
 		return this.currentInternalTemp;
-	}
-
-	public double getDemand() {
-		return this.getNetDemand() + this.currentGeneration();
 	}
 
 	public double getSetPoint() {
@@ -556,139 +540,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 		return returnAmount;
 	}
 
-	/**
-	 * @return
-	 */
-	protected double PVGeneration() {
-		if (this.hasPV) {
-			// TODO: get a realistic model of solar production - this just
-			// assumes
-			// linear relation between insolation and maximum insolation
-			// arriving at
-			// earth, which is ~1000 W/m^2, which is the power at which nominal
-			// rated
-			// power is calculated
-			//
-			// We can introduce the McKenna, Thomson et al model from the CREST
-			// spreadsheet
-			// to combine azimuth and time of day to get a better version of
-			// insolation than
-			// `getInsolation()`
 
-			double adjusted_insolation = adjustInsolationForTimeAndAzimuth(this
-					.getInsolation());
-
-			double p = (adjusted_insolation / Consts.MAX_INSOLATION)
-					* this.ratedPowerPV;
-			return p
-					* ((1.0 * Consts.HOURS_PER_DAY) / this.mainContext.ticksPerDay); // convert
-			// power
-			// to
-			// kWh
-			// per
-			// tick
-		} else {
-			return 0;
-		}
-	}
-
-	/**
-	 * @param timeOfDay2
-	 * @param insolation
-	 * @return
-	 */
-	private double adjustInsolationForTimeAndAzimuth(double insolation) {
-		double dayOfYear = this.mainContext.getDayCount() % 365;
-		// Calculate B
-		double B = 360 * (dayOfYear - 81) / 364; // Approximated Day of year (no
-													// leap years)
-		// Calculate equation of time
-		double equationOfTime = (9.87 * Math.sin(2 * B * Math.PI / 180))
-				- (7.53 * Math.cos(B * Math.PI / 180))
-				- (1.5 * Math.sin(B * Math.PI / 180));
-		// Calculate time correction factor
-		double longitude = 0;
-		double timeCorrectionFactor = (4 * (longitude - 0)) + equationOfTime; // TODO:
-																				// Standard
-																				// longitude
-																				// of
-																				// -1
-																				// which
-																				// is
-																				// a
-																				// bit
-																				// off
-		int hour = (timeOfDay * Consts.HOURS_PER_DAY)
-				/ this.mainContext.ticksPerDay;
-		boolean britishSummerTime = true; // TODO: Replace with proper test
-		if (britishSummerTime) {
-			hour -= 1;
-		}
-		int minute = (((timeOfDay * Consts.HOURS_PER_DAY) % this.mainContext.ticksPerDay) * 60)
-				/ this.mainContext.ticksPerDay;
-		double hoursBeforeSolarNoon = 12 - (hour + (minute * 1.0 / 60) + (timeCorrectionFactor / 60));
-
-		// Calculate optical depth
-		double opticalDepth = 0.174 + (0.035 * Math.sin(2 * Math.PI
-				* (dayOfYear - 100) / 365));
-		// Calculate hour angle
-		double hourAngle = 15 * hoursBeforeSolarNoon;
-		// Calculate declination
-		double declination = 23.45 * Math.sin(2 * Math.PI * (284 + dayOfYear)
-				/ 365.25);
-		// Calculate solar altitude angle
-		double latitude = 52;
-		double solarAltitudeAngle = 180
-				/ Math.PI
-				* Math.asin((Math.cos(latitude * Math.PI / 180)
-						* Math.cos(declination * Math.PI / 180) * Math
-							.cos(hourAngle * Math.PI / 180))
-						+ (Math.sin(latitude * Math.PI / 180) * Math
-								.sin(declination * Math.PI / 180)));
-		// Calculate azimuth of sun
-		double azimuthOfSun = 180
-				/ Math.PI
-				* Math.asin(Math.cos(declination * Math.PI / 180)
-						* Math.sin(hourAngle * Math.PI / 180)
-						/ Math.cos(solarAltitudeAngle * Math.PI / 180));
-		// Calculate azimuth angle test
-		boolean azimuthAngleTest = Math.cos(hourAngle * Math.PI / 180) >= (Math
-				.tan(declination * Math.PI / 180) / Math.tan(declination
-				* Math.PI / 180));
-
-		double adjustedAzimuthOfSun = azimuthOfSun;
-		// Calculate adjusted azimuth of sun
-		if (!azimuthAngleTest) {
-			if (azimuthOfSun > 90) {
-				adjustedAzimuthOfSun = azimuthOfSun - 90;
-			} else if (azimuthOfSun < -90) {
-				adjustedAzimuthOfSun = azimuthOfSun + 90;
-			} else {
-				adjustedAzimuthOfSun = azimuthOfSun;
-			}
-		} else if (azimuthOfSun > 0 && azimuthOfSun < 90) {
-			adjustedAzimuthOfSun = 180 - azimuthOfSun;
-		} else if (azimuthOfSun > -90 && azimuthOfSun < 0) {
-			adjustedAzimuthOfSun = -180 - azimuthOfSun;
-		}
-
-		// Calculate solar incident angle on panel
-		double slope = 40; // Put panel slope at 40 degrees
-		double solarIncidentAngle = Math.cos((Math.cos(solarAltitudeAngle
-				* Math.PI / 180)
-				* Math.cos(adjustedAzimuthOfSun * Math.PI / 180 - azimuth
-						* Math.PI / 180) * Math.sin(slope * Math.PI / 180))
-				+ (Math.sin(solarAltitudeAngle * Math.PI / 180) * Math
-						.cos(slope * Math.PI / 180)));
-		// Get clearsky beam radiation at surface (plane tracking the sun)
-		if (Math.abs(solarIncidentAngle) > 90) {
-			return 0;
-		} else {
-			return insolation * Math.cos(solarIncidentAngle * Math.PI / 180);
-		}
-
-		// return insolation; //Old basic version - just return insolation
-	}
 
 	/**
 	 * @return
@@ -753,9 +605,13 @@ public class HouseholdProsumer extends ProsumerAgent {
 	 * @return
 	 */
 	private double getElectricalHeatingDemand(double potentialElecDemand) {
+
+		//If we have a storage heater, return the electrical demand it has in
+		//the current timeslot.
 		if (this.storageHeater != null) {
 			this.storageHeater.demandHeat(this
-					.calculateSpaceHeatEnergyDemand(time));
+					.calculateHeatEnergyDemand(time).get("maintenance")+this
+					.calculateHeatEnergyDemand(time).get("tempIncrease"));
 			return this.storageHeater.getDemand(timeOfDay);
 		}
 
@@ -861,17 +717,17 @@ public class HouseholdProsumer extends ProsumerAgent {
 	 * @return energy required to heat / maintain the space at the set point
 	 *         temperature
 	 */
-	private double calculateSpaceHeatEnergyDemand(int timeStep) {
+	private WeakHashMap<String,Double> calculateHeatEnergyDemand(int timeStep) {
 
 		double deltaT = this.setPoint/* currentInternalTemp */
 				- this.getContext().getAirTemperature(timeStep);
 		double requiredTempChange = this.setPoint - this.currentInternalTemp;
 		double maintenanceEnergy = 0;
 		double heatingEnergy = 0;
-		if (requiredTempChange > 0) {
+		if (requiredTempChange > -Consts.TEMP_CHANGE_TOLERANCE) {
 			maintenanceEnergy = ((deltaT * (this.buildingHeatLossRate)) * (Consts.SECONDS_PER_DAY / this.mainContext.ticksPerDay))
 					/ Consts.KWH_TO_JOULE_CONVERSION_FACTOR;
-			heatingEnergy = requiredTempChange * this.buildingThermalMass
+			heatingEnergy = Math.max(requiredTempChange,0) * this.buildingThermalMass
 					/ Consts.DOMESTIC_COP_DEGRADATION_FOR_TEMP_INCREASE; // refer
 																			// to
 																			// Peter's
@@ -892,11 +748,10 @@ public class HouseholdProsumer extends ProsumerAgent {
 						* (this.waterSetPoint - ArrayUtils
 								.min(Consts.MONTHLY_MAINS_WATER_TEMP)));
 
-		double energyDemand = maintenanceEnergy + heatingEnergy
-				+ hotWaterEnergy[this.timeOfDay];
-		if (energyDemand > this.maxHeatPerTimestep) {
-			energyDemand = this.maxHeatPerTimestep;
-		}
+		WeakHashMap<String,Double> energyDemand = new WeakHashMap<String,Double>();
+		energyDemand.put("maintenance", maintenanceEnergy);
+		energyDemand.put("tempIncrease", heatingEnergy);
+		energyDemand.put("water", hotWaterEnergy[this.timeOfDay]);
 
 		return energyDemand;
 	}
@@ -907,7 +762,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 	 * @param timeStep
 	 * @return
 	 */
-	private double calculateHeatDemandAndInternalTemp(int timeStep) {
+	private double calculateSpaceHeatpumpElectricalDemandAndInternalTemp(int timeStep) {
 		// demand is the local variable holding the energy demand
 
 		double electricityDemand = 0;
@@ -931,12 +786,14 @@ public class HouseholdProsumer extends ProsumerAgent {
 			this.dayHistoryHeatingEnergy[this.timeOfDay] = 0;
 
 		} else {
-			double energyDemand = this.calculateSpaceHeatEnergyDemand(timeStep);
+			WeakHashMap<String,Double> heatDemands = this.calculateHeatEnergyDemand(timeStep);
+			double spaceHeatEnergyDemand = heatDemands.get("maintenance")+heatDemands.get("tempIncrease");
+			double waterHeatEnergyDemand = heatDemands.get("water");
 			if (this.mainContext.logger.isTraceEnabled()) {
-				this.mainContext.logger.trace("Adding " + energyDemand
+				this.mainContext.logger.trace("Adding " + spaceHeatEnergyDemand
 						+ " to the historical heat energy array");
 			}
-			if (energyDemand > (this.maxHeatPerTimestep)) {
+			if (spaceHeatEnergyDemand + waterHeatEnergyDemand > (this.maxHeatPerTimestep)) {
 				// If the energy demand to raise to set point in this particular
 				// timestep
 				// is greater than that which can be delivered by the HP, cap it
@@ -960,11 +817,11 @@ public class HouseholdProsumer extends ProsumerAgent {
 				// If energy demand within the capability of the heatpump,
 				// switch it on until set point regained.
 				if (this.isHasElectricalSpaceHeat()) {
-					electricityDemand = energyDemand
+					electricityDemand = spaceHeatEnergyDemand
 							/ Consts.DOMESTIC_HEAT_PUMP_SPACE_COP;
 				}
 				this.currentInternalTemp = this.setPoint;
-				this.dayHistoryHeatingEnergy[this.timeOfDay] = energyDemand;
+				this.dayHistoryHeatingEnergy[this.timeOfDay] = spaceHeatEnergyDemand;
 				if (this.mainContext.logger.isTraceEnabled()) {
 					this.mainContext.logger
 							.trace("HouseholdProsumer:: Heatpump on until current internal temperature regains set point");
@@ -1176,40 +1033,23 @@ public class HouseholdProsumer extends ProsumerAgent {
 				 */
 			}
 
-			if (false) {
-				// if (mainContext.isBeginningOfDay()) {
-
-				if (this.mainContext.logger.isDebugEnabled()) {
+			if (this.mainContext.logger.isDebugEnabled() && mainContext.isBeginningOfDay()) {
 					this.mainContext.logger
 							.debug("============================");
-				}
-				if (this.mainContext.logger.isDebugEnabled()) {
 					this.mainContext.logger.debug("dailyDemand: "
 							+ Arrays.toString(this.arr_otherDemandProfile));
-				}
-				if (this.mainContext.logger.isDebugEnabled()) {
 					this.mainContext.logger.debug("dailyElasticity: "
 							+ Arrays.toString(this.dailyElasticity));
-				}
-				if (this.mainContext.logger.isDebugEnabled()) {
 					this.mainContext.logger.debug("predictedCostSignal: "
 							+ Arrays.toString(this.getPredictedCostSignal()));
-				}
-				if (this.mainContext.logger.isDebugEnabled()) {
 					this.mainContext.logger.debug("predictedCostSignal: "
 							+ predictedCostSignal);
-				}
-				if (this.mainContext.logger.isDebugEnabled()) {
 					this.mainContext.logger.debug("predictedCostNow * myE: "
 							+ predictedCostSignal * myE);
-				}
-				if (this.mainContext.logger.isDebugEnabled()) {
 					this.mainContext.logger
 							.debug("dailyElasticity[time % this.mainContext.ticksPerDay]: "
 									+ this.dailyElasticity[time
 											% this.mainContext.ticksPerDay]);
-				}
-				if (this.mainContext.logger.isDebugEnabled()) {
 					this.mainContext.logger
 							.debug("HouseholdProsumer:: Based on predicted cost = "
 									+ predictedCostSignal
@@ -1217,7 +1057,6 @@ public class HouseholdProsumer extends ProsumerAgent {
 									+ (1 - ((predictedCostSignal / Consts.NORMALIZING_MAX_COST) * this.dailyElasticity[time
 											% this.mainContext.ticksPerDay]))
 									+ " of initial ");
-				}
 			}
 		}
 
@@ -1481,8 +1320,6 @@ public class HouseholdProsumer extends ProsumerAgent {
 		 * needs to be addressed at later stage.
 		 */
 
-		// double[] hotWaterNeededProfile = new
-		// double[this.lengthOfDemandProfile];
 		double[] hotWaterNeededProfile = new double[this.mainContext.ticksPerDay];
 
 		// share the needed water equally between occupants
@@ -1547,6 +1384,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 							* (this.waterSetPoint - ArrayUtils
 									.min(Consts.MONTHLY_MAINS_WATER_TEMP))
 							/ Consts.DOMESTIC_HEAT_PUMP_WATER_COP));
+			this.setHasElectricalWaterHeat(true);
 		} else {
 			if (this.mainContext.logger.isDebugEnabled()) {
 				this.mainContext.logger
@@ -1554,17 +1392,14 @@ public class HouseholdProsumer extends ProsumerAgent {
 			}
 
 			double[] noWaterHeating = new double[this.mainContext.ticksPerDay];
-			// double[] noWaterHeating = new double[this.lengthOfDemandProfile];
 			Arrays.fill(noWaterHeating, 0);
 			this.setWaterHeatProfile(noWaterHeating);
 		}
-
-		this.setHasElectricalWaterHeat(true);
 	}
 
 	public void initializeElecSpaceHeatPar() {
-		// initializeElecSpaceHeatPar(Consts.HEAT_TYPE_HP);
-		initializeElecSpaceHeatPar(Consts.HEAT_TYPE_STORAGE);
+		initializeElecSpaceHeatPar(Consts.HEAT_TYPE_HP);
+		//initializeElecSpaceHeatPar(Consts.HEAT_TYPE_STORAGE);
 	}
 
 	public void initializeElecSpaceHeatPar(String type) {
@@ -1604,6 +1439,11 @@ public class HouseholdProsumer extends ProsumerAgent {
 		// this.mainContext);
 		this.mySmartController = new ProportionalWattboxController(this,
 				this.mainContext);
+	}
+
+	public void removeWattboxController() {
+		this.hasSmartControl = false;
+		this.mySmartController = null;
 	}
 
 	private double[] calculateCombinedColdAppliancesProfile(
@@ -1669,7 +1509,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 		for (int i = 0; i < lengthOfProfileArrays; i++) {
 			if (this.hasElectricalSpaceHeat) {
 				// this assumes only space heat always uses heat pump
-				spaceHeatDemand[i] = this.calculateHeatDemandAndInternalTemp(i)
+				spaceHeatDemand[i] = this.calculateSpaceHeatpumpElectricalDemandAndInternalTemp(i)
 						/ Consts.DOMESTIC_HEAT_PUMP_SPACE_COP;
 			} else {
 				// not interested in gas - make this 0
@@ -1780,9 +1620,6 @@ public class HouseholdProsumer extends ProsumerAgent {
 				this.currentSmartProfiles = this.mySmartController
 						.getCurrentProfiles();
 
-				// this.coldApplianceProfile =
-				// calculateCombinedColdAppliancesProfile(this.coldApplianceProfiles);
-
 				this.optimisedSetPointProfile = this.currentSmartProfiles
 						.get("HeatPump");
 				this.setWaterHeatProfile(this.currentSmartProfiles
@@ -1841,7 +1678,7 @@ public class HouseholdProsumer extends ProsumerAgent {
 		}
 
 		double potentialElecDemand = this
-				.calculateHeatDemandAndInternalTemp(this.time);
+				.calculateSpaceHeatpumpElectricalDemandAndInternalTemp(this.time);
 
 		// Every step we do these actions
 		if (this.hasSmartControl) {
@@ -1997,14 +1834,14 @@ public class HouseholdProsumer extends ProsumerAgent {
 		this.setPointProfile = new double[this.mainContext.ticksPerDay];
 		// this.setPointProfile = new double[this.lengthOfDemandProfile];
 
-		Arrays.fill(this.setPointProfile, 20); // This puts in a flat set point
+		//Arrays.fill(this.setPointProfile, 18); // This puts in a flat set point
 												// through the day set by the
 												// consumer
-		// this.setPointProfile =
-		// Arrays.copyOf(Consts.BASIC_AVERAGE_SET_POINT_PROFILE,
-		// Consts.BASIC_AVERAGE_SET_POINT_PROFILE.length);
-		// this.setPointProfile = ArrayUtils.offset(this.setPointProfile,
-		// (double) RandomHelper.nextDoubleFromTo(-2, 2));
+		this.setPointProfile =
+		Arrays.copyOf(Consts.BASIC_AVERAGE_SET_POINT_PROFILE,
+		Consts.BASIC_AVERAGE_SET_POINT_PROFILE.length);
+		this.setPointProfile = ArrayUtils.offset(this.setPointProfile,
+		(double) RandomHelper.nextDoubleFromTo(-2, 2)); // Add +/- 2 to the setpoint for variability and personal preference
 		this.optimisedSetPointProfile = Arrays.copyOf(this.setPointProfile,
 				this.setPointProfile.length);
 		this.setPoint = this.optimisedSetPointProfile[0];
@@ -2012,7 +1849,9 @@ public class HouseholdProsumer extends ProsumerAgent {
 	}
 
 	/**
-	 * @param generateBEVProfile
+	 * setEVProfile
+	 *
+	 * @param EVProfile - array containing default EV demand per timeslot for a day (length same as ticksPerDay parameter)
 	 */
 	public void setEVProfile(double[] EVProfile) {
 		this.electricVehicleProfile = EVProfile;
@@ -2020,14 +1859,18 @@ public class HouseholdProsumer extends ProsumerAgent {
 	}
 
 	/**
-	 * @param generateBEVProfile
+	 * setOptimisedEVProfile
+	 *
+	 * @param EVProfile - array containing  EV demand per timeslot for a day following optimisation (length same as ticksPerDay parameter)
 	 */
 	public void setOptimisedEVProfile(double[] EVProfile) {
 		this.optimisedEVProfile = EVProfile;
 	}
 
 	/**
-	 * @return
+	 * getEVProfile
+	 *
+	 * @return copy of EV profile (note, not the original array to avoid concurrency issues
 	 */
 	public double[] getEVProfile() {
 		return Arrays.copyOf(this.electricVehicleProfile,

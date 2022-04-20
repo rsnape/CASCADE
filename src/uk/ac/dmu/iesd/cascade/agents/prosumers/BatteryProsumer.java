@@ -114,4 +114,13 @@ public class BatteryProsumer extends ProsumerAgent
 
 	}
 
+	/* (non-Javadoc)
+	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#currentGeneration()
+	 */
+	@Override
+	public double currentGeneration() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

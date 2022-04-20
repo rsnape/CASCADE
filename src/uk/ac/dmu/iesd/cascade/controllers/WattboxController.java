@@ -305,6 +305,7 @@ if (			this.mainContext.logger.isTraceEnabled()) {
 				double extraHeatRequired = 0;
 				for (int j = i - 1; j >= 0; j--)
 				{
+					//TODO - this needs a better (exponential) model, temp loss per second should be improved.
 					extraHeatRequired += (Consts.WATER_TEMP_LOSS_PER_SECOND * ((double) Consts.SECONDS_PER_DAY / this.ticksPerDay))
 							* this.hotWaterVolumeDemandProfile[i]
 							* (Consts.WATER_SPECIFIC_HEAT_CAPACITY / Consts.KWH_TO_JOULE_CONVERSION_FACTOR)

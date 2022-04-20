@@ -21,6 +21,7 @@ import org.apache.log4j.Level;
 import org.jgap.Chromosome;
 import org.jgap.Configuration;
 import org.jgap.Genotype;
+import org.jgap.IChromosome;
 import org.jgap.InvalidConfigurationException;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.DoubleGene;
@@ -1347,10 +1348,10 @@ if (				 * this.mainContext.logger.isDebugEnabled()) {
 
 			for (int ii = 0; ii < sampleGenes.length; ii++)
 			{
-				sampleGenes[ii] = new DoubleGene(-1, 1);
+				sampleGenes[ii] = new DoubleGene(conf,-1, 1);
 			}
 
-			Chromosome sampleChromosome = new Chromosome(sampleGenes);
+			Chromosome sampleChromosome = new Chromosome(conf,sampleGenes);
 
 			conf.setSampleChromosome(sampleChromosome);
 
@@ -1361,7 +1362,7 @@ if (				 * this.mainContext.logger.isDebugEnabled()) {
 			{
 				population.evolve();
 			}
-			Chromosome bestSolutionSoFar = population.getFittestChromosome();
+			IChromosome bestSolutionSoFar = population.getFittestChromosome();
 
 			for (int jj = 0; jj < returnArray.length; jj++)
 			{

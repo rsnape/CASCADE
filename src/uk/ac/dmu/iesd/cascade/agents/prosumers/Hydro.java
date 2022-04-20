@@ -3,6 +3,7 @@
  */
 package uk.ac.dmu.iesd.cascade.agents.prosumers;
 
+import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.context.CascadeContext;
 
 /**
@@ -19,7 +20,7 @@ public class Hydro extends ProsumerAgent
 	 */
 	private int type = 0;
 	
-	private double capacity = 100; // capacity in kW
+	private double capacity = 200; // capacity in kW
 	private double nominalVoltage = 230;
 	private double actualVoltage;
 	private double apparentLoadResistanceAtCapacity;
@@ -68,6 +69,15 @@ public class Hydro extends ProsumerAgent
 		this.mainContext = context;
 		this.apparentLoadResistanceAtCapacity = (this.nominalVoltage * this.nominalVoltage) / (this.capacity * 1000);
 		context.add(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent#currentGeneration()
+	 */
+	@Override
+	public double currentGeneration() {
+		// TODO Auto-generated method stub
+		return this.capacity * Consts.HOURS_PER_DAY / this.mainContext.ticksPerDay;
 	}
 
 }

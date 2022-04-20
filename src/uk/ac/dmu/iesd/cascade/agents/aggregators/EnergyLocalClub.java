@@ -8,9 +8,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
+import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.essentials.RepastEssentials;
 import repast.simphony.parameter.IllegalParameterException;
+import repast.simphony.util.collections.IndexedIterable;
+import uk.ac.dmu.iesd.cascade.agents.prosumers.HouseholdProsumer;
 import uk.ac.dmu.iesd.cascade.agents.prosumers.ProsumerAgent;
 import uk.ac.dmu.iesd.cascade.base.Consts;
 import uk.ac.dmu.iesd.cascade.base.Consts.BMU_CATEGORY;
@@ -33,7 +37,9 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 	double[] importPerDay;
 	double[] exportPerDay;
 	CSVWriter res;
+	CSVWriter hh_net;
 	double[] tariff;
+	double[] dsp;
 	private double localGenPrice;
 	private double originalPrice;
 	double[] dayCost;
@@ -42,6 +48,7 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 	ArrayList<Double> netDemands;
 	ArrayList<Double> localShares;
 	private String configString;
+	private CSVWriter demandOutput;
 
 	
 	/*
@@ -215,8 +222,11 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 			{
 				this.importPerDay[j] += totDem;
 			}
+			//hh_net.appendText(Double.toString(totDem));
 		}
-	
+
+
+
 	}
 	
 	private String writeCosts()
@@ -291,10 +301,58 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 		}
 		
 		this.calculateDailyCosts();
-		
+		this.writeNetDemand();
+
 	}
-	
-	
+
+
+
+	/**
+	 *
+	 */
+	private void writeNetDemand() {
+		int t = this.mainContext.getTickCount();
+		if ( t < 48) return; //All arrays meaningless until 1 day has passed.
+		int ts = this.mainContext.getTimeslotOfDay();
+		if (ts == 0)
+		{
+
+			IndexedIterable<HouseholdProsumer> list_hhProsumers = this.mainContext.getObjects(HouseholdProsumer.class);
+
+			double[] sum_spaceHeat = new double [this.mainContext.ticksPerDay];
+			double[] sum_hotWater = new double [this.mainContext.ticksPerDay];
+			double[] sum_other = new double [this.mainContext.ticksPerDay];
+			double[] sum_cold = new double [this.mainContext.ticksPerDay];
+			double[] sum_wet = new double [this.mainContext.ticksPerDay];
+			double[] sum_EV = new double [this.mainContext.ticksPerDay];
+			for (HouseholdProsumer hhAgent : list_hhProsumers)
+			{
+				sum_spaceHeat=ArrayUtils.add(sum_spaceHeat,hhAgent.getHistoricalSpaceHeatDemand());
+				sum_hotWater = ArrayUtils.add(sum_hotWater,hhAgent.getHistoricalWaterHeatDemand());
+				sum_other = ArrayUtils.add(sum_other,hhAgent.getHistoricalOtherDemand());
+				sum_cold = ArrayUtils.add(sum_cold,hhAgent.getHistoricalColdDemand());
+				sum_wet = ArrayUtils.add(sum_wet,hhAgent.getHistoricalWetDemand());
+				sum_EV = ArrayUtils.add(sum_EV,hhAgent.getHistoricalEVDemand());
+			}
+
+			double[] data = new double [8];
+			for (int j=0; j<this.mainContext.ticksPerDay; j++)
+			{
+				data[0] = t-48+j;
+				data[1]= sum_spaceHeat[j];
+				data[2]= sum_hotWater[j];
+				data[3]= sum_cold[j];
+				data[4]= sum_wet[j];
+				data[5]= sum_EV[j];
+				data[6]= sum_other[j];
+				data[7]= this.arr_day_D[j];
+
+				this.demandOutput.appendRow(data);
+			}
+		}
+	}
+
+
 
 	/**
 	 * @param context
@@ -318,6 +376,8 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 	public EnergyLocalClub(CascadeContext context)
 	{
 		super(context);
+		context.logger.info("Adding Energy Local Club");
+
 		this.init();
 	}
 
@@ -334,12 +394,25 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
         		 12,12,12,12,12,12,12,12,12,12,
         		 10,10,10,10,10,10,10,10,10,10,
         		 14,14,14,14,14,14,14,14,
-        		 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25};		
+        		 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25, 7.25};
+
+        //DSP is used if signal set non-adaptive
+        this.dsp = new double[]{
+        		-0.251,	-0.251,	-0.251,	-0.251,	-0.251,	-0.251,	-0.275, -0.275,	-0.275,	-0.275,	-0.275,	-0.275,
+        		-0.137,-0.137,	-0.137,	-0.137,	-0.137,	-0.137,	-0.137,	-0.137,
+        		-0.157,	-0.157,	-0.157,
+        		-0.167,	-0.167,	-0.167,	-0.167,
+        		-0.157,	-0.157,	-0.157,	-0.157,-0.157,	-0.157,	-0.157,
+        		1,1,1,1,1,1,1,1,
+        		-0.24,-0.24,-0.24,-0.24,
+        		-0.275,	-0.275};
+        this.defaultSignal = this.dsp;
+
         this.localGenPrice = 7.0;
         
         //Make the default signal for Energy Local the price signal
         this.defaultSignal = ArrayUtils.normalizeValues(this.tariff);
-        
+
         if (this.mainContext.logger.isDebugEnabled())
 		{
 			this.mainContext.logger.debug("Initialising club prices");
@@ -351,8 +424,11 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
          */
 		String parsedDate = (new SimpleDateFormat("yyyy.MMM.dd.HH_mm_ss_z")).format(new Date());
 		String outputDir = (String) RepastEssentials.GetParameter("outputDir");
-        this.res = new CSVWriter(outputDir +"/EnergyLocalOutput"+this.getAgentName()+"_"+parsedDate+".csv" , true);
-		try
+
+        // Get a configuration file for the aggregator if it exists.
+        // If not - default to using values from the parameter window of the
+        // simulation
+        try
 		{
 			this.configString = (String) RepastEssentials.GetParameter("configFileName");
 		}
@@ -364,8 +440,20 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
 				.concat("Seed")
 						.concat(Integer.toString(this.mainContext
 								.getRandomSeedValue())).concat(this.configString).concat("_").concat(parsedDate);
+
+		String sigMode = RepastEssentials.GetParameter("signalMode").toString();
+        this.res = new CSVWriter(outputDir +"/EnergyLocalOutput_Mode"+sigMode+"_"+configString+"_"+parsedDate+".csv" , true);
+		this.demandOutput = new CSVWriter(outputDir+"/ELAggNetDemand_Mode"+sigMode+"_"+configString+"_"+parsedDate+".csv" , true);
+		ScheduleParameters stop = ScheduleParameters.createAtEnd(ScheduleParameters.LAST_PRIORITY);
+		RunEnvironment.getInstance().getCurrentSchedule().schedule(stop,this,"closeFiles");
+
 	}
 
+	public void closeFiles()
+	{
+		this.res.close();
+		this.demandOutput.close();
+	}
 	@ScheduledMethod(start=0, priority=Consts.AGGREGATOR_PRE_STEP_PRIORITY_FIRST)
 	public void writeHeaders()
 	{
@@ -395,4 +483,11 @@ public class EnergyLocalClub extends SupplierCoAdvancedModel
         this.res.writeColHeaders(headArray); 
 	}
 	
+	@ScheduledMethod(start=0, priority=Consts.AGGREGATOR_PRE_STEP_PRIORITY_FIRST)
+	public void writeDemHeaders()
+	{
+		String[] headers = {"Tick","Space","Water", "Cold", "Wet", "EV", "Other", "Net"};
+		this.demandOutput.writeColHeaders(headers);
+	}
+
 }
