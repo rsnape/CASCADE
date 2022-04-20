@@ -3,7 +3,7 @@ package uk.ac.dmu.iesd.cascade.base;
 /**
  * Class to hold all the variable structures etc that are available to all code
  * in the model - not features of a given environment (they should be in the
- * context) but rather enumerations, lookup tables, truly global variables etc.
+ * context) but rather enumerations, lookup tables, truly global variables etc.)
  * 
  * @author J. Richard Snape
  * @author Babak Mahdavi
@@ -12,7 +12,8 @@ package uk.ac.dmu.iesd.cascade.base;
  *          Version history (for intermediate steps see Git repository history)
  * 
  *          1.1 - Class name changed; class becomes final; constants' names with
- *          capital characters (Babak) 1.2 - added AGGREGATOR_LEARNING_PERIODE;
+ *          capital characters (Babak) 
+ *          1.2 - added AGGREGATOR_LEARNING_PERIODE;
  *          1.3 - added Category and Type constants, defining aggregators' types
  *          and categories (as BMUs), (Babak)
  * 
@@ -298,10 +299,12 @@ public final class Consts
 	public static final double DOMESTIC_HEAT_PUMP_WATER_COP = 2.0d; //
 
 	// Maximum domestic heat pump power (in kW)
-	public static final double TEMP_CHANGE_TOLERANCE = 0.5d;
+	public static final double TEMP_CHANGE_TOLERANCE = 0d;
 	public static final double NORMALIZING_MAX_COST = 1;
 
-	public static final double HEAT_PUMP_THRESHOLD_TEMP_DIFF = 3;
+	//This is a threshold for difference between outside and inside temperature to 
+	//run heat pump
+	public static final double HEAT_PUMP_THRESHOLD_TEMP_DIFF = 0.5d;
 
 	public static final int HEAT_PUMP_MIN_SWITCHOFF = 1;
 	public static final int HEAT_PUMP_MAX_SWITCHOFF = 8;
@@ -428,6 +431,9 @@ public final class Consts
 
 	public static final String HEAT_TYPE_HP = "HEATPUMP";
 	public static final String HEAT_TYPE_STORAGE = "STORAGE";
+
+	public static final double[] BASIC_AVERAGE_SET_POINT_PROFILE = {14,14,14,14,14,14,14,14,14,14,14,14,14,14,20,20,20,20,20,20,18,18,18,18,
+																	18,18,18,18,18,18,18,18,18,18,18,18,20,20,20,20,22,22,22,22,22,22,16,16};
 
 	public static enum HEATING_TYPE
 	{

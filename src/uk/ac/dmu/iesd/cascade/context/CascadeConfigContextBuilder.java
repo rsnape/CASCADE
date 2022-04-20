@@ -6,8 +6,10 @@ package uk.ac.dmu.iesd.cascade.context;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -18,6 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -29,6 +32,8 @@ import repast.simphony.context.space.graph.NetworkFactory;
 import repast.simphony.context.space.graph.NetworkFactoryFinder;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.essentials.RepastEssentials;
+import repast.simphony.parameter.IllegalParameterException;
 import repast.simphony.parameter.Parameters;
 import repast.simphony.query.PropertyEquals;
 import repast.simphony.random.RandomHelper;
@@ -61,7 +66,7 @@ import cern.jet.random.Empirical;
  * Implementation of the Repast ContextBuilder object designed to take input
  * from a CACADE framework context file and build the context according to that
  * specification.
- * 
+ * f
  * Currently v0.1 - lots of strong assumptions about users' knowledge of the
  * internals of agent implementations
  * 
@@ -101,7 +106,10 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 																// CascadeContext
 																// by passing
 																// the context
-		
+		//String s_logLevel = (String) RepastEssentials.GetParameter("loggingLevel");
+		//this.cascadeMainContext.logger.warn("Resetting log level to " +s_logLevel);
+		//Level logLevel = Level.toLevel(s_logLevel);
+		//LogManager.getRootLogger().setLevel(logLevel);
 		this.readParamsAndInitializeArrays();
 		// XMLReader myR = readConfigFile(configFile);
 		// decodeConfigFile();
@@ -129,10 +137,10 @@ public class CascadeConfigContextBuilder implements ContextBuilder<Object>
 			// TODO: should we handle multiple markets?
 			if (this.cascadeMainContext.logger.isDebugEnabled())
 			{
-if (				this.cascadeMainContext.logger.isDebugEnabled()) {
+				if (this.cascadeMainContext.logger.isDebugEnabled()) {
 				this.cascadeMainContext.logger.debug("Market element value : "
 						+ marketElements.item(0).getChildNodes().item(0).getNodeValue());
-}
+				}
 			}
 			if (!marketElements.item(0).getChildNodes().item(0).getNodeValue().equals("false"))
 			{
@@ -140,9 +148,24 @@ if (				this.cascadeMainContext.logger.isDebugEnabled()) {
 			}
 		}
 
-		this.populateContext();
+		try {
+			this.populateContext();
+		} catch (Exception e1) {
+			this.cascadeMainContext.logger.error("Error in populating context, ending!!");
+			this.cascadeMainContext.logger.error(e1.getMessage());
+			RepastEssentials.EndSimulationRun();
+		} 
+		
+		try {
+			Integer endAt = (Integer) RepastEssentials.GetParameter("stopTick");
+			double stop = endAt.doubleValue();
+			RepastEssentials.EndSimulationRunAt(stop );
+		}
+		catch (IllegalParameterException e)
+		{
+			this.cascadeMainContext.logger.debug("no stopTick specified");
+		}
 
-		// TODO Auto-generated method stub
 		return this.cascadeMainContext;
 	}
 
@@ -223,6 +246,9 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 
 		this.cascadeMainContext.wetApplProbDistGenerator = RandomHelper
 				.createEmpiricalWalker(Consts.WET_APPLIANCE_PDF, Empirical.NO_INTERPOLATION);
+		this.cascadeMainContext.journeyLengthGenerator = RandomHelper.createPoisson(Consts.MEAN_JOURNEY_LENGTH);
+		this.cascadeMainContext.vehicleArrivalGenerator = RandomHelper
+				.createEmpiricalWalker(Consts.CAR_ARRIVAL_PROBABILITY, Empirical.NO_INTERPOLATION);
 
 		// ChartUtils.testProbabilityDistAndShowHistogram(cascadeMainContext.wetApplProbDistGenerator,
 		// 10000, 48); //test to make sure the prob dist generate desired
@@ -251,25 +277,12 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 
 	}
 
-	private void populateContext()
+	private void populateContext() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
 	{
 		this.bmuFactory = new AggregatorFactory(this.cascadeMainContext, this.messageBoard);
 		this.proFactory = new ProsumerFactory(this.cascadeMainContext);
-		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null); // unclear
-																							// what
-																							// the
-																							// hints
-																							// map
-																							// is
-																							// for
-																							// in
-																							// this
-																							// call
-																							// -
-																							// so
-																							// leave
-																							// it
-																							// null
+		// unclear what the hints map is for in following call - so leave it null
+		NetworkFactory networkFactory = NetworkFactoryFinder.createNetworkFactory(null); 
 		this.economicNet = networkFactory.createNetwork("economicNetwork", this.cascadeMainContext, true);
 		this.cascadeMainContext.setEconomicNetwork(this.economicNet);
 
@@ -313,21 +326,21 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 							SupplierCoAdvancedModel suppCo = this.bmuFactory
 									.createSupplierCoAdvanced(this.cascadeMainContext.systemPriceSignalDataArray);
 							this.cascadeMainContext.add(suppCo);
-							this.addHouseholdsToAggregator(a, suppCo);
+							this.addProsumersToSupplyAggregator(a, suppCo);
 
 						}
 						else if (shortName.equals("EnergyLocalClub"))						{
 							EnergyLocalClub suppCo = this.bmuFactory
 									.createEnergyLocalClub(this.cascadeMainContext.systemPriceSignalDataArray);
 							this.cascadeMainContext.add(suppCo);
-							this.addHouseholdsToAggregator(a, suppCo);
+							this.addProsumersToSupplyAggregator(a, suppCo);
 
 						}
 						else if (shortName.equals("SupplierCo"))
 						{
 							SupplierCo suppCo = this.bmuFactory.createSupplierCo(this.cascadeMainContext.systemPriceSignalDataArray);
 							this.cascadeMainContext.add(suppCo);
-							this.addHouseholdsToAggregator(a, suppCo);
+							this.addProsumersToSupplyAggregator(a, suppCo);
 						}
 						else if (shortName.equals("WindFarmAggregator"))
 						{
@@ -338,7 +351,7 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 							Arrays.fill(flatBaseline, ASTEMConsts.BMU_SMALLDEM_MINDEM * 1.1);
 							PassThroughAggregatorWithLag a1 = new PassThroughAggregatorWithLag(this.cascadeMainContext, this.messageBoard,
 									ASTEMConsts.BMU_SMALLDEM_MAXDEM, ASTEMConsts.BMU_SMALLDEM_MINDEM, flatBaseline, 48);
-							this.addHouseholdsToAggregator(a, a1);
+							this.addProsumersToSupplyAggregator(a, a1);
 							this.economicNet.addProjectionListener(a1); // Testing
 																		// a
 																		// feature
@@ -419,106 +432,180 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 
 	}
 
-	private void addHouseholdsToAggregator(Element a, AggregatorAgent suppCo)
+	private void addProsumersToSupplyAggregator(Element a, AggregatorAgent suppCo) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException
 	{
 		System.err.println("In here with " + suppCo.getAgentName());
 		NodeList prosumers = a.getElementsByTagName("prosumer");
+		Class<?> elementClass;
 		for (int j = 0; j < prosumers.getLength(); j++)
 		{
 			Element p = (Element) prosumers.item(j);
-			int numHH = Integer.valueOf(p.getAttribute("number"));
-			System.err.println("Adding " + numHH + " households");
-			int occNum = Consts.RANDOM;
-			int gasPercentage = 0;
-			double pv_cap = 0;
-			int orientation = 0;
-			if (p.hasChildNodes())
+			String className = p.getAttribute("class");
+			String shortName;
+			try {
+				elementClass = Class.forName(className);
+				shortName = elementClass.getSimpleName();
+			} catch (ClassNotFoundException e) {
+				if (this.cascadeMainContext.logger.isDebugEnabled())
+				{
+					this.cascadeMainContext.logger.debug("Couldn't find class to instantiate : " + className);
+					this.cascadeMainContext.logger.debug("Breaking and on to next element");
+				}
+				break;
+			}
+			
+		
+			if (!ProsumerAgent.class.isAssignableFrom(elementClass))
 			{
-				// Alter the prosumer generation distributions based on this
-				// At the moment - relies on a well formed XML file - only
-				// specifying these for households
-				double bLMean = Double.parseDouble(p.getElementsByTagName("lossRateMean").item(0).getChildNodes().item(0).getNodeValue());
-				double bLSD = Double.parseDouble(p.getElementsByTagName("lossRateSD").item(0).getChildNodes().item(0).getNodeValue());
-				double tMMean = Double
-						.parseDouble(p.getElementsByTagName("thermalMassMean").item(0).getChildNodes().item(0).getNodeValue());
-				double tMSD = Double.parseDouble(p.getElementsByTagName("thermalMassSD").item(0).getChildNodes().item(0).getNodeValue());
-				NodeList fixedOccupancy = p.getElementsByTagName("occupants");
-
-				if (fixedOccupancy.getLength() == 1)
+				System.err.println("Config file specifies a prosumer with a class that is not an prosumer agent : " + className);
+				break;
+			}
+			
+			
+			//If we get to here, it's possible to instantiate and we can test simplename
+			if (shortName.contains("Household"))
+			{
+				int numHH = Integer.valueOf(p.getAttribute("number"));
+				System.err.println("Adding " + numHH + " households");
+				int occNum = Consts.RANDOM;
+				int gasPercentage = 0;
+				int evPercentage = 0;
+				double pv_cap = 0;
+				int orientation = 0;
+				double smartControlProb = 1; // Default to having a smart controller
+	
+				if (p.hasChildNodes())
 				{
-					occNum = Integer.parseInt(fixedOccupancy.item(0).getChildNodes().item(0).getNodeValue());
-				}
-				NodeList gas = p.getElementsByTagName("percentageGas");
-				if (gas.getLength() == 1)
-				{
-					gasPercentage = Integer.parseInt(gas.item(0).getChildNodes().item(0).getNodeValue());
-				}
-
-				NodeList pv = p.getElementsByTagName("pv");
-				if (pv.getLength() == 1)
-				{
-					Element pvElmnt = (Element) pv.item(0);
-					String orient= pvElmnt.getAttribute("orientation");
-					if (orient.equals(""))
+					// Alter the prosumer generation distributions based on this
+					// At the moment - relies on a well formed XML file - only
+					// specifying these for households
+					double bLMean = Double.parseDouble(p.getElementsByTagName("lossRateMean").item(0).getChildNodes().item(0).getNodeValue());
+					double bLSD = Double.parseDouble(p.getElementsByTagName("lossRateSD").item(0).getChildNodes().item(0).getNodeValue());
+					double tMMean = Double
+							.parseDouble(p.getElementsByTagName("thermalMassMean").item(0).getChildNodes().item(0).getNodeValue());
+					double tMSD = Double.parseDouble(p.getElementsByTagName("thermalMassSD").item(0).getChildNodes().item(0).getNodeValue());
+					NodeList smartProb = p.getElementsByTagName("smartControlProbability");
+					if (smartProb.getLength() == 1)
 					{
-						orient = "180"; //Default to South facing
+						Double.parseDouble(smartProb.item(0).getChildNodes().item(0).getNodeValue());
 					}
-					orientation = Integer.valueOf(orient);
-					pv_cap = Double.parseDouble(pvElmnt.getChildNodes().item(0).getNodeValue());
+	
+					NodeList fixedOccupancy = p.getElementsByTagName("occupants");
+	
+					if (fixedOccupancy.getLength() == 1)
+					{
+						occNum = Integer.parseInt(fixedOccupancy.item(0).getChildNodes().item(0).getNodeValue());
+					}
+					NodeList gas = p.getElementsByTagName("percentageGas");
+					if (gas.getLength() == 1)
+					{
+						gasPercentage = Integer.parseInt(gas.item(0).getChildNodes().item(0).getNodeValue());
+					}
+	
+					NodeList pv = p.getElementsByTagName("pv");
+					if (pv.getLength() == 1)
+					{
+						Element pvElmnt = (Element) pv.item(0);
+						String orient= pvElmnt.getAttribute("orientation");
+						if (orient.equals(""))
+						{
+							orient = "180"; //Default to South facing
+						}
+						orientation = Integer.valueOf(orient);
+						pv_cap = Double.parseDouble(pvElmnt.getChildNodes().item(0).getNodeValue());
+					}
+	
+					NodeList ev = p.getElementsByTagName("percentageEV");
+					if (ev.getLength() == 1)
+					{
+						evPercentage = Integer.parseInt(ev.item(0).getChildNodes().item(0).getNodeValue());
+					}
+					
+					
+					this.cascadeMainContext.buildingLossRateGenerator = RandomHelper.createNormal(bLMean, bLSD);
+					this.cascadeMainContext.thermalMassGenerator = RandomHelper.createNormal(tMMean, tMSD);
+	
+					// cascadeMainContext.occupancyGenerator =
+					// RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY,
+					// Empirical.NO_INTERPOLATION);
 				}
-
-				
-				
-				this.cascadeMainContext.buildingLossRateGenerator = RandomHelper.createNormal(bLMean, bLSD);
-				this.cascadeMainContext.thermalMassGenerator = RandomHelper.createNormal(tMMean, tMSD);
-
-				// cascadeMainContext.occupancyGenerator =
-				// RandomHelper.createEmpiricalWalker(Consts.OCCUPANCY_PROBABILITY_ARRAY,
-				// Empirical.NO_INTERPOLATION);
-			}
-
-			int numGas = gasPercentage * numHH / 100;
-			boolean wGas = true;
-			for (int k = 0; k < numHH; k++)
-			{
-				if (k >= numGas)
+	
+				int numGas = gasPercentage * numHH / 100;
+				int numEV = evPercentage * numHH / 100;
+				boolean wGas = true;
+				ArrayList<HouseholdProsumer> currenthouseholds = new ArrayList<HouseholdProsumer>();
+				for (int k = 0; k < numHH; k++)
 				{
-					wGas = false;
+					if (k >= numGas) //Note this will give first numGas households gas heating, all others electrical
+					{
+						wGas = false;
+					}
+					
+	
+					HouseholdProsumer hhProsAgent = this.proFactory.createHouseholdProsumer(this.map_nbOfOccToOtherDemand, occNum, true, wGas);
+					if (RandomHelper.nextDouble() > smartControlProb)
+					{
+						hhProsAgent.removeWattboxController();			
+					}
+					
+					hhProsAgent.initializeWaterHeatDemand();
+	
+					if (k < numEV) // Note this gives first numEV households an EV.  may be some overlap with electrical heating
+					{
+						double[] EVprofile;
+						if (RandomHelper.nextDouble() < 1) //Note - this sets them all BEV, no hybrids
+						{
+							EVprofile = EVProfileGenerator.generateBEVProfile(this.cascadeMainContext, Consts.NB_OF_DAYS_LOADED_DEMAND);
+						}
+						else
+						{
+							EVprofile = EVProfileGenerator.generatePHEVProfile(this.cascadeMainContext, Consts.NB_OF_DAYS_LOADED_DEMAND);
+						}
+						hhProsAgent.hasElectricVehicle = true;
+						hhProsAgent.setEVProfile(EVprofile);
+					}
+					
+					this.cascadeMainContext.add(hhProsAgent);
+					this.economicNet.addEdge(suppCo, hhProsAgent);
+	
+					currenthouseholds.add(hhProsAgent);
+					if (pv_cap > 0)
+					{
+						hhProsAgent.hasPV = true;
+						hhProsAgent.ratedPowerPV = pv_cap;
+						hhProsAgent.azimuth = orientation;
+					}
 				}
-				HouseholdProsumer hhProsAgent = this.proFactory.createHouseholdProsumer(this.map_nbOfOccToOtherDemand, occNum, true, wGas);
-				hhProsAgent.initializeWaterHeatDemand();
-
-				this.cascadeMainContext.add(hhProsAgent);
-				this.economicNet.addEdge(suppCo, hhProsAgent);
 				
-				if (pv_cap > 0)
+	
+				if (Consts.HHPRO_HAS_WET_APPL)
 				{
-					hhProsAgent.hasPV = true;
-					hhProsAgent.ratedPowerPV = pv_cap;
-					hhProsAgent.azimuth = orientation;
+					this.initializeHHProsumersWetAppliancesPar4All();
+				}
+	
+				if (Consts.HHPRO_HAS_COLD_APPL)
+				{
+					this.initializeHHProsumersColdAppliancesPar4All();
+				}
+	
+				if (Consts.HHPRO_HAS_ELEC_WATER_HEAT)
+				{
+					this.initializeWithoutGasHHProsumersElecWaterHeat();
+				}
+	
+				if (Consts.HHPRO_HAS_ELEC_SPACE_HEAT)
+				{
+					this.initializeWithoutGasHHProsumersElecSpaceHeat();
 				}
 			}
-
-			if (Consts.HHPRO_HAS_WET_APPL)
+			else if (shortName.contains("DataFileProsumer"))
 			{
-				this.initializeHHProsumersWetAppliancesPar4All();
+				String demFile = p.getAttribute("demandFileName");
+				String genFile = p.getAttribute("genFileName");
+				this.cascadeMainContext.logger.info("Adding data file prosumer with files, demand = "+demFile+"; gen = "+genFile);
+				ProsumerAgent p1 = (ProsumerAgent) elementClass.getConstructor(CascadeContext.class, String.class, String.class).newInstance(this.cascadeMainContext, demFile, genFile);
+				this.economicNet.addEdge(suppCo, p1);
 			}
-
-			if (Consts.HHPRO_HAS_COLD_APPL)
-			{
-				this.initializeHHProsumersColdAppliancesPar4All();
-			}
-
-			if (Consts.HHPRO_HAS_ELEC_WATER_HEAT)
-			{
-				this.initializeWithoutGasHHProsumersElecWaterHeat();
-			}
-
-			if (Consts.HHPRO_HAS_ELEC_SPACE_HEAT)
-			{
-				this.initializeWithoutGasHHProsumersElecSpaceHeat();
-			}
-
 		}
 	}
 
@@ -564,31 +651,7 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 			RunEnvironment.getInstance().endRun();
 		}
 	}
-
-	private void initializeElectricVehicles()
-	{
-		IndexedIterable<HouseholdProsumer> householdProsumers = this.cascadeMainContext.getObjects(HouseholdProsumer.class);
-
-		for (HouseholdProsumer thisAgent : householdProsumers)
-		{
-			if (RandomHelper.nextDouble() < 0.25)
-			{
-				double[] EVprofile;
-				if (RandomHelper.nextDouble() < 0.5)
-				{
-					EVprofile = EVProfileGenerator.generateBEVProfile(this.cascadeMainContext, Consts.NB_OF_DAYS_LOADED_DEMAND);
-				}
-				else
-				{
-					EVprofile = EVProfileGenerator.generatePHEVProfile(this.cascadeMainContext, Consts.NB_OF_DAYS_LOADED_DEMAND);
-				}
-				thisAgent.hasElectricVehicle = true;
-				thisAgent.setEVProfile(EVprofile);
-
-			}
-		}
-	}
-
+	
 	private void initializeHHProsumersWetAppliancesPar4All()
 	{
 
@@ -646,73 +709,46 @@ if (		this.cascadeMainContext.logger.isTraceEnabled()) {
 
 		}
 
-		if (CascadeContext.verbose)
+		if (CascadeContext.verbose && this.cascadeMainContext.logger.isDebugEnabled())
 		{
-			if (this.cascadeMainContext.logger.isDebugEnabled())
-			{
 				this.cascadeMainContext.logger.debug("Percentages:");
-			}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
-			this.cascadeMainContext.logger.debug("households with occupancy 1 : "
+				this.cascadeMainContext.logger.debug("households with occupancy 1 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 1)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 2 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 2)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 3 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 3)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 4 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 4)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 5 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 5)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 6 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 6)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 7 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 7)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("households with occupancy 8 : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "numOccupants", 8)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("Washing Mach : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasWashingMachine", true)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("Washer Dryer : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasWasherDryer", true)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("Tumble Dryer: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasTumbleDryer", true)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("Dish Washer : "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasDishWasher", true)).query())
 					/ householdProsumers.size());
-}
-		}
+			}
 	}
 
 	public void setWetAppsPerPBMatlabPrototype(HouseholdProsumer thisAgent)
@@ -740,32 +776,6 @@ if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 		thisAgent.setWetAppliancesProfiles(PB_wash_approx);
 	}
 
-	/*
-	 * private void initializeHHProsumersElecWaterHeat() {
-	 * 
-	 * //Iterable waterHeatedProsumersIter =
-	 * cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long)
-	 * (numProsumers * (Double) params.getValue("elecWaterFraction"))); Iterable
-	 * waterHeatedProsumersIter =
-	 * cascadeMainContext.getRandomObjects(HouseholdProsumer.class, (long)
-	 * (numProsumers));
-	 * 
-	 * ArrayList prosumersWithElecWaterHeatList =
-	 * IterableUtils.Iterable2ArrayList(waterHeatedProsumersIter);
-	 * 
-if (	 * this.cascadeMainContext.logger.isTraceEnabled()) {
-	 * this.cascadeMainContext.logger.trace("ArrayList.size: WaterHeat "+
-	 * prosumersWithElecWaterHeatList.size());
-}
-	 * AgentUtils.assignParameterSingleValue("hasElectricalWaterHeat", true,
-	 * prosumersWithElecWaterHeatList.iterator());
-	 * 
-	 * Iterator iter = prosumersWithElecWaterHeatList.iterator();
-	 * 
-	 * while (iter.hasNext()) { ((HouseholdProsumer)
-	 * iter.next()).initializeElectWaterHeatPar(); } }
-	 */
-
 	private void initializeWithoutGasHHProsumersElecSpaceHeat()
 	{
 
@@ -785,9 +795,9 @@ if (	 * this.cascadeMainContext.logger.isTraceEnabled()) {
 	private void initializeWithoutGasHHProsumersElecWaterHeat()
 	{
 
-		IndexedIterable<HouseholdProsumer> spaceHeatedProsumersIter = this.cascadeMainContext.getObjects(HouseholdProsumer.class);
+		IndexedIterable<HouseholdProsumer> hHIter = this.cascadeMainContext.getObjects(HouseholdProsumer.class);
 
-		for (HouseholdProsumer hhPros : spaceHeatedProsumersIter)
+		for (HouseholdProsumer hhPros : hHIter)
 		{
 
 			if (!hhPros.isHasGas())
@@ -847,45 +857,28 @@ if (	 * this.cascadeMainContext.logger.isTraceEnabled()) {
 					.melodyStokesColdApplianceGen(Consts.NB_OF_DAYS_LOADED_DEMAND, pAgent.hasRefrigerator, pAgent.hasFridgeFreezer, (pAgent.hasUprightFreezer || pAgent.hasChestFreezer)));
 		}
 
-		if (CascadeContext.verbose)
+		if (CascadeContext.verbose && this.cascadeMainContext.logger.isDebugEnabled())
 		{
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with Fridge: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasRefrigerator", true)).query()));
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with FridgeFreezer: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasFridgeFreezer", true)).query()));
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with UprightFreezer: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasUprightFreezer", true)).query()));
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with ChestFreezer: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasChestFreezer", true)).query()));
-}
-
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with Fridge %: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasRefrigerator", true)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with FridgeFreezer %: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasFridgeFreezer", true)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with UprightFreezer %: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasUprightFreezer", true)).query())
 					/ householdProsumers.size());
-}
-if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.logger.debug("HHs with ChestFreezer %: "
 					+ (double) IterableUtils.count((new PropertyEquals(this.cascadeMainContext, "hasChestFreezer", true)).query())
 					/ householdProsumers.size());
-}
 		}
 	}
 
@@ -960,6 +953,7 @@ if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			double[] windSpeedArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("windSpeed"));
 			double[] airTemperatureArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airTemp"));
 			double[] airDensityArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("airDensity"));
+			double[] rainfallArray_all = ArrayUtils.convertStringArrayToDoubleArray(weatherReader.getColumn("rainfall"));
 
 			//TODO: Bit hacky - but I'm not sure why we were limiting this to one day previously.
 			lengthOfProfileArrays = insolationArray_all.length;
@@ -968,7 +962,27 @@ if (			this.cascadeMainContext.logger.isDebugEnabled()) {
 			this.cascadeMainContext.windSpeedArray = Arrays.copyOf(windSpeedArray_all, lengthOfProfileArrays);
 			this.cascadeMainContext.airTemperatureArray = Arrays.copyOf(airTemperatureArray_all, lengthOfProfileArrays);
 			this.cascadeMainContext.airDensityArray = Arrays.copyOf(airDensityArray_all, airDensityArray_all.length);
-
+			if (rainfallArray_all.length > 0)
+			{
+				this.cascadeMainContext.rainFallArray = Arrays.copyOf(rainfallArray_all, lengthOfProfileArrays);
+			}
+			
+			/*
+			 * Populate the context forecast for weather.  In the simplest
+			 * case, these are the same as the actuals (i.e. perfect forecasting)
+			 * 
+			 * We could add noise here to make it more realistic, or even 
+			 * import directly some actual forecasts against observations.
+			 */
+			this.cascadeMainContext.insolationForecast = Arrays.copyOf(insolationArray_all, lengthOfProfileArrays);
+			this.cascadeMainContext.windSpeedForecast = Arrays.copyOf(windSpeedArray_all, lengthOfProfileArrays);
+			this.cascadeMainContext.airTemperatureForecast = Arrays.copyOf(airTemperatureArray_all, lengthOfProfileArrays);
+			this.cascadeMainContext.airDensityForecast = Arrays.copyOf(airDensityArray_all, airDensityArray_all.length);
+			if (rainfallArray_all.length > 0)
+			{
+				this.cascadeMainContext.rainFallForecast = Arrays.copyOf(rainfallArray_all, lengthOfProfileArrays);
+			}
+			
 			this.cascadeMainContext.weatherDataLength = lengthOfProfileArrays;
 
 		}
